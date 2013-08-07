@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rotate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/loading"
     android:fromDegrees="0"
     android:pivotX="50%"
     android:pivotY="50%"
-    android:toDegrees="360"
-    android:drawable="@drawable/loading" >
-    <!-- <shape android:shape="ring" android:innerRadiusRatio="3"
-        android:thicknessRatio="8" android:useLevel="false">
-        <gradient android:type="sweep" android:useLevel="false"
-            android:startColor="#000000" android:centerColor="#FFFFFF"
-            android:centerY="0.50" android:endColor="#1E90FF" />
-    </shape> -->
+    android:toDegrees="360" >
+
 </rotate>

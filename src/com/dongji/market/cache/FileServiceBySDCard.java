@@ -27,7 +27,8 @@ public class FileServiceBySDCard extends FileServiceAbstractDetails {
 	private final static String TAG = "FileServiceBySDCard";
 	private final long NEED_DELETED_TIME_INTERVAL = 48 * 3600000;// 2天（该变量用作判断2天前的图片会被删除）
 	final static String EXTERNAL_STORAGE_DIRECTORY_PATH = AndroidUtils.getSdcardFile().getPath() + "/.dongji/dongjiMarket/cache/images/";
-	static HashMap<String, String> urlMap;// key:URL hash code value:file path，图片路径缓存
+	static HashMap<String, String> urlMap;// key:URL hash code value:file
+											// path，图片路径缓存
 
 	@Override
 	public void loadFileToMap() {

@@ -20,9 +20,8 @@ import com.dongji.market.R;
 import com.dongji.market.database.MarketDatabase.SearchHistory;
 import com.dongji.market.widget.CustomSearchView.RequestDataListener;
 
-public class SearchHistoryAdapter extends BaseAdapter implements
-		RequestDataListener {
-	
+public class SearchHistoryAdapter extends BaseAdapter implements RequestDataListener {
+
 	private static final int REQUEST_ASSOCIATE_DATA = 0;
 
 	private Activity activity;
@@ -30,9 +29,9 @@ public class SearchHistoryAdapter extends BaseAdapter implements
 	private List<String> data, list;
 	private MyHandler mHandler;
 	private SearchHistory history;
-	
+
 	private boolean isVisibleBtn = true;
-	
+
 	public SearchHistoryAdapter(Activity activity, List<String> list, SearchHistory history) {
 		super();
 		this.activity = activity;
@@ -41,7 +40,7 @@ public class SearchHistoryAdapter extends BaseAdapter implements
 		data = list;
 		initHandler();
 	}
-	
+
 	private void initHandler() {
 		HandlerThread mHandlerThread = new HandlerThread("handler");
 		mHandlerThread.start();
@@ -49,22 +48,21 @@ public class SearchHistoryAdapter extends BaseAdapter implements
 	}
 
 	public int getCount() {
-		// TODO Auto-generated method stub
 		return data.size();
 	}
-	
+
 	public void addData(String keyword) {
 		data.add(keyword);
-		if(activity!=null && !activity.isFinishing()) {
+		if (activity != null && !activity.isFinishing()) {
 			notifyDataSetChanged();
 		}
 	}
-	
+
 	public void updateData(List<String> list) {
 		data.clear();
 		data.addAll(list);
-		
-		if(activity!=null && !activity.isFinishing()) {
+
+		if (activity != null && !activity.isFinishing()) {
 			notifyDataSetChanged();
 		}
 	}
@@ -78,7 +76,6 @@ public class SearchHistoryAdapter extends BaseAdapter implements
 	}
 
 	public View getView(final int position, View convertView, ViewGroup parent) {
-//		TextView mTextView;
 		ViewHolder holder;
 		if (convertView == null) {
 			holder = new ViewHolder();
@@ -89,16 +86,16 @@ public class SearchHistoryAdapter extends BaseAdapter implements
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
-		
+
 		if (isVisibleBtn) {
 			holder.mDelBtn.setVisibility(View.VISIBLE);
 		} else {
 			holder.mDelBtn.setVisibility(View.GONE);
 		}
-		
+
 		holder.mTextView.setText(data.get(position));
 		holder.mDelBtn.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				history.del(data.get(position));
@@ -117,52 +114,27 @@ public class SearchHistoryAdapter extends BaseAdapter implements
 		} else {
 			isVisibleBtn = true;
 		}
-		
+
 	}
 
 	public void cancelPreRequest() {
-		// TODO Auto-generated method stub
-		
 	}
-	
-	private static class ViewHolder{
+
+	private static class ViewHolder {
 		TextView mTextView;
 		ImageView mDelBtn;
 	}
-	
-	class MyHandler extends Handler{
+
+	class MyHandler extends Handler {
 
 		public MyHandler(Looper looper) {
 			super(looper);
-			// TODO Auto-generated constructor stub
 		}
 
 		@Override
 		public void handleMessage(Message msg) {
-			/*if (msg.what == REQUEST_ASSOCIATE_DATA) {
-//				System.out.println("start request------------>" + System.currentTimeMillis());
-				try {
-					list = DataManager.newInstance().getSearchList((String)msg.obj);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					return;
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					return;
-				}
-//				System.out.println("end request------------>" + System.currentTimeMillis());
-				activity.runOnUiThread(new Runnable() {
-					
-					@Override
-					public void run() {
-						updateData(list);
-					}
-				});
-			}*/
 		}
-		
+
 	}
 
 }

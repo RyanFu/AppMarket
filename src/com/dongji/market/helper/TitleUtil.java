@@ -80,8 +80,7 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 	private Activity cxt;
 	private View titleView;
 	private Bundle bundle;
-	private ImageView mSettingButton, mSearchButton, mSWeManageButton,
-			mShareButton;
+	private ImageView mSettingButton, mSearchButton, mSWeManageButton, mShareButton;
 	private Button mBackButton;
 	private TextView mPageNameTextView;
 	public CustomSearchView mSearchEdit;
@@ -102,12 +101,9 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 	private CommonReceiver commonRecv;
 
 	private LinearLayout mPopSmsShare;
-	private TextView mPopSettingDiv, mPopChgPwd, mPopLogin, mPopShareDiv_1,
-			mPopShareDiv_2;
+	private TextView mPopSettingDiv, mPopChgPwd, mPopLogin, mPopShareDiv_1, mPopShareDiv_2;
 	private TextView mPopDownloadMost, mPopGradeTop, mPopRiseFastest;
 	private int popLenParam;
-
-	// private int flag = 0;
 	private SaveSettingListener saveListener;
 	private LoginListener loginListener;
 	public static final int SEARCH_PAGE_FLAG = 100;
@@ -131,153 +127,67 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 
 	public boolean isSharing = false;
 
-	public TitleUtil(Activity cxt, View titleView, int pageNameId,
-			Bundle params,
-			OnToolBarBlankClickListener mOnToolBarBlankClickListener) {
-		this(cxt, titleView, cxt.getResources().getString(pageNameId), params,
-				mOnToolBarBlankClickListener);
-	}
-
-	public TitleUtil(Activity cxt, View titleView, String pageName,
-			Bundle params,
-			OnToolBarBlankClickListener mOnToolBarBlankClickListener) {
+	/**
+	 * 
+	 * @param cxt
+	 *            activity
+	 * @param titleView
+	 *            view
+	 * @param pageName
+	 * @param params
+	 * @param mOnToolBarBlankClickListener
+	 */
+	public TitleUtil(Activity cxt, View titleView, String pageName, Bundle params, OnToolBarBlankClickListener mOnToolBarBlankClickListener) {
 		this.bundle = params;
 		this.cxt = cxt;
 		this.titleView = titleView;
 		this.pageName = pageName;
 		this.mOnToolBarBlankClickListener = mOnToolBarBlankClickListener;
-		// flag = ADownloadService.checkDownloadList();
 		initViews();
 		initHandler();
-
 		registerAllReceiver();
 	}
 
-	private void registerAllReceiver() {
-		flowBroadcastReceiver = new FlowBroadcastReceiver(cxt);
-		flowBroadcastReceiver.registerMyReceiver();
-
-		if (!(cxt instanceof MainActivity)) {
-			// IntentFilter intentFilter=new
-			// IntentFilter(BROADCAST_CLOSE_ACTIVITY);
-			// cxt.registerReceiver(mCloseActivityBroadcastReceiver,
-			// intentFilter);
-
-			commonRecv = new CommonReceiver();
-			cxt.registerReceiver(commonRecv, new IntentFilter(
-					AConstDefine.GO_HOME_BROADCAST));
-		}
+	public TitleUtil(Activity cxt, View titleView, int pageNameId, Bundle params, OnToolBarBlankClickListener mOnToolBarBlankClickListener) {
+		this(cxt, titleView, cxt.getResources().getString(pageNameId), params, mOnToolBarBlankClickListener);
 	}
 
-	private class MyInstallReceiver extends BroadcastReceiver {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-
-			String packageName = intent.getDataString();
-			packageName = DJMarketUtils.convertPackageName(packageName);
-			if (intent.getAction().equals(BROADCAST_SYS_ACTION_APPINSTALL)) {
-
-				ADownloadApkDBHelper db = new ADownloadApkDBHelper(context);
-				ADownloadApkItem aDownloadApkItem = db
-						.selectApkByPackageName(packageName);
-				if (null != aDownloadApkItem) {
-					DataManager.newInstance().statisticsForInstall(
-							aDownloadApkItem.apkId, aDownloadApkItem.category);
-					db.deleteDownloadByPAndV(aDownloadApkItem.apkPackageName,
-							aDownloadApkItem.apkVersionCode);
-					NetTool.fillWaitingInstallNotifitcation(context);
-					Toast.makeText(
-							context,
-							aDownloadApkItem.apkName
-									+ context
-											.getString(R.string.install_success_msg),
-							Toast.LENGTH_SHORT).show();
-				}
-				List<InstalledAppInfo> installedAppInfos = NetTool
-						.getAllInstallAppInfo(context);
-				for (int i = 0; i < ADownloadService.updateAPKList.apkList
-						.size(); i++) {
-					aDownloadApkItem = ADownloadService.updateAPKList.apkList
-							.get(i);
-					if (packageName.equals(aDownloadApkItem.apkPackageName)) {
-						for (int j = 0; j < installedAppInfos.size(); j++) {
-							if (installedAppInfos.get(j).getPkgName()
-									.equals(packageName)) {
-								if (installedAppInfos.get(j).getVersionCode() >= aDownloadApkItem.apkVersionCode) {
-									ADownloadService.updateAPKList.apkList
-											.remove(aDownloadApkItem);
-									NetTool.fillUpdateNotification(context);
-									break;
-								}
-							}
-						}
-					}
-				}
-			} else if (intent.getAction()
-					.equals(BROADCAST_SYS_ACTION_APPREMOVE)) {
-				ADownloadApkItem aDownloadApkItem;
-				for (int i = 0; i < ADownloadService.updateAPKList.apkList
-						.size(); i++) {
-					aDownloadApkItem = ADownloadService.updateAPKList.apkList
-							.get(i);
-					if (aDownloadApkItem.apkPackageName.equals(packageName)) {
-						ADownloadService.updateAPKList.apkList
-								.remove(aDownloadApkItem);
-						NetTool.fillotherUpdate(context);
-						break;
-					}
-				}
-			} else if (BROADCAST_UPDATE_DATA_REFRESH.equals(intent.getAction())) {
-				setDownloadCount();
-			}
-			context.sendBroadcast(new Intent(BROADCAST_ACTION_UPDATECOUNT));
-			// NetTool.updateNotification(context);
-		}
-	}
-
-	public TitleUtil(Activity cxt, View titleView, int pageNameId,
-			SaveSettingListener saveListener, Bundle params,
-			OnToolBarBlankClickListener mOnToolBarBlankClickListener) {
+	public TitleUtil(Activity cxt, View titleView, int pageNameId, SaveSettingListener saveListener, Bundle params, OnToolBarBlankClickListener mOnToolBarBlankClickListener) {
 		this(cxt, titleView, pageNameId, params, mOnToolBarBlankClickListener);
 		this.saveListener = saveListener;
 	}
 
-	public TitleUtil(Activity cxt, View titleView, int pageNameId,
-			LoginListener loginListener, Bundle params,
-			OnToolBarBlankClickListener mOnToolBarBlankClickListener) {
+	public TitleUtil(Activity cxt, View titleView, int pageNameId, LoginListener loginListener, Bundle params, OnToolBarBlankClickListener mOnToolBarBlankClickListener) {
 		this(cxt, titleView, pageNameId, params, mOnToolBarBlankClickListener);
 		this.loginListener = loginListener;
 	}
 
-	public TitleUtil(Activity cxt, View titleView, String pageName,
-			Bundle bundle, OnSortChangeListener listener,
-			OnToolBarBlankClickListener mOnToolBarBlankClickListener) {
+	public TitleUtil(Activity cxt, View titleView, String pageName, Bundle bundle, OnSortChangeListener listener, OnToolBarBlankClickListener mOnToolBarBlankClickListener) {
 		this(cxt, titleView, pageName, bundle, null);
 		this.listener = listener;
 		this.mOnToolBarBlankClickListener = mOnToolBarBlankClickListener;
 	}
 
+	/**
+	 * 初始化actionbar
+	 */
 	private void initViews() {
 		mSettingButton = (ImageView) titleView.findViewById(R.id.settingButton);
 		mSearchButton = (ImageView) titleView.findViewById(R.id.searchButton);
 		mShareButton = (ImageView) titleView.findViewById(R.id.shareButton);
-		mSWeManageButton = (ImageView) titleView
-				.findViewById(R.id.softmanagerbutton);
+		mSWeManageButton = (ImageView) titleView.findViewById(R.id.softmanagerbutton);
 
-		if (cxt.getClass().equals(ApkDetailActivity.class)
-				|| cxt.getClass().equals(MainActivity.class)) {
+		if (cxt.getClass().equals(ApkDetailActivity.class) || cxt.getClass().equals(MainActivity.class)) {
 			mShareButton.setVisibility(View.VISIBLE);
 			mShareButton.setOnClickListener(this);
 		} else {
 			mShareButton.setVisibility(View.GONE);
 		}
 		if (!cxt.getClass().equals(Search_Activity2.class)) {// 非搜索页有页面名称
-			mPageNameTextView = (TextView) titleView
-					.findViewById(R.id.page_name);
+			mPageNameTextView = (TextView) titleView.findViewById(R.id.page_name);
 			mPageNameTextView.setText(pageName);
 			if (cxt.getClass().equals(ChannelListActivity.class)) {
-				mSortPageShrinkIcon = (ImageView) titleView
-						.findViewById(R.id.shrink_icon);
+				mSortPageShrinkIcon = (ImageView) titleView.findViewById(R.id.shrink_icon);
 				mSortPageShrinkIcon.setVisibility(View.VISIBLE);
 				mSortPageShrinkIcon.setOnClickListener(this);
 				mPageNameTextView.setOnClickListener(this);
@@ -295,10 +205,8 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 			if (!cxt.isFinishing()) {
 				View mClearLayout = titleView.findViewById(R.id.clearLayout);
 				mClearLayout.setOnClickListener(this);
-				mClearKeywordBtn = (Button) titleView
-						.findViewById(R.id.clearKeyword);
-				mSearchEdit = (CustomSearchView) titleView
-						.findViewById(R.id.searchEdittext);
+				mClearKeywordBtn = (Button) titleView.findViewById(R.id.clearKeyword);
+				mSearchEdit = (CustomSearchView) titleView.findViewById(R.id.searchEdittext);
 				history = new SearchHistory(cxt);
 				data = history.getAll();
 				historyAdapter = new SearchHistoryAdapter(cxt, data, history);
@@ -307,7 +215,6 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 
 					public void afterTextChanged(Editable s) {
 						if (TextUtils.isEmpty(s.toString())) {
-							// historyAdapter.notifyDataSetChanged();
 							historyAdapter.updateData(history.getAll());
 						} else {
 							mSearchEdit.dismissDropDown();
@@ -319,10 +226,8 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 					@Override
 					public boolean onTouch(View v, MotionEvent event) {
 						if (event.getAction() == MotionEvent.ACTION_DOWN) {
-							if (TextUtils.isEmpty(mSearchEdit.getText()
-									.toString().trim())) {
+							if (TextUtils.isEmpty(mSearchEdit.getText().toString().trim())) {
 								historyAdapter.notifyDataSetChanged();
-								// historyAdapter.updateData(history.getAll());
 							}
 						}
 						return false;
@@ -332,40 +237,32 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 
 					@Override
 					public boolean onKeyDown(int keyCode, KeyEvent event) {
-						System.out.println("key code========>" + keyCode);
 						if (keyCode == KeyEvent.KEYCODE_ENTER) {
-							searchInvoke(mSearchEdit.getText().toString()
-									.trim());
+							searchInvoke(mSearchEdit.getText().toString().trim());
 						}
 						return false;
 					}
 				});
-				mSearchEdit
-						.setDropDownOnItemClickListener(new OnItemClickListener() {
+				mSearchEdit.setDropDownOnItemClickListener(new OnItemClickListener() {
 
-							public void onItemClick(String keyword) {
-								searchInvoke(keyword);
-							}
-						});
+					public void onItemClick(String keyword) {
+						searchInvoke(keyword);
+					}
+				});
 				mClearKeywordBtn.setOnClickListener(this);
 			}
 		}
-		mTopLogoLayout = (FrameLayout) titleView
-				.findViewById(R.id.top_logo_layout);
+		mTopLogoLayout = (FrameLayout) titleView.findViewById(R.id.top_logo_layout);
 		mBackButton = (Button) titleView.findViewById(R.id.backButton);
 		if (cxt.getClass().equals(MainActivity.class)) {// 主页面会改变logo图标,并隐藏返回按钮
-			TextView mTitleTextView = (TextView) titleView
-					.findViewById(R.id.page_name);
+			TextView mTitleTextView = (TextView) titleView.findViewById(R.id.page_name);
 			mTitleTextView.setText(R.string.app_name);
 			mTitleTextView.setVisibility(View.VISIBLE);
 		}
 
 		tvCount = (TextView) titleView.findViewById(R.id.tvCount);
-		manager_progress = (ProgressBar) titleView
-				.findViewById(R.id.manager_progress);
-
+		manager_progress = (ProgressBar) titleView.findViewById(R.id.manager_progress);
 		manager_progress.setMax(100);
-
 		mBackButton.setOnClickListener(this);
 		mTopLogoLayout.setOnClickListener(this);
 		mSettingButton.setOnClickListener(this);
@@ -373,62 +270,38 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		mSWeManageButton.setOnClickListener(this);
 	}
 
-	public void dismissSearchPop() {
-		if (mSearchEdit != null) {
-			mSearchEdit.dismissFocus();
+	/**
+	 * 初始化Handler
+	 */
+	private void initHandler() {
+		// 分享Handler
+		HandlerThread thread = new HandlerThread("handler");
+		thread.start();
+		mHandler = new MyHandler(thread.getLooper());
+
+		// 刷新Handler
+		HandlerThread mHandlerThread = new HandlerThread("T");
+		mHandlerThread.start();
+		mRefreshTitleHandler = new DownloadRefreshHandler(mHandlerThread.getLooper());
+		mRefreshTitleHandler.sendEmptyMessageDelayed(EVENT_REFRESH_DOWNLOAD, 3000L);// 3秒后发送下载刷新消息
+	}
+
+	/**
+	 * 注册所有广播
+	 */
+	private void registerAllReceiver() {
+		flowBroadcastReceiver = new FlowBroadcastReceiver(cxt);
+		flowBroadcastReceiver.registerMyReceiver();
+
+		if (!(cxt instanceof MainActivity)) {
+			commonRecv = new CommonReceiver();
+			cxt.registerReceiver(commonRecv, new IntentFilter(AConstDefine.GO_HOME_BROADCAST));
 		}
 	}
 
-	public void setDownloadCount() {
-		int tempUpdateCount = ADownloadService
-				.getUpdateCountByStatus(STATUS_OF_UPDATE);
-		if (tempUpdateCount > 0) {
-			tvCount.setText(tempUpdateCount + "");
-			tvCount.setVisibility(View.VISIBLE);
-		} else {
-			tvCount.setVisibility(View.GONE);
-		}
-
-		int tempDownloadCount = ADownloadService.downloadingAPKList.apkList
-				.size()
-				+ ADownloadService.getUpdateCountByStatus(
-						STATUS_OF_PREPAREUPDATE, STATUS_OF_UPDATEING,
-						STATUS_OF_PAUSEUPDATE_BYHAND);
-
-		System.out.println("tempupdatecount................"
-				+ tempDownloadCount);
-
-		if (tempDownloadCount > 0) {
-			manager_progress.setVisibility(View.VISIBLE);
-			mSWeManageButton
-					.setImageResource(R.drawable.manager_download_selector);
-		} else if (tempUpdateCount > 0) {
-			manager_progress.setVisibility(View.GONE);
-			mSWeManageButton
-					.setImageResource(R.drawable.manager_update_selector);
-		} else {
-			manager_progress.setVisibility(View.GONE);
-			mSWeManageButton.setImageResource(R.drawable.manager_none_selector);
-		}
-	}
-
-	private void searchInvoke(String keyword) {
-		if (!TextUtils.isEmpty(keyword)) {
-			history.add(keyword);
-			Intent intent = new Intent();
-			intent.putExtra("search_keyword", keyword);
-			intent.setClass(cxt, Search_Result_Activity.class);
-			cxt.startActivity(intent);
-			// mSearchEdit.setText("");
-		} else {
-			AndroidUtils
-					.showToast(
-							cxt,
-							cxt.getResources().getString(
-									R.string.input_keyword_please));
-		}
-	}
-
+	/**
+	 * 按钮点击事件
+	 */
 	@Override
 	public void onClick(View v) {
 		Intent intent = new Intent();
@@ -436,16 +309,9 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		case R.id.backButton:
 		case R.id.top_logo_layout:
 			if (cxt.getClass().equals(Setting_Activity.class)) {
-				// cxt.sendBroadcast(new
-				// Intent("com.dongji.market.exitSetting"));
 				saveListener.exitVerify(true, -1);
-			}/*
-			 * else if (cxt.getClass().equals(Login_Activity2.class)) {
-			 * loginListener.titleBack(); }
-			 */else if (!cxt.getClass().equals(MainActivity.class)) {
-				// cxt.finish();
+			} else if (!cxt.getClass().equals(MainActivity.class)) {
 				cxt.sendBroadcast(new Intent(AConstDefine.GO_HOME_BROADCAST));
-				// cxt.sendBroadcast(new Intent(BROADCAST_CLOSE_ACTIVITY));
 			}
 			break;
 		case R.id.searchButton:
@@ -501,13 +367,10 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 				 * ...... 此为退出登录逻辑,待补充,假设退出完成
 				 */
 				if (loginParams == null) {
-					loginParams = ((AppMarket) cxt.getApplication())
-							.getLoginParams();
+					loginParams = ((AppMarket) cxt.getApplication()).getLoginParams();
 				}
 				loginParams.setSessionId(null);
 				loginParams.setUserName(null);
-				// loginParams.setLoginState(AConstDefine.LOGIN_OUT_FLAG);
-				// loginParams.setSinaUserName(null);
 				AndroidUtils.showToast(cxt, R.string.login_out);
 				if (cxt.getClass().equals(Change_Pwd_Activity.class)) {
 					cxt.finish();
@@ -517,14 +380,12 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 					saveListener.exitVerify(false, LOGIN_PAGE_FLAG);
 				} else if (!cxt.getClass().equals(Login_Activity.class)) {// 当前不为登录界面
 					intent.setClass(cxt, Login_Activity.class);
-					cxt.overridePendingTransition(R.anim.enter_in,
-							R.anim.enter_out);
+					cxt.overridePendingTransition(R.anim.enter_in, R.anim.enter_out);
 					cxt.startActivity(intent);
 					if (cxt.getClass().equals(ApkDetailActivity.class)) {
 						cxt.finish();
 					}
 				} else if (cxt.getClass().equals(Login_Activity.class)) {
-					// loginListener.pageBack();
 				}
 			}
 			mSettingPopup.dismiss();
@@ -533,13 +394,9 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 			if (cxt.getClass().equals(Setting_Activity.class)) {
 				saveListener.exitVerify(false, CHANGE_PWD_PAGE_FLAG);
 			} else if (!cxt.getClass().equals(Change_Pwd_Activity.class)) {// 当前不为更改密码界面
-				// if (DJMarketUtils.isSinaLogin(cxt)) {
-				// AndroidUtils.showToast(cxt, R.string.forbid_modify_pwd);
-				// } else {
 				intent.setClass(cxt, Change_Pwd_Activity.class);
 				cxt.overridePendingTransition(R.anim.enter_in, R.anim.enter_out);
 				cxt.startActivity(intent);
-				// }
 			}
 			mSettingPopup.dismiss();
 			break;
@@ -550,57 +407,25 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 			}
 			break;
 		case R.id.shareButton:
-			// // new ShareDialog_unuse(cxt, bundle).show();
-			// System.out.println("SIM card exist ===========>"
-			// + AndroidUtils.checkSIM(cxt));
-			// // if (!AndroidUtils.checkSIM(cxt)) {
-			// // // AndroidUtils.showToast(cxt, R.string.no_SIM);
-			// // Toast.makeText(cxt, R.string.no_SIM,
-			// Toast.LENGTH_SHORT).show();
-			// // } else {
-			// if (isSharing) {
-			// AndroidUtils.showToast(cxt, R.string.is_loading);
-			// } else {
-			// ApkItem apkItem = bundle.getParcelable("apkItem");
-			// if (apkItem.apkUrl != null) {
-			// showOrDismissSharePopupWindow();
-			// }
-			// }
-			// // }
-			String share_subject = cxt.getResources().getString(
-					R.string.share_us_subject);
+			String share_subject = cxt.getResources().getString(R.string.share_us_subject);
 			String share_content = "";
-			String share_dialog_title = cxt.getResources().getString(
-					R.string.share_us_title);
+			String share_dialog_title = cxt.getResources().getString(R.string.share_us_title);
 			if (cxt.getClass().equals(MainActivity.class)) {
-				share_content = cxt.getResources().getString(
-						R.string.share_us_content)
-						+ DataManager.newInstance().getShortUrlByLongUrl(
-								cxt.getResources().getString(
-										R.string.share_us_url))+cxt.getResources().getString(
-												R.string.share_us_content2);
+				share_content = cxt.getResources().getString(R.string.share_us_content) + DataManager.newInstance().getShortUrlByLongUrl(cxt.getResources().getString(R.string.share_us_url)) + cxt.getResources().getString(R.string.share_us_content2);
 
 			} else if (cxt.getClass().equals(ApkDetailActivity.class)) {
 				ApkItem apkItem = bundle.getParcelable("apkItem");
-				share_content = cxt.getResources().getString(
-						R.string.share_text1)
-						+ apkItem.appName
-						+ cxt.getResources().getString(R.string.share_text2)
-						+ DataManager.newInstance().getShortUrlByLongUrl(
-								apkItem.apkUrl)+cxt.getResources().getString(R.string.share_text3);
+				share_content = cxt.getResources().getString(R.string.share_text1) + apkItem.appName + cxt.getResources().getString(R.string.share_text2) + DataManager.newInstance().getShortUrlByLongUrl(apkItem.apkUrl) + cxt.getResources().getString(R.string.share_text3);
 
 			}
-
 			Intent intent2 = new Intent(Intent.ACTION_SEND);
 			intent2.setType("text/plain");
 			intent2.putExtra(Intent.EXTRA_SUBJECT, share_subject); // 分享主题
 			intent2.putExtra(Intent.EXTRA_TEXT, share_content); // 分享内容
-			// intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			cxt.startActivity(Intent.createChooser(intent2, share_dialog_title));// 选择对话框标题
 
 			break;
 		case R.id.popup_sms_share:
-			// AndroidUtils.showToast(cxt, R.string.is_loading);
 			if (!isSharing) {
 				isSharing = true;
 				mHandler.sendEmptyMessage(SMS_SHARE);
@@ -641,8 +466,7 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 			break;
 		case R.id.popup_download_most:
 			if (this.listener != null) {
-				this.listener
-						.onSortChanged(OnSortChangeListener.SORT_BY_DOWNLOAD);
+				this.listener.onSortChanged(OnSortChangeListener.SORT_BY_DOWNLOAD);
 			}
 			dismissPopupWindow();
 			break;
@@ -663,58 +487,136 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		}
 	}
 
-	private void initHandler() {
-		HandlerThread thread = new HandlerThread("handler");
-		thread.start();
-		mHandler = new MyHandler(thread.getLooper());
+	/**
+	 * 安装广播接收
+	 * 
+	 * @author yvon
+	 * 
+	 */
+	private class MyInstallReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String packageName = intent.getDataString();
+			packageName = DJMarketUtils.convertPackageName(packageName);
+			if (intent.getAction().equals(BROADCAST_SYS_ACTION_APPINSTALL)) {
+				ADownloadApkDBHelper db = new ADownloadApkDBHelper(context);
+				ADownloadApkItem aDownloadApkItem = db.selectApkByPackageName(packageName);
+				if (null != aDownloadApkItem) {
+					DataManager.newInstance().statisticsForInstall(aDownloadApkItem.apkId, aDownloadApkItem.category);
+					db.deleteDownloadByPAndV(aDownloadApkItem.apkPackageName, aDownloadApkItem.apkVersionCode);
+					NetTool.fillWaitingInstallNotifitcation(context);
+					Toast.makeText(context, aDownloadApkItem.apkName + context.getString(R.string.install_success_msg), Toast.LENGTH_SHORT).show();
+				}
+				List<InstalledAppInfo> installedAppInfos = NetTool.getAllInstallAppInfo(context);
+				for (int i = 0; i < ADownloadService.updateAPKList.apkList.size(); i++) {
+					aDownloadApkItem = ADownloadService.updateAPKList.apkList.get(i);
+					if (packageName.equals(aDownloadApkItem.apkPackageName)) {
+						for (int j = 0; j < installedAppInfos.size(); j++) {
+							if (installedAppInfos.get(j).getPkgName().equals(packageName)) {
+								if (installedAppInfos.get(j).getVersionCode() >= aDownloadApkItem.apkVersionCode) {
+									ADownloadService.updateAPKList.apkList.remove(aDownloadApkItem);
+									NetTool.fillUpdateNotification(context);
+									break;
+								}
+							}
+						}
+					}
+				}
+			} else if (intent.getAction().equals(BROADCAST_SYS_ACTION_APPREMOVE)) {
+				ADownloadApkItem aDownloadApkItem;
+				for (int i = 0; i < ADownloadService.updateAPKList.apkList.size(); i++) {
+					aDownloadApkItem = ADownloadService.updateAPKList.apkList.get(i);
+					if (aDownloadApkItem.apkPackageName.equals(packageName)) {
+						ADownloadService.updateAPKList.apkList.remove(aDownloadApkItem);
+						NetTool.fillotherUpdate(context);
+						break;
+					}
+				}
+			} else if (BROADCAST_UPDATE_DATA_REFRESH.equals(intent.getAction())) {
+				setDownloadCount();
+			}
+			context.sendBroadcast(new Intent(BROADCAST_ACTION_UPDATECOUNT));
+		}
+	}
 
-		HandlerThread mHandlerThread = new HandlerThread("T");
-		mHandlerThread.start();
-		mRefreshTitleHandler = new DownloadRefreshHandler(
-				mHandlerThread.getLooper());
-		mRefreshTitleHandler.sendEmptyMessageDelayed(EVENT_REFRESH_DOWNLOAD,
-				3000L);
+	/**
+	 * 取消搜索Pop
+	 */
+	public void dismissSearchPop() {
+		if (mSearchEdit != null) {
+			mSearchEdit.dismissFocus();
+		}
+	}
+
+	/**
+	 * 设置下载数量
+	 */
+	public void setDownloadCount() {
+		int tempUpdateCount = ADownloadService.getUpdateCountByStatus(STATUS_OF_UPDATE);
+		if (tempUpdateCount > 0) {
+			tvCount.setText(tempUpdateCount + "");
+			tvCount.setVisibility(View.VISIBLE);
+		} else {
+			tvCount.setVisibility(View.GONE);
+		}
+		int tempDownloadCount = ADownloadService.downloadingAPKList.apkList.size() + ADownloadService.getUpdateCountByStatus(STATUS_OF_PREPAREUPDATE, STATUS_OF_UPDATEING, STATUS_OF_PAUSEUPDATE_BYHAND);
+		System.out.println("tempupdatecount................" + tempDownloadCount);
+		if (tempDownloadCount > 0) {
+			manager_progress.setVisibility(View.VISIBLE);
+			mSWeManageButton.setImageResource(R.drawable.manager_download_selector);
+		} else if (tempUpdateCount > 0) {
+			manager_progress.setVisibility(View.GONE);
+			mSWeManageButton.setImageResource(R.drawable.manager_update_selector);
+		} else {
+			manager_progress.setVisibility(View.GONE);
+			mSWeManageButton.setImageResource(R.drawable.manager_none_selector);
+		}
+	}
+
+	/**
+	 * 搜索调用
+	 * 
+	 * @param keyword
+	 */
+	private void searchInvoke(String keyword) {
+		if (!TextUtils.isEmpty(keyword)) {
+			history.add(keyword);
+			Intent intent = new Intent();
+			intent.putExtra("search_keyword", keyword);
+			intent.setClass(cxt, Search_Result_Activity.class);
+			cxt.startActivity(intent);
+		} else {
+			AndroidUtils.showToast(cxt, cxt.getResources().getString(R.string.input_keyword_please));
+		}
 	}
 
 	class MyHandler extends Handler {
 
 		public MyHandler(Looper looper) {
 			super(looper);
-			// TODO Auto-generated constructor stub
 		}
 
 		@Override
 		public void handleMessage(Message msg) {
-			// Intent intent = new Intent();
 			switch (msg.what) {
 			case SMS_SHARE:
 				executeSmsShare();
-				// isSharing = false;
 				break;
 			case SINA_SHARE:
 				executeSinaShare();
-				// isSharing = false;
 				break;
 			case TENCENT_SHARE:
-				executeTencentShare(((AppMarket) cxt.getApplicationContext())
-						.getLoginParams().getTencent_oAuth());
-				// isSharing = false;
+				executeTencentShare(((AppMarket) cxt.getApplicationContext()).getLoginParams().getTencent_oAuth());
 				break;
 			case OAuthV2ImplicitGrant.GET_OATHV2:
-				DJMarketUtils.getTencentUsrInfo(cxt, (OAuthV2) msg.obj,
-						mHandler);
+				DJMarketUtils.getTencentUsrInfo(cxt, (OAuthV2) msg.obj, mHandler);
 				break;
 			case OAuthV2ImplicitGrant.TENCENT_LOGIN_SUCCESS:
 				((Activity) cxt).runOnUiThread(new Runnable() {
 
 					@Override
 					public void run() {
-						// TODO Auto-generated method stub
-						Toast.makeText(cxt, R.string.tencent_oAuth_success,
-								Toast.LENGTH_SHORT).show();
-						// AndroidUtils.showToast(cxt,
-						// R.string.tencent_oAuth_success);
-						// mHandler.sendEmptyMessage(TENCENT_SHARE);
+						Toast.makeText(cxt, R.string.tencent_oAuth_success, Toast.LENGTH_SHORT).show();
 					}
 				});
 				mHandler.sendEmptyMessage(TENCENT_SHARE);
@@ -768,17 +670,9 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 			ApkItem apkItem = bundle.getParcelable("apkItem");
 			Uri smsUri = Uri.parse("smsto:");
 			Intent intent = new Intent(Intent.ACTION_SENDTO, smsUri);
-			intent.putExtra(
-					"sms_body",
-					cxt.getResources().getString(R.string.share_text1)
-							+ apkItem.appName
-							+ cxt.getResources()
-									.getString(R.string.share_text2)
-							+ DataManager.newInstance().getShortUrlByLongUrl(
-									apkItem.apkUrl));
+			intent.putExtra("sms_body", cxt.getResources().getString(R.string.share_text1) + apkItem.appName + cxt.getResources().getString(R.string.share_text2) + DataManager.newInstance().getShortUrlByLongUrl(apkItem.apkUrl));
 			cxt.startActivity(intent);
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		} finally {
 			isSharing = false;
@@ -789,31 +683,13 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 	 * 新浪微博分享实现
 	 */
 	private void executeSinaShare() {
-		// AndroidUtils.showToast(cxt, "暂未实现微博分享！");
 		ApkItem apkItem = bundle.getParcelable("apkItem");
 		Weibo weibo = Weibo.getInstance();
 		try {
-			// weibo.share2weibo(cxt, weibo.getAccessToken().getToken(), weibo
-			// .getAccessToken().getSecret(), cxt.getResources()
-			// .getString(R.string.share_text1)
-			// + apkItem.appName
-			// + cxt.getResources().getString(R.string.share_text2)
-			// + apkItem.apkUrl, null);
-			weibo.share2weibo(
-					cxt,
-					weibo.getAccessToken().getToken(),
-					weibo.getAccessToken().getSecret(),
-					cxt.getResources().getString(R.string.share_text1)
-							+ apkItem.appName
-							+ cxt.getResources()
-									.getString(R.string.share_text2)
-							+ DataManager.newInstance().getShortUrlByLongUrl(
-									apkItem.apkUrl), null);
+			weibo.share2weibo(cxt, weibo.getAccessToken().getToken(), weibo.getAccessToken().getSecret(), cxt.getResources().getString(R.string.share_text1) + apkItem.appName + cxt.getResources().getString(R.string.share_text2) + DataManager.newInstance().getShortUrlByLongUrl(apkItem.apkUrl), null);
 		} catch (NotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (WeiboException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			isSharing = false;
@@ -826,15 +702,10 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 	private void executeTencentShare(OAuthV2 oAuth) {
 		try {
 			ApkItem apkItem = bundle.getParcelable("apkItem");
-			String content = cxt.getResources().getString(R.string.share_text1)
-					+ apkItem.appName
-					+ cxt.getResources().getString(R.string.share_text2)
-					+ DataManager.newInstance().getShortUrlByLongUrl(
-							apkItem.apkUrl);
+			String content = cxt.getResources().getString(R.string.share_text1) + apkItem.appName + cxt.getResources().getString(R.string.share_text2) + DataManager.newInstance().getShortUrlByLongUrl(apkItem.apkUrl);
 
 			new OAuthV2ImplicitGrant(cxt).shareContent(content, oAuth);
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		} finally {
 			isSharing = false;
@@ -864,33 +735,14 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 				return false;
 			}
 		});
-		mPopDownloadMost = (TextView) mLayout
-				.findViewById(R.id.popup_download_most);
+		mPopDownloadMost = (TextView) mLayout.findViewById(R.id.popup_download_most);
 		mPopGradeTop = (TextView) mLayout.findViewById(R.id.popup_grade_top);
-		mPopRiseFastest = (TextView) mLayout
-				.findViewById(R.id.popup_rise_fastest);
-
-		// mSortPopup = new PopupWindow(mLayout, mSortPageShrinkIcon.getWidth()
-		// + AndroidUtils.dip2px(cxt, 80), mPopDownloadMost.getHeight()
-		// + AndroidUtils.dip2px(cxt, 15) * 8, true);
-		mSortPopup = new PopupWindow(mLayout, mSortPageShrinkIcon.getWidth()
-				+ AndroidUtils.dip2px(cxt, 80), AndroidUtils.dip2px(cxt, 139),
-				true);
-		mSortPopup.setBackgroundDrawable(cxt.getResources().getDrawable(
-				R.drawable.sort_popup_bg));
+		mPopRiseFastest = (TextView) mLayout.findViewById(R.id.popup_rise_fastest);
+		mSortPopup = new PopupWindow(mLayout, mSortPageShrinkIcon.getWidth() + AndroidUtils.dip2px(cxt, 80), AndroidUtils.dip2px(cxt, 139), true);
+		mSortPopup.setBackgroundDrawable(cxt.getResources().getDrawable(R.drawable.sort_popup_bg));
 		mSortPopup.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
 		mSortPopup.setOutsideTouchable(true);
 		mSortPopup.setTouchable(true);
-		/*
-		 * mSortPopup.setTouchInterceptor(new OnTouchListener() {
-		 * 
-		 * @Override public boolean onTouch(View v, MotionEvent event) { if
-		 * (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
-		 * dismissPopupWindow(); return false; }
-		 * System.out.println("aaaaaaaaaaaaaa=========>" + event.getAction());
-		 * return false; // return true; } });
-		 */
-
 		mSortPopup.setOnDismissListener(new OnDismissListener() {
 
 			@Override
@@ -907,15 +759,13 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		if (mSortPopup == null) {
 			initSortPopupWindow();
 		}
-		// updateSharePop();
 		if (cxt != null && !cxt.isFinishing()) {
 			if (mSortPopup.isShowing()) {
 				mSortPageShrinkIcon.setImageResource(R.drawable.arrows_down);
 				mSortPopup.dismiss();
 			} else {
 				mSortPageShrinkIcon.setImageResource(R.drawable.arrows_up);
-				mSortPopup.showAsDropDown(titleView, mTopLogoLayout.getWidth(),
-						3);
+				mSortPopup.showAsDropDown(titleView, mTopLogoLayout.getWidth(), 3);
 			}
 		}
 	}
@@ -943,26 +793,15 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 				return false;
 			}
 		});
-		mPopSmsShare = (LinearLayout) mLayout
-				.findViewById(R.id.popup_sms_share);
-		LinearLayout mPopSinaShare = (LinearLayout) mLayout
-				.findViewById(R.id.popup_sina_share);
-		mPopShareDiv_1 = (TextView) mLayout
-				.findViewById(R.id.popup_share_divider_1);
-		LinearLayout mPopTencentShare = (LinearLayout) mLayout
-				.findViewById(R.id.popup_tencent_share);
-		// mPopShareDiv_2 = (TextView)
-		// mLayout.findViewById(R.id.popup_share_divider_2);
-
-		// mSharePopup = new PopupWindow(mLayout, mShareButton.getWidth() * 9,
-		// (mShareButton.getHeight() + AndroidUtils.dip2px(cxt, 15)) * 1,
-		// true);
+		mPopSmsShare = (LinearLayout) mLayout.findViewById(R.id.popup_sms_share);
+		LinearLayout mPopSinaShare = (LinearLayout) mLayout.findViewById(R.id.popup_sina_share);
+		mPopShareDiv_1 = (TextView) mLayout.findViewById(R.id.popup_share_divider_1);
+		LinearLayout mPopTencentShare = (LinearLayout) mLayout.findViewById(R.id.popup_tencent_share);
 		mSharePopup = new PopupWindow(mLayout);
 		mSharePopup.setFocusable(true);
 		mSharePopup.setWidth(mShareButton.getWidth() * 9);
 		updateSharePop();
-		mSharePopup.setBackgroundDrawable(cxt.getResources().getDrawable(
-				R.drawable.setting_pop_bg));
+		mSharePopup.setBackgroundDrawable(cxt.getResources().getDrawable(R.drawable.setting_pop_bg));
 		mSharePopup.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
 		mSharePopup.setOutsideTouchable(true);
 		mSharePopup.setTouchable(true);
@@ -986,13 +825,11 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		if (mSharePopup == null) {
 			initSharePopupWindow();
 		}
-		// updateSharePop();
 		if (cxt != null && !cxt.isFinishing()) {
 			if (mSharePopup.isShowing()) {
 				mSharePopup.dismiss();
 			} else {
-				mSharePopup.showAsDropDown(titleView,
-						AndroidUtils.getScreenSize(cxt).widthPixels, 3);
+				mSharePopup.showAsDropDown(titleView, AndroidUtils.getScreenSize(cxt).widthPixels, 3);
 			}
 		}
 	}
@@ -1001,15 +838,10 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		if (AndroidUtils.checkSIM(cxt)) {
 			mPopShareDiv_1.setVisibility(View.VISIBLE);
 			mPopSmsShare.setVisibility(View.VISIBLE);
-			// mSharePopup.setHeight((mShareButton.getHeight() + AndroidUtils
-			// .dip2px(cxt, 14)) * 3);
 			mSharePopup.setHeight(AndroidUtils.dip2px(cxt, 148));
-		} else if (!AndroidUtils.checkSIM(cxt)
-				&& mPopShareDiv_1.getVisibility() == View.VISIBLE) {
+		} else if (!AndroidUtils.checkSIM(cxt) && mPopShareDiv_1.getVisibility() == View.VISIBLE) {
 			mPopShareDiv_1.setVisibility(View.GONE);
 			mPopSmsShare.setVisibility(View.GONE);
-			// mSharePopup.setHeight((mShareButton.getHeight() + AndroidUtils
-			// .dip2px(cxt, 14)) * 2);
 			mSharePopup.setHeight(AndroidUtils.dip2px(cxt, 100));
 		}
 	}
@@ -1034,32 +866,12 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 				return false;
 			}
 		});
-		TextView mPopSetting = (TextView) mLayout
-				.findViewById(R.id.popup_setting);
+		TextView mPopSetting = (TextView) mLayout.findViewById(R.id.popup_setting);
 		mPopLogin = (TextView) mLayout.findViewById(R.id.popup_login);
-		mPopSettingDiv = (TextView) mLayout
-				.findViewById(R.id.popup_chg_pwd_divider);
+		mPopSettingDiv = (TextView) mLayout.findViewById(R.id.popup_chg_pwd_divider);
 		mPopChgPwd = (TextView) mLayout.findViewById(R.id.popup_change_pwd);
-		// if (DJMarketUtils.isLogin(cxt)) {
-		// mPopSettingDiv.setVisibility(View.VISIBLE);
-		// mPopChgPwd.setVisibility(View.VISIBLE);
-		// popLenParam = 3;
-		// } else {
-		// mPopSettingDiv.setVisibility(View.GONE);
-		// mPopChgPwd.setVisibility(View.GONE);
-		// popLenParam = 2;
-		// }
-
-		// mSettingPopup = new PopupWindow(
-		// mLayout,
-		// mSettingButton.getWidth() * 5,
-		// (mSettingButton.getHeight() + AndroidUtils.dip2px(cxt, 8) +
-		// AndroidUtils
-		// .sp2px(cxt, 15)) * popLenParam, true);
-		mSettingPopup = new PopupWindow(mLayout, mSettingButton.getWidth() * 5,
-				(AndroidUtils.dip2px(cxt, 100)), true);
-		mSettingPopup.setBackgroundDrawable(cxt.getResources().getDrawable(
-				R.drawable.setting_pop_bg));
+		mSettingPopup = new PopupWindow(mLayout, mSettingButton.getWidth() * 5, (AndroidUtils.dip2px(cxt, 100)), true);
+		mSettingPopup.setBackgroundDrawable(cxt.getResources().getDrawable(R.drawable.setting_pop_bg));
 		mSettingPopup.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
 		mSettingPopup.setOutsideTouchable(true);
 		mSettingPopup.setTouchable(true);
@@ -1090,59 +902,33 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 			} else {
 				if (cxt.getClass().equals(MainActivity.class)) {
 					if (((MainActivity) cxt).showSettingPop()) {
-						mSettingPopup.showAsDropDown(cxt.getWindow()
-								.getDecorView(), AndroidUtils
-								.getScreenSize(cxt).widthPixels, -cxt
-								.getWindow().getDecorView().getHeight()
-								+ AndroidUtils.getStatusBarInfo(cxt).top);
+						mSettingPopup.showAsDropDown(cxt.getWindow().getDecorView(), AndroidUtils.getScreenSize(cxt).widthPixels, -cxt.getWindow().getDecorView().getHeight() + AndroidUtils.getStatusBarInfo(cxt).top);
 					} else {
-						mSettingPopup.showAsDropDown(titleView,
-								AndroidUtils.getScreenSize(cxt).widthPixels, 3);
+						mSettingPopup.showAsDropDown(titleView, AndroidUtils.getScreenSize(cxt).widthPixels, 3);
 					}
 				} else if (cxt.getClass().equals(SoftwareManageActivity.class)) {
 					if (((SoftwareManageActivity) cxt).showSettingPop()) {
-						mSettingPopup.showAsDropDown(cxt.getWindow()
-								.getDecorView(), AndroidUtils
-								.getScreenSize(cxt).widthPixels, -cxt
-								.getWindow().getDecorView().getHeight()
-								+ AndroidUtils.getStatusBarInfo(cxt).top);
+						mSettingPopup.showAsDropDown(cxt.getWindow().getDecorView(), AndroidUtils.getScreenSize(cxt).widthPixels, -cxt.getWindow().getDecorView().getHeight() + AndroidUtils.getStatusBarInfo(cxt).top);
 					} else {
-						mSettingPopup.showAsDropDown(titleView,
-								AndroidUtils.getScreenSize(cxt).widthPixels, 3);
+						mSettingPopup.showAsDropDown(titleView, AndroidUtils.getScreenSize(cxt).widthPixels, 3);
 					}
 				} else {
-					mSettingPopup.showAsDropDown(titleView,
-							AndroidUtils.getScreenSize(cxt).widthPixels, 3);
+					mSettingPopup.showAsDropDown(titleView, AndroidUtils.getScreenSize(cxt).widthPixels, 3);
 				}
 			}
 		}
 	}
 
+	/**
+	 * 更新设置pop
+	 */
 	private void updateSettingPop() {
-		// if (DJMarketUtils.isLogin(cxt)) {
-		// mPopLogin.setText(R.string.login_out);
-		// mPopSettingDiv.setVisibility(View.VISIBLE);
-		// mPopChgPwd.setVisibility(View.VISIBLE);
-		// popLenParam = 3;
-		// mSettingPopup.setHeight((mSettingButton.getHeight() + AndroidUtils
-		// .dip2px(cxt, 15)) * popLenParam);
-		// } else if (!DJMarketUtils.isLogin(cxt)
-		// && mPopSettingDiv.getVisibility() == View.VISIBLE) {
-		// mPopLogin.setText(R.string.login);
-		// mPopSettingDiv.setVisibility(View.GONE);
-		// mPopChgPwd.setVisibility(View.GONE);
-		// popLenParam = 2;
-		// mSettingPopup.setHeight((mSettingButton.getHeight() + AndroidUtils
-		// .dip2px(cxt, 15)) * popLenParam);
-		// }
 		if (DJMarketUtils.isLogin(cxt)) {
 			mPopLogin.setText(R.string.login_out);
 			mPopSettingDiv.setVisibility(View.VISIBLE);
 			mPopChgPwd.setVisibility(View.VISIBLE);
-			// popLenParam = 3;
 			mSettingPopup.setHeight(AndroidUtils.dip2px(cxt, 148));
-		} else if (!DJMarketUtils.isLogin(cxt)
-				&& mPopSettingDiv.getVisibility() == View.VISIBLE) {
+		} else if (!DJMarketUtils.isLogin(cxt) && mPopSettingDiv.getVisibility() == View.VISIBLE) {
 			mPopLogin.setText(R.string.login);
 			mPopSettingDiv.setVisibility(View.GONE);
 			mPopChgPwd.setVisibility(View.GONE);
@@ -1160,13 +946,17 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 			} else if (mSharePopup != null && mSharePopup.isShowing()) {
 				mSharePopup.dismiss();
 			} else if (mSortPopup != null && mSortPopup.isShowing()) {
-				// System.out.println("bbbbbbbbbbbbbbb===========>");
 				mSortPopup.dismiss();
 				mSortPageShrinkIcon.setImageResource(R.drawable.arrows_down);
 			}
 		}
 	}
 
+	/**
+	 * 取消注册广播
+	 * 
+	 * @param cxt
+	 */
 	public void unregisterMyReceiver(Activity cxt) {
 		if (null != flowBroadcastReceiver) {
 			flowBroadcastReceiver.unregisterMyReceiver();
@@ -1174,23 +964,9 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		if (null != myInstallReceiver) {
 			cxt.unregisterReceiver(myInstallReceiver);
 		}
-		// if(null!=mCloseActivityBroadcastReceiver && !(cxt instanceof
-		// MainActivity)) {
-		// cxt.unregisterReceiver(mCloseActivityBroadcastReceiver);
-		// }
 		if (null != commonRecv && !(cxt instanceof MainActivity)) {
 			cxt.unregisterReceiver(commonRecv);
 		}
-	}
-
-	public static interface SaveSettingListener {
-		public void exitVerify(boolean isFinish, int pageFlag);
-	}
-
-	public static interface LoginListener {
-		public void titleBack();
-
-		public void pageBack();
 	}
 
 	/**************** kevin logic ********************/
@@ -1207,8 +983,7 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 			switch (msg.what) {
 			case EVENT_REFRESH_DOWNLOAD:
 				if (cxt != null && DownloadService.mDownloadService != null) {
-					List<DownloadEntity> downloadList = DownloadService.mDownloadService
-							.getAllDownloadList();
+					List<DownloadEntity> downloadList = DownloadService.mDownloadService.getAllDownloadList();
 					long downloadLength = 0;
 					long downloadCur = 0;
 					int updateCount = 0;
@@ -1218,8 +993,7 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 							downloadLength += entity.fileLength;
 							downloadCur += entity.currentPosition;
 						} else if (entity.downloadType == DownloadConstDefine.TYPE_OF_UPDATE) {
-							if (entity.getStatus() != DownloadConstDefine.STATUS_OF_INITIAL
-									&& entity.getStatus() != DownloadConstDefine.STATUS_OF_IGNORE) {
+							if (entity.getStatus() != DownloadConstDefine.STATUS_OF_INITIAL && entity.getStatus() != DownloadConstDefine.STATUS_OF_IGNORE) {
 								downloadLength += entity.fileLength;
 								downloadCur += entity.currentPosition;
 							} else {
@@ -1234,16 +1008,13 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 						@Override
 						public void run() {
 							if (downloadLength2 > 0) {
-								mSWeManageButton
-										.setBackgroundResource(R.drawable.manager_download_selector);
+								mSWeManageButton.setBackgroundResource(R.drawable.manager_download_selector);
 								manager_progress.setVisibility(View.VISIBLE);
-								double progress = downloadCur2 * 100.0
-										/ downloadLength2;
+								double progress = downloadCur2 * 100.0 / downloadLength2;
 								manager_progress.setProgress((int) progress);
 								if (updateCount2 > 0) {
 									tvCount.setVisibility(View.VISIBLE);
-									tvCount.setText(String
-											.valueOf(updateCount2));
+									tvCount.setText(String.valueOf(updateCount2));
 								} else {
 									tvCount.setVisibility(View.GONE);
 								}
@@ -1251,22 +1022,17 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 								manager_progress.setVisibility(View.GONE);
 								if (updateCount2 > 0) {
 									tvCount.setVisibility(View.VISIBLE);
-									tvCount.setText(String
-											.valueOf(updateCount2));
-									mSWeManageButton
-											.setBackgroundResource(R.drawable.manager_update_selector);
+									tvCount.setText(String.valueOf(updateCount2));
+									mSWeManageButton.setBackgroundResource(R.drawable.manager_update_selector);
 								} else {
 									tvCount.setVisibility(View.GONE);
-									mSWeManageButton
-											.setBackgroundResource(R.drawable.manager_none_selector);
+									mSWeManageButton.setBackgroundResource(R.drawable.manager_none_selector);
 								}
 							}
 						}
 					});
 				}
-				mRefreshTitleHandler.sendEmptyMessageDelayed(
-						EVENT_REFRESH_DOWNLOAD, 2000L);
-				// System.out.println("==========================================="+cxt);
+				mRefreshTitleHandler.sendEmptyMessageDelayed(EVENT_REFRESH_DOWNLOAD, 2000L);
 				break;
 			}
 		}
@@ -1276,8 +1042,7 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 	 * 删除请求刷新下载的消息
 	 */
 	public void removeRefreshHandler() {
-		if (mRefreshTitleHandler != null
-				&& mRefreshTitleHandler.hasMessages(EVENT_REFRESH_DOWNLOAD)) {
+		if (mRefreshTitleHandler != null && mRefreshTitleHandler.hasMessages(EVENT_REFRESH_DOWNLOAD)) {
 			mRefreshTitleHandler.removeMessages(EVENT_REFRESH_DOWNLOAD);
 		}
 	}
@@ -1286,12 +1051,17 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 	 * 发送请求刷新下载的消息
 	 */
 	public void sendRefreshHandler() {
-		if (mRefreshTitleHandler != null
-				&& !mRefreshTitleHandler.hasMessages(EVENT_REFRESH_DOWNLOAD)) {
+		if (mRefreshTitleHandler != null && !mRefreshTitleHandler.hasMessages(EVENT_REFRESH_DOWNLOAD)) {
 			mRefreshTitleHandler.sendEmptyMessage(EVENT_REFRESH_DOWNLOAD);
 		}
 	}
 
+	/**
+	 * 排序改变监听
+	 * 
+	 * @author yvon
+	 * 
+	 */
 	public interface OnSortChangeListener {
 		static final int SORT_BY_DOWNLOAD = 1; // 按时间排序
 		static final int SORT_BY_SCORE = 2; // 按评分排序
@@ -1300,17 +1070,36 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		void onSortChanged(int sort);
 	}
 
+	/**
+	 * 工具条空白点击监听
+	 * 
+	 * @author yvon
+	 * 
+	 */
 	public interface OnToolBarBlankClickListener {
 		void onClick();
 	}
 
-	private BroadcastReceiver mCloseActivityBroadcastReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			// TODO Auto-generated method stub
-			if (cxt != null && !cxt.isFinishing()) {
-				cxt.finish();
-			}
-		}
-	};
+	/**
+	 * 保存设置监听接口
+	 * 
+	 * @author yvon
+	 * 
+	 */
+	public static interface SaveSettingListener {
+		public void exitVerify(boolean isFinish, int pageFlag);
+	}
+
+	/**
+	 * 登陆监听接口
+	 * 
+	 * @author yvon
+	 * 
+	 */
+	public static interface LoginListener {
+		public void titleBack();
+
+		public void pageBack();
+	}
+
 }

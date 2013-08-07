@@ -35,7 +35,7 @@ public class ADownloadService extends Service implements AConstDefine {
 	private ExecutorService executorService;
 	public static ADownloadApkList downloadingAPKList = new ADownloadApkList();
 	public static ADownloadApkList updateAPKList = new ADownloadApkList();
-//	public static ADownloadApkList ignoreAPKList = new ADownloadApkList();
+	// public static ADownloadApkList ignoreAPKList = new ADownloadApkList();
 	public static boolean isBackgroundRun = false;
 	private ADownloadApkDBHelper aDownloadApkDBHelper;
 	private ADownloadThread aDownloadThread = null;
@@ -85,8 +85,7 @@ public class ADownloadService extends Service implements AConstDefine {
 		}
 		Bundle apkItemBundle = intent.getBundleExtra(APKDOWNLOADITEM);
 		if (null != apkItemBundle) {
-			final ADownloadApkItem aDownloadApkItem = (ADownloadApkItem) apkItemBundle
-					.getParcelable(APKDOWNLOADITEM);
+			final ADownloadApkItem aDownloadApkItem = (ADownloadApkItem) apkItemBundle.getParcelable(APKDOWNLOADITEM);
 
 			if (null != aDownloadApkItem.apkUrl) {
 
@@ -96,32 +95,19 @@ public class ADownloadService extends Service implements AConstDefine {
 						Looper.prepare();
 						if (aDownloadApkItem.apkStatus == STATUS_OF_PREPAREDOWNLOAD) {
 							// 这行一定要写在downloading方法前，因为downloading方法在列表里添加了数据，如果再加1数据就错了
-							NetTool.setNotification(ADownloadService.this,
-									FLAG_NOTIFICATION_DOWNLOAD,
-									downloadingAPKList.apkList.size() + 1);
+							NetTool.setNotification(ADownloadService.this, FLAG_NOTIFICATION_DOWNLOAD, downloadingAPKList.apkList.size() + 1);
 							downloading(aDownloadApkItem);
 
-							Intent intent = new Intent(
-									BROADCAST_ACTION_DOWNLOAD);
-							intent.putExtra(BROADCAST_STARTDOWNLOAD,
-									aDownloadApkItem.apkPackageName + "_"
-											+ aDownloadApkItem.apkVersionCode);
+							Intent intent = new Intent(BROADCAST_ACTION_DOWNLOAD);
+							intent.putExtra(BROADCAST_STARTDOWNLOAD, aDownloadApkItem.apkPackageName + "_" + aDownloadApkItem.apkVersionCode);
 							sendBroadcast(intent);
 							showToast(aDownloadApkItem.apkName + "开始下载");
 						} else if (aDownloadApkItem.apkStatus == STATUS_OF_PREPAREUPDATE) {
-							NetTool.setNotification(
-									context,
-									FLAG_NOTIFICATION_UPDATEING,
-									getUpdateCountByStatus(
-											STATUS_OF_PREPAREUPDATE,
-											STATUS_OF_UPDATEING,
-											STATUS_OF_PAUSEUPDATE_BYHAND));
+							NetTool.setNotification(context, FLAG_NOTIFICATION_UPDATEING, getUpdateCountByStatus(STATUS_OF_PREPAREUPDATE, STATUS_OF_UPDATEING, STATUS_OF_PAUSEUPDATE_BYHAND));
 							NetTool.fillUpdateNotification(context);
 							int tempFlag = 0;
 							for (int i = 0; i < updateAPKList.apkList.size(); i++) {
-								if (updateAPKList.apkList.get(i).apkPackageName
-										.equals(aDownloadApkItem.apkPackageName)
-										&& updateAPKList.apkList.get(i).apkVersionCode == aDownloadApkItem.apkVersionCode) {
+								if (updateAPKList.apkList.get(i).apkPackageName.equals(aDownloadApkItem.apkPackageName) && updateAPKList.apkList.get(i).apkVersionCode == aDownloadApkItem.apkVersionCode) {
 									tempFlag = i;
 									break;
 								}
@@ -129,9 +115,7 @@ public class ADownloadService extends Service implements AConstDefine {
 							updateAPKList.apkList.get(tempFlag).apkStatus = STATUS_OF_PREPAREUPDATE;
 							downloading(updateAPKList.apkList.get(tempFlag));
 							Intent intent = new Intent(BROADCAST_ACTION_UPDATE);
-							intent.putExtra(BROADCAST_STARTUPDATE,
-									aDownloadApkItem.apkPackageName + "_"
-											+ aDownloadApkItem.apkVersionCode);
+							intent.putExtra(BROADCAST_STARTUPDATE, aDownloadApkItem.apkPackageName + "_" + aDownloadApkItem.apkVersionCode);
 							sendBroadcast(intent);
 							showToast(aDownloadApkItem.apkName + "开始更新");
 						}
@@ -149,16 +133,9 @@ public class ADownloadService extends Service implements AConstDefine {
 
 			for (int position = 0; position < downloadListSize; position++) {
 				apkStatus = downloadingAPKList.apkList.get(position).apkStatus;
-				if (apkStatus == STATUS_OF_PAUSE
-						|| apkStatus == STATUS_OF_DOWNLOADING) {
-					File file = new File(
-							NetTool.DOWNLOADPATH
-									+ downloadingAPKList.apkList.get(position).apkPackageName
-									+ "_"
-									+ downloadingAPKList.apkList.get(position).apkVersionCode
-									+ ".apk.temp");
-					if (!file.exists()
-							&& downloadingAPKList.apkList.get(position).apkDownloadSize > 0) {
+				if (apkStatus == STATUS_OF_PAUSE || apkStatus == STATUS_OF_DOWNLOADING) {
+					File file = new File(NetTool.DOWNLOADPATH + downloadingAPKList.apkList.get(position).apkPackageName + "_" + downloadingAPKList.apkList.get(position).apkVersionCode + ".apk.temp");
+					if (!file.exists() && downloadingAPKList.apkList.get(position).apkDownloadSize > 0) {
 						downloadingAPKList.apkList.get(position).apkDownloadSize = 0;
 					}
 					downloadingAPKList.apkList.get(position).apkStatus = STATUS_OF_PREPAREDOWNLOAD;
@@ -168,8 +145,7 @@ public class ADownloadService extends Service implements AConstDefine {
 				}
 			}
 			if (downloadListSize > 0) {
-				NetTool.setNotification(context, FLAG_NOTIFICATION_DOWNLOAD,
-						downloadListSize);
+				NetTool.setNotification(context, FLAG_NOTIFICATION_DOWNLOAD, downloadListSize);
 			}
 
 			NetTool.fillUpdateingList(context);
@@ -179,16 +155,9 @@ public class ADownloadService extends Service implements AConstDefine {
 			for (int position = 0; position < updateListSize; position++) {
 				apkStatus = updateAPKList.apkList.get(position).apkStatus;
 				System.out.println("adownloadservice......." + apkStatus);
-				if (apkStatus == STATUS_OF_PAUSEUPDATE
-						|| apkStatus == STATUS_OF_UPDATEING) {
-					File file = new File(
-							NetTool.DOWNLOADPATH
-									+ updateAPKList.apkList.get(position).apkPackageName
-									+ "_"
-									+ updateAPKList.apkList.get(position).apkVersionCode
-									+ ".apk.temp");
-					if (!file.exists()
-							&& updateAPKList.apkList.get(position).apkDownloadSize > 0) {
+				if (apkStatus == STATUS_OF_PAUSEUPDATE || apkStatus == STATUS_OF_UPDATEING) {
+					File file = new File(NetTool.DOWNLOADPATH + updateAPKList.apkList.get(position).apkPackageName + "_" + updateAPKList.apkList.get(position).apkVersionCode + ".apk.temp");
+					if (!file.exists() && updateAPKList.apkList.get(position).apkDownloadSize > 0) {
 						updateAPKList.apkList.get(position).apkDownloadSize = 0;
 					}
 					updateAPKList.apkList.get(position).apkStatus = STATUS_OF_PREPAREUPDATE;
@@ -211,11 +180,9 @@ public class ADownloadService extends Service implements AConstDefine {
 					downloading(updateAPKList.apkList.get(position));
 				}
 			}
-			int count = getUpdateCountByStatus(STATUS_OF_PREPAREUPDATE,
-					STATUS_OF_UPDATEING, STATUS_OF_PAUSEUPDATE_BYHAND);
+			int count = getUpdateCountByStatus(STATUS_OF_PREPAREUPDATE, STATUS_OF_UPDATEING, STATUS_OF_PAUSEUPDATE_BYHAND);
 			if (count > 0) {
-				NetTool.setNotification(context, FLAG_NOTIFICATION_UPDATEING,
-						count);
+				NetTool.setNotification(context, FLAG_NOTIFICATION_UPDATEING, count);
 				NetTool.cancelNotification(context, FLAG_NOTIFICATION_UPDATE);
 			}
 		} else if (intent.getBooleanExtra(FLAG_CONTINUEPAUSETASK, false)) {
@@ -245,26 +212,21 @@ public class ADownloadService extends Service implements AConstDefine {
 			NetTool.fillUpdateingNotifitcation(context);
 		} else if (intent.getBooleanExtra(FLAG_CLOUDRESTORE, false)) {
 			sendBroadcast(new Intent(BROADCAST_ACTION_CLOUDRESTORE));
-			ArrayList<ApkItem> apkItems = intent
-					.getParcelableArrayListExtra(FLAG_RESTORELIST);
+			ArrayList<ApkItem> apkItems = intent.getParcelableArrayListExtra(FLAG_RESTORELIST);
 
 			ADownloadApkItem aDownloadApkItem;
 			for (int i = 0; i < apkItems.size(); i++) {
 				int j = 0;
 				for (; j < updateAPKList.apkList.size(); j++) {
 					aDownloadApkItem = updateAPKList.apkList.get(j);
-					if (aDownloadApkItem.apkPackageName
-							.equals(apkItems.get(i).packageName)
-							&& aDownloadApkItem.apkVersionCode == apkItems
-									.get(i).versionCode) {
+					if (aDownloadApkItem.apkPackageName.equals(apkItems.get(i).packageName) && aDownloadApkItem.apkVersionCode == apkItems.get(i).versionCode) {
 						aDownloadApkItem.apkStatus = STATUS_OF_PREPAREUPDATE;
 						downloading(aDownloadApkItem);
 						break;
 					}
 				}
 				if (j == updateAPKList.apkList.size()) {
-					downloading(new ADownloadApkItem(apkItems.get(i),
-							STATUS_OF_PREPAREDOWNLOAD));
+					downloading(new ADownloadApkItem(apkItems.get(i), STATUS_OF_PREPAREDOWNLOAD));
 				}
 
 			}
@@ -274,11 +236,9 @@ public class ADownloadService extends Service implements AConstDefine {
 
 	private void initThread(int position, int type) {
 		if (type == 1) {
-			aDownloadThread = new ADownloadThread(
-					downloadingAPKList.apkList.get(position), context);
+			aDownloadThread = new ADownloadThread(downloadingAPKList.apkList.get(position), context);
 		} else if (type == 2) {
-			aDownloadThread = new ADownloadThread(
-					updateAPKList.apkList.get(position), context);
+			aDownloadThread = new ADownloadThread(updateAPKList.apkList.get(position), context);
 		}
 		executorService.execute(aDownloadThread);
 	}
@@ -306,16 +266,14 @@ public class ADownloadService extends Service implements AConstDefine {
 
 		for (int i = 0; i < downloadListSize; i++) {
 			ADownloadApkItem item = downloadingAPKList.apkList.get(i);
-			if (item.apkStatus == STATUS_OF_DOWNLOADING
-					|| item.apkStatus == STATUS_OF_PREPAREDOWNLOAD) {
+			if (item.apkStatus == STATUS_OF_DOWNLOADING || item.apkStatus == STATUS_OF_PREPAREDOWNLOAD) {
 				item.apkStatus = STATUS_OF_PAUSE;
 			}
 		}
 		for (int i = 0; i < updateListSize; i++) {
 			ADownloadApkItem item = updateAPKList.apkList.get(i);
 
-			if (item.apkStatus == STATUS_OF_UPDATEING
-					|| item.apkStatus == STATUS_OF_PREPAREUPDATE) {
+			if (item.apkStatus == STATUS_OF_UPDATEING || item.apkStatus == STATUS_OF_PREPAREUPDATE) {
 				item.apkStatus = STATUS_OF_PAUSEUPDATE;
 			}
 		}
@@ -335,12 +293,10 @@ public class ADownloadService extends Service implements AConstDefine {
 		if (myInstallReceiver != null) {
 			unregisterReceiver(myInstallReceiver);
 		}
-		NetTool.cancelNotification(ADownloadService.this,
-				FLAG_NOTIFICATION_CANCELALL);
+		NetTool.cancelNotification(ADownloadService.this, FLAG_NOTIFICATION_CANCELALL);
 
 		List<Runnable> aa = executorService.shutdownNow();
-		showErrorLog("===================================================  service exit "
-				+ aa.size());
+		showErrorLog("===================================================  service exit " + aa.size());
 		super.onDestroy();
 	}
 
@@ -355,22 +311,17 @@ public class ADownloadService extends Service implements AConstDefine {
 		public void onReceive(Context context, Intent intent) {
 			if (intent.getAction().equals(BROADCAST_ACTION_DOWNLOAD)) {
 				int size = downloadingAPKList.apkList.size();
-				String apkSaveName = intent
-						.getStringExtra(BROADCAST_COMPLETEDOWNLOAD);
+				String apkSaveName = intent.getStringExtra(BROADCAST_COMPLETEDOWNLOAD);
 				if (null != apkSaveName) {
 					Bundle bundle = intent.getExtras();
 					int apkStatus = bundle.getInt("status", 0);
 					onReceiveCompleteDownload(apkSaveName, apkStatus);
 					if (apkStatus == STATUS_OF_DOWNLOADCOMPLETE) {
 						NetTool.fillDownloadingNotification(context);
-						NetTool.setNotification(context,
-								FLAG_NOTIFICATION_WAITINGINSTALL,
-								NetTool.getWaitInstallListCount(context));
+						NetTool.setNotification(context, FLAG_NOTIFICATION_WAITINGINSTALL, NetTool.getWaitInstallListCount(context));
 					} else if (apkStatus == STATUS_OF_UPDATECOMPLETE) {
 						NetTool.fillUpdateingNotifitcation(context);
-						NetTool.setNotification(context,
-								FLAG_NOTIFICATION_WAITINGINSTALL,
-								NetTool.getWaitInstallListCount(context));
+						NetTool.setNotification(context, FLAG_NOTIFICATION_WAITINGINSTALL, NetTool.getWaitInstallListCount(context));
 					}
 					return;
 				}
@@ -400,8 +351,7 @@ public class ADownloadService extends Service implements AConstDefine {
 				}
 			} else if (intent.getAction().equals(BROADCAST_ACTION_UPDATE)) {
 				int size = updateAPKList.apkList.size();
-				String apkSaveName = intent
-						.getStringExtra(BROADCAST_PAUSEUPDATE);
+				String apkSaveName = intent.getStringExtra(BROADCAST_PAUSEUPDATE);
 				if (null != apkSaveName) {
 					onReceivePauseUpdate(apkSaveName, size);
 					return;
@@ -426,8 +376,7 @@ public class ADownloadService extends Service implements AConstDefine {
 				// onReceiveCancelIgnoreUpdate();
 				// return;
 				// }
-			} else if (intent.getAction().equals(
-					BROADCAST_SYS_ACTION_CONNECTCHANGE)) {
+			} else if (intent.getAction().equals(BROADCAST_SYS_ACTION_CONNECTCHANGE)) {
 				ADownloadApkItem aDownloadApkItem;
 				if (AndroidUtils.isWifiAvailable(context)) {
 					for (int i = 0; i < downloadingAPKList.apkList.size(); i++) {
@@ -455,8 +404,7 @@ public class ADownloadService extends Service implements AConstDefine {
 						}
 					}
 				}
-			} else if (BROADCAST_ACTION_LIMITFLOWCHANGE.equals(intent
-					.getAction())) {
+			} else if (BROADCAST_ACTION_LIMITFLOWCHANGE.equals(intent.getAction())) {
 				Bundle bundle = intent.getExtras();
 				long temp = bundle.getLong("limitFlow", -1);
 				if (temp > -1) {
@@ -469,41 +417,32 @@ public class ADownloadService extends Service implements AConstDefine {
 				}
 				isOnlyWifi = bundle.getBoolean("isOnlyWifi");
 				if (bundle.getBoolean(FLAG_BUNDLECONTINUEPAUSETASK)) {
-					DJMarketUtils.prepareDownload(context,
-							INT_CONTINUEPAUSETASK);
+					DJMarketUtils.prepareDownload(context, INT_CONTINUEPAUSETASK);
 				}
 			} else if (BROADCAST_DOWNLOAD_ERROR.equals(intent.getAction())) {
-				String apkSaveName = intent
-						.getStringExtra(FLAG_EXCEPTION_APKSAVENAME);
+				String apkSaveName = intent.getStringExtra(FLAG_EXCEPTION_APKSAVENAME);
 				int apkStatus = intent.getIntExtra(FLAG_EXCEPTION_STATUS, -1);
 				onReceiveException(apkSaveName, apkStatus);
 			} else if (intent.getAction().equals(BROADCAST_DEL_DOWNLOADED_APK)) {
-				aDownloadApkDBHelper
-						.deleteDownloadByApkStatus(AConstDefine.STATUS_OF_DOWNLOADCOMPLETE);
-				aDownloadApkDBHelper
-						.deleteDownloadByApkStatus(AConstDefine.STATUS_OF_UPDATECOMPLETE);
+				aDownloadApkDBHelper.deleteDownloadByApkStatus(AConstDefine.STATUS_OF_DOWNLOADCOMPLETE);
+				aDownloadApkDBHelper.deleteDownloadByApkStatus(AConstDefine.STATUS_OF_UPDATECOMPLETE);
 			}
 		}
 	}
 
 	private void onReceiveException(String apkSaveName, int apkStatus) {
 		ADownloadApkItem aDownloadApkItem;
-		if (apkStatus == STATUS_OF_PREPAREDOWNLOAD
-				|| apkStatus == STATUS_OF_DOWNLOADING) {
+		if (apkStatus == STATUS_OF_PREPAREDOWNLOAD || apkStatus == STATUS_OF_DOWNLOADING) {
 			for (int i = 0; i < downloadingAPKList.apkList.size(); i++) {
 				aDownloadApkItem = downloadingAPKList.apkList.get(i);
-				if (apkSaveName.equals(aDownloadApkItem.apkPackageName + "_"
-						+ aDownloadApkItem.apkVersionCode)) {
+				if (apkSaveName.equals(aDownloadApkItem.apkPackageName + "_" + aDownloadApkItem.apkVersionCode)) {
 					if (aDownloadApkItem.errCount < 3) {
 						aDownloadApkItem.errCount += 1;
 						initThread(aDownloadApkItem);
 					} else {
 						aDownloadApkItem.apkStatus = STATUS_OF_PAUSE_BYHAND;
-						aDownloadApkDBHelper
-								.updateADownloadApkItem(aDownloadApkItem);
-						String msg = aDownloadApkItem.apkName
-								+ context
-										.getString(R.string.download_error_pause_msg);
+						aDownloadApkDBHelper.updateADownloadApkItem(aDownloadApkItem);
+						String msg = aDownloadApkItem.apkName + context.getString(R.string.download_error_pause_msg);
 						if (!TextUtils.isEmpty(aDownloadApkItem.apkName)) {
 							AndroidUtils.showToast(context, msg);
 						}
@@ -514,18 +453,14 @@ public class ADownloadService extends Service implements AConstDefine {
 		} else {
 			for (int i = 0; i < updateAPKList.apkList.size(); i++) {
 				aDownloadApkItem = updateAPKList.apkList.get(i);
-				if (apkSaveName.equals(aDownloadApkItem.apkPackageName + "_"
-						+ aDownloadApkItem.apkVersionCode)) {
+				if (apkSaveName.equals(aDownloadApkItem.apkPackageName + "_" + aDownloadApkItem.apkVersionCode)) {
 					if (aDownloadApkItem.errCount < 3) {
 						aDownloadApkItem.errCount += 1;
 						initThread(aDownloadApkItem);
 					} else {
 						aDownloadApkItem.apkStatus = STATUS_OF_PAUSEUPDATE_BYHAND;
-						aDownloadApkDBHelper
-								.updateADownloadApkItem(aDownloadApkItem);
-						String msg = aDownloadApkItem.apkName
-								+ context
-										.getString(R.string.update_error_pause_msg);
+						aDownloadApkDBHelper.updateADownloadApkItem(aDownloadApkItem);
+						String msg = aDownloadApkItem.apkName + context.getString(R.string.update_error_pause_msg);
 						if (!TextUtils.isEmpty(aDownloadApkItem.apkName)) {
 							AndroidUtils.showToast(context, msg);
 						}
@@ -540,8 +475,7 @@ public class ADownloadService extends Service implements AConstDefine {
 		ADownloadApkItem aDownloadApkItem;
 		for (int i = 0; i < size; i++) {
 			aDownloadApkItem = downloadingAPKList.apkList.get(i);
-			if (apkSaveName.equals(aDownloadApkItem.apkPackageName + "_"
-					+ aDownloadApkItem.apkVersionCode)) {
+			if (apkSaveName.equals(aDownloadApkItem.apkPackageName + "_" + aDownloadApkItem.apkVersionCode)) {
 				showToast(aDownloadApkItem.apkName + "暂停下载");
 				aDownloadApkDBHelper.updateADownloadApkItem(aDownloadApkItem);
 				break;
@@ -554,8 +488,7 @@ public class ADownloadService extends Service implements AConstDefine {
 		ADownloadApkItem aDownloadApkItem;
 		for (int i = 0; i < size; i++) {
 			aDownloadApkItem = downloadingAPKList.apkList.get(i);
-			if (apkSaveName.equals(aDownloadApkItem.apkPackageName + "_"
-					+ aDownloadApkItem.apkVersionCode)) {
+			if (apkSaveName.equals(aDownloadApkItem.apkPackageName + "_" + aDownloadApkItem.apkVersionCode)) {
 				showToast(aDownloadApkItem.apkName + "继续下载");
 				if (aDownloadApkItem.apkDownloadSize == 0) {
 					aDownloadApkItem.apkStatus = STATUS_OF_PREPAREDOWNLOAD;
@@ -572,8 +505,7 @@ public class ADownloadService extends Service implements AConstDefine {
 		ADownloadApkItem aDownloadApkItem;
 		for (int i = 0; i < size; i++) {
 			aDownloadApkItem = downloadingAPKList.apkList.get(i);
-			if (apkSaveName.equals(aDownloadApkItem.apkPackageName + "_"
-					+ aDownloadApkItem.apkVersionCode)) {
+			if (apkSaveName.equals(aDownloadApkItem.apkPackageName + "_" + aDownloadApkItem.apkVersionCode)) {
 				aDownloadApkItem.apkStatus = STATUS_OF_CANCEL;
 				sendBroadcast(new Intent(BROADCAST_ACTION_TITLERECEIVER));
 				showToast(aDownloadApkItem.apkName + "取消下载");
@@ -585,11 +517,8 @@ public class ADownloadService extends Service implements AConstDefine {
 				// FLAG_NOTIFICATION_DOWNLOAD);
 				// }
 				downloadingAPKList.apkList.remove(i);
-				aDownloadApkDBHelper.deleteDownloadByPAndV(
-						aDownloadApkItem.apkPackageName,
-						aDownloadApkItem.apkVersionCode);
-				NetTool.deleteTempFileByApkSaveName(aDownloadApkItem.apkPackageName
-						+ "_" + aDownloadApkItem.apkVersionCode);
+				aDownloadApkDBHelper.deleteDownloadByPAndV(aDownloadApkItem.apkPackageName, aDownloadApkItem.apkVersionCode);
+				NetTool.deleteTempFileByApkSaveName(aDownloadApkItem.apkPackageName + "_" + aDownloadApkItem.apkVersionCode);
 				break;
 			}
 		}
@@ -603,8 +532,7 @@ public class ADownloadService extends Service implements AConstDefine {
 		size = downloadingAPKList.apkList.size();
 		for (int i = 0; i < size; i++) {
 			aDownloadApkItem = downloadingAPKList.apkList.get(i);
-			if (apkSaveName.equals(aDownloadApkItem.apkPackageName + "_"
-					+ aDownloadApkItem.apkVersionCode)) {
+			if (apkSaveName.equals(aDownloadApkItem.apkPackageName + "_" + aDownloadApkItem.apkVersionCode)) {
 				flag = 1;
 				showToast(aDownloadApkItem.apkName + "文件在它处被删除");
 				downloadingAPKList.apkList.remove(aDownloadApkItem);
@@ -620,14 +548,11 @@ public class ADownloadService extends Service implements AConstDefine {
 		size = updateAPKList.apkList.size();
 		for (int i = 0; i < size; i++) {
 			aDownloadApkItem = updateAPKList.apkList.get(i);
-			if (apkSaveName.equals(aDownloadApkItem.apkPackageName + "_"
-					+ aDownloadApkItem.apkVersionCode)) {
+			if (apkSaveName.equals(aDownloadApkItem.apkPackageName + "_" + aDownloadApkItem.apkVersionCode)) {
 				flag = 1;
 				showToast(aDownloadApkItem.apkName + "文件在它处被删除");
 				updateAPKList.apkList.remove(aDownloadApkItem);
-				int notificationCout = ADownloadService.getUpdateCountByStatus(
-						STATUS_OF_PREPAREUPDATE, STATUS_OF_UPDATEING,
-						STATUS_OF_PAUSEUPDATE_BYHAND);
+				int notificationCout = ADownloadService.getUpdateCountByStatus(STATUS_OF_PREPAREUPDATE, STATUS_OF_UPDATEING, STATUS_OF_PAUSEUPDATE_BYHAND);
 				if (notificationCout < 1) {
 					if (isBackgroundRun) {
 						stopSelf();
@@ -674,9 +599,7 @@ public class ADownloadService extends Service implements AConstDefine {
 		// i--;
 		// }
 		// }
-		int notificationCout = ADownloadService.getUpdateCountByStatus(
-				STATUS_OF_PREPAREUPDATE, STATUS_OF_UPDATEING,
-				STATUS_OF_PAUSEUPDATE_BYHAND);
+		int notificationCout = ADownloadService.getUpdateCountByStatus(STATUS_OF_PREPAREUPDATE, STATUS_OF_UPDATEING, STATUS_OF_PAUSEUPDATE_BYHAND);
 		if (notificationCout > 0) {
 			// NetTool.setNotification(ADownloadService.this,
 			// FLAG_NOTIFICATION_UPDATEING, notificationCout);
@@ -693,8 +616,7 @@ public class ADownloadService extends Service implements AConstDefine {
 		ADownloadApkItem aDownloadApkItem;
 		for (int i = 0; i < size; i++) {
 			aDownloadApkItem = updateAPKList.apkList.get(i);
-			if (apkSaveName.equals(aDownloadApkItem.apkPackageName + "_"
-					+ aDownloadApkItem.apkVersionCode)) {
+			if (apkSaveName.equals(aDownloadApkItem.apkPackageName + "_" + aDownloadApkItem.apkVersionCode)) {
 				showToast(aDownloadApkItem.apkName + "暂停更新");
 				aDownloadApkDBHelper.updateADownloadApkItem(aDownloadApkItem);
 				break;
@@ -706,8 +628,7 @@ public class ADownloadService extends Service implements AConstDefine {
 		ADownloadApkItem aDownloadApkItem;
 		for (int i = 0; i < size; i++) {
 			aDownloadApkItem = updateAPKList.apkList.get(i);
-			if (apkSaveName.equals(aDownloadApkItem.apkPackageName + "_"
-					+ aDownloadApkItem.apkVersionCode)) {
+			if (apkSaveName.equals(aDownloadApkItem.apkPackageName + "_" + aDownloadApkItem.apkVersionCode)) {
 				showToast(aDownloadApkItem.apkName + "继续更新");
 				if (aDownloadApkItem.apkDownloadSize == 0) {
 					aDownloadApkItem.apkStatus = STATUS_OF_PREPAREUPDATE;
@@ -728,21 +649,17 @@ public class ADownloadService extends Service implements AConstDefine {
 		for (int i = 0; i < size; i++) {
 			aDownloadApkItem = updateAPKList.apkList.get(i);
 			// aDownloadApkItem.apkStatus = STATUS_OF_UPDATE;
-			if (apkSaveName.equals(aDownloadApkItem.apkPackageName + "_"
-					+ aDownloadApkItem.apkVersionCode)) {
+			if (apkSaveName.equals(aDownloadApkItem.apkPackageName + "_" + aDownloadApkItem.apkVersionCode)) {
 				aDownloadApkItem.apkStatus = STATUS_OF_UPDATE;
 				showToast(aDownloadApkItem.apkName + "取消更新");
 				NetTool.fillUpdateingNotifitcation(context);
-				NetTool.setNotification(context, FLAG_NOTIFICATION_UPDATE,
-						ADownloadService
-								.getUpdateCountByStatus(STATUS_OF_UPDATE));
+				NetTool.setNotification(context, FLAG_NOTIFICATION_UPDATE, ADownloadService.getUpdateCountByStatus(STATUS_OF_UPDATE));
 
 				NetTool.deleteTempFileByApkSaveName(apkSaveName);
 				NetTool.deleteFileByApkSaveName(apkSaveName);
 				String[] tempString = apkSaveName.split("_");
 				if (tempString.length == 2) {
-					aDownloadApkDBHelper.deleteDownloadByPAndV(tempString[0],
-							Integer.valueOf(tempString[1]));
+					aDownloadApkDBHelper.deleteDownloadByPAndV(tempString[0], Integer.valueOf(tempString[1]));
 				}
 				break;
 			}
@@ -762,19 +679,12 @@ public class ADownloadService extends Service implements AConstDefine {
 				int downloadSize = downloadingAPKList.apkList.size();
 				for (int i = 0; i < downloadSize; i++) {
 					aDownloadApkItem = downloadingAPKList.apkList.get(i);
-					if (aDownloadApkItem.apkPackageName.equals(tempString[0])
-							&& aDownloadApkItem.apkVersionCode == Integer
-									.valueOf(tempString[1])) {
-						aDownloadApkDBHelper.updateWhileDownloadComplete(
-								tempString[0], Integer.valueOf(tempString[1]),
-								aDownloadApkItem.apkDownloadSize,
-								STATUS_OF_DOWNLOADCOMPLETE);
+					if (aDownloadApkItem.apkPackageName.equals(tempString[0]) && aDownloadApkItem.apkVersionCode == Integer.valueOf(tempString[1])) {
+						aDownloadApkDBHelper.updateWhileDownloadComplete(tempString[0], Integer.valueOf(tempString[1]), aDownloadApkItem.apkDownloadSize, STATUS_OF_DOWNLOADCOMPLETE);
 
 						if (DJMarketUtils.isDefaultInstall(context)) {
 							if (AndroidUtils.isRoot()) {
-								AndroidUtils
-										.rootInstallApp(NetTool.DOWNLOADPATH
-												+ apkSaveName + ".apk");
+								AndroidUtils.rootInstallApp(NetTool.DOWNLOADPATH + apkSaveName + ".apk");
 								showToast(aDownloadApkItem.apkName + "下载完成");
 							} else {
 								new Thread(new Runnable() {
@@ -805,18 +715,12 @@ public class ADownloadService extends Service implements AConstDefine {
 				int updateSize = updateAPKList.apkList.size();
 				for (int i = 0; i < updateSize; i++) {
 					aDownloadApkItem = updateAPKList.apkList.get(i);
-					if (apkSaveName.equals(aDownloadApkItem.apkPackageName
-							+ "_" + aDownloadApkItem.apkVersionCode)) {
-						aDownloadApkDBHelper.updateWhileDownloadComplete(
-								tempString[0], Integer.valueOf(tempString[1]),
-								aDownloadApkItem.apkDownloadSize,
-								STATUS_OF_UPDATECOMPLETE);
+					if (apkSaveName.equals(aDownloadApkItem.apkPackageName + "_" + aDownloadApkItem.apkVersionCode)) {
+						aDownloadApkDBHelper.updateWhileDownloadComplete(tempString[0], Integer.valueOf(tempString[1]), aDownloadApkItem.apkDownloadSize, STATUS_OF_UPDATECOMPLETE);
 
 						if (DJMarketUtils.isDefaultInstall(context)) {
 							if (AndroidUtils.isRoot()) {
-								AndroidUtils
-										.rootInstallApp(NetTool.DOWNLOADPATH
-												+ apkSaveName + ".apk");
+								AndroidUtils.rootInstallApp(NetTool.DOWNLOADPATH + apkSaveName + ".apk");
 								showToast(aDownloadApkItem.apkName + "下载完成");
 							} else {
 								new Thread(new Runnable() {
@@ -846,11 +750,8 @@ public class ADownloadService extends Service implements AConstDefine {
 					}
 				}
 			}
-			int notificationCout = ADownloadService.getUpdateCountByStatus(
-					STATUS_OF_PREPAREUPDATE, STATUS_OF_UPDATEING,
-					STATUS_OF_PAUSEUPDATE_BYHAND);
-			if ((ADownloadService.downloadingAPKList.apkList.size() < 1)
-					&& (notificationCout < 1)) {
+			int notificationCout = ADownloadService.getUpdateCountByStatus(STATUS_OF_PREPAREUPDATE, STATUS_OF_UPDATEING, STATUS_OF_PAUSEUPDATE_BYHAND);
+			if ((ADownloadService.downloadingAPKList.apkList.size() < 1) && (notificationCout < 1)) {
 				if (isBackgroundRun) {
 					stopSelf();
 				}
@@ -859,8 +760,7 @@ public class ADownloadService extends Service implements AConstDefine {
 	}
 
 	private void writeToSharePreference(long size) {
-		SharedPreferences mSharedPreferences = getSharedPreferences(
-				DONGJI_SHAREPREFERENCES, Context.MODE_PRIVATE);
+		SharedPreferences mSharedPreferences = getSharedPreferences(DONGJI_SHAREPREFERENCES, Context.MODE_PRIVATE);
 		SharedPreferences.Editor mEditor = mSharedPreferences.edit();
 		mEditor.putLong(SHARE_DOWNLOADSIZE, size);
 		mEditor.commit();
@@ -888,14 +788,12 @@ public class ADownloadService extends Service implements AConstDefine {
 		return tempCount;
 	}
 
-	public static int getDownloadcountByStatus(int status1, int status2,
-			int status3) {
+	public static int getDownloadcountByStatus(int status1, int status2, int status3) {
 		int tempCount = 0;
 		int tempStatus;
 		for (int i = 0; i < downloadingAPKList.apkList.size(); i++) {
 			tempStatus = downloadingAPKList.apkList.get(i).apkStatus;
-			if (tempStatus == status1 || tempStatus == status2
-					|| tempStatus == status3) {
+			if (tempStatus == status1 || tempStatus == status2 || tempStatus == status3) {
 				tempCount++;
 			}
 		}
@@ -924,14 +822,12 @@ public class ADownloadService extends Service implements AConstDefine {
 		return tempCount;
 	}
 
-	public static int getUpdateCountByStatus(int status1, int status2,
-			int status3) {
+	public static int getUpdateCountByStatus(int status1, int status2, int status3) {
 		int tempCount = 0;
 		int tempStatus;
 		for (int i = 0; i < updateAPKList.apkList.size(); i++) {
 			tempStatus = updateAPKList.apkList.get(i).apkStatus;
-			if (tempStatus == status1 || tempStatus == status2
-					|| tempStatus == status3) {
+			if (tempStatus == status1 || tempStatus == status2 || tempStatus == status3) {
 				tempCount++;
 			}
 		}
@@ -945,18 +841,15 @@ public class ADownloadService extends Service implements AConstDefine {
 				String packageName = intent.getDataString();
 				packageName = DJMarketUtils.convertPackageName(packageName);
 				if (!isBackgroundRun) {
-					String appName = aDownloadApkDBHelper
-							.selectApkNameByPackageName(packageName);
+					String appName = aDownloadApkDBHelper.selectApkNameByPackageName(packageName);
 					if (!TextUtils.isEmpty(appName)) {
-						AndroidUtils.showToast(context, appName
-								+ getString(R.string.install_success_msg));
+						AndroidUtils.showToast(context, appName + getString(R.string.install_success_msg));
 					}
 				}
 				if (DJMarketUtils.isAutoDelPkg(context)) {
 					NetTool.deleteFileByPackageName(context, packageName);
 				}
-				aDownloadApkDBHelper
-						.deleteDownloadByApkPackageName(packageName);
+				aDownloadApkDBHelper.deleteDownloadByApkPackageName(packageName);
 			}
 		}
 	}
@@ -981,8 +874,7 @@ public class ADownloadService extends Service implements AConstDefine {
 		if (value > 0) {
 			_3GDownloadSize += value;
 		}
-		System.out.println("_3GDownloadSize:" + _3GDownloadSize + ", saveFlow:"
-				+ saveFlow + ", maxFlow:" + maxFlow);
+		System.out.println("_3GDownloadSize:" + _3GDownloadSize + ", saveFlow:" + saveFlow + ", maxFlow:" + maxFlow);
 		return canUse3GDownload();
 	}
 
@@ -993,8 +885,7 @@ public class ADownloadService extends Service implements AConstDefine {
 	 */
 	public static boolean canUse3GDownload() {
 		if (!isOnlyWifi && _3GDownloadSize + saveFlow >= maxFlow) {
-			System.out.println("_3GDownloadSize:" + _3GDownloadSize
-					+ ", saveFlow:" + saveFlow + ", maxFlow:" + maxFlow);
+			System.out.println("_3GDownloadSize:" + _3GDownloadSize + ", saveFlow:" + saveFlow + ", maxFlow:" + maxFlow);
 			return false;
 		}
 		return true;
@@ -1021,8 +912,7 @@ public class ADownloadService extends Service implements AConstDefine {
 	/**
 	 * 改变设置修改中的各项参数
 	 */
-	public static void changeDownloadParameter(long maxFlow,
-			boolean isOnlyWifi, boolean downloadChange) {
+	public static void changeDownloadParameter(long maxFlow, boolean isOnlyWifi, boolean downloadChange) {
 		if (maxFlow > 0) {
 			maxFlow *= (1024 * 1024);
 		}
@@ -1044,13 +934,11 @@ public class ADownloadService extends Service implements AConstDefine {
 		if (maxFlow > 0) {
 			maxFlow *= (1024 * 1024);
 		}
-		SharedPreferences pref = context.getSharedPreferences(
-				AConstDefine.DONGJI_SHAREPREFERENCES, Context.MODE_PRIVATE);
+		SharedPreferences pref = context.getSharedPreferences(AConstDefine.DONGJI_SHAREPREFERENCES, Context.MODE_PRIVATE);
 		saveFlow = pref.getLong(AConstDefine.SHARE_DOWNLOADSIZE, 0);
 		_3GDownloadSize = 0;
 
-		showLog("init maxFlow:" + maxFlow + ", saveFlow:" + saveFlow
-				+ ", isOnlyWifi:" + isOnlyWifi);
+		showLog("init maxFlow:" + maxFlow + ", saveFlow:" + saveFlow + ", isOnlyWifi:" + isOnlyWifi);
 	}
 
 }

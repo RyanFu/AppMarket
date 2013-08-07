@@ -149,11 +149,11 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		ADownloadService.isBackgroundRun = false;
+		ADownloadService.isBackgroundRun = false;// 设置下载服务是否后台运行
 
 		mApp = (AppMarket) getApplication();
-		boolean flag = DJMarketUtils.isSaveFlow(this);
-		mApp.setRemoteImage(flag);
+		boolean flag = DJMarketUtils.isSaveFlow(this);// 是否开启流量模式
+		mApp.setRemoteImage(flag);// 是否下载图片
 
 		checkFirstLaunch();
 
@@ -404,9 +404,11 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		// android.os.Process.killProcess(android.os.Process.myPid());
 	}
 
+	/**
+	 * 初始化首页框架视图
+	 */
 	private void initViews() {
 		mInflater = LayoutInflater.from(this);
-
 		mMainLayout = (HorizontalScrollLayout) findViewById(R.id.mainlayout);
 		mMainLayout.setOnPageChangedListener(this);
 		initHorizontalScrollLayout();
@@ -629,6 +631,9 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		mHandler.sendEmptyMessage(EVENT_CHECK_APP_UPDATE);
 	}
 
+	/**
+	 * 初始化水平滑动布局
+	 */
 	private void initHorizontalScrollLayout() {
 		mMainLayout.addView(mInflater.inflate(R.layout.layout_loading, null));
 		mMainLayout.addView(mInflater.inflate(R.layout.layout_loading, null));
@@ -752,6 +757,9 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		}
 	}
 
+	/**
+	 * 初始化内容activityID
+	 */
 	private void initData() {
 		activityIds = new String[5];
 		activityIds[0] = "choiceness";
@@ -759,10 +767,6 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		activityIds[2] = "theme";
 		activityIds[3] = "install";
 		activityIds[4] = "channel";
-		// Bundle bundle = getIntent().getExtras();
-		// if (bundle != null) {
-		// navigationInfos = bundle.getParcelableArrayList("navigationList");
-		// }
 	}
 
 	/**

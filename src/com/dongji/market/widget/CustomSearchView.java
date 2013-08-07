@@ -55,21 +55,12 @@ public class CustomSearchView extends EditText {
 	public CustomSearchView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		cxt = context;
-		TypedArray typedArray = context.obtainStyledAttributes(attrs,
-				R.styleable.SearchTextEdit);
-		mPopupBg = typedArray
-				.getDrawable(R.styleable.SearchTextEdit_popupBackground);
-		color = typedArray.getColor(R.styleable.SearchTextEdit_divider,
-				Color.BLACK);
-		dividerHeight = typedArray.getDimensionPixelOffset(
-				R.styleable.SearchTextEdit_dividerHeight, 1);
-		// mPopupHeight =
-		// typedArray.getDimensionPixelOffset(R.styleable.SearchTextEdit_popupHeight,
-		// 0);
-		threshold = typedArray.getInt(
-				R.styleable.SearchTextEdit_completionThreshold, 1);
-		mListSelector = typedArray
-				.getDrawable(R.styleable.SearchTextEdit_dropdownSelector);
+		TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.SearchTextEdit);
+		mPopupBg = typedArray.getDrawable(R.styleable.SearchTextEdit_popupBackground);
+		color = typedArray.getColor(R.styleable.SearchTextEdit_divider, Color.BLACK);
+		dividerHeight = typedArray.getDimensionPixelOffset(R.styleable.SearchTextEdit_dividerHeight, 1);
+		threshold = typedArray.getInt(R.styleable.SearchTextEdit_completionThreshold, 1);
+		mListSelector = typedArray.getDrawable(R.styleable.SearchTextEdit_dropdownSelector);
 		initMaxPopupSize();
 		addTextChangedListener(new MyTextWatcher());
 		buildDropDown();
@@ -114,7 +105,6 @@ public class CustomSearchView extends EditText {
 
 	private void dismissPopup() {
 		if (mPopup != null && mPopup.isShowing()) {
-//			mListView.startAnimation(AnimationUtils.loadAnimation(cxt, R.anim.up_fade_out));
 			mPopup.dismiss();
 		}
 	}
@@ -127,12 +117,10 @@ public class CustomSearchView extends EditText {
 			mListView.setDividerHeight(dividerHeight);
 			mListView.setScrollbarFadingEnabled(false);
 			mListView.setPadding(3, 0, 0, 0);
-			// mListView.setScrollBarStyle(style)
 			if (mListSelector != null) {
 				mListView.setSelector(mListSelector);
 			}
-			mListView.setLayoutParams(new LayoutParams(
-					LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 1.0f));
+			mListView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 1.0f));
 		}
 	}
 
@@ -142,8 +130,7 @@ public class CustomSearchView extends EditText {
 		}
 	}
 
-	public void setDropDownOnItemClickListener(
-			OnItemClickListener onItemClickListener) {
+	public void setDropDownOnItemClickListener(OnItemClickListener onItemClickListener) {
 		this.onItemClickListener = onItemClickListener;
 	}
 
@@ -156,7 +143,6 @@ public class CustomSearchView extends EditText {
 			adjustPopupHeight();
 			mPopup.update(this, 0, -3, getMeasuredWidth(), mPopupHeight);
 		} else {
-			// System.out.println("pop show!!!!");
 			mPopup.setWidth(getMeasuredWidth());
 			adjustPopupHeight();
 			mPopup.setHeight(mPopupHeight);
@@ -165,7 +151,7 @@ public class CustomSearchView extends EditText {
 			setSelectionTop();
 		}
 	}
-	
+
 	private void adjustPopupHeight() {
 		if (mAdapter.getCount() * mPopupItemHeight > mPopupMaxHeight) {
 			mPopupHeight = mPopupMaxHeight;
@@ -177,7 +163,7 @@ public class CustomSearchView extends EditText {
 	public void dismissDropDown() {
 		this.dismissPopup();
 	}
-	
+
 	public void dismissFocus() {
 		this.dismissPopup();
 		this.clearFocus();
@@ -189,8 +175,7 @@ public class CustomSearchView extends EditText {
 		mListView.setSelection(0);
 	}
 
-	public <T extends BaseAdapter & RequestDataListener> void setAdapter(
-			T adapter) {
+	public <T extends BaseAdapter & RequestDataListener> void setAdapter(T adapter) {
 		if (mObserver == null) {
 			mObserver = new PopupDataSetObserver();
 		}
@@ -198,22 +183,20 @@ public class CustomSearchView extends EditText {
 		this.mAdapter.registerDataSetObserver(mObserver);
 		this.requestDataListener = adapter;
 		mListView.setAdapter(mAdapter);
-		mListView
-				.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
+		mListView.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
 
-					public void onItemClick(AdapterView<?> parent, View view,
-							int position, long id) {
-						String keyword = mAdapter.getItem(position).toString();
-						isAutoSearching = false;
-						setText(keyword);
-						isAutoSearching = true;
-						if (onItemClickListener != null) {
-							onItemClickListener.onItemClick(keyword);
-						}
-						setSelection(keyword.length());
-						dismissPopup();
-					}
-				});
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				String keyword = mAdapter.getItem(position).toString();
+				isAutoSearching = false;
+				setText(keyword);
+				isAutoSearching = true;
+				if (onItemClickListener != null) {
+					onItemClickListener.onItemClick(keyword);
+				}
+				setSelection(keyword.length());
+				dismissPopup();
+			}
+		});
 	}
 
 	@Override
@@ -236,13 +219,11 @@ public class CustomSearchView extends EditText {
 
 	private class MyTextWatcher implements TextWatcher {
 
-		public void beforeTextChanged(CharSequence s, int start, int count,
-				int after) {
+		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
 		}
 
-		public void onTextChanged(CharSequence s, int start, int before,
-				int count) {
+		public void onTextChanged(CharSequence s, int start, int before, int count) {
 
 		}
 
@@ -255,8 +236,6 @@ public class CustomSearchView extends EditText {
 				return;
 			}
 			if (isAutoSearching && s.length() >= threshold) {
-//				requestDataListener.cancelPreRequest();
-//				requestDataListener.request(s.toString());
 			} else {
 				dismissPopup();
 			}
@@ -268,19 +247,16 @@ public class CustomSearchView extends EditText {
 
 		public MyListView(Context context) {
 			super(context);
-			// TODO Auto-generated constructor stub
 		}
 
 		@Override
 		public boolean hasWindowFocus() {
-			// TODO Auto-generated method stub
 			return true;
 		}
 
 		@Override
 		@ExportedProperty
 		public boolean isInTouchMode() {
-			// TODO Auto-generated method stub
 			return true;
 		}
 	}

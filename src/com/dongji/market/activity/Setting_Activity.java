@@ -53,9 +53,7 @@ import com.umeng.analytics.MobclickAgent;
 public class Setting_Activity extends Activity implements OnToolBarBlankClickListener {
 
 	// Body
-	private SlipSwitch mUpdate_msg, mAuto_del_pkg, mSave_flow, mSet_root,
-			mAuto_install, mOnly_wifi, mAuto_download_bg, mAuto_update,
-			mSina_login, mTencent_login, mRenren_login;
+	private SlipSwitch mUpdate_msg, mAuto_del_pkg, mSave_flow, mSet_root, mAuto_install, mOnly_wifi, mAuto_download_bg, mAuto_update, mSina_login, mTencent_login, mRenren_login;
 	private TextView mAuto_install_text1;
 	private TextView mAuto_install_text2;
 	private EditText mLimit_flow;
@@ -67,10 +65,7 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 	private TextView mLimit_text;
 	private TextView mM_text;
 	private TextView mSina_name;
-	private RelativeLayout mUpdate_msg_layout, mAuto_del_pkg_layout,
-			mSave_flow_layout, mSet_root_layout, mAuto_install_layout,
-			mOnly_wifi_layout, mAuto_download_bg_layout, mAuto_update_layout,
-			mSina_login_layout;
+	private RelativeLayout mUpdate_msg_layout, mAuto_del_pkg_layout, mSave_flow_layout, mSet_root_layout, mAuto_install_layout, mOnly_wifi_layout, mAuto_download_bg_layout, mAuto_update_layout, mSina_login_layout;
 
 	private Setting_Service service;
 	private SearchHistory searchHistory;
@@ -78,9 +73,7 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 
 	private TitleUtil titleUtil;
 
-	private static final String APKPath = Environment
-			.getExternalStorageDirectory().getPath()
-			+ "/.dongji/dongjiMarket/cache/apk/";
+	private static final String APKPath = Environment.getExternalStorageDirectory().getPath() + "/.dongji/dongjiMarket/cache/apk/";
 	public static final int EXIT_SETTINGPAGE = 0;
 	public static final int LEAVE_SETTINGPAGE = 3;
 	private static final int CLEAR_SEARCH_HISTORY = 1;
@@ -98,26 +91,19 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 
 	private View mMaskView;
 	private boolean fromBackKey = false;
-	
+
 	private ScrollView mScrollView;
-	
-//	private static final String BROADCAST_CLOSE_ACTIVITY = "com.dongji.market.CLOSE_ACTIVITY";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		// requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
 		setContentView(R.layout.activity_setting);
 		overridePendingTransition(R.anim.in_from_right, R.anim.out_to_left);
-		// getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE,
-		// R.layout.layout_main_top);
 		startTime = System.currentTimeMillis();
 		checkFirstLauncherSetting();
 		queryUse3GSize(); // 查询3G所消耗流量
 		View mTopView = findViewById(R.id.setting_top);
-		titleUtil = new TitleUtil(this, mTopView, R.string.setting,
-				new SaveListener(), null, this);
+		titleUtil = new TitleUtil(this, mTopView, R.string.setting, new SaveListener(), null, this);
 
 		mUpdate_msg_layout = (RelativeLayout) findViewById(R.id.update_msg_layout);
 		mAuto_del_pkg_layout = (RelativeLayout) findViewById(R.id.auto_del_pkg_layout);
@@ -168,21 +154,17 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 		mDel_pkg.setOnClickListener(listener);
 		mAbout.setOnClickListener(listener);
 		mFeedback.setOnClickListener(listener);
-		
-		mScrollView=(ScrollView)findViewById(R.id.scrollview);
+
+		mScrollView = (ScrollView) findViewById(R.id.scrollview);
 
 		mSet_root.setOnSwitchListener(new OnSwitchListener() {
 
 			@Override
 			public void onSwitched(boolean switchState) {
-				// TODO Auto-generated method stub
 				if (switchState) {
-					// System.out.println("turn on===========>");
 					mHandler.sendEmptyMessage(CHECK_ROOT);
 				} else {
-					// System.out.println("turn off==========>");
 					mSet_root.setSwitchState(false);
-
 					mAuto_install.updateSwitchState(false);
 					mAuto_install_layout.setEnabled(false);
 					mAuto_install.setEnabled(false);
@@ -196,15 +178,13 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 
 			@Override
 			public void onSwitched(boolean switchState) {
-				// TODO Auto-generated method stub
 				if (switchState) {
 					if (!isSinaLogin()) {
 						DJMarketUtils.sinaLogin(Setting_Activity.this, handler);
 					}
 				} else {// 退出新浪登录
 					mSina_name.setVisibility(View.GONE);
-					LoginParams loginParams = ((AppMarket) getApplication())
-							.getLoginParams();
+					LoginParams loginParams = ((AppMarket) getApplication()).getLoginParams();
 					loginParams.setSinaUserName(null);
 					mSina_name.setText("");
 				}
@@ -214,7 +194,6 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 		mOnly_wifi.setOnSwitchListener(new OnSwitchListener() {
 
 			public void onSwitched(boolean switchState) {
-				// TODO Auto-generated method stub
 				if (switchState) {
 					mLimit_flow.setEnabled(false);
 					mLimit_text.setTextColor(Color.rgb(136, 136, 136));// 0x888888
@@ -232,27 +211,23 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 	@Override
 	public void onBackPressed() {
 		super.onBackPressed();
-//		overridePendingTransition(R.anim.in_from_left, R.anim.out_to_right);
 	}
 
 	@Override
 	protected void onResume() {
-		// TODO Auto-generated method stub
 		super.onResume();
-		System.out.println("打开设置页面到显示耗时为:"
-				+ (System.currentTimeMillis() - startTime));
+		System.out.println("打开设置页面到显示耗时为:" + (System.currentTimeMillis() - startTime));
 		MobclickAgent.onResume(this);
-		if(titleUtil!=null) {
+		if (titleUtil != null) {
 			titleUtil.sendRefreshHandler();
 		}
 	}
 
 	@Override
 	protected void onPause() {
-		// TODO Auto-generated method stub
 		super.onPause();
 		MobclickAgent.onPause(this);
-		if(titleUtil!=null) {
+		if (titleUtil != null) {
 			titleUtil.removeRefreshHandler();
 		}
 		if (isFinishing()) {
@@ -290,10 +265,8 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 	};
 
 	private void checkFirstLauncherSetting() {
-		SharedPreferences mSharedPreferences = getSharedPreferences(
-				this.getPackageName() + "_temp", Context.MODE_PRIVATE);
-		boolean firstLaunch = mSharedPreferences.getBoolean(
-				ShareParams.FIRST_LAUNCHER_SETTING2, true);
+		SharedPreferences mSharedPreferences = getSharedPreferences(this.getPackageName() + "_temp", Context.MODE_PRIVATE);
+		boolean firstLaunch = mSharedPreferences.getBoolean(ShareParams.FIRST_LAUNCHER_SETTING2, true);
 		if (firstLaunch) {
 			SharedPreferences.Editor mEditor = mSharedPreferences.edit();
 			mEditor.putBoolean(ShareParams.FIRST_LAUNCHER_SETTING2, false);
@@ -311,16 +284,6 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 		}
 	}
 
-	/*
-	 * private void exitVerify() { int value = 0; if
-	 * (TextUtils.isEmpty(mLimit_flow.getText())) { isLimitFlowChange = true;
-	 * value = -1; } else { value =
-	 * Integer.valueOf(mLimit_flow.getText().toString()); if (value !=
-	 * limitFlow) { isLimitFlowChange = true; } } if (isLimitFlowChange) {
-	 * showSettingChangedDialog(true, 0, null); return; } else { save2db();
-	 * finish(); } }
-	 */
-
 	@Override
 	protected void onRestart() {
 		initSetting();
@@ -330,7 +293,6 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 
 	@Override
 	protected void onStop() {
-		// save2db();
 		super.onStop();
 	}
 
@@ -355,52 +317,42 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 	 * @param pageFlag
 	 *            　标记所要到达的页面
 	 */
-	private void showSettingChangedDialog(final boolean isFinish,
-			final int pageFlag) {
+	private void showSettingChangedDialog(final boolean isFinish, final int pageFlag) {
 		if (!isFinishing()) {
 			if (mSettingDialog == null) {
 				mSettingDialog = new CustomNoTitleDialog(this);
 				mSettingDialog.setMessage(R.string.setting_for_flow_changed);
-				mSettingDialog.setNeutralButton(getString(R.string.confirm),
-						new View.OnClickListener() {
-							@Override
-							public void onClick(View v) {
-								int num = 0;
-								if (!TextUtils.isEmpty(mLimit_flow.getText())) {
-									num = Integer.parseInt(mLimit_flow
-											.getText().toString());
-								}
-								if (num > 2048) {
-									AndroidUtils
-											.showToast(
-													Setting_Activity.this,
-													getResources()
-															.getString(
-																	R.string.limit_flow_too_large));
-									mLimit_flow.requestFocus();
+				mSettingDialog.setNeutralButton(getString(R.string.confirm), new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						int num = 0;
+						if (!TextUtils.isEmpty(mLimit_flow.getText())) {
+							num = Integer.parseInt(mLimit_flow.getText().toString());
+						}
+						if (num > 2048) {
+							AndroidUtils.showToast(Setting_Activity.this, getResources().getString(R.string.limit_flow_too_large));
+							mLimit_flow.requestFocus();
+						} else {
+							save2db();
+							if (isFinish) {
+								if (fromBackKey) {
+									finish();
 								} else {
-									save2db();
-									if (isFinish) {
-										if (fromBackKey) {
-											finish();
-										} else {
-											sendBroadcast(new Intent(
-													AConstDefine.GO_HOME_BROADCAST));
-										}
-									} else {
-										titleUtil.toOtherPage(pageFlag);
-									}
+									sendBroadcast(new Intent(AConstDefine.GO_HOME_BROADCAST));
 								}
-								mSettingDialog.dismiss();
+							} else {
+								titleUtil.toOtherPage(pageFlag);
 							}
-						});
-				mSettingDialog.setNegativeButton(getString(R.string.cancel),
-						new View.OnClickListener() {
-							@Override
-							public void onClick(View v) {
-								mSettingDialog.dismiss();
-							}
-						});
+						}
+						mSettingDialog.dismiss();
+					}
+				});
+				mSettingDialog.setNegativeButton(getString(R.string.cancel), new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						mSettingDialog.dismiss();
+					}
+				});
 			}
 			if (mSettingDialog != null) {
 				mSettingDialog.show();
@@ -413,18 +365,13 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-			// case EXIT_SETTINGPAGE:
-			// exitVerify();
-			// break;
 			case CLEAR_SEARCH_HISTORY: // 清除搜索历史
-				AndroidUtils.showToast(Setting_Activity.this,
-						R.string.has_clear_record);
+				AndroidUtils.showToast(Setting_Activity.this, R.string.has_clear_record);
 				mClear_search_history.setEnabled(false);
 				mClear_search_history.setTextColor(Color.rgb(136, 136, 136));
 				break;
 			case DEL_DOWNLOADED_APK: // 删除已下载安装包
-				AndroidUtils.showToast(Setting_Activity.this,
-						R.string.has_clear_pkgs);
+				AndroidUtils.showToast(Setting_Activity.this, R.string.has_clear_pkgs);
 				mDel_pkg.setEnabled(false);
 				mDel_pkg.setTextColor(Color.rgb(136, 136, 136));
 				break;
@@ -442,7 +389,6 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 	OnClickListener listener = new OnClickListener() {
 
 		public void onClick(View v) {
-			// TODO Auto-generated method stub
 			switch (v.getId()) {
 			case R.id.update_msg_layout:
 				if (mUpdate_msg.getSwitchState()) {
@@ -518,41 +464,30 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 					if (!isSinaLogin()) {
 						DJMarketUtils.sinaLogin(Setting_Activity.this, handler);
 					}
-					// mSina_login.updateSwitchState(true);
 				}
 				break;
 			case R.id.clear_search_history:
 				if (!isFinishing()) {
-					final CustomDialog clearSearchDialog = new CustomDialog(
-							Setting_Activity.this).setIcon(R.drawable.icon);
+					final CustomDialog clearSearchDialog = new CustomDialog(Setting_Activity.this).setIcon(R.drawable.icon);
 					clearSearchDialog.setTitle(R.string.clear_record);
-					clearSearchDialog
-							.setMessage(R.string.confirm_clear_record)
-							.setPositiveButton(R.string.confirm,
-									new OnClickListener() {
+					clearSearchDialog.setMessage(R.string.confirm_clear_record).setPositiveButton(R.string.confirm, new OnClickListener() {
 
-										@Override
-										public void onClick(View v) {
-											if (searchHistory == null) {
-												searchHistory = new MarketDatabase.SearchHistory(
-														Setting_Activity.this);
-											}
-											searchHistory.delAll();
-											clearSearchDialog.dismiss();
-											handler.sendEmptyMessage(CLEAR_SEARCH_HISTORY);
-											// AndroidUtils.showToast(
-											// Setting_Activity.this,
-											// R.string.has_clear_record);
-										}
-									})
-							.setNegativeButton(R.string.cancel,
-									new OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							if (searchHistory == null) {
+								searchHistory = new MarketDatabase.SearchHistory(Setting_Activity.this);
+							}
+							searchHistory.delAll();
+							clearSearchDialog.dismiss();
+							handler.sendEmptyMessage(CLEAR_SEARCH_HISTORY);
+						}
+					}).setNegativeButton(R.string.cancel, new OnClickListener() {
 
-										@Override
-										public void onClick(View v) {
-											clearSearchDialog.dismiss();
-										}
-									});
+						@Override
+						public void onClick(View v) {
+							clearSearchDialog.dismiss();
+						}
+					});
 
 					if (clearSearchDialog != null) {
 						clearSearchDialog.show();
@@ -561,38 +496,25 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 				break;
 			case R.id.del_pkg:
 				if (!isFinishing()) {
-					final CustomDialog clearPkgsDialog = new CustomDialog(
-							Setting_Activity.this).setIcon(R.drawable.icon);
+					final CustomDialog clearPkgsDialog = new CustomDialog(Setting_Activity.this).setIcon(R.drawable.icon);
 					clearPkgsDialog.setTitle(R.string.del_pkg2);
-					clearPkgsDialog
-							.setMessage(R.string.confirm_clear_pkgs)
-							.setPositiveButton(R.string.confirm,
-									new OnClickListener() {
+					clearPkgsDialog.setMessage(R.string.confirm_clear_pkgs).setPositiveButton(R.string.confirm, new OnClickListener() {
 
-										@Override
-										public void onClick(View v) {
+						@Override
+						public void onClick(View v) {
 
-											del_packages();
-											clearPkgsDialog.dismiss();
-											sendBroadcast(new Intent(
-													AConstDefine.BROADCAST_DEL_DOWNLOADED_APK));
-											handler.sendEmptyMessage(DEL_DOWNLOADED_APK);
-											// AndroidUtils.showToast(
-											// Setting_Activity.this,
-											// R.string.has_clear_pkgs);
-											// mDel_pkg.setEnabled(false);
-											// mDel_pkg.setTextColor(Color.rgb(136,
-											// 136, 136));
-										}
-									})
-							.setNegativeButton(R.string.cancel,
-									new OnClickListener() {
+							del_packages();
+							clearPkgsDialog.dismiss();
+							sendBroadcast(new Intent(AConstDefine.BROADCAST_DEL_DOWNLOADED_APK));
+							handler.sendEmptyMessage(DEL_DOWNLOADED_APK);
+						}
+					}).setNegativeButton(R.string.cancel, new OnClickListener() {
 
-										@Override
-										public void onClick(View v) {
-											clearPkgsDialog.dismiss();
-										}
-									});
+						@Override
+						public void onClick(View v) {
+							clearPkgsDialog.dismiss();
+						}
+					});
 					if (clearPkgsDialog != null) {
 						clearPkgsDialog.show();
 					}
@@ -601,17 +523,12 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 			case R.id.about:
 
 				if (!isFinishing()) {
-					Intent intent = new Intent(Setting_Activity.this,
-							AboutUsActivity.class);
+					Intent intent = new Intent(Setting_Activity.this, AboutUsActivity.class);
 					startActivity(intent);
-					
-//					new AboutDialog(Setting_Activity.this)
-//							.setPublishDate(R.string.publish_date_value).show();
 				}
 				break;
 			case R.id.feedback:
-				Intent intent = new Intent(Setting_Activity.this,
-						FeedbackActivity.class);
+				Intent intent = new Intent(Setting_Activity.this, FeedbackActivity.class);
 				startActivity(intent);
 				break;
 			default:
@@ -626,13 +543,6 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 	 * @return
 	 */
 	private long queryUse3GSize() {
-		/*
-		 * int _3GSize=ADownloadService.get3GdownloadSize(); SharedPreferences
-		 * pref = getSharedPreferences( AConstDefine.DONGJI_SHAREPREFERENCES,
-		 * Context.MODE_PRIVATE); int
-		 * size=pref.getInt(AConstDefine.SHARE_DOWNLOADSIZE, 0); return
-		 * _3GSize+size;
-		 */
 		return DJMarketUtils.queryUse3GDownloadSize(this);
 	}
 
@@ -674,11 +584,11 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 		}
 		if (mOnly_wifi.getSwitchState()) {
 			service.update("only_wifi", 1);
-			System.out.println("662:"+wifiSettingChange+", "+isLimitFlowChange);
+			System.out.println("662:" + wifiSettingChange + ", " + isLimitFlowChange);
 			int value = -1;
-			Intent intent=new Intent(DownloadConstDefine.BROADCAST_ACTION_GPRS_SETTING_CHANGE);
-			Bundle bundle=new Bundle();
-			if(isLimitFlowChange) {
+			Intent intent = new Intent(DownloadConstDefine.BROADCAST_ACTION_GPRS_SETTING_CHANGE);
+			Bundle bundle = new Bundle();
+			if (isLimitFlowChange) {
 				if (TextUtils.isEmpty(mLimit_flow.getText())) {
 					value = 50;
 				} else {
@@ -697,16 +607,16 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 			} else {
 				value = Integer.parseInt(mLimit_flow.getText().toString());
 			}
-			System.out.println("686:"+wifiSettingChange+", "+isLimitFlowChange);
-			Intent intent=new Intent(DownloadConstDefine.BROADCAST_ACTION_GPRS_SETTING_CHANGE);
-			Bundle bundle=new Bundle();
+			System.out.println("686:" + wifiSettingChange + ", " + isLimitFlowChange);
+			Intent intent = new Intent(DownloadConstDefine.BROADCAST_ACTION_GPRS_SETTING_CHANGE);
+			Bundle bundle = new Bundle();
 			if (isLimitFlowChange) {
 				service.update("limit_flow", value);
 				// 每次修改限制流量必须清零已使用流量
 				clearUsedFlow();
-				
+
 				bundle.putLong("limitFlow", value);
-			}else {
+			} else {
 				bundle.putLong("limitFlow", -1);
 			}
 			bundle.putBoolean("isOnlyWifi", false);
@@ -770,23 +680,6 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 			mAuto_install_text1.setTextColor(Color.rgb(136, 136, 136));
 			mAuto_install_text2.setTextColor(Color.rgb(136, 136, 136));
 		}
-
-		// checkRootHandler();
-		/*
-		 * if (AndroidUtils.isRoot()) { mAuto_install_layout.setEnabled(true);
-		 * mAuto_install.setEnabled(true);
-		 * mAuto_install_text1.setTextColor(Color.rgb(59, 59, 59));
-		 * mAuto_install_text2.setTextColor(Color.rgb(59, 59, 59)); if
-		 * (service.select("auto_install") == 1) {
-		 * mAuto_install.setSwitchState(true); } else {
-		 * mAuto_install.setSwitchState(false); }
-		 * 
-		 * } else { mAuto_install.setSwitchState(false);
-		 * mAuto_install_layout.setEnabled(false);
-		 * mAuto_install.setEnabled(false);
-		 * mAuto_install_text1.setTextColor(Color.rgb(136, 136, 136));
-		 * mAuto_install_text2.setTextColor(Color.rgb(136, 136, 136)); }
-		 */
 		limitFlow = service.select("limit_flow");
 		if (service.select("only_wifi") == 1) {
 			mOnly_wifi.setSwitchState(true);
@@ -836,11 +729,6 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 			service.update("sina_login", 0);
 			mSina_name.setVisibility(View.GONE);
 		}
-		// if (service.select("sina_login") == 1) {
-		// } else {
-		// mSina_login.setSwitchState(false);
-		// mSina_name.setVisibility(View.GONE);
-		// }
 	}
 
 	private void initDBService() {
@@ -853,18 +741,13 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 	}
 
 	private boolean isSinaLogin() {
-		LoginParams loginParams = ((AppMarket) getApplication())
-				.getLoginParams();
+		LoginParams loginParams = ((AppMarket) getApplication()).getLoginParams();
 		String sina_name = loginParams.getSinaUserName();
 		if (sina_name != null && sina_name.length() > 0) {
 			mSina_name.setVisibility(View.VISIBLE);
-			// mSina_name.setText(getResources().getString(R.string.user_name_text)
-			// + sina_name);
 			mSina_name.append(sina_name);
 			return true;
-		}/*
-		 * else { AndroidUtils.sinaLogin(this); }
-		 */
+		}
 		return false;
 	}
 
@@ -920,7 +803,6 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 		File[] list = new File(APKPath).listFiles(new FilenameFilter() {
 
 			public boolean accept(File dir, String filename) {
-				// TODO Auto-generated method stub
 				return filename.endsWith(".apk");
 			}
 		});
@@ -949,7 +831,6 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 	private float getUsedFlow() {
 		long num = queryUse3GSize();
 		float used_flow = b2mb(num < 0 ? 0 : num);
-		// float current_flow = 0;//需要从下载线程中获取
 		return used_flow;
 	}
 
@@ -968,8 +849,7 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 	 * 每次修改限制流量值后都需要对已用流量清零
 	 */
 	private void clearUsedFlow() {
-		SharedPreferences pref = getSharedPreferences(
-				AConstDefine.DONGJI_SHAREPREFERENCES, MODE_PRIVATE);
+		SharedPreferences pref = getSharedPreferences(AConstDefine.DONGJI_SHAREPREFERENCES, MODE_PRIVATE);
 		Editor editor = pref.edit();
 		editor.putLong(AConstDefine.SHARE_DOWNLOADSIZE, 0);
 		editor.commit();
@@ -985,14 +865,12 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 		HandlerThread handlerThread = new HandlerThread("handler");
 		handlerThread.start();
 		mHandler = new MyHandler(handlerThread.getLooper());
-		// mHandler.sendEmptyMessage(CHECK_ROOT);
 	}
 
 	class MyHandler extends Handler {
 
 		public MyHandler(Looper looper) {
 			super(looper);
-			// TODO Auto-generated constructor stub
 		}
 
 		@Override
@@ -1004,14 +882,11 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 
 						@Override
 						public void run() {
-							// System.out.println("get root success==========>");
 							mSet_root.updateSwitchState(true);
 							mAuto_install_layout.setEnabled(true);
 							mAuto_install.setEnabled(true);
-							mAuto_install_text1.setTextColor(Color.rgb(59, 59,
-									59));
-							mAuto_install_text2.setTextColor(Color.rgb(59, 59,
-									59));
+							mAuto_install_text1.setTextColor(Color.rgb(59, 59, 59));
+							mAuto_install_text2.setTextColor(Color.rgb(59, 59, 59));
 						}
 					});
 
@@ -1020,17 +895,13 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 
 						@Override
 						public void run() {
-							// System.out.println("get root failed===========>");
 							mSet_root.updateSwitchState(false);
 							mAuto_install.updateSwitchState(false);
 							mAuto_install_layout.setEnabled(false);
 							mAuto_install.setEnabled(false);
-							mAuto_install_text1.setTextColor(Color.rgb(136,
-									136, 136));
-							mAuto_install_text2.setTextColor(Color.rgb(136,
-									136, 136));
-							AndroidUtils.showToast(getApplicationContext(),
-									R.string.get_root_failed);
+							mAuto_install_text1.setTextColor(Color.rgb(136, 136, 136));
+							mAuto_install_text2.setTextColor(Color.rgb(136, 136, 136));
+							AndroidUtils.showToast(getApplicationContext(), R.string.get_root_failed);
 						}
 					});
 				}
@@ -1048,7 +919,6 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 
 		@Override
 		public void exitVerify(boolean isFinish, int pageFlag) {
-			// TODO Auto-generated method stub
 			int value = 0;
 			if (TextUtils.isEmpty(mLimit_flow.getText())) {
 				isLimitFlowChange = true;
@@ -1066,7 +936,6 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 			} else {
 				save2db();
 				if (isFinish) {
-					// finish();
 					sendBroadcast(new Intent(AConstDefine.GO_HOME_BROADCAST));
 				} else {
 					titleUtil.toOtherPage(pageFlag);
@@ -1077,8 +946,7 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 
 	@Override
 	public void onClick() {
-		if(mScrollView!=null) {
-//			mScrollView.scrollTo(0, 0);
+		if (mScrollView != null) {
 			mScrollView.smoothScrollTo(0, 0);
 		}
 	}

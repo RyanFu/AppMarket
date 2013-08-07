@@ -43,25 +43,13 @@ public class MarketDatabase {
 
 		@Override
 		public void onCreate(SQLiteDatabase db) {
-			db.execSQL("create table if not exists "
-					+ SETTING_TABLE
-					+ "(_id INTEGER primary key autoincrement, name TEXT, value INTEGER)");
-			db.execSQL("create table if not exists " + SEARCH_HISTORY_TABLE
-					+ "(_id INTEGER primary key autoincrement, name TEXT)");
-			db.execSQL("create table if not exists " + SEARCH_HOTWORDS_TABLE
-					+ "(_id INTEGER primary key autoincrement, hotword TEXT)");
-			db.execSQL("create table if not exists "
-					+ NAVIGATION_TABLE
-					+ "(_id INTEGER primary key autoincrement, nav_id INTEGER, nav_name TEXT, gameUrl TEXT, gameMd5Value TEXT, appUrl TEXT, appMd5Value TEXT);");
-			db.execSQL("create table if not exists "
-					+ CHANNEL_TABLE
-					+ "(_id INTEGER primary key autoincrement, catid INTEGER, name TEXT, parentId INTEGER);");
-			db.execSQL("create table if not exists "
-					+ CHANNEL_REF_TABLE
-					+ "(_id INTEGER primary key autoincrement, catid INTEGER, _index INTEGER, url TEXT, md5Value TEXT);");
-			db.execSQL("create table if not exists "
-					+ RATING_TABLE
-					+ "(_id INTEGER primary key autoincrement, typeid INTEGER, appid INTEGER,rating float);");
+			db.execSQL("create table if not exists " + SETTING_TABLE + "(_id INTEGER primary key autoincrement, name TEXT, value INTEGER)");
+			db.execSQL("create table if not exists " + SEARCH_HISTORY_TABLE + "(_id INTEGER primary key autoincrement, name TEXT)");
+			db.execSQL("create table if not exists " + SEARCH_HOTWORDS_TABLE + "(_id INTEGER primary key autoincrement, hotword TEXT)");
+			db.execSQL("create table if not exists " + NAVIGATION_TABLE + "(_id INTEGER primary key autoincrement, nav_id INTEGER, nav_name TEXT, gameUrl TEXT, gameMd5Value TEXT, appUrl TEXT, appMd5Value TEXT);");
+			db.execSQL("create table if not exists " + CHANNEL_TABLE + "(_id INTEGER primary key autoincrement, catid INTEGER, name TEXT, parentId INTEGER);");
+			db.execSQL("create table if not exists " + CHANNEL_REF_TABLE + "(_id INTEGER primary key autoincrement, catid INTEGER, _index INTEGER, url TEXT, md5Value TEXT);");
+			db.execSQL("create table if not exists " + RATING_TABLE + "(_id INTEGER primary key autoincrement, typeid INTEGER, appid INTEGER,rating float);");
 		}
 
 		@Override
@@ -204,10 +192,8 @@ public class MarketDatabase {
 		try {
 			sqLiteDatabase = dbHelper.getWritableDatabase();
 			sqLiteDatabase.beginTransaction();
-			sqLiteDatabase.delete(CHANNEL_REF_TABLE, "catid=?",
-					new String[] { String.valueOf(id) });
-			sqLiteDatabase.delete(CHANNEL_TABLE, "catid=?",
-					new String[] { String.valueOf(id) });
+			sqLiteDatabase.delete(CHANNEL_REF_TABLE, "catid=?", new String[] { String.valueOf(id) });
+			sqLiteDatabase.delete(CHANNEL_TABLE, "catid=?", new String[] { String.valueOf(id) });
 			sqLiteDatabase.setTransactionSuccessful();
 			sqLiteDatabase.endTransaction();
 			return true;
@@ -223,11 +209,7 @@ public class MarketDatabase {
 		SQLiteDatabase sqLiteDatabase = null;
 		try {
 			sqLiteDatabase = dbHelper.getWritableDatabase();
-			int count = sqLiteDatabase.delete(
-					CHANNEL_REF_TABLE,
-					"channelId=? and _index=?",
-					new String[] { String.valueOf(channelId),
-							String.valueOf(index) });
+			int count = sqLiteDatabase.delete(CHANNEL_REF_TABLE, "channelId=? and _index=?", new String[] { String.valueOf(channelId), String.valueOf(index) });
 			return count > 0;
 		} catch (SQLiteException e) {
 
@@ -237,8 +219,7 @@ public class MarketDatabase {
 		return false;
 	}
 
-	public boolean addChannelRef(StaticAddress staticAddress, int index,
-			int channelId) {
+	public boolean addChannelRef(StaticAddress staticAddress, int index, int channelId) {
 		SQLiteDatabase sqLiteDatabase = null;
 		try {
 			sqLiteDatabase = dbHelper.getWritableDatabase();
@@ -257,20 +238,14 @@ public class MarketDatabase {
 		return false;
 	}
 
-	public boolean updateChannelRefById(StaticAddress staticAddress, int index,
-			int channelId) {
+	public boolean updateChannelRefById(StaticAddress staticAddress, int index, int channelId) {
 		SQLiteDatabase sqLiteDatabase = null;
 		try {
 			sqLiteDatabase = dbHelper.getWritableDatabase();
 			ContentValues values = new ContentValues();
 			values.put("url", staticAddress.url);
 			values.put("md5Value", staticAddress.md5Value);
-			int count = sqLiteDatabase.update(
-					CHANNEL_REF_TABLE,
-					values,
-					"catid=? and _index=?",
-					new String[] { String.valueOf(channelId),
-							String.valueOf(index) });
+			int count = sqLiteDatabase.update(CHANNEL_REF_TABLE, values, "catid=? and _index=?", new String[] { String.valueOf(channelId), String.valueOf(index) });
 			return count > 0;
 		} catch (SQLiteException e) {
 
@@ -284,8 +259,7 @@ public class MarketDatabase {
 		SQLiteDatabase sqLiteDatabase = null;
 		try {
 			sqLiteDatabase = dbHelper.getWritableDatabase();
-			int count = sqLiteDatabase.delete(CHANNEL_REF_TABLE, "catid=?",
-					new String[] { String.valueOf(channelId) });
+			int count = sqLiteDatabase.delete(CHANNEL_REF_TABLE, "catid=?", new String[] { String.valueOf(channelId) });
 			return count > 0;
 		} catch (SQLiteException e) {
 
@@ -297,8 +271,8 @@ public class MarketDatabase {
 
 	public boolean addNavigation(NavigationInfo info) {
 		SQLiteDatabase sqLiteDatabase = null;
-		try{
-			sqLiteDatabase=dbHelper.getWritableDatabase();
+		try {
+			sqLiteDatabase = dbHelper.getWritableDatabase();
 			StaticAddress appStaticAddress = (StaticAddress) info.staticAddress[0];
 			StaticAddress gameStaticAddress = (StaticAddress) info.staticAddress[1];
 			ContentValues values = new ContentValues();
@@ -310,9 +284,9 @@ public class MarketDatabase {
 			values.put("appMd5Value", appStaticAddress.md5Value);
 			long result = sqLiteDatabase.insert(NAVIGATION_TABLE, null, values);
 			return result > 0;
-		}catch(SQLiteException e) {
-			
-		}finally {
+		} catch (SQLiteException e) {
+
+		} finally {
 			release(sqLiteDatabase, null);
 		}
 		return false;
@@ -320,25 +294,22 @@ public class MarketDatabase {
 
 	public boolean updateNavigation(NavigationInfo info, boolean isApp) {
 		SQLiteDatabase sqLiteDatabase = null;
-		try{
+		try {
 			sqLiteDatabase = dbHelper.getWritableDatabase();
 			ContentValues values = new ContentValues();
 			values.put("nav_name", info.name);
 			if (!isApp) {
 				values.put("gameUrl", ((StaticAddress) info.staticAddress[1]).url);
-				values.put("gameMd5Value",
-						((StaticAddress) info.staticAddress[1]).md5Value);
+				values.put("gameMd5Value", ((StaticAddress) info.staticAddress[1]).md5Value);
 			} else {
 				values.put("appUrl", ((StaticAddress) info.staticAddress[0]).url);
-				values.put("appMd5Value",
-						((StaticAddress) info.staticAddress[0]).md5Value);
+				values.put("appMd5Value", ((StaticAddress) info.staticAddress[0]).md5Value);
 			}
-			int result = sqLiteDatabase.update(NAVIGATION_TABLE, values,
-					"nav_id=?", new String[] { String.valueOf(info.id) });
+			int result = sqLiteDatabase.update(NAVIGATION_TABLE, values, "nav_id=?", new String[] { String.valueOf(info.id) });
 			return result > 0;
-		}catch(SQLiteException e) {
-			
-		}finally {
+		} catch (SQLiteException e) {
+
+		} finally {
 			release(sqLiteDatabase, null);
 		}
 		return false;
@@ -349,10 +320,7 @@ public class MarketDatabase {
 		Cursor cursor = null;
 		try {
 			sqLiteDatabase = dbHelper.getReadableDatabase();
-			cursor = sqLiteDatabase.query(NAVIGATION_TABLE, new String[] {
-					"nav_id", "nav_name", "gameUrl", "gameMd5Value", "appUrl",
-					"appMd5Value" }, "nav_id=?",
-					new String[] { String.valueOf(navId) }, null, null, null);
+			cursor = sqLiteDatabase.query(NAVIGATION_TABLE, new String[] { "nav_id", "nav_name", "gameUrl", "gameMd5Value", "appUrl", "appMd5Value" }, "nav_id=?", new String[] { String.valueOf(navId) }, null, null, null);
 			if (cursor != null && cursor.getCount() > 0) {
 				cursor.moveToFirst();
 				NavigationInfo info = new NavigationInfo();
@@ -361,14 +329,10 @@ public class MarketDatabase {
 				StaticAddress[] staticAddress = new StaticAddress[2];
 				StaticAddress appStaticAddress = new StaticAddress();
 				StaticAddress gameStaticAddress = new StaticAddress();
-				appStaticAddress.url = cursor.getString(cursor
-						.getColumnIndex("appUrl"));
-				appStaticAddress.md5Value = cursor.getString(cursor
-						.getColumnIndex("appMd5Value"));
-				gameStaticAddress.url = cursor.getString(cursor
-						.getColumnIndex("gameUrl"));
-				gameStaticAddress.md5Value = cursor.getString(cursor
-						.getColumnIndex("gameMd5Value"));
+				appStaticAddress.url = cursor.getString(cursor.getColumnIndex("appUrl"));
+				appStaticAddress.md5Value = cursor.getString(cursor.getColumnIndex("appMd5Value"));
+				gameStaticAddress.url = cursor.getString(cursor.getColumnIndex("gameUrl"));
+				gameStaticAddress.md5Value = cursor.getString(cursor.getColumnIndex("gameMd5Value"));
 				staticAddress[0] = appStaticAddress;
 				staticAddress[1] = gameStaticAddress;
 				info.staticAddress = staticAddress;
@@ -484,8 +448,7 @@ public class MarketDatabase {
 			Cursor cursor = null;
 			try {
 				db = dbHelp.getReadableDatabase();
-				cursor = db.query(TBNAME, new String[] { "value" },
-						"name = ?", new String[] { name }, null, null, null);
+				cursor = db.query(TBNAME, new String[] { "value" }, "name = ?", new String[] { name }, null, null, null);
 				if (cursor.getCount() == 0) {
 					add(new SettingConf(name, 50));
 				}
@@ -629,8 +592,7 @@ public class MarketDatabase {
 		public boolean checkExist(String keyword, SQLiteDatabase db) {
 			Cursor cursor = null;
 			try {
-				cursor = db.query(TBNAME, null, "name = ?",
-						new String[] { keyword }, null, null, null);
+				cursor = db.query(TBNAME, null, "name = ?", new String[] { keyword }, null, null, null);
 				if (cursor.getCount() > 0) {
 					return true;
 				}
@@ -652,12 +614,10 @@ public class MarketDatabase {
 			Cursor cursor = null;
 			try {
 				db = dbHelper.getWritableDatabase();
-				cursor = db.query(TBNAME, new String[] { "_id" },
-						"name = ?", new String[] { keyword }, null, null, null);
+				cursor = db.query(TBNAME, new String[] { "_id" }, "name = ?", new String[] { keyword }, null, null, null);
 				if (cursor.getCount() > 1) {
 					if (cursor.moveToFirst()) {
-						db.delete(TBNAME, "_id = ?",
-								new String[] { cursor.getInt(0) + "" });
+						db.delete(TBNAME, "_id = ?", new String[] { cursor.getInt(0) + "" });
 					}
 				}
 			} catch (Exception e) {
@@ -693,8 +653,7 @@ public class MarketDatabase {
 			Cursor cursor = null;
 			try {
 				db = dbHelper.getReadableDatabase();
-				cursor = db
-						.query(TBNAME, null, null, null, null, null, null);
+				cursor = db.query(TBNAME, null, null, null, null, null, null);
 				if (cursor.getCount() > max) {
 					if (cursor.moveToFirst()) {
 						del(cursor.getString(cursor.getColumnIndex("name")));
@@ -718,8 +677,7 @@ public class MarketDatabase {
 			Cursor cursor = null;
 			try {
 				db = dbHelper.getReadableDatabase();
-				cursor = db.query(TBNAME, new String[] { "name" }, null,
-						null, null, null, "_id desc");
+				cursor = db.query(TBNAME, new String[] { "name" }, null, null, null, null, "_id desc");
 				while (cursor.moveToNext()) {
 					list.add(cursor.getString(0));
 				}
@@ -742,8 +700,7 @@ public class MarketDatabase {
 			int count = 0;
 			try {
 				db = dbHelper.getReadableDatabase();
-				cursor = db.query(TBNAME, new String[] { "_id" }, null,
-						null, null, null, null);
+				cursor = db.query(TBNAME, new String[] { "_id" }, null, null, null, null, null);
 				count = cursor.getCount();
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -843,8 +800,7 @@ public class MarketDatabase {
 			Cursor cursor = null;
 			try {
 				db = dbHelper.getReadableDatabase();
-				cursor = db.query(TBNAME, new String[] { "hotword" }, null,
-						null, null, null, null);
+				cursor = db.query(TBNAME, new String[] { "hotword" }, null, null, null, null, null);
 				while (cursor.moveToNext()) {
 					list.add(cursor.getString(0));
 				}
@@ -894,15 +850,10 @@ public class MarketDatabase {
 		Cursor cursor = null;
 		try {
 			sqLiteDatabase = dbHelper.getReadableDatabase();
-			cursor = sqLiteDatabase.query(
-					RATING_TABLE,
-					new String[] { "rating" },
-					"typeid=? and appid=?",
-					new String[] { String.valueOf(typeid),
-							String.valueOf(appid) }, null, null, null);
+			cursor = sqLiteDatabase.query(RATING_TABLE, new String[] { "rating" }, "typeid=? and appid=?", new String[] { String.valueOf(typeid), String.valueOf(appid) }, null, null, null);
 			if (cursor != null && cursor.getCount() > 0) {
 				cursor.moveToFirst();
-				float num=cursor.getFloat(cursor.getColumnIndex("rating"));
+				float num = cursor.getFloat(cursor.getColumnIndex("rating"));
 				return num;
 			}
 		} catch (SQLiteException e) {

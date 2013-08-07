@@ -32,30 +32,25 @@ public class FlowBroadcastReceiver implements AConstDefine {
 		if (!activity.isFinishing()) {
 			mFlowSettingDialog = new CustomNoTitleDialog(activity);
 			mFlowSettingDialog.setMessage(R.string.dialog_tip_noflow);
-			mFlowSettingDialog.setNeutralButton(
-					activity.getString(R.string.dialog_setting),
-					new View.OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							mFlowSettingDialog.dismiss();
-							SettingFlowDialog settingFlowDialog = new SettingFlowDialog(
-									activity);
-							if (settingFlowDialog != null) {
-								
-								settingFlowDialog.show();
-							}
-						}
-					});
-			mFlowSettingDialog.setNegativeButton(
-					activity.getString(R.string.dialog_pause),
-					new View.OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							mFlowSettingDialog.dismiss();
-						}
-					});
+			mFlowSettingDialog.setNeutralButton(activity.getString(R.string.dialog_setting), new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					mFlowSettingDialog.dismiss();
+					SettingFlowDialog settingFlowDialog = new SettingFlowDialog(activity);
+					if (settingFlowDialog != null) {
+
+						settingFlowDialog.show();
+					}
+				}
+			});
+			mFlowSettingDialog.setNegativeButton(activity.getString(R.string.dialog_pause), new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					mFlowSettingDialog.dismiss();
+				}
+			});
 			mFlowSettingDialog.setOnDismissListener(new OnDismissListener() {
-				
+
 				@Override
 				public void onDismiss(DialogInterface dialog) {
 					activity.sendBroadcast(new Intent(CANCELNOFLOWDIALOG));
@@ -69,7 +64,6 @@ public class FlowBroadcastReceiver implements AConstDefine {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if (BROADCAST_ACTION_NOFLOW.equals(intent.getAction())) {
-				// DJMarketUtils.showNoFlowDialog(activity);
 				if (!activity.isFinishing() && mFlowSettingDialog != null) {
 					mFlowSettingDialog.show();
 				}

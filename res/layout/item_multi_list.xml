@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:descendantFocusability="blocksDescendants" >
+  	<FrameLayout 
+  		android:id="@+id/leftlayout"
+  		android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	android:layout_weight="1.0"
+    	android:paddingTop="8dip"
+ 		android:paddingBottom="8dip"
+    	android:paddingLeft="7dip"
+    	android:paddingRight="5dip"
+    	android:background="@drawable/android_listselector" >
+	  	<LinearLayout 
+	  		android:layout_width="fill_parent"
+	    	android:layout_height="fill_parent" >
+	    	<ImageView 
+				android:id="@+id/leftIconImageview"
+				style="@style/list_imagestyle" />
+			<LinearLayout 
+				android:orientation="vertical"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:layout_weight="1.0"
+				android:paddingLeft="4dip" >
+				<LinearLayout 
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:gravity="bottom" >
+					<TextView 
+						android:id="@+id/leftappnametextview"
+						style="@style/list_title_textstyle" />
+					<TextView 
+						android:id="@+id/leftappversiontextview"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_marginLeft="2dip"
+						android:singleLine="true"
+						android:textSize="10sp"
+						android:textColor="@drawable/black" />
+					<ImageView 
+						android:id="@+id/leftlanguageimageview"
+						android:layout_width="13dip"
+						android:layout_height="13dip"
+						android:layout_marginLeft="2dip"
+						android:layout_marginBottom="2dip"
+						android:background="@drawable/language_chinese" />
+				</LinearLayout>
+				<TextView 
+					android:id="@+id/leftappownertextview"
+					style="@style/list_small_textstyle" />
+				<TextView 
+					android:id="@+id/leftappsizetextview"
+					style="@style/list_small_textstyle"
+					android:text="大小：4.35M" />
+				<TextView 
+					android:id="@+id/leftappinstallnumtextview"
+					style="@style/list_small_textstyle" />
+			</LinearLayout>
+	    </LinearLayout>
+		<Button 
+    		android:id="@+id/leftinstalltextview"
+    		android:layout_width="45dip"
+    		android:layout_height="30dip"
+    		android:layout_gravity="bottom|right"
+    		android:textColor="@drawable/button_text_default_color"
+    		android:text="@string/install"
+    		android:textSize="13sp"
+    		android:gravity="center"
+    		android:background="@drawable/button_has_border_selector" />
+    </FrameLayout>
+    <TextView 
+   		android:layout_width="1.0dip"
+   		android:layout_height="fill_parent"
+   		android:background="#d3d3d3" />
+   	<FrameLayout 
+   		android:id="@+id/rightlayout"
+  		android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	android:layout_weight="1.0"
+    	android:paddingTop="8dip"
+ 		android:paddingBottom="8dip"
+    	android:paddingLeft="7dip"
+    	android:paddingRight="5dip"
+    	android:background="@drawable/android_listselector" >
+	    <LinearLayout 
+	  		android:layout_width="fill_parent"
+	    	android:layout_height="fill_parent"
+	    	android:background="@drawable/android_listselector" ><!--  -->
+	    	<ImageView 
+				android:id="@+id/rightIconImageview"
+				style="@style/list_imagestyle" />
+			<LinearLayout 
+				android:orientation="vertical"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:layout_weight="1.0"
+				android:paddingLeft="4dip" >
+				<LinearLayout 
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:gravity="bottom" >
+					<TextView 
+						android:id="@+id/rightappnametextview"
+						style="@style/list_title_textstyle" />
+					<TextView 
+						android:id="@+id/rightappversiontextview"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:singleLine="true"
+						android:layout_marginLeft="2dip"
+						android:textSize="10sp"
+						android:textColor="@drawable/black" />
+					<ImageView 
+						android:id="@+id/rightlanguageimageview"
+						android:layout_width="13dip"
+						android:layout_height="13dip"
+						android:layout_marginLeft="2dip"
+						android:layout_marginBottom="2dip"
+						android:background="@drawable/language_english" />
+				</LinearLayout>
+				<TextView 
+					android:id="@+id/rightappownertextview"
+					style="@style/list_small_textstyle" />
+				<TextView 
+					android:id="@+id/rightappsizetextview"
+					style="@style/list_small_textstyle"
+					android:text="大小：4.35M" />
+				<TextView 
+					android:id="@+id/rightappinstallnumtextview"
+					style="@style/list_small_textstyle" />
+			</LinearLayout>
+	    </LinearLayout>
+		<Button 
+    		android:id="@+id/rightinstalltextview"
+    		android:layout_width="45dip"
+    		android:layout_height="30dip"
+    		android:layout_gravity="bottom|right"
+    		android:text="@string/install"
+    		android:textColor="@drawable/button_text_default_color"
+    		android:textSize="13sp"
+    		android:gravity="center"
+    		android:background="@drawable/button_has_border_selector" />
+	</FrameLayout>
+</LinearLayout>

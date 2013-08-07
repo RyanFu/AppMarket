@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="160dip"
+    android:layout_height="240dip" >
+
+    <ImageView
+        android:layout_width="160dip"
+        android:layout_height="240dip"
+        android:scaleType="fitXY"
+        android:src="@drawable/bg_printscreen" />
+
+    <ImageView
+        android:id="@+id/app_icon"
+        android:layout_width="155dip"
+        android:layout_height="235dip" />
+
+</FrameLayout>

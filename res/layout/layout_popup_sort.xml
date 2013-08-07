@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingLeft="3dp"
+    android:paddingRight="3dp" >
+
+    <TextView
+        android:id="@+id/popup_download_most"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.0"
+        android:background="@drawable/android_listselector"
+        android:gravity="center"
+        android:paddingBottom="10dip"
+        android:paddingTop="10dip"
+        android:singleLine="true"
+        android:text="@string/download_most"
+        android:textColor="#3d3d3d"
+        android:textSize="14sp" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:background="#d3d3d3" />
+
+    <TextView
+        android:id="@+id/popup_grade_top"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.0"
+        android:background="@drawable/android_listselector"
+        android:gravity="center"
+        android:paddingBottom="10dip"
+        android:paddingTop="10dip"
+        android:singleLine="true"
+        android:text="@string/grade_top"
+        android:textColor="#3d3d3d"
+        android:textSize="14sp" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:background="#d3d3d3" />
+
+    <TextView
+        android:id="@+id/popup_rise_fastest"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.0"
+        android:background="@drawable/android_listselector"
+        android:gravity="center"
+        android:paddingBottom="14dip"
+        android:paddingTop="10dip"
+        android:singleLine="true"
+        android:text="@string/rise_fastest"
+        android:textColor="#3d3d3d"
+        android:textSize="14sp" />
+
+</LinearLayout>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    tools:context=".MainActivity" >
+
+    <FrameLayout
+        android:id="@+id/like_fl"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <FrameLayout
+            android:id="@+id/like_content_fl"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" >
+
+            <com.dongji.market.helper.LazyScrollView
+                android:id="@+id/like_sv"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:fadingEdge="none">
+
+                <LinearLayout
+                    android:id="@+id/like_ll"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:orientation="horizontal"
+                    android:layout_marginRight="1dp">
+                </LinearLayout>
+            </com.dongji.market.helper.LazyScrollView>
+
+            <include layout="@layout/layout_loading" />
+        </FrameLayout>
+    </FrameLayout>
+
+</RelativeLayout>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#EBEBEB"
+    android:orientation="vertical" >
+    
+    <include android:id="@+id/chg_pwd_top"
+        layout="@layout/layout_main_top" />
+    <ImageView 
+  		android:layout_width="fill_parent"
+  		android:layout_height="3dip"
+  		android:background="@drawable/sharw"/>
+
+    <EditText
+        android:id="@+id/old_pwd"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/inter_et_style"
+        android:hint="@string/input_old_pwd"
+        android:inputType="textPassword"
+        android:textSize="17sp" />
+
+    <EditText
+        android:id="@+id/new_pwd"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginTop="-2dp"
+        android:background="@drawable/inter_et_style"
+        android:hint="@string/input_new_pwd"
+        android:inputType="textPassword"
+        android:textSize="17sp" />
+
+    <EditText
+        android:id="@+id/new_pwd_repeat"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginTop="-2dp"
+        android:background="@drawable/bottom_et_style"
+        android:hint="@string/input_new_pwd_repeat"
+        android:imeOptions="actionUnspecified"
+        android:inputType="textPassword"
+        android:textSize="17sp" />
+
+    <Button
+        android:id="@+id/chg_pwd_confirm"
+        android:layout_width="fill_parent"
+        android:layout_height="45dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:background="@drawable/button_has_border_selector"
+        android:text="@string/confirm"
+        android:textColor="@drawable/button_font_selector"
+        android:textSize="17sp" />
+
+</LinearLayout>

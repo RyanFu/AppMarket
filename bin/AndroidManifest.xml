@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.dongji.market"
+    android:versionCode="6"
+    android:versionName="1.3.5" >
+
+    <uses-sdk android:minSdkVersion="5" />
+
+    <!-- 权限列表 -->
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
+    <uses-permission android:name="android.permission.READ_LOGS" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RESTART_PACKAGES"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.INSTALL_PACKAGES" />
+
+    <application
+        android:name="com.dongji.market.application.AppMarket"
+        android:icon="@drawable/icon"
+        android:label="@string/app_name" >
+        <activity
+            android:name=".activity.LauncherActivity"
+            android:configChanges="keyboardHidden|navigation|orientation"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.MainActivity"
+            android:configChanges="keyboardHidden|navigation|orientation"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.kaizhang" >
+            <intent-filter >
+                <category android:name="android.intent.category.HOME"/>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.ChoicenessActivity"
+            android:configChanges="keyboardHidden|navigation|orientation"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.kaizhang" >
+        </activity>
+        <activity
+            android:name=".activity.UpdateActivity"
+            android:configChanges="keyboardHidden|navigation|orientation"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.kaizhang" >
+        </activity>
+        <activity
+            android:name=".activity.SoftwareManageActivity"
+            android:configChanges="keyboardHidden|navigation|orientation"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.kaizhang" >
+        </activity>
+        <activity
+            android:name=".activity.Uninstall_list_Activity"
+            android:configChanges="keyboardHidden|navigation|orientation"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Translucent" >
+        </activity>
+        <activity
+            android:name=".activity.Search_Activity2"
+            android:configChanges="keyboardHidden|navigation|orientation"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.kaizhang" >
+        </activity>
+        <activity
+            android:name=".activity.Search_Result_Activity"
+            android:configChanges="keyboardHidden|navigation|orientation"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.kaizhang" >
+        </activity>
+        <activity
+            android:name=".activity.Setting_Activity"
+            android:configChanges="keyboardHidden|navigation|orientation"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.kaizhang" >
+        </activity>
+        <activity
+            android:name=".activity.FeedbackActivity"
+            android:configChanges="keyboardHidden|navigation|orientation"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.kaizhang"
+            android:windowSoftInputMode="stateVisible|adjustPan" >
+        </activity>
+        <!--
+        <activity
+            android:name=".activity.FeedbackActivity2"
+            android:configChanges="keyboardHidden|navigation|orientation"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.kaizhang" >
+        </activity>
+        -->
+
+        <activity
+            android:name=".activity.Login_Activity"
+            android:configChanges="keyboardHidden|navigation|orientation"
+            android:label="@string/login"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.kaizhang" >
+        </activity>
+
+        <!--
+        <activity
+            android:name=".activity.Login_Activity2"
+            android:configChanges="keyboardHidden|navigation|orientation"
+            android:label="@string/login"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.kaizhang" >
+        </activity>
+        -->
+
+        <activity
+            android:name=".activity.Register_Activity"
+            android:configChanges="keyboardHidden|navigation|orientation"
+            android:label="@string/register"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.kaizhang" >
+        </activity>
+        <activity
+            android:name=".activity.Passwd_Retake_Activity"
+            android:configChanges="keyboardHidden|navigation|orientation"
+            android:label="@string/passwd_retake"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.kaizhang" >
+        </activity>
+        <activity
+            android:name=".activity.Change_Pwd_Activity"
+            android:configChanges="keyboardHidden|navigation|orientation"
+            android:label="@string/change_pwd"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.kaizhang" >
+        </activity>
+
+        <!--
+        <activity
+            android:name=".activity.Change_Pwd_Activity2"
+            android:configChanges="keyboardHidden|navigation|orientation"
+            android:label="@string/change_pwd"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.kaizhang" >
+        </activity>
+        -->
+
+        <service
+            android:name="com.dongji.market.service.LoginService"
+            android:permission="android.permission.ACCESS_NETWORK_STATE" >
+            <intent-filter>
+                <action android:name="com.dongji.market.loginService" />
+            </intent-filter>
+        </service>
+
+        <activity
+            android:name=".activity.ApkDetailActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.kaizhang" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="details"
+                    android:path=""
+                    android:scheme="market" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.SoftwareMove_list_Activity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.kaizhang" >
+        </activity>
+        <activity
+            android:name=".activity.ADownloadActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.kaizhang" >
+        </activity>
+        <activity
+            android:name=".activity.BackupOrRestoreActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.kaizhang" >
+        </activity>
+]
+        <activity
+            android:name=".activity.ChannelActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.kaizhang" >
+        </activity>
+        <activity
+            android:name=".activity.ChannelListActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.kaizhang" >
+        </activity>
+
+        <activity 
+            android:name=".activity.ThemeActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.kaizhang">
+        </activity>
+        <activity 
+            android:name=".activity.ThemeListActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.kaizhang">
+        </activity>
+        
+        <service
+            android:name=".download.ADownloadService"
+            android:enabled="true" />
+        <service android:name=".protocol.DataUpdateService" >
+        </service>
+
+        <!-- 友盟统计 -->
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="5154eb9856240b0fe2009a12" >
+        </meta-data>
+        <meta-data
+            android:name="UMENG_CHANNEL"
+            android:value="dongji" />
+
+        <!-- download -->
+        <activity
+            android:name=".activity.DownloadActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.kaizhang" >
+        </activity>
+        <!-- 关于我们 -->
+        <activity
+            android:name=".activity.AboutUsActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.kaizhang" >
+            <intent-filter >
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+
+        <service android:name=".download.DownloadService" />
+    </application>
+
+    <supports-screens
+        android:anyDensity="true"
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:smallScreens="true" />
+
+</manifest>

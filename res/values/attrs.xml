@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <declare-styleable name = "SlipSwitch">
+        <attr name = "background" format = "reference" />
+        <attr name = "onBackground" format = "reference" />
+        <attr name = "offBackground" format = "reference" />
+        <attr name = "onText" format = "string" />
+        <attr name = "offText" format = "string" />
+        <attr name = "textSize" format = "dimension" />
+        <attr name = "onTextColor" format = "color" />
+        <attr name = "offTextColor" format = "color" />
+        <attr name = "switchState" format = "boolean" />
+
+    </declare-styleable>
+    
+    <declare-styleable name = "SearchTextEdit">
+        <attr name = "popupBackground" format = "reference" />
+        <attr name = "popupHeight" format = "dimension" />
+        <attr name = "completionThreshold" format = "integer" />
+        <attr name = "dropdownSelector" format = "reference|color" />
+        <attr name="divider" format="reference|color" />
+        <attr name="dividerHeight" format="dimension" />
+    </declare-styleable>
+        
+</resources>

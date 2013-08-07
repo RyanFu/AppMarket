@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/android_listselector"
+    android:orientation="vertical" >
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <ImageView
+            android:id="@+id/app_icon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/app_default_icon" />
+
+        <ImageView
+            android:id="@+id/ivdongji_guess"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/dongjituijian" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/app_name"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dip"
+        android:gravity="center_horizontal"
+        android:maxLines="2"
+        android:text="app_name"
+        android:textColor="@android:color/black"
+        android:textSize="11sp" />
+
+</LinearLayout>

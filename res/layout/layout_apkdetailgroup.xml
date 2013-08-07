@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="35dip"
+    android:background="#d9d9d9"
+    android:orientation="horizontal"
+    android:gravity="center_vertical" >
+
+    <TextView
+        android:id="@+id/tvApkDetailGroupTitle"
+        android:layout_width="0dip"
+        android:layout_height="35dip"
+        android:layout_weight="1.0"
+        android:gravity="center_vertical"
+        android:textColor="#485361"
+        android:textSize="17.5sp"
+        android:textStyle="bold"
+        android:layout_marginLeft="5dip" />
+
+    <ImageView
+        android:id="@+id/ivGalleryLeft"
+        android:layout_width="8dip"
+        android:layout_height="15dip"
+        android:gravity="center_vertical"
+        android:clickable="true"
+        android:src="@drawable/small_left_indicate_selector"/>
+
+    <ImageView
+        android:id="@+id/ivGalleryRight"
+        android:layout_width="8dip"
+        android:layout_height="15dip"
+        android:layout_marginLeft="35dip"
+        android:layout_marginRight="15dip"
+        android:gravity="center_vertical"
+        android:clickable="true"
+        android:src="@drawable/small_right_indicate_selector"/>
+
+    <ImageView
+        android:id="@+id/ivGroupSelector"
+        android:layout_width="15dip"
+        android:layout_height="8dip"
+        android:layout_marginRight="15dip"
+        android:gravity="center_vertical"
+        android:src="@drawable/pic_down"
+        android:visibility="gone"/>
+
+</LinearLayout>

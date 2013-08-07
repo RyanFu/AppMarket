@@ -1,0 +1,68 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/white"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1.0" >
+
+        <com.dongji.market.widget.ScrollListView
+            android:id="@+id/list"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:cacheColorHint="@null"
+            android:divider="#d3d3d3"
+            android:dividerHeight="1.0dip"
+            android:fadingEdge="none"
+            android:listSelector="#dbe9f9"
+            android:scrollbarThumbVertical="@drawable/scrollbar"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tvNoAppTips"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:text="@string/noMoveToSDCardApp"
+            android:visibility="gone" />
+
+        <include
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            layout="@layout/layout_loading" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/llBottomBtn"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="1.5dip"
+            android:layout_gravity="bottom"
+            android:background="#d3d3d3" />
+
+        <RadioGroup
+            android:layout_width="fill_parent"
+            android:layout_height="42dip"
+            android:orientation="horizontal" >
+
+            <RadioButton
+                android:id="@+id/rbPhonecard"
+                style="@style/bottom_radio_button_style"
+                android:text="@string/phonecard" />
+
+            <RadioButton
+                android:id="@+id/rbSdcard"
+                style="@style/bottom_radio_button_style"
+                android:text="@string/sdcard" />
+        </RadioGroup>
+    </LinearLayout>
+
+</LinearLayout>

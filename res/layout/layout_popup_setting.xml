@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
+  android:layout_width="wrap_content"
+  android:layout_height="wrap_content"
+  android:paddingLeft="3dp"
+  android:paddingBottom="3dp"
+  android:background="@drawable/setting_pop_bg" >
+    <TextView 
+        android:id="@+id/popup_setting"
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:paddingTop="10dip"
+    	android:paddingBottom="10dip"
+    	android:textColor="#3d3d3d"
+	    android:textSize="14sp"
+	    android:singleLine="true"
+	    android:layout_weight="1.0"
+	    android:gravity="center"
+	    android:background="@drawable/android_listselector"
+	    android:text="@string/setting" />
+	<TextView 
+		android:layout_width="fill_parent"
+		android:layout_height="1dip"
+		android:background="#d3d3d3"/>
+	<TextView 
+	    android:id="@+id/popup_login"
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:paddingTop="10dip"
+    	android:paddingBottom="10dip"
+    	android:textColor="#3d3d3d"
+	    android:textSize="14sp"
+	    android:layout_weight="1.0"
+	    android:singleLine="true"
+	    android:gravity="center"
+	    android:background="@drawable/android_listselector"
+	    android:text="@string/login" />
+	<TextView 
+	    android:id="@+id/popup_chg_pwd_divider"
+		android:layout_width="fill_parent"
+		android:layout_height="1dip"
+		android:background="#d3d3d3"/>
+	<TextView 
+	    android:id="@+id/popup_change_pwd"
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:paddingTop="10dip"
+    	android:paddingBottom="14dip"
+    	android:layout_marginBottom="10dip"
+    	android:textColor="#3d3d3d"
+	    android:textSize="14sp"
+	    android:layout_weight="1.0"
+	    android:singleLine="true"
+	    android:gravity="center"
+	    android:background="@drawable/android_listselector"
+	    android:text="@string/change_pwd" />
+</LinearLayout>

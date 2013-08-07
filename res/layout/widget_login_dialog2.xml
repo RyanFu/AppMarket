@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/shape_login_dialog_bg"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="20dp" >
+    
+    <LinearLayout 
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="@string/login_dialog_title"
+        android:textColor="#333"
+        android:textSize="19sp" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="2dip"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="#33b5e5" />
+
+    <!-- <EditText
+        android:id="@+id/et_random_name"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/top_et_style"
+        android:visibility="gone"
+        android:padding="10dp"
+        android:text="abc红尘" /> -->
+    
+    <TextView
+        android:id="@+id/et_random_name"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/top_et_style"
+        android:textSize="18sp"
+        android:padding="10dp"
+        android:text="abc红尘" />
+
+    <EditText
+        android:id="@+id/et_login_password"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-2dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/bottom_et_style"
+        android:hint="@string/input_passwd"
+        android:imeOptions="actionUnspecified"
+        android:inputType="textPassword"
+        android:padding="10dp" />
+
+    <Button
+        android:id="@+id/confirm_twitter_register"
+        android:layout_width="fill_parent"
+        android:layout_height="45dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/button_has_border_selector"
+        android:text="@string/confirm_twitter_reg"
+        android:textColor="@drawable/button_font_selector"
+        android:textSize="17sp" />
+
+    <Button
+        android:id="@+id/cancel_twitter_register"
+        android:layout_width="fill_parent"
+        android:layout_height="45dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/button_has_border_selector"
+        android:text="@string/cancel_twitter_reg"
+        android:textColor="@drawable/button_font_selector"
+        android:textSize="17sp" />
+        
+    </LinearLayout>
+
+</LinearLayout>

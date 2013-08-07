@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <FrameLayout
+        android:id="@+id/contentlayout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#fff" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical" >
+
+			<AbsoluteLayout 
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content">
+                <LinearLayout
+                    android:id="@+id/menu_layout"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" >
+
+                    <include
+                        android:id="@+id/main_top"
+                        layout="@layout/layout_main_top" />
+
+                    <include layout="@layout/layout_main_tab" />
+                </LinearLayout>
+            </AbsoluteLayout>
+
+                <FrameLayout
+                    android:id="@+id/content_layout"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1.0" >
+
+                    <com.dongji.market.widget.HorizontalScrollLayout
+                        android:id="@+id/mainlayout"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1.0" >
+                    </com.dongji.market.widget.HorizontalScrollLayout>
+
+                    <ProgressBar
+                        android:id="@+id/progress_horizontal"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="fill_parent"
+                        android:layout_height="3dip"
+                        android:layout_gravity="bottom"
+                        android:max="100"
+                        android:progress="0"
+                        android:progressDrawable="@drawable/progressbar_xml"
+                        android:secondaryProgress="0"
+                        android:visibility="gone" />
+                </FrameLayout>
+
+            <include layout="@layout/layout_main_bottom" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/touchlayout"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:visibility="gone" />
+
+        <include layout="@layout/layout_main_mask" />
+    </FrameLayout>
+
+    <ImageView
+        android:id="@+id/tempIcon"
+        android:layout_width="48dip"
+        android:layout_height="48dip" />
+
+</RelativeLayout>

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/android_listselector"
+    android:descendantFocusability="blocksDescendants"
+    android:gravity="center_vertical"
+    android:paddingBottom="12dip"
+    android:paddingLeft="7dip"
+    android:paddingRight="8dip"
+    android:paddingTop="12dip"
+    android:orientation="vertical" >
+
+<LinearLayout
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/android_listselector"
+    android:descendantFocusability="blocksDescendants"
+    android:gravity="center_vertical">
+	
+	<FrameLayout 
+		android:layout_width="50dip"
+		android:layout_height="50dip" >
+	    <ImageView
+	        android:id="@+id/iconImageview"
+	        android:layout_gravity="right|bottom"
+	        style="@style/list_imagestyle" />
+	    <ImageView 
+	    	android:id="@id/authorityimageview"
+	    	android:layout_width="50dip"
+	    	android:layout_height="50dip"
+	    	android:background="@drawable/dongjituijian" />
+	</FrameLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.0"
+        android:orientation="vertical"
+        android:paddingLeft="8dip" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical" >
+
+            <TextView
+                android:id="@+id/appnametextview"
+                style="@style/list_title_textstyle"
+                android:lineSpacingExtra="0dip"/>
+
+            <TextView
+                android:id="@+id/appversiontextview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="17sp"
+                android:textColor="@drawable/black"
+                android:paddingLeft="3dp"
+                android:visibility="gone"/>
+            <!--
+                <TextView 
+				android:id="@+id/appversiontextview"
+				style="@style/list_title_textstyle" />
+            -->
+
+            <ImageView
+                android:id="@+id/languageimageview"
+                android:layout_width="13dip"
+                android:layout_height="13dip"
+                android:layout_marginLeft="5dip"
+                android:background="@drawable/language_chinese"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/languagemultiimageview"
+                android:layout_width="23dip"
+                android:layout_height="13dip"
+                android:layout_marginLeft="5dip"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp" >
+
+            <TextView
+                android:id="@+id/appsizetextview"
+                style="@style/list_small_textstyle" />
+            
+             <TextView
+                android:id="@+id/appinstallnumtextview"
+                style="@style/list_small_textstyle"
+                android:paddingLeft="10dp"/>
+            
+<!--             <TextView  -->
+<!--                 style="@style/list_small_textstyle" -->
+<!--                 android:layout_marginLeft="10dip" -->
+<!--                  android:layout_marginRight="10dip" -->
+<!--                 android:text="|"/> -->
+            
+<!--             <TextView -->
+<!--                 android:id="@+id/appversiontextview" -->
+<!--                 style="@style/list_small_textstyle"/> -->
+
+        </LinearLayout>
+        
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingBottom="1dip"
+        android:paddingLeft="3dip" >
+
+        <Button
+            android:id="@+id/installtextview"
+            android:layout_width="65dip"
+            android:layout_height="40dip"
+            android:background="@drawable/button_has_border_selector"
+            android:gravity="center"
+            android:text="@string/install"
+            android:textSize="14sp" /> <!-- @string/install  android:textColor="@drawable/button_text_default_color" -->
+    </LinearLayout>
+
+</LinearLayout>
+
+<TextView 
+    android:id="@+id/appreviewtextview"
+    android:layout_height="wrap_content"
+    android:layout_width="fill_parent"
+    android:padding="10dip"
+    android:textColor="#666666"
+    android:textSize="12.5sp" />
+
+</LinearLayout>

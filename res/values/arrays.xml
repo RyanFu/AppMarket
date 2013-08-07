@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="phoneModel">
+        <item>One X</item>
+        <item>Nexus 4</item>
+        <item>Optimus Pro</item>
+        <item>One</item>
+        <item>X920e</item>
+        <item>LT26ii</item>
+        <item>G23</item>
+        <item>I9250</item>
+        <item>E975</item>
+        <item>S720t</item>
+        <item>Z560e</item>
+        <item>Droid DNA</item>
+        <item>x920d</item>
+        <item>s728e</item>
+        <item>Butterfly</item>
+        <item>GT-I9300</item>
+        <item>GT-I9082L</item>
+    </string-array>
+
+</resources>

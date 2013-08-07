@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/mainbottomlayout"
+	android:orientation="vertical"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content">
+	<TextView 
+	  	android:layout_width="fill_parent"
+	  	android:layout_height="1.5dip"
+	  	android:layout_gravity="bottom"
+	  	android:background="#d3d3d3" />
+	<FrameLayout 
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content">
+		<RadioGroup 
+		  android:orientation="horizontal"
+		  android:layout_width="fill_parent"
+		  android:layout_height="42dip">
+		    <RadioButton 
+		    	android:id="@id/appbutton"
+		    	style="@style/bottom_radio_button_style"
+		    	android:text="@string/app_txt" />
+		    <RadioButton 
+		    	android:id="@id/gamebutton"
+		    	style="@style/bottom_radio_button_style"
+		    	android:text="@string/game_txt" />
+		</RadioGroup>
+		<ImageView 
+			android:id="@+id/leftBottomExpand"
+			android:layout_width="15dip"
+			android:layout_height="8dip"
+			android:layout_marginLeft="20dip"
+			android:layout_gravity="center_vertical"
+			android:background="@drawable/list_expand"
+			android:visibility="gone" />
+		<ImageView 
+			android:id="@+id/rightBottomExpand"
+			android:layout_width="15dip"
+			android:layout_height="8dip"
+			android:layout_marginRight="20dip"
+			android:layout_gravity="center_vertical|right"
+			android:background="@drawable/list_expand"
+			android:visibility="gone" />
+	</FrameLayout>
+</LinearLayout>

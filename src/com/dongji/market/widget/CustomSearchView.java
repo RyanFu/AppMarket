@@ -1,0 +1,324 @@
+package com.dongji.market.widget;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.res.TypedArray;
+import android.database.DataSetObserver;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.ViewDebug.ExportedProperty;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.EditText;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.ListView;
+import android.widget.PopupWindow;
+
+import com.dongji.market.R;
+import com.dongji.market.helper.AndroidUtils;
+
+public class CustomSearchView extends EditText {
+
+	private Context cxt;
+	private int color;
+	private int mPopupMaxHeight, mPopupHeight, mPopupItemHeight;
+	private int threshold;
+	private int dividerHeight;
+	private Drawable mListSelector, mPopupBg;
+	private boolean isAutoSearching;
+
+	private PopupWindow mPopup;
+	private BaseAdapter mAdapter;
+	private RequestDataListener requestDataListener;
+	private PopupDataSetObserver mObserver;
+	private MyListView mListView;
+	private OnItemClickListener onItemClickListener;
+	private OnTextChangeListener mOnTextChangeListener;
+	private OnKeyDownListener mOnKeyDownListener;
+
+	public CustomSearchView(Context context) {
+		super(context);
+	}
+
+	public CustomSearchView(Context context, AttributeSet attrs, int defStyle) {
+		super(context, attrs, defStyle);
+	}
+
+	public CustomSearchView(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		cxt = context;
+		TypedArray typedArray = context.obtainStyledAttributes(attrs,
+				R.styleable.SearchTextEdit);
+		mPopupBg = typedArray
+				.getDrawable(R.styleable.SearchTextEdit_popupBackground);
+		color = typedArray.getColor(R.styleable.SearchTextEdit_divider,
+				Color.BLACK);
+		dividerHeight = typedArray.getDimensionPixelOffset(
+				R.styleable.SearchTextEdit_dividerHeight, 1);
+		// mPopupHeight =
+		// typedArray.getDimensionPixelOffset(R.styleable.SearchTextEdit_popupHeight,
+		// 0);
+		threshold = typedArray.getInt(
+				R.styleable.SearchTextEdit_completionThreshold, 1);
+		mListSelector = typedArray
+				.getDrawable(R.styleable.SearchTextEdit_dropdownSelector);
+		initMaxPopupSize();
+		addTextChangedListener(new MyTextWatcher());
+		buildDropDown();
+		isAutoSearching = true;
+	}
+
+	/**
+	 * 设置popupWindow高度最大为屏幕高度的1/4
+	 */
+	private void initMaxPopupSize() {
+		DisplayMetrics metrics = AndroidUtils.getScreenSize((Activity) cxt);
+		mPopupItemHeight = AndroidUtils.dip2px(cxt, 17) + AndroidUtils.sp2px(cxt, 17);
+		mPopupMaxHeight = metrics.heightPixels / 4;
+	}
+
+	public void setPopupHeight(int height) {
+		this.mPopupMaxHeight = height;
+	}
+
+	public void setThreshold(int threshold) {
+		this.threshold = threshold;
+	}
+
+	public void setOnTextChangeListener(OnTextChangeListener listener) {
+		this.mOnTextChangeListener = listener;
+	}
+
+	public void setOnKeyDownListener(OnKeyDownListener listener) {
+		this.mOnKeyDownListener = listener;
+	}
+
+	private void initPopupWindow() {
+		mPopup = new PopupWindow(this);
+		mPopup.setAnimationStyle(R.anim.down_fade_in);
+		mPopup.setOutsideTouchable(true);
+		if (mPopupBg == null) {
+			mPopupBg = new BitmapDrawable();
+		}
+		mPopup.setBackgroundDrawable(mPopupBg);
+		mPopup.setContentView(mListView);
+	}
+
+	private void dismissPopup() {
+		if (mPopup != null && mPopup.isShowing()) {
+//			mListView.startAnimation(AnimationUtils.loadAnimation(cxt, R.anim.up_fade_out));
+			mPopup.dismiss();
+		}
+	}
+
+	private void buildDropDown() {
+		if (mListView == null) {
+			mListView = new MyListView(getContext());
+			mListView.setCacheColorHint(0x000);
+			mListView.setDivider(new ColorDrawable(color));
+			mListView.setDividerHeight(dividerHeight);
+			mListView.setScrollbarFadingEnabled(false);
+			mListView.setPadding(3, 0, 0, 0);
+			// mListView.setScrollBarStyle(style)
+			if (mListSelector != null) {
+				mListView.setSelector(mListSelector);
+			}
+			mListView.setLayoutParams(new LayoutParams(
+					LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 1.0f));
+		}
+	}
+
+	public void setSelector(Drawable drawable) {
+		if (drawable != null && mListView != null) {
+			mListView.setSelector(drawable);
+		}
+	}
+
+	public void setDropDownOnItemClickListener(
+			OnItemClickListener onItemClickListener) {
+		this.onItemClickListener = onItemClickListener;
+	}
+
+	private void showDropDown() {
+		if (mPopup == null) {
+			initPopupWindow();
+		}
+		if (mPopup.isShowing()) {
+			setSelectionTop();
+			adjustPopupHeight();
+			mPopup.update(this, 0, -3, getMeasuredWidth(), mPopupHeight);
+		} else {
+			// System.out.println("pop show!!!!");
+			mPopup.setWidth(getMeasuredWidth());
+			adjustPopupHeight();
+			mPopup.setHeight(mPopupHeight);
+			mPopup.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
+			mPopup.showAsDropDown(this, 0, -3);
+			setSelectionTop();
+		}
+	}
+	
+	private void adjustPopupHeight() {
+		if (mAdapter.getCount() * mPopupItemHeight > mPopupMaxHeight) {
+			mPopupHeight = mPopupMaxHeight;
+		} else {
+			mPopupHeight = mPopupItemHeight * mAdapter.getCount();
+		}
+	}
+
+	public void dismissDropDown() {
+		this.dismissPopup();
+	}
+	
+	public void dismissFocus() {
+		this.dismissPopup();
+		this.clearFocus();
+	}
+
+	private void setSelectionTop() {
+		mListView.requestFocusFromTouch();
+		mListView.setSelected(true);
+		mListView.setSelection(0);
+	}
+
+	public <T extends BaseAdapter & RequestDataListener> void setAdapter(
+			T adapter) {
+		if (mObserver == null) {
+			mObserver = new PopupDataSetObserver();
+		}
+		this.mAdapter = adapter;
+		this.mAdapter.registerDataSetObserver(mObserver);
+		this.requestDataListener = adapter;
+		mListView.setAdapter(mAdapter);
+		mListView
+				.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
+
+					public void onItemClick(AdapterView<?> parent, View view,
+							int position, long id) {
+						String keyword = mAdapter.getItem(position).toString();
+						isAutoSearching = false;
+						setText(keyword);
+						isAutoSearching = true;
+						if (onItemClickListener != null) {
+							onItemClickListener.onItemClick(keyword);
+						}
+						setSelection(keyword.length());
+						dismissPopup();
+					}
+				});
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+			if (mPopup != null && mPopup.isShowing()) {
+				mPopup.dismiss();
+				return true;
+			}
+		}
+		if (mOnKeyDownListener != null) {
+			boolean flag = mOnKeyDownListener.onKeyDown(keyCode, event);
+			if (!flag) {
+				return super.onKeyDown(keyCode, event);
+			}
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+
+	private class MyTextWatcher implements TextWatcher {
+
+		public void beforeTextChanged(CharSequence s, int start, int count,
+				int after) {
+
+		}
+
+		public void onTextChanged(CharSequence s, int start, int before,
+				int count) {
+
+		}
+
+		public void afterTextChanged(Editable s) {
+
+			if (mOnTextChangeListener != null) {
+				mOnTextChangeListener.afterTextChanged(s);
+			}
+			if (requestDataListener == null) {
+				return;
+			}
+			if (isAutoSearching && s.length() >= threshold) {
+//				requestDataListener.cancelPreRequest();
+//				requestDataListener.request(s.toString());
+			} else {
+				dismissPopup();
+			}
+		}
+
+	}
+
+	private class MyListView extends ListView {
+
+		public MyListView(Context context) {
+			super(context);
+			// TODO Auto-generated constructor stub
+		}
+
+		@Override
+		public boolean hasWindowFocus() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+
+		@Override
+		@ExportedProperty
+		public boolean isInTouchMode() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+	}
+
+	public interface RequestDataListener {
+		void request(String keyword);
+
+		void cancelPreRequest();
+	}
+
+	public interface OnItemClickListener {
+		void onItemClick(String keyword);
+	}
+
+	public interface OnTextChangeListener {
+		void afterTextChanged(Editable s);
+	}
+
+	public interface OnKeyDownListener {
+		boolean onKeyDown(int keyCode, KeyEvent event);
+	}
+
+	private class PopupDataSetObserver extends DataSetObserver {
+
+		@Override
+		public void onChanged() {
+			if (mAdapter.getCount() > 0) {
+				showDropDown();
+			} else {
+				dismissPopup();
+			}
+		}
+
+		@Override
+		public void onInvalidated() {
+			super.onInvalidated();
+		}
+
+	}
+
+}

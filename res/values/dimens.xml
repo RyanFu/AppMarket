@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="title">23.0sp</dimen>
+    <dimen name="title_btn">16.0sp</dimen>
+    <dimen name="main">18.0sp</dimen>
+    <dimen name="sub_main">17.0sp</dimen>
+    <dimen name="mygame_divider">16.0sp</dimen>
+    <dimen name="list_sub">14.0sp</dimen>
+    <dimen name="intro">13.0sp</dimen>
+    <dimen name="game_name">20.0sp</dimen>
+    <dimen name="friend_search_height">46.0dip</dimen>
+    <dimen name="header_bar_height">43.0dip</dimen>
+    <dimen name="list_padding_right">10.0dip</dimen>
+    <dimen name="list_padding_left">10.0dip</dimen>
+    <dimen name="list_padding_top_bottom">10.0dip</dimen>
+    <dimen name="avatar_small">48.0dip</dimen>
+    <dimen name="avatar_large">72.0dip</dimen>
+    <dimen name="comment_nickname">16.0sp</dimen>
+    <dimen name="comment_date">13.0sp</dimen>
+    <dimen name="comment_content">14.0sp</dimen>
+    <dimen name="comment_action">14.0sp</dimen>
+    <dimen name="list_item_height">90.0dip</dimen>
+    <dimen name="main_bottom_rg_height">55.0dip</dimen>
+    <dimen name="waterfall_cell_name_height">22.0dip</dimen>
+    <dimen name="waterfall_cell_padding">2.0dip</dimen>
+    <dimen name="waterfall_cell_margin">2.0dip</dimen>
+    <dimen name="waterfall_cell_ratingbar_margin_bottom">2.0dip</dimen>
+    <dimen name="ratingbar_small_size">12.0dip</dimen>
+</resources>

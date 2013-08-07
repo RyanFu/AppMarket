@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/maintablayout"
+  android:orientation="vertical"
+  android:layout_width="fill_parent"
+  android:layout_height="wrap_content"
+  android:background="#ebebeb">
+  	<ImageView 
+  		android:layout_width="fill_parent"
+  		android:layout_height="3dip"
+  		android:background="@drawable/sharw"/>
+  	<FrameLayout 
+  		android:layout_width="fill_parent"
+  		android:layout_height="45dip">
+	    <RadioGroup 
+	    	android:orientation="horizontal"
+	    	android:layout_width="fill_parent"
+	    	android:layout_height="fill_parent"
+	    	android:gravity="center" >
+	    	<RadioButton 
+	    		android:id="@id/choicenessButton"
+	    		style="@style/radio_button_style"
+	    		android:text="@string/edit_choiceness_txt" />
+	    	<TextView 
+	    		android:layout_width="1.0dip"
+	    		android:layout_height="fill_parent"
+	    		android:layout_marginTop="10dip"
+	    		android:layout_marginBottom="10dip"
+	    		android:background="#d3d3d3" />
+	    	<RadioButton 
+	    		android:id="@id/updateButton"
+	    		style="@style/radio_button_style"
+	    		android:text="@string/recently_update_txt" />
+	    	<TextView 
+	    		android:layout_width="1.0dip"
+	    		android:layout_height="fill_parent"
+	    		android:layout_marginTop="10dip"
+	    		android:layout_marginBottom="10dip"
+	    		android:background="#d3d3d3" />
+	    	<RadioButton 
+	    		android:id="@id/themeRecommendButton"
+	    		style="@style/radio_button_style"
+	    		android:text="@string/theme_recommend" />
+	    	<TextView 
+	    		android:layout_width="1.0dip"
+	    		android:layout_height="fill_parent"
+	    		android:layout_marginTop="10dip"
+	    		android:layout_marginBottom="10dip"
+	    		android:background="#d3d3d3" />
+	   		<RadioButton 
+	   			android:id="@id/installNecessaryButton"
+	    		style="@style/radio_button_style"
+	    		android:text="@string/install_necessary_txt" />
+	    	<TextView 
+	    		android:layout_width="1.0dip"
+	    		android:layout_height="fill_parent"
+	    		android:layout_marginTop="10dip"
+	    		android:layout_marginBottom="10dip"
+	    		android:background="#d3d3d3" />
+	    	<RadioButton 
+	    		android:id="@id/softChannelButton"
+	    		style="@style/radio_button_style"
+	    		android:text="@string/soft_channel_txt" />
+	    </RadioGroup>
+	    <TextView 
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="1dip"
+		  	android:layout_gravity="bottom"
+		  	android:background="#d3d3d3"/>
+	    <ImageView 
+	    	android:id="@+id/slideimageview"
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="5dip"
+	    	android:layout_marginBottom="1dip"
+	    	android:layout_gravity="bottom"
+	    	android:background="@drawable/blue_line" />
+	</FrameLayout>
+</LinearLayout>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="dialog_progress_default" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">fill_parent</item>
+        <!--
+        <item name="android:paddingLeft">5dp</item>
+        <item name="android:paddingRight">5dp</item>
+        -->
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+    <style name="dialog_about" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">fill_parent</item>
+        <!--
+        <item name="android:paddingLeft">5dp</item>
+        <item name="android:paddingRight">5dp</item>
+        <item name="android:paddingTop">5dp</item>
+		<item name="android:paddingBottom">5dp</item>
+		<item name="android:layout_margin">5dp</item>
+        -->
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+    <style name="radio_button_style">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:layout_weight">1.0</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:button">@null</item>
+        <item name="android:textAppearance">?android:textAppearanceSmall</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:paddingLeft">0dip</item>
+        <item name="android:textColor">@drawable/main_tab_font_selector</item>
+        <!--
+        <item name="android:textColor">@color/bottom_text_selector</item>
+		<item name="android:textStyle">bold</item>
+        -->
+    </style>
+
+    <!-- 列表小字体的样式 -->
+    <style name="list_small_textstyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textColor">#666</item>
+        <item name="android:textSize">12sp</item>
+        <!-- <item name="android:lineSpacingMultiplier">0.8</item> -->
+    </style>
+
+    <!-- 详情头字体样式 -->
+    <style name="detail_head_small_textstyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textColor">#666</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:lineSpacingMultiplier">0.85</item>
+    </style>
+
+    <style name="detail_head_small_textstyle_nosingleline">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textColor">#666</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:lineSpacingMultiplier">0.85</item>
+    </style>
+
+    <style name="list_imagestyle">
+        <item name="android:layout_width">48dip</item>
+        <item name="android:layout_height">48dip</item>
+        <item name="android:layout_marginTop">1dip</item>
+        <!-- <item name="android:background">@drawable/app_default_icon</item> -->
+    </style>
+
+    <style name="list_title_textstyle">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1.0</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textColor">@drawable/black</item>
+        <!-- <item name="android:lineSpacingMultiplier">0.8</item> -->
+    </style>
+
+    <!-- 底部radiobutton样式 -->
+    <style name="bottom_radio_button_style">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:layout_weight">1.0</item>
+        <item name="android:paddingLeft">0dip</item>
+        <item name="android:button">@null</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">#3d3d3d</item>
+        <item name="android:background">@drawable/bottom_radio_selector</item>
+    </style>
+
+    <style name="Theme.kaizhang" parent="@android:style/Theme">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:screenOrientation">portrait</item>
+        <item name="android:configChanges">keyboardHidden|orientation</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <style name="Theme.Translucent" parent="android:style/Theme.Translucent">
+        <item name="android:screenOrientation">portrait</item>
+        <item name="android:configChanges">keyboardHidden|orientation</item>
+        <item name="android:windowBackground">@drawable/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:colorForeground">#fff</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <style name="ContentOverlay" parent="android:style/Theme.Dialog">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@color/transparent</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
+    <style name="CustomCheckboxTheme" parent="@android:style/Widget.CompoundButton.CheckBox">
+        <item name="android:button">@drawable/checkbox_selector</item>
+    </style>
+
+    <style name="CommitComment.RatingBar" parent="@android:style/Widget.RatingBar">
+        <item name="android:maxHeight">30dip</item>
+        <item name="android:progressDrawable">@drawable/commit_comment_rating_bar</item>
+        <item name="android:minHeight">10dip</item>
+    </style>
+    
+    <style name="apkdetail_head.smellRatingBar" parent="@android:style/Widget.RatingBar">
+        <item name="android:maxHeight">15dip</item>
+        <item name="android:progressDrawable">@drawable/apkdetail_head_rating_bar</item>
+        <item name="android:minHeight">10dip</item>
+    </style>
+
+</resources>

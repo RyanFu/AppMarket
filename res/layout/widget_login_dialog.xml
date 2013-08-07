@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+    <LinearLayout 
+    	android:id="@+id/contentlayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dip"
+        android:layout_marginRight="10dip"
+        android:background="@drawable/shape_login_dialog_bg"
+        android:orientation="vertical"
+        android:paddingBottom="15dip"
+        android:paddingLeft="15dip"
+        android:paddingRight="15dip"
+        android:paddingTop="10dip" >
+
+        <TextView
+            android:id="@+id/tvLocalTip"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/local_backup"
+            android:textColor="#333"
+            android:textSize="19sp" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dip"
+            android:layout_marginTop="5dp"
+            android:background="#33b5e5" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:text="@string/cloud_nologinTip"
+            android:textColor="#333"
+            android:textSize="17sp" />
+
+        <Button
+            android:id="@+id/btnLocalBackupOrRestore"
+            android:layout_width="wrap_content"
+            android:layout_height="45dip"
+            android:layout_marginLeft="5dip"
+            android:layout_marginRight="5dip"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/button_has_border_selector"
+            android:text="@string/login"
+            android:textColor="@drawable/button_font_selector"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/tvCloudTip"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dip"
+            android:gravity="center_horizontal"
+            android:text="@string/cloud_backup"
+            android:textColor="#333"
+            android:textSize="19sp" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dip"
+            android:layout_marginTop="5dp"
+            android:background="#33b5e5" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:text="@string/cloud_login_dialog_prompt"
+            android:textColor="#333"
+            android:textSize="17sp" />
+        
+        <Button
+            android:id="@+id/btnlogin"
+            android:layout_width="wrap_content"
+            android:layout_height="45dip"
+            android:layout_marginLeft="5dip"
+            android:layout_marginRight="5dip"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/button_has_border_selector"
+            android:text="@string/login"
+            android:textColor="@drawable/button_font_selector"
+            android:textSize="17sp" />
+        
+
+        <!-- <EditText
+            android:id="@+id/login_dialog_email"
+            android:layout_width="fill_parent"
+            android:layout_height="45dip"
+            android:layout_marginLeft="5dip"
+            android:layout_marginRight="5dip"
+            android:background="@drawable/top_et_style"
+            android:hint="@string/input_email"
+            android:inputType="textEmailAddress"
+            android:padding="10dp"
+            android:singleLine="true"
+            android:textColor="@drawable/black"
+            android:textColorHint="#666" />
+
+        <EditText
+            android:id="@+id/login_dialog_password"
+            android:layout_width="fill_parent"
+            android:layout_height="45dip"
+            android:layout_marginLeft="5dip"
+            android:layout_marginRight="5dip"
+            android:layout_marginTop="-2dp"
+            android:background="@drawable/bottom_et_style"
+            android:hint="@string/input_passwd"
+            android:imeOptions="actionUnspecified"
+            android:inputType="textPassword"
+            android:padding="10dp"
+            android:singleLine="true"
+            android:textColor="@drawable/black"
+            android:textColorHint="#666" />
+
+        <Button
+            android:id="@+id/login_dialog_confirm"
+            android:layout_width="fill_parent"
+            android:layout_height="45dip"
+            android:layout_marginLeft="5dip"
+            android:layout_marginRight="5dip"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/button_has_border_selector"
+            android:text="@string/login"
+            android:textColor="@drawable/button_font_selector"
+            android:textSize="17sp" />
+        
+        
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dip"
+            android:layout_marginRight="5dip"
+            android:layout_marginTop="10dp" >
+
+            <Button
+            android:id="@+id/btnRegisterNow"
+            android:layout_width="fill_parent"
+            android:layout_height="45dip"
+            android:layout_weight="1.0"
+            android:layout_marginRight="5dip"
+            android:background="@drawable/button_has_border_selector"
+            android:text="@string/register_now_txt"
+            android:textColor="@drawable/button_font_selector"
+            android:textSize="17sp" />
+            
+             <Button
+            android:id="@+id/btnFindPassword"
+            android:layout_width="fill_parent"
+            android:layout_height="45dip"
+            android:layout_weight="1.0"
+            android:layout_marginLeft="5dip"
+            android:background="@drawable/button_has_border_selector"
+            android:text="@string/forget_password_txt"
+            android:textColor="@drawable/button_font_selector"
+            android:textSize="17sp" />
+
+        </LinearLayout> -->
+    </LinearLayout>
+    <LinearLayout 
+    	android:id="@+id/contentlayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dip"
+        android:layout_marginRight="10dip"
+        android:background="@drawable/shape_login_dialog_bg"
+        android:orientation="vertical"
+        android:paddingBottom="10dip"
+        android:paddingLeft="15dip"
+        android:paddingRight="15dip"
+        android:paddingTop="10dip"
+        android:visibility="gone" >
+    <WebView
+       android:id="@+id/webView"
+       android:layout_width="fill_parent"
+       android:layout_height="250dip"
+       android:layout_marginLeft="5dip"
+       android:layout_marginRight="5dip"
+       android:layout_gravity="center" />
+    </LinearLayout>
+    <!--
+    <LinearLayout 
+    	android:layout_width="300dip"
+    	android:layout_height="50dip"
+    	android:layout_marginLeft="10dip"
+    	android:layout_marginRight="10dip"
+    	android:background="@drawable/red_alert_dialog_top_bg"
+    	android:gravity="center_vertical" >
+    	<ImageView 
+    		android:layout_width="wrap_content"
+    		android:layout_height="wrap_content"
+    		android:layout_marginLeft="4dip"
+    		android:background="@drawable/nor_icon" />
+    	<TextView 
+    		android:id="@+id/titleTextView"
+    		android:layout_width="wrap_content"
+    		android:layout_height="wrap_content"
+    		android:layout_marginLeft="7dip"
+    		android:singleLine="true"
+    		android:ellipsize="marquee"
+    		android:textColor="@drawable/white"
+    		android:textSize="20sp"
+    		android:text="@string/tip" />
+    </LinearLayout>
+    <LinearLayout 
+    	android:orientation="vertical"
+    	android:layout_width="284dip"
+    	android:layout_height="wrap_content"
+    	android:layout_marginLeft="18dip"
+    	android:layout_marginRight="17dip"
+    	android:background="@drawable/shape_dialog_content">
+    	<LinearLayout
+    		android:layout_width="fill_parent"
+    		android:layout_height="wrap_content"
+    		android:paddingTop="20dip"
+    		android:paddingBottom="20dip"
+    		android:gravity="center" >
+    		<TextView 
+    			android:id="@+id/messagetextview"
+    			android:layout_width="wrap_content"
+    			android:layout_height="wrap_content"
+    			android:textColor="@drawable/black"
+    			android:textSize="20sp" />
+    	</LinearLayout>
+    	<LinearLayout 
+    		android:layout_width="fill_parent"
+    		android:layout_height="wrap_content"
+    		android:gravity="center"
+    		android:paddingLeft="7dip"
+    		android:paddingRight="7dip"
+    		android:paddingTop="7dip"
+    		android:paddingBottom="5dip" >
+    		<Button
+    			android:id="@+id/okButton" 
+    			android:textSize="20sp" 
+    			android:textColor="#ffe45041"
+				android:gravity="center" 
+				android:background="@drawable/weak_button_bg"
+				android:layout_width="fill_parent" 
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:text="@string/ok"
+				android:layout_marginRight="10dip" />
+			<Button
+    			android:id="@+id/cancelButton" 
+    			android:textSize="20sp" 
+    			android:textColor="#ffe45041"
+				android:gravity="center" 
+				android:background="@drawable/weak_button_bg"
+				android:layout_width="fill_parent" 
+				android:layout_height="wrap_content"
+				android:layout_weight="1"
+				android:text="@string/cancel"
+				android:layout_marginLeft="10dip" />
+    	</LinearLayout>
+    </LinearLayout>
+    -->
+
+</FrameLayout>

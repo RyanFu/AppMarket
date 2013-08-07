@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout 
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/layout_detail_mask"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:visibility="gone" >
+	<LinearLayout 
+		android:layout_width="fill_parent"
+		android:layout_height="45dip">
+		<View 
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"
+			android:layout_weight="1.0"
+			android:background="@drawable/mask_bg" />
+		<ImageView 
+			android:layout_width="35dip"
+			android:layout_height="fill_parent"
+			android:background="@drawable/main_top_circle" />
+		<View 
+			android:layout_width="80dip"
+			android:layout_height="fill_parent"
+			android:background="@drawable/mask_bg"/>
+	</LinearLayout>
+	<LinearLayout 
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:paddingTop="45dip">
+		<View 
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"
+			android:layout_weight="1.0"
+			android:background="@drawable/mask_bg" />
+	</LinearLayout>
+	<LinearLayout 
+		android:orientation="vertical"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:paddingTop="33dip"
+		android:gravity="right" >
+		<ImageView 
+			android:layout_width="50dip"
+			android:layout_height="30dip"
+			android:layout_marginRight="110dip"
+			android:background="@drawable/bottom_arrow" />
+		<ImageView 
+			android:layout_width="fill_parent"
+			android:layout_height="25dip"
+			android:background="@drawable/detail_text_mask" />
+	</LinearLayout>
+</FrameLayout>

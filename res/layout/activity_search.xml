@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#fff"
+    android:orientation="vertical" >
+    <include layout="@layout/layout_search_top"
+        android:id="@+id/search_top" />
+    <ImageView 
+  		android:layout_width="fill_parent"
+  		android:layout_height="3dip"
+  		android:background="@drawable/sharw"/>
+    <TextView 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#ebebeb"
+        android:paddingTop="7dp"
+        android:paddingBottom="7dp"
+        android:paddingLeft="15dp"
+        android:textColor="#485361"
+        android:text="@string/search_hot_words"
+        android:textStyle="bold"
+        android:textSize="17sp"/>
+    <View 
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="#d3d3d3"/>
+    <ListView 
+        android:id="@android:id/list"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:cacheColorHint="@null"
+    	android:fadingEdge="none"
+    	android:background="#fff"
+    	android:visibility="gone"
+    	android:divider="#d3d3d3"
+    	android:dividerHeight="1.0dip"
+    	android:scrollbarThumbVertical="@drawable/scrollbar" />
+    
+    <!-- <TextView 
+        android:id="@+id/empty"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        android:textColor="@drawable/black"
+        android:text="@string/no_data"/> -->
+        <include layout="@layout/layout_loading" />
+
+</LinearLayout>

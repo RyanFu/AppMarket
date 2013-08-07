@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="10dip"
+    android:layout_marginRight="10dip"
+    android:background="@drawable/shape_login_dialog_bg"
+    android:orientation="vertical"
+    android:paddingBottom="15dip"
+    android:paddingLeft="15dip"
+    android:paddingRight="15dip"
+    android:paddingTop="10dip" >
+
+    <TextView
+        android:id="@+id/titletextview"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="@string/dialog_setting"
+        android:textColor="#333"
+        android:textSize="19sp" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="2dip"
+        android:layout_marginTop="5dp"
+        android:background="#33b5e5" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:text="@string/dialog_tip_settingflow"
+        android:textColor="#333"
+        android:textSize="17sp" />
+
+    <EditText
+        android:id="@+id/etInputFlow"
+        android:layout_width="fill_parent"
+        android:layout_height="45dip"
+        android:layout_marginLeft="5dip"
+        android:layout_marginRight="5dip"
+        android:background="@drawable/top_et_style"
+        android:hint="@string/dialog_tip_inputflow"
+        android:padding="10dp"
+        android:singleLine="true"
+        android:maxLength="6"
+        android:inputType="number"
+        android:textColor="@drawable/black"
+        android:textColorHint="#666" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dip"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/btnCancel"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/install_button_selector"
+            android:text="@string/cancel"
+            android:textColor="@drawable/button_font_selector"
+            android:textSize="17sp" />
+
+        <Button
+            android:id="@+id/btnConfirm"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:background="@drawable/install_button_selector"
+            android:text="@string/confirm"
+            android:textColor="@drawable/button_font_selector"
+            android:textSize="17sp" />
+    </LinearLayout>
+
+</LinearLayout>

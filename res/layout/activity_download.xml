@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/white"
+    android:orientation="vertical" >
+
+    <ExpandableListView
+        android:id="@+id/exlvDownload"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#fff"
+        android:cacheColorHint="@null"
+        android:divider="@drawable/greyline"
+        android:dividerHeight="1.0dip"
+        android:fadingEdge="none"
+        android:listSelector="#00000000"
+        android:visibility="gone"
+        android:scrollbarThumbVertical="@drawable/scrollbar" >
+    </ExpandableListView>
+
+    <include layout="@layout/layout_loading" />
+
+</LinearLayout>

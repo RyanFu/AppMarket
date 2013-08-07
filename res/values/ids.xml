@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="id" name="searchButton">false</item>
+    <item type="id" name="choicenessButton">false</item> 
+    <item type="id" name="updateButton">false</item> 
+    <item type="id" name="installNecessaryButton">false</item> 
+    <item type="id" name="softChannelButton">false</item> 
+    <item type="id" name="viewflipper">false</item>  
+    <item type="id" name="settingButton">false</item>  
+    <item type="id" name="applistview">false</item>
+    <item type="id" name="gamelistview">false</item>
+    <item type="id" name="choicenessgallery">false</item>
+    <item type="id" name="appbutton">false</item>
+    <item type="id" name="gamebutton">false</item>
+    <item type="id" name="softmanagerbutton">false</item>
+    <item type="id" name="backButton">false</item>
+    <item type="id" name="shareButton">false</item>
+    <item type="id" name="searchEdittext">false</item>
+    <item type="id" name="poplistview">false</item>
+    <item type="id" name="loading_progressbar">false</item>
+    <item type="id" name="loading_textview">false</item>
+    <item type="id" name="authorityimageview">false</item>
+    
+    <item type="id" name="themeRecommendButton">false</item> 
+    
+</resources>

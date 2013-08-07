@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:descendantFocusability="blocksDescendants"
+    android:gravity="center"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/emptytextview"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dip"
+        android:textColor="#666666"
+        android:textSize="15sp" />
+
+    <LinearLayout
+        android:id="@+id/contentlayout"
+        android:layout_width="fill_parent"
+        android:layout_height="90dip"
+        android:background="@drawable/android_listselector"
+        android:gravity="center"
+        android:paddingBottom="15dip"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:paddingTop="15dip" > <!--  -->
+
+        <FrameLayout
+            android:layout_width="42dip"
+            android:layout_height="42dip" >
+
+            <ImageView
+                android:id="@+id/iconImageview"
+                android:layout_width="42dip"
+                android:layout_height="42dip"
+                android:layout_gravity="bottom|right" />
+
+            <ImageView
+                android:id="@id/authorityimageview"
+                android:layout_width="42dip"
+                android:layout_height="42dip"
+                android:background="@drawable/dongjituijian" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1.0"
+            android:orientation="vertical"
+            android:paddingLeft="8dip" >
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:id="@+id/appnametextview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:textColor="@drawable/black"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/appversiontextview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:textColor="#666666"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/progress_horizontal"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="5dip"
+                android:layout_marginTop="4dip"
+                android:max="100"
+                android:progress="0"
+                android:progressDrawable="@drawable/progressbar_xml"
+                android:secondaryProgress="0"
+                android:visibility="visible" />
+
+            <TextView
+                android:id="@+id/centertextview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textColor="#666666"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/bottomtextview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textColor="#666666"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/firstButton"
+            android:layout_width="50dip"
+            android:layout_height="42dip"
+            android:layout_marginLeft="20dip"
+            android:background="@drawable/install_button_selector"
+            android:gravity="center"
+            android:textColor="@drawable/button_text_default_color"
+            android:textSize="13sp" />
+
+        <Button
+            android:id="@+id/secondButton"
+            android:layout_width="50dip"
+            android:layout_height="42dip"
+            android:layout_marginLeft="5dip"
+            android:background="@drawable/install_button_selector"
+            android:gravity="center"
+            android:textColor="@drawable/button_text_default_color"
+            android:textSize="13sp" />
+
+        <Button
+            android:id="@+id/longButton"
+            android:layout_width="105dip"
+            android:layout_height="42dip"
+            android:layout_marginLeft="5dip"
+            android:background="@drawable/install_button_selector"
+            android:gravity="center"
+            android:textColor="@drawable/button_text_default_color"
+            android:textSize="13sp"
+            android:visibility="gone" />
+    </LinearLayout>
+
+</LinearLayout>

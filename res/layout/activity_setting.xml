@@ -1,0 +1,831 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:customAttr="http://schemas.android.com/apk/res/com.dongji.market"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#fff"
+        android:orientation="vertical" >
+
+        <include
+            android:id="@+id/setting_top"
+            layout="@layout/layout_main_top" />
+
+        <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="3dip"
+            android:background="@drawable/sharw" />
+
+        <ScrollView
+            android:id="@+id/scrollview"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:fadingEdge="none"
+            android:scrollbarThumbVertical="@drawable/scrollbar"
+            android:scrollbars="vertical" >
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:orientation="vertical" >
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#e9e9e9"
+                    android:orientation="vertical"
+                    android:paddingTop="3dp" >
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="4dp"
+                        android:paddingLeft="10dp"
+                        android:text="@string/normal_set"
+                        android:textColor="#485361"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:layout_width="fill_parent"
+                        android:layout_height="2dp"
+                        android:background="@drawable/divider" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:orientation="vertical"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:paddingTop="5dp" >
+
+                    <RelativeLayout
+                        android:id="@+id/update_msg_layout"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/setting_item_selector"
+                        android:minHeight="55dp"
+                        android:paddingBottom="10dp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:paddingTop="10dp" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_centerVertical="true"
+                            android:text="@string/update_msg"
+                            android:textColor="#3b3b3b"
+                            android:textSize="15sp" />
+
+                        <com.dongji.market.widget.SlipSwitch
+                            android:id="@+id/update_msg"
+                            android:layout_width="85dip"
+                            android:layout_height="35dip"
+                            android:layout_alignParentRight="true"
+                            customAttr:background="@drawable/switch_background"
+                            customAttr:offBackground="@drawable/switch_off"
+                            customAttr:offText="@string/turn_off"
+                            customAttr:offTextColor="#000"
+                            customAttr:onBackground="@drawable/switch_on"
+                            customAttr:onText="@string/turn_on"
+                            customAttr:onTextColor="#fff"
+                            customAttr:switchState="true"
+                            customAttr:textSize="12sp" />
+                    </RelativeLayout>
+
+                    <ImageView
+                        android:layout_width="fill_parent"
+                        android:layout_height="2dp"
+                        android:background="@drawable/divider" />
+
+                    <RelativeLayout
+                        android:id="@+id/auto_del_pkg_layout"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/setting_item_selector"
+                        android:minHeight="55dp"
+                        android:paddingBottom="10dp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:paddingTop="10dp" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_centerVertical="true"
+                            android:text="@string/auto_del_pkg"
+                            android:textColor="#3b3b3b"
+                            android:textSize="15sp" />
+
+                        <com.dongji.market.widget.SlipSwitch
+                            android:id="@+id/auto_del_pkg"
+                            android:layout_width="85dip"
+                            android:layout_height="35dip"
+                            android:layout_alignParentRight="true"
+                            customAttr:background="@drawable/switch_background"
+                            customAttr:offBackground="@drawable/switch_off"
+                            customAttr:offText="@string/turn_off"
+                            customAttr:offTextColor="#000"
+                            customAttr:onBackground="@drawable/switch_on"
+                            customAttr:onText="@string/turn_on"
+                            customAttr:onTextColor="#fff"
+                            customAttr:switchState="false"
+                            customAttr:textSize="12sp" />
+                    </RelativeLayout>
+
+                    <ImageView
+                        android:layout_width="fill_parent"
+                        android:layout_height="2dp"
+                        android:background="@drawable/divider" />
+
+                    <RelativeLayout
+                        android:id="@+id/save_flow_layout"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/setting_item_selector"
+                        android:gravity="center_vertical"
+                        android:paddingBottom="10dp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:paddingTop="10dp" >
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:gravity="center_vertical"
+                            android:minHeight="55dp"
+                            android:orientation="vertical"
+                            android:paddingRight="85dip" >
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/save_flow_text"
+                                android:textColor="#3b3b3b"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:singleLine="false"
+                                android:text="@string/save_flow_prompt"
+                                android:textColor="#888"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <com.dongji.market.widget.SlipSwitch
+                            android:id="@+id/save_flow"
+                            android:layout_width="85dip"
+                            android:layout_height="35dip"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            customAttr:background="@drawable/switch_background"
+                            customAttr:offBackground="@drawable/switch_off"
+                            customAttr:offText="@string/turn_off"
+                            customAttr:offTextColor="#000"
+                            customAttr:onBackground="@drawable/switch_on"
+                            customAttr:onText="@string/turn_on"
+                            customAttr:onTextColor="#fff"
+                            customAttr:switchState="true"
+                            customAttr:textSize="12sp" />
+                    </RelativeLayout>
+
+                    <ImageView
+                        android:layout_width="fill_parent"
+                        android:layout_height="2dp"
+                        android:background="@drawable/divider" />
+
+                    <RelativeLayout
+                        android:id="@+id/set_root_layout"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/setting_item_selector"
+                        android:minHeight="55dp"
+                        android:paddingBottom="10dp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:paddingTop="10dp" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_centerVertical="true"
+                            android:text="@string/set_root"
+                            android:textColor="#3b3b3b"
+                            android:textSize="15sp" />
+
+                        <com.dongji.market.widget.SlipSwitch
+                            android:id="@+id/set_root"
+                            android:layout_width="85dip"
+                            android:layout_height="35dip"
+                            android:layout_alignParentRight="true"
+                            customAttr:background="@drawable/switch_background"
+                            customAttr:offBackground="@drawable/switch_off"
+                            customAttr:offText="@string/turn_off"
+                            customAttr:offTextColor="#000"
+                            customAttr:onBackground="@drawable/switch_on"
+                            customAttr:onText="@string/turn_on"
+                            customAttr:onTextColor="#fff"
+                            customAttr:switchState="false"
+                            customAttr:textSize="12sp" />
+                    </RelativeLayout>
+
+                    <ImageView
+                        android:layout_width="fill_parent"
+                        android:layout_height="2dp"
+                        android:background="@drawable/divider" />
+
+                    <RelativeLayout
+                        android:id="@+id/auto_install_layout"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/setting_item_selector"
+                        android:minHeight="55dp"
+                        android:paddingBottom="10dp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:paddingTop="10dp" >
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_centerVertical="true"
+                            android:orientation="vertical" >
+
+                            <TextView
+                                android:id="@+id/auto_install_text1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/auto_install"
+                                android:textColor="#3b3b3b"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:id="@+id/auto_install_text2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/need_root"
+                                android:textColor="#3b3b3b"
+                                android:textSize="15sp" />
+                        </LinearLayout>
+
+                        <com.dongji.market.widget.SlipSwitch
+                            android:id="@+id/auto_install"
+                            android:layout_width="85dip"
+                            android:layout_height="35dip"
+                            android:layout_alignParentRight="true"
+                            customAttr:background="@drawable/switch_background"
+                            customAttr:offBackground="@drawable/switch_off"
+                            customAttr:offText="@string/turn_off"
+                            customAttr:offTextColor="#000"
+                            customAttr:onBackground="@drawable/switch_on"
+                            customAttr:onText="@string/turn_on"
+                            customAttr:onTextColor="#fff"
+                            customAttr:switchState="true"
+                            customAttr:textSize="12sp" />
+                    </RelativeLayout>
+
+                    <ImageView
+                        android:layout_width="fill_parent"
+                        android:layout_height="2dp"
+                        android:background="@drawable/divider" />
+
+                    <RelativeLayout
+                        android:id="@+id/only_wifi_layout"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/setting_item_selector"
+                        android:minHeight="55dp"
+                        android:paddingBottom="10dp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:paddingTop="10dp" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_centerVertical="true"
+                            android:text="@string/only_wifi"
+                            android:textColor="#3b3b3b"
+                            android:textSize="15sp" />
+
+                        <com.dongji.market.widget.SlipSwitch
+                            android:id="@+id/only_wifi"
+                            android:layout_width="85dip"
+                            android:layout_height="35dip"
+                            android:layout_alignParentRight="true"
+                            customAttr:background="@drawable/switch_background"
+                            customAttr:offBackground="@drawable/switch_off"
+                            customAttr:offText="@string/turn_off"
+                            customAttr:offTextColor="#000"
+                            customAttr:onBackground="@drawable/switch_on"
+                            customAttr:onText="@string/turn_on"
+                            customAttr:onTextColor="#fff"
+                            customAttr:switchState="true"
+                            customAttr:textSize="12sp" />
+                    </RelativeLayout>
+
+                    <ImageView
+                        android:layout_width="fill_parent"
+                        android:layout_height="2dp"
+                        android:background="@drawable/divider" />
+
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/setting_item_selector"
+                        android:minHeight="55dp"
+                        android:paddingBottom="10dp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:paddingTop="10dp" >
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_centerVertical="true"
+                            android:orientation="vertical" >
+
+                            <TextView
+                                android:id="@+id/limit_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/limit_flow"
+                                android:textColor="#3b3b3b"
+                                android:textSize="15sp" />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:id="@+id/remaintextview"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:singleLine="true"
+                                    android:text="@string/last_flow_text"
+                                    android:textColor="#888"
+                                    android:textSize="14sp" />
+
+                                <TextView
+                                    android:id="@+id/last_flow"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/default_flow"
+                                    android:textColor="#888"
+                                    android:textSize="14sp" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/M_flag"
+                                    android:textColor="#888"
+                                    android:textSize="14sp" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/M_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:text="@string/M_flag"
+                            android:textColor="#3b3b3b"
+                            android:textSize="15sp" />
+
+                        <EditText
+                            android:id="@+id/limet_flow"
+                            android:layout_width="60dp"
+                            android:layout_height="35dp"
+                            android:layout_centerVertical="true"
+                            android:layout_toLeftOf="@+id/M_text"
+                            android:background="@drawable/setting_et_selector"
+                            android:gravity="right|center_vertical"
+                            android:inputType="number"
+                            android:maxLength="6"
+                            android:paddingRight="3dip"
+                            android:text="10"
+                            android:textColor="@drawable/setting_etfont_selector"
+                            android:textSize="15sp" >
+                        </EditText>
+                    </RelativeLayout>
+
+                    <ImageView
+                        android:layout_width="fill_parent"
+                        android:layout_height="2dp"
+                        android:background="@drawable/divider" />
+
+                    <RelativeLayout
+                        android:id="@+id/download_background_layout"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/setting_item_selector"
+                        android:gravity="center_vertical"
+                        android:paddingBottom="10dp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:paddingTop="10dp" >
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:gravity="center_vertical"
+                            android:minHeight="55dp"
+                            android:orientation="vertical"
+                            android:paddingRight="85dip" >
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/auto_download_background"
+                                android:textColor="#3b3b3b"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:singleLine="false"
+                                android:text="@string/download_background_explain"
+                                android:textColor="#888"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <com.dongji.market.widget.SlipSwitch
+                            android:id="@+id/auto_download_background"
+                            android:layout_width="85dip"
+                            android:layout_height="35dip"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            customAttr:background="@drawable/switch_background"
+                            customAttr:offBackground="@drawable/switch_off"
+                            customAttr:offText="@string/turn_off"
+                            customAttr:offTextColor="#000"
+                            customAttr:onBackground="@drawable/switch_on"
+                            customAttr:onText="@string/turn_on"
+                            customAttr:onTextColor="#fff"
+                            customAttr:switchState="true"
+                            customAttr:textSize="12sp" />
+                    </RelativeLayout>
+
+                    <ImageView
+                        android:layout_width="fill_parent"
+                        android:layout_height="2dp"
+                        android:background="@drawable/divider" />
+
+                    <RelativeLayout
+                        android:id="@+id/auto_update_layout"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/setting_item_selector"
+                        android:minHeight="55dp"
+                        android:paddingBottom="10dp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:paddingTop="10dp" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_centerVertical="true"
+                            android:text="@string/auto_update"
+                            android:textColor="#3b3b3b"
+                            android:textSize="15sp" />
+
+                        <com.dongji.market.widget.SlipSwitch
+                            android:id="@+id/auto_update"
+                            android:layout_width="85dip"
+                            android:layout_height="35dip"
+                            android:layout_alignParentRight="true"
+                            customAttr:background="@drawable/switch_background"
+                            customAttr:offBackground="@drawable/switch_off"
+                            customAttr:offText="@string/turn_off"
+                            customAttr:offTextColor="#000"
+                            customAttr:onBackground="@drawable/switch_on"
+                            customAttr:onText="@string/turn_on"
+                            customAttr:onTextColor="#fff"
+                            customAttr:switchState="true"
+                            customAttr:textSize="12sp" />
+                    </RelativeLayout>
+
+                    <ImageView
+                        android:layout_width="fill_parent"
+                        android:layout_height="2dp"
+                        android:background="@drawable/divider" />
+
+                    <TextView
+                        android:id="@+id/clear_search_history"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/setting_item_selector"
+                        android:gravity="center_vertical"
+                        android:minHeight="55dp"
+                        android:paddingBottom="10dp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:paddingTop="10dp"
+                        android:text="@string/clear_search_history"
+                        android:textColor="#3b3b3b"
+                        android:textSize="15sp" />
+
+                    <ImageView
+                        android:layout_width="fill_parent"
+                        android:layout_height="2dp"
+                        android:background="@drawable/divider" />
+
+                    <TextView
+                        android:id="@+id/del_pkg"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/setting_item_selector"
+                        android:gravity="center_vertical"
+                        android:minHeight="55dp"
+                        android:paddingBottom="10dp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:paddingTop="10dp"
+                        android:text="@string/del_pkg"
+                        android:textColor="#3b3b3b"
+                        android:textSize="15sp" />
+
+                    <ImageView
+                        android:layout_width="fill_parent"
+                        android:layout_height="2dp"
+                        android:background="@drawable/divider"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="4dp"
+                        android:paddingLeft="6dp"
+                        android:paddingTop="8dp"
+                        android:text="@string/twitter_set"
+                        android:textColor="#485361"
+                        android:textSize="17sp"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:layout_width="fill_parent"
+                        android:layout_height="2dp"
+                        android:background="@drawable/divider"
+                        android:visibility="gone" />
+
+                    <RelativeLayout
+                        android:id="@+id/sina_login_layout"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/setting_item_selector"
+                        android:minHeight="55dp"
+                        android:paddingBottom="10dp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:paddingTop="10dp"
+                        android:visibility="gone" >
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_centerVertical="true"
+                            android:orientation="vertical" >
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/use_sina_login"
+                                android:textColor="#3b3b3b"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:id="@+id/sina_user_name"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/user_name_text"
+                                android:textColor="#888"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <com.dongji.market.widget.SlipSwitch
+                            android:id="@+id/use_sina_login"
+                            android:layout_width="85dip"
+                            android:layout_height="35dip"
+                            android:layout_alignParentRight="true"
+                            customAttr:background="@drawable/switch_background"
+                            customAttr:offBackground="@drawable/switch_off"
+                            customAttr:offText="@string/turn_off"
+                            customAttr:offTextColor="#000"
+                            customAttr:onBackground="@drawable/switch_on"
+                            customAttr:onText="@string/turn_on"
+                            customAttr:onTextColor="#fff"
+                            customAttr:switchState="true"
+                            customAttr:textSize="12sp" />
+                    </RelativeLayout>
+
+                    <ImageView
+                        android:layout_width="fill_parent"
+                        android:layout_height="2dp"
+                        android:background="@drawable/divider"
+                        android:visibility="gone" />
+
+                    <RelativeLayout
+                        android:id="@+id/tencent_login_layout"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/setting_item_selector"
+                        android:minHeight="55dp"
+                        android:paddingBottom="10dp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:paddingTop="10dp"
+                        android:visibility="gone" >
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_centerVertical="true"
+                            android:orientation="vertical" >
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/use_tencent_login"
+                                android:textColor="#3b3b3b"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:id="@+id/tencent_user_name"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/user_name_text"
+                                android:textColor="#888"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <com.dongji.market.widget.SlipSwitch
+                            android:id="@+id/use_tencent_login"
+                            android:layout_width="85dip"
+                            android:layout_height="35dip"
+                            android:layout_alignParentRight="true"
+                            customAttr:background="@drawable/switch_background"
+                            customAttr:offBackground="@drawable/switch_off"
+                            customAttr:offText="@string/turn_off"
+                            customAttr:offTextColor="#000"
+                            customAttr:onBackground="@drawable/switch_on"
+                            customAttr:onText="@string/turn_on"
+                            customAttr:onTextColor="#fff"
+                            customAttr:switchState="true"
+                            customAttr:textSize="12sp" />
+                    </RelativeLayout>
+
+                    <ImageView
+                        android:layout_width="fill_parent"
+                        android:layout_height="2dp"
+                        android:background="@drawable/divider"
+                        android:visibility="gone" />
+
+                    <RelativeLayout
+                        android:id="@+id/renren_login_layout"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/setting_item_selector"
+                        android:minHeight="55dp"
+                        android:paddingBottom="10dp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:paddingTop="10dp"
+                        android:visibility="gone" >
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_centerVertical="true"
+                            android:orientation="vertical" >
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/use_renren_login"
+                                android:textColor="#3b3b3b"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:id="@+id/renren_user_name"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/user_name_text"
+                                android:textColor="#888"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <com.dongji.market.widget.SlipSwitch
+                            android:id="@+id/use_renren_login"
+                            android:layout_width="85dip"
+                            android:layout_height="35dip"
+                            android:layout_alignParentRight="true"
+                            customAttr:background="@drawable/switch_background"
+                            customAttr:offBackground="@drawable/switch_off"
+                            customAttr:offText="@string/turn_off"
+                            customAttr:offTextColor="#000"
+                            customAttr:onBackground="@drawable/switch_on"
+                            customAttr:onText="@string/turn_on"
+                            customAttr:onTextColor="#fff"
+                            customAttr:switchState="true"
+                            customAttr:textSize="12sp" />
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="fill_parent"
+                    android:layout_height="2dp"
+                    android:background="@drawable/divider" />
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#e9e9e9"
+                    android:paddingBottom="4dp"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="3dp"
+                    android:text="@string/about_feedback"
+                    android:textColor="#485361"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:layout_width="fill_parent"
+                    android:layout_height="2dp"
+                    android:background="@drawable/divider" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:orientation="vertical"
+                    android:padding="5dp" >
+
+                    <TextView
+                        android:id="@+id/feedback"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/setting_item_selector"
+                        android:gravity="center_vertical"
+                        android:minHeight="55dp"
+                        android:paddingBottom="10dp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:paddingTop="10dp"
+                        android:text="@string/feedback"
+                        android:textColor="#3b3b3b"
+                        android:textSize="15sp" />
+
+                    <ImageView
+                        android:layout_width="fill_parent"
+                        android:layout_height="2dp"
+                        android:background="@drawable/divider" />
+
+                    <TextView
+                        android:id="@+id/about"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/setting_item_selector"
+                        android:gravity="center_vertical"
+                        android:minHeight="55dp"
+                        android:paddingBottom="10dp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:paddingTop="10dp"
+                        android:text="@string/about"
+                        android:textColor="#3b3b3b"
+                        android:textSize="15sp" />
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+
+    <include layout="@layout/layout_setting_mask" />
+
+</FrameLayout>

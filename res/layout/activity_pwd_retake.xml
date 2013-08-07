@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#EBEBEB"
+    android:orientation="vertical" >
+    
+    <include android:id="@+id/pwd_retake_top"
+        layout="@layout/layout_main_top" />
+    <ImageView 
+  		android:layout_width="fill_parent"
+  		android:layout_height="3dip"
+  		android:background="@drawable/sharw"/>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:layout_marginBottom="12dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:textColor="#666"
+        android:text="@string/pwd_retake_prompt"
+        android:textSize="12sp" />
+
+    <EditText
+        android:id="@+id/pwd_retake_email"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:background="@drawable/single_et_style"
+        android:hint="@string/input_email"
+        android:imeOptions="actionGo"
+        android:inputType="textEmailAddress"
+        android:textSize="17sp" />
+
+    <Button
+        android:id="@+id/pwd_retake_confirm"
+        android:layout_width="fill_parent"
+        android:layout_height="45dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:background="@drawable/button_has_border_selector"
+        android:textColor="@drawable/button_font_selector"
+        android:text="@string/confirm"
+        android:textSize="17sp" />
+
+</LinearLayout>

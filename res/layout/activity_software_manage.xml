@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#fff" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical" >
+
+            <AbsoluteLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <LinearLayout
+                    android:id="@+id/ll_SoftManageTop"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" >
+
+                    <include
+                        android:id="@+id/soft_manage_top"
+                        layout="@layout/layout_main_top" />
+
+                    <ImageView
+                        android:layout_width="fill_parent"
+                        android:layout_height="3dip"
+                        android:background="@drawable/sharw" />
+
+                    <FrameLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="45dp"
+                        android:background="#ebebeb" >
+
+                        <RadioGroup
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:gravity="center"
+                            android:orientation="horizontal" >
+
+                            <RadioButton
+                                android:id="@+id/update_install"
+                                style="@style/radio_button_style"
+                                android:text="@string/update_install" />
+
+                            <View
+                                android:layout_width="1.0dip"
+                                android:layout_height="fill_parent"
+                                android:layout_marginBottom="10dip"
+                                android:layout_marginTop="10dip"
+                                android:background="#d3d3d3" />
+
+                            <RadioButton
+                                android:id="@+id/installed_software"
+                                style="@style/radio_button_style"
+                                android:text="@string/installed_software" />
+
+                            <View
+                                android:layout_width="1.0dip"
+                                android:layout_height="fill_parent"
+                                android:layout_marginBottom="10dip"
+                                android:layout_marginTop="10dip"
+                                android:background="#d3d3d3" />
+
+                            <RadioButton
+                                android:id="@+id/softwaremove"
+                                style="@style/radio_button_style"
+                                android:text="@string/software_move" />
+                        </RadioGroup>
+
+                        <ImageView
+                            android:id="@+id/slide_image"
+                            android:layout_width="wrap_content"
+                            android:layout_height="5dip"
+                            android:layout_gravity="bottom"
+                            android:background="@drawable/blue_line" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="1dip"
+                        android:layout_gravity="bottom"
+                        android:background="#d3d3d3" />
+                </LinearLayout>
+            </AbsoluteLayout>
+
+            <FrameLayout
+                android:id="@+id/content_layout"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent" >
+
+                <com.dongji.market.widget.HorizontalScrollLayout
+                    android:id="@+id/horizontalScrollLayout"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1.0" >
+                </com.dongji.market.widget.HorizontalScrollLayout>
+
+                <ProgressBar
+                    android:id="@+id/progress_horizontal"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="fill_parent"
+                    android:layout_height="3dip"
+                    android:layout_gravity="bottom"
+                    android:max="100"
+                    android:progress="0"
+                    android:progressDrawable="@drawable/progressbar_xml"
+                    android:secondaryProgress="0"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="1.5dip"
+                android:layout_gravity="bottom"
+                android:background="#d3d3d3" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/touchlayout"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:visibility="gone" />
+
+        <include layout="@layout/layout_install_mask" />
+        
+        <include layout="@layout/layout_soft_move_mask" />
+    </FrameLayout>
+
+</RelativeLayout><!--
+        <FrameLayout
+            android:layout_width="fill_parent"
+            android:layout_height="45dp"
+            android:background="#ebebeb" >
+
+            <RadioGroup
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:gravity="center"
+                android:orientation="horizontal" >
+
+                <RadioButton
+                    android:id="@+id/update_install"
+                    style="@style/radio_button_style"
+                    android:text="@string/update_install" />
+
+                <View
+                    android:layout_width="1.0dip"
+                    android:layout_height="fill_parent"
+                    android:layout_marginBottom="10dip"
+                    android:layout_marginTop="10dip"
+                    android:background="#d3d3d3" />
+
+                <RadioButton
+                    android:id="@+id/installed_software"
+                    style="@style/radio_button_style"
+                    android:text="@string/installed_software" />
+            </RadioGroup>
+
+            <ImageView
+                android:id="@+id/slide_image"
+                android:layout_width="wrap_content"
+                android:layout_height="5dip"
+                android:layout_gravity="bottom"
+                android:background="@drawable/blue_line" />
+        </FrameLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1.5dip"
+            android:background="#d3d3d3" />
+
+<FrameLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0" >
+
+            <com.dongji.market.widget.HorizontalScrollLayout
+                android:id="@+id/horizontalScrollLayout"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1.0" >
+            </com.dongji.market.widget.HorizontalScrollLayout>
+
+            <ProgressBar
+                android:id="@+id/progress_horizontal"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="3dip"
+                android:layout_gravity="bottom"
+                android:max="100"
+                android:progress="0"
+                android:progressDrawable="@drawable/progressbar_xml"
+                android:secondaryProgress="0"
+                android:visibility="gone" />
+        </FrameLayout>
+        <LinearLayout
+            android:id="@+id/manage_body_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+        
+    </LinearLayout>
+
+    <include layout="@layout/layout_install_mask" />
+
+</FrameLayout>-->

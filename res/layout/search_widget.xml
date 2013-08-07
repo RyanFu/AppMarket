@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:searchview="http://schemas.android.com/apk/res/com.dongji.market"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:background="#000" >
+
+    <com.dongji.market.widget.CustomSearchView
+        android:id="@+id/searchview"
+        android:layout_width="300dip"
+        android:layout_height="36dip"
+        android:paddingLeft="4dip"
+        android:paddingRight="33dip"
+        android:singleLine="true"
+        android:textColor="#ffffffff"
+        android:textSize="20sp"
+        searchview:popupBackground="@drawable/search_bg_2"
+        searchview:popupHeight="200dip" />
+
+</LinearLayout>

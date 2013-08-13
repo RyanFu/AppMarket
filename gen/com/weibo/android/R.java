@@ -46,32 +46,32 @@ public final class R {
 		public static final int toast_bg = 0x7f0200ae;
 	}
 	public static final class id {
-		public static final int btnClose = 0x7f0b0147;
-		public static final int btnSend = 0x7f0b0148;
-		public static final int etEdit = 0x7f0b0150;
-		public static final int flPic = 0x7f0b014d;
-		public static final int ivDelPic = 0x7f0b014f;
-		public static final int ivImage = 0x7f0b014e;
-		public static final int llImage = 0x7f0b0149;
-		public static final int ll_text_limit_unit = 0x7f0b014b;
-		public static final int loadinglayout = 0x7f0b0118;
-		public static final int rlTitle = 0x7f0b0146;
-		public static final int rlTotal = 0x7f0b014a;
-		public static final int send_twitter = 0x7f0b015d;
-		public static final int sharing_layout = 0x7f0b015e;
-		public static final int sharing_progressbar = 0x7f0b013d;
-		public static final int sharing_textview = 0x7f0b013e;
-		public static final int surplus_text = 0x7f0b015b;
-		public static final int text_limit_num = 0x7f0b015c;
-		public static final int toast_txt = 0x7f0b00aa;
-		public static final int tv_text_limit = 0x7f0b014c;
-		public static final int twitter_content = 0x7f0b015a;
+		public static final int btnClose = 0x7f0b014f;
+		public static final int btnSend = 0x7f0b0150;
+		public static final int etEdit = 0x7f0b0158;
+		public static final int flPic = 0x7f0b0155;
+		public static final int ivDelPic = 0x7f0b0157;
+		public static final int ivImage = 0x7f0b0156;
+		public static final int llImage = 0x7f0b0151;
+		public static final int ll_text_limit_unit = 0x7f0b0153;
+		public static final int loadinglayout = 0x7f0b011e;
+		public static final int rlTitle = 0x7f0b014e;
+		public static final int rlTotal = 0x7f0b0152;
+		public static final int send_twitter = 0x7f0b0165;
+		public static final int sharing_layout = 0x7f0b0166;
+		public static final int sharing_progressbar = 0x7f0b0143;
+		public static final int sharing_textview = 0x7f0b0144;
+		public static final int surplus_text = 0x7f0b0163;
+		public static final int text_limit_num = 0x7f0b0164;
+		public static final int toast_txt = 0x7f0b00b0;
+		public static final int tv_text_limit = 0x7f0b0154;
+		public static final int twitter_content = 0x7f0b0162;
 	}
 	public static final class layout {
-		public static final int custom_toast = 0x7f03001a;
-		public static final int layout_sharing = 0x7f030049;
-		public static final int share_mblog_view = 0x7f03004f;
-		public static final int widget_share_dialog = 0x7f03005d;
+		public static final int custom_toast = 0x7f03001b;
+		public static final int layout_sharing = 0x7f03004a;
+		public static final int share_mblog_view = 0x7f030051;
+		public static final int widget_share_dialog = 0x7f03005f;
 	}
 	public static final class string {
 		public static final int app_name = 0x7f080000;

@@ -42,6 +42,7 @@ import com.dongji.market.activity.MainActivity;
 import com.dongji.market.activity.Search_Activity2;
 import com.dongji.market.activity.Search_Result_Activity;
 import com.dongji.market.activity.Setting_Activity;
+import com.dongji.market.activity.ShareActivity;
 import com.dongji.market.activity.SoftwareManageActivity;
 import com.dongji.market.adapter.SearchHistoryAdapter;
 import com.dongji.market.application.AppMarket;
@@ -407,23 +408,27 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 			}
 			break;
 		case R.id.shareButton:
-			String share_subject = cxt.getResources().getString(R.string.share_us_subject);
-			String share_content = "";
-			String share_dialog_title = cxt.getResources().getString(R.string.share_us_title);
-			if (cxt.getClass().equals(MainActivity.class)) {
-				share_content = cxt.getResources().getString(R.string.share_us_content) + DataManager.newInstance().getShortUrlByLongUrl(cxt.getResources().getString(R.string.share_us_url)) + cxt.getResources().getString(R.string.share_us_content2);
-
-			} else if (cxt.getClass().equals(ApkDetailActivity.class)) {
+//			boolean isAppPage=false;
+//			String share_title="";
+//			String share_subject=cxt.getResources().getString(R.string.share_us_subject);
+//			String share_iconUrl="";
+//			String share_content = "";
+//			if (cxt.getClass().equals(MainActivity.class)) {
+//				share_title=cxt.getResources().getString(R.string.share_us_title);
+//				share_content = cxt.getResources().getString(R.string.share_us_content) + DataManager.newInstance().getShortUrlByLongUrl(cxt.getResources().getString(R.string.share_us_url)) + cxt.getResources().getString(R.string.share_us_content2);
+//			} else 
+			if (cxt.getClass().equals(ApkDetailActivity.class)) {
+				boolean isApkDetailPage=true;
 				ApkItem apkItem = bundle.getParcelable("apkItem");
-				share_content = cxt.getResources().getString(R.string.share_text1) + apkItem.appName + cxt.getResources().getString(R.string.share_text2) + DataManager.newInstance().getShortUrlByLongUrl(apkItem.apkUrl) + cxt.getResources().getString(R.string.share_text3);
-
+				String share_content = cxt.getResources().getString(R.string.share_text1) + apkItem.appName + cxt.getResources().getString(R.string.share_text2) + DataManager.newInstance().getShortUrlByLongUrl(apkItem.apkUrl) + cxt.getResources().getString(R.string.share_text3);
+				Intent intent2 = new Intent(cxt, ShareActivity.class);
+				intent2.putExtra("isAppPage", isApkDetailPage);
+				intent2.putExtra("title",apkItem.appName);
+				intent2.putExtra("content", share_content); // 分享内容
+				intent2.putExtra("iconUrl", apkItem.appIconUrl);
+				intent2.putExtra("appId",apkItem.appId);
+				cxt.startActivity(intent2);
 			}
-			Intent intent2 = new Intent(Intent.ACTION_SEND);
-			intent2.setType("text/plain");
-			intent2.putExtra(Intent.EXTRA_SUBJECT, share_subject); // 分享主题
-			intent2.putExtra(Intent.EXTRA_TEXT, share_content); // 分享内容
-			cxt.startActivity(Intent.createChooser(intent2, share_dialog_title));// 选择对话框标题
-
 			break;
 		case R.id.popup_sms_share:
 			if (!isSharing) {

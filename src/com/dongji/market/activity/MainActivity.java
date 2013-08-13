@@ -184,7 +184,6 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 
 	@Override
 	protected void onResume() {
-		// TODO Auto-generated method stub
 		try {
 			super.onResume();
 		} catch (NullPointerException e) {

@@ -53,7 +53,7 @@ public class DataManager {
 
 	private static final String DOMAIN_NAME = "http://www.91dongji.com/";// http://192.168.0.106/
 																			// http://192.168.1.200/cms/
-//	private static final String DOMAIN_NAME2 = "http://192.168.1.200/cms/";// 测试
+    // private static final String DOMAIN_NAME2 = "http://192.168.1.200/cms/";// 测试
 	// private static final String DOMAIN_NAME =
 	// "http://192.168.1.200/cms/";//测试
 
@@ -897,8 +897,7 @@ public class DataManager {
 				// }
 			}
 		}
-		System.out
-				.println("=============initRequestUpdateList:" + items.size());
+		System.out.println("=============initRequestUpdateList:" + items.size());
 		return items;
 	}
 

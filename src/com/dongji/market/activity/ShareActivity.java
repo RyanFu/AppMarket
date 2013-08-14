@@ -32,6 +32,7 @@ import android.widget.Toast;
 import com.dongji.market.R;
 import com.dongji.market.helper.Constants;
 import com.dongji.market.helper.WxUtils;
+import com.dongji.market.protocol.DataManager;
 import com.dongji.market.widget.ShareGridView;
 import com.tencent.mm.sdk.openapi.SendMessageToWX;
 
@@ -57,12 +58,42 @@ public class ShareActivity extends Activity implements OnClickListener {
 
 	private TextView wxInstallTextView2;
 
+	private boolean isApkDetailPage;//是否是应用详情页跳转
+
+	private String title;// 分享标题
+
+	private String content;// 分享内容
+
+	private Bitmap icon;// 分享应用icon
+	
+	private String shareUrl;//分享url
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_share);
+		getData();
 		getAppInfo();
 		initView();
+	}
+
+	/**
+	 * 获取跳转数据
+	 */
+	private void getData() {
+		Intent intent=getIntent();
+		isApkDetailPage=intent.getBooleanExtra("isApkDetailPage", false);
+		if (isApkDetailPage) {
+			title=intent.getStringExtra("title");
+			content=intent.getStringExtra("content");
+			String url=intent.getStringExtra("iconUrl");
+			shareUrl=Constants.APKDETAIL_PREFIX+intent.getStringExtra("appId");
+		}else {
+			title=this.getResources().getString(R.string.DJ_app_center);
+			content = this.getResources().getString(R.string.share_us_content) + DataManager.newInstance().getShortUrlByLongUrl(this.getResources().getString(R.string.share_us_url)) + this.getResources().getString(R.string.share_us_content2);
+			shareUrl=Constants.APKDETAIL_PREFIX+"888777";
+			icon=BitmapFactory.decodeResource(getResources(), R.drawable.icon);
+		}
 	}
 
 	/**
@@ -132,8 +163,8 @@ public class ShareActivity extends Activity implements OnClickListener {
 					Intent intent = new Intent(Intent.ACTION_SEND);
 					intent.setComponent(componetName);
 					intent.setType(Constants.TXTTYPE);
-					intent.putExtra(Intent.EXTRA_SUBJECT, "动机市场"); // 分享主题
-					intent.putExtra(Intent.EXTRA_TEXT, "海量精品应用，尽在动机市场! http://www.91dongji.com");
+					intent.putExtra(Intent.EXTRA_SUBJECT, title); // 分享主题
+					intent.putExtra(Intent.EXTRA_TEXT, content);
 					startActivity(intent);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -148,8 +179,7 @@ public class ShareActivity extends Activity implements OnClickListener {
 		case R.id.wxfriend_btn:
 			if (wxInstall) {
 				WxUtils.registWxApi(ShareActivity.this);
-				Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.icon);
-				WxUtils.sendWebPageWx("www.91dongji.com", "动机市场2", "海量精品应用，尽在动机市场", bmp, Constants.THUMB_SIZE, Constants.THUMB_SIZE, SendMessageToWX.Req.WXSceneSession);
+				WxUtils.sendWebPageWx(shareUrl, title, content, icon, Constants.THUMB_SIZE, Constants.THUMB_SIZE, SendMessageToWX.Req.WXSceneSession);
 			} else {
 				Toast.makeText(this, "跳转到微信详情页面！", Toast.LENGTH_SHORT).show();
 			}
@@ -157,8 +187,7 @@ public class ShareActivity extends Activity implements OnClickListener {
 		case R.id.wxtimeline_btn:
 			if (wxInstall) {
 				WxUtils.registWxApi(ShareActivity.this);
-				Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.icon);
-				WxUtils.sendWebPageWx("www.91dongji.com", "动机市场1", "海量精品应用，尽在动机市场", bmp, Constants.THUMB_SIZE, Constants.THUMB_SIZE, SendMessageToWX.Req.WXSceneTimeline);
+				WxUtils.sendWebPageWx(shareUrl, title, content, icon,  SendMessageToWX.Req.WXSceneTimeline);
 			} else {
 				Toast.makeText(this, "跳转到微信详情页面！", Toast.LENGTH_SHORT).show();
 			}

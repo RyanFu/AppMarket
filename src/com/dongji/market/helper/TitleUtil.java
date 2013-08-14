@@ -408,7 +408,7 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 			}
 			break;
 		case R.id.shareButton:
-//			boolean isAppPage=false;
+			Intent intent2 = new Intent(cxt, ShareActivity.class);
 //			String share_title="";
 //			String share_subject=cxt.getResources().getString(R.string.share_us_subject);
 //			String share_iconUrl="";
@@ -421,14 +421,15 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 				boolean isApkDetailPage=true;
 				ApkItem apkItem = bundle.getParcelable("apkItem");
 				String share_content = cxt.getResources().getString(R.string.share_text1) + apkItem.appName + cxt.getResources().getString(R.string.share_text2) + DataManager.newInstance().getShortUrlByLongUrl(apkItem.apkUrl) + cxt.getResources().getString(R.string.share_text3);
-				Intent intent2 = new Intent(cxt, ShareActivity.class);
-				intent2.putExtra("isAppPage", isApkDetailPage);
+				String share_content1=cxt.getResources().getString(R.string.share_us_content);
 				intent2.putExtra("title",apkItem.appName);
-				intent2.putExtra("content", share_content); // 分享内容
+				intent2.putExtra("content", share_content); // 分享内容1
+				intent2.putExtra("content1", share_content1);//分享内容2
 				intent2.putExtra("iconUrl", apkItem.appIconUrl);
 				intent2.putExtra("appId",apkItem.appId);
-				cxt.startActivity(intent2);
+				intent2.putExtra("isApkDetailPage", isApkDetailPage);
 			}
+			cxt.startActivity(intent2);
 			break;
 		case R.id.popup_sms_share:
 			if (!isSharing) {

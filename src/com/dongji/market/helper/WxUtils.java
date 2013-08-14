@@ -1,13 +1,24 @@
 package com.dongji.market.helper;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
+
+import junit.framework.Assert;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.graphics.Bitmap.CompressFormat;
+import android.util.Log;
 
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.SendMessageToWX;
@@ -23,6 +34,8 @@ import com.tencent.mm.sdk.openapi.WXWebpageObject;
  */
 public class WxUtils {
 	private static IWXAPI api;
+	private static final String TAG = "SDK_Sample.Util";
+	private static final int MAX_DECODE_PICTURE_SIZE = 1920 * 1440;
 
 	/**
 	 * 
@@ -106,6 +119,49 @@ public class WxUtils {
 	}
 
 	/**
+	 * 微信发布图片
+	 * 
+	 * @param imageData
+	 *            图片的数组资源
+	 * @param imagePath
+	 *            图片的路径
+	 * @param imageUrl
+	 *            图片的URL
+	 * @param scene
+	 *            SendMessageToWX.Req.WXSceneTimeline 发送到朋友圈
+	 *            SendMessageToWX.Req.WXSceneSession 发送到会话
+	 * 
+	 *            注意:imageData imagePath imageUrl指定一个就行，不能同时为空
+	 */
+	public static void sendImageWx(byte[] imageData, String imagePath, String imageUrl, int scene) {
+		WXImageObject imgObj = new WXImageObject();
+		if (imageData != null) {
+			imgObj.imageData = imageData;
+		}
+		if (imagePath != null) {
+			imgObj.imagePath = imagePath;
+		}
+		if (imageUrl != null) {
+			imgObj.imageUrl = imageUrl;
+		}
+		WXMediaMessage msg = new WXMediaMessage();
+		msg.mediaObject = imgObj;
+		try {
+			Bitmap bmp = BitmapFactory.decodeStream(new URL(imageUrl).openStream());
+			byte[] bytes = bmpToByteArray(bmp, true);
+			msg.thumbData = bytes;
+			SendMessageToWX.Req req = new SendMessageToWX.Req();
+			req.transaction = System.currentTimeMillis() + "";
+			req.message = msg;
+			req.scene = scene;
+			api.sendReq(req);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	/**
 	 * 发布链接
 	 * 
 	 * @param url
@@ -132,6 +188,38 @@ public class WxUtils {
 		localWXMediaMessage.description = text;
 		if (bitmap != null) {
 			localWXMediaMessage.thumbData = getBitmapBytes(bitmap, false, width, heigth);
+		}
+		SendMessageToWX.Req localReq = new SendMessageToWX.Req();
+		localReq.transaction = System.currentTimeMillis() + "";
+		localReq.message = localWXMediaMessage;
+		localReq.scene = scene;
+		api.sendReq(localReq);
+
+	}
+
+	/**
+	 * 发布链接
+	 * 
+	 * @param url
+	 *            链接的地址
+	 * @param title
+	 *            链接的标题
+	 * @param text
+	 *            链接的内容
+	 * @param bitmap
+	 *            链接的图片资源
+	 * @param scene
+	 *            SendMessageToWX.Req.WXSceneTimeline 发送到朋友圈
+	 *            SendMessageToWX.Req.WXSceneSession 发送到会话
+	 */
+	public static void sendWebPageWx(String url, String title, String text, Bitmap bitmap, int scene) {
+		WXWebpageObject localWXWebpageObject = new WXWebpageObject();
+		localWXWebpageObject.webpageUrl = url;
+		WXMediaMessage localWXMediaMessage = new WXMediaMessage(localWXWebpageObject);
+		localWXMediaMessage.title = title;
+		localWXMediaMessage.description = text;
+		if (bitmap != null) {
+			localWXMediaMessage.thumbData = bmpToByteArray(bitmap, true);
 		}
 		SendMessageToWX.Req localReq = new SendMessageToWX.Req();
 		localReq.transaction = System.currentTimeMillis() + "";
@@ -179,6 +267,220 @@ public class WxUtils {
 			i = bitmap.getHeight();
 			j = bitmap.getHeight();
 		}
+	}
+
+	/**
+	 * bitmap 转字节数组
+	 * 
+	 * @param bmp
+	 * @param needRecycle
+	 *            是否需要回收资源
+	 * @return
+	 */
+	public static byte[] bmpToByteArray(final Bitmap bmp, final boolean needRecycle) {
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		bmp.compress(CompressFormat.PNG, 100, output);
+		if (needRecycle) {
+			bmp.recycle();
+		}
+		byte[] result = output.toByteArray();
+		try {
+			output.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	/**
+	 * 获取html数据字节数组
+	 * 
+	 * @param url
+	 * @return
+	 */
+	public static byte[] getHtmlByteArray(final String url) {
+		URL htmlUrl = null;
+		InputStream inStream = null;
+		try {
+			htmlUrl = new URL(url);
+			URLConnection connection = htmlUrl.openConnection();
+			HttpURLConnection httpConnection = (HttpURLConnection) connection;
+			int responseCode = httpConnection.getResponseCode();
+			if (responseCode == HttpURLConnection.HTTP_OK) {
+				inStream = httpConnection.getInputStream();
+			}
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		byte[] data = inputStreamToByte(inStream);
+
+		return data;
+	}
+
+	/**
+	 * 输入流转字节数组
+	 * 
+	 * @param is
+	 * @return
+	 */
+	public static byte[] inputStreamToByte(InputStream is) {
+		try {
+			ByteArrayOutputStream bytestream = new ByteArrayOutputStream();
+			int ch;
+			while ((ch = is.read()) != -1) {
+				bytestream.write(ch);
+			}
+			byte imgdata[] = bytestream.toByteArray();
+			bytestream.close();
+			return imgdata;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	/**
+	 * 文件转字节数组
+	 * 
+	 * @param fileName
+	 * @param offset
+	 * @param len
+	 * @return
+	 */
+	public static byte[] readFromFile(String fileName, int offset, int len) {
+		if (fileName == null) {
+			return null;
+		}
+
+		File file = new File(fileName);
+		if (!file.exists()) {
+			Log.i(TAG, "readFromFile: file not found");
+			return null;
+		}
+
+		if (len == -1) {
+			len = (int) file.length();
+		}
+
+		Log.d(TAG, "readFromFile : offset = " + offset + " len = " + len + " offset + len = " + (offset + len));
+
+		if (offset < 0) {
+			Log.e(TAG, "readFromFile invalid offset:" + offset);
+			return null;
+		}
+		if (len <= 0) {
+			Log.e(TAG, "readFromFile invalid len:" + len);
+			return null;
+		}
+		if (offset + len > (int) file.length()) {
+			Log.e(TAG, "readFromFile invalid file len:" + file.length());
+			return null;
+		}
+
+		byte[] b = null;
+		try {
+			RandomAccessFile in = new RandomAccessFile(fileName, "r");
+			b = new byte[len]; // 创建合适文件大小的数组
+			in.seek(offset);
+			in.readFully(b);
+			in.close();
+
+		} catch (Exception e) {
+			Log.e(TAG, "readFromFile : errMsg = " + e.getMessage());
+			e.printStackTrace();
+		}
+		return b;
+	}
+
+	/**
+	 * 获取缩略图
+	 * 
+	 * @param path
+	 * @param height
+	 * @param width
+	 * @param crop
+	 * @return
+	 */
+	public static Bitmap extractThumbNail(final String path, final int height, final int width, final boolean crop) {
+		Assert.assertTrue(path != null && !path.equals("") && height > 0 && width > 0);
+
+		BitmapFactory.Options options = new BitmapFactory.Options();
+
+		try {
+			options.inJustDecodeBounds = true;
+			Bitmap tmp = BitmapFactory.decodeFile(path, options);
+			if (tmp != null) {
+				tmp.recycle();
+				tmp = null;
+			}
+
+			Log.d(TAG, "extractThumbNail: round=" + width + "x" + height + ", crop=" + crop);
+			final double beY = options.outHeight * 1.0 / height;
+			final double beX = options.outWidth * 1.0 / width;
+			Log.d(TAG, "extractThumbNail: extract beX = " + beX + ", beY = " + beY);
+			options.inSampleSize = (int) (crop ? (beY > beX ? beX : beY) : (beY < beX ? beX : beY));
+			if (options.inSampleSize <= 1) {
+				options.inSampleSize = 1;
+			}
+
+			// NOTE: out of memory error
+			while (options.outHeight * options.outWidth / options.inSampleSize > MAX_DECODE_PICTURE_SIZE) {
+				options.inSampleSize++;
+			}
+
+			int newHeight = height;
+			int newWidth = width;
+			if (crop) {
+				if (beY > beX) {
+					newHeight = (int) (newWidth * 1.0 * options.outHeight / options.outWidth);
+				} else {
+					newWidth = (int) (newHeight * 1.0 * options.outWidth / options.outHeight);
+				}
+			} else {
+				if (beY < beX) {
+					newHeight = (int) (newWidth * 1.0 * options.outHeight / options.outWidth);
+				} else {
+					newWidth = (int) (newHeight * 1.0 * options.outWidth / options.outHeight);
+				}
+			}
+
+			options.inJustDecodeBounds = false;
+
+			Log.i(TAG, "bitmap required size=" + newWidth + "x" + newHeight + ", orig=" + options.outWidth + "x" + options.outHeight + ", sample=" + options.inSampleSize);
+			Bitmap bm = BitmapFactory.decodeFile(path, options);
+			if (bm == null) {
+				Log.e(TAG, "bitmap decode failed");
+				return null;
+			}
+
+			Log.i(TAG, "bitmap decoded size=" + bm.getWidth() + "x" + bm.getHeight());
+			final Bitmap scale = Bitmap.createScaledBitmap(bm, newWidth, newHeight, true);
+			if (scale != null) {
+				bm.recycle();
+				bm = scale;
+			}
+
+			if (crop) {
+				final Bitmap cropped = Bitmap.createBitmap(bm, (bm.getWidth() - width) >> 1, (bm.getHeight() - height) >> 1, width, height);
+				if (cropped == null) {
+					return bm;
+				}
+
+				bm.recycle();
+				bm = cropped;
+				Log.i(TAG, "bitmap croped size=" + bm.getWidth() + "x" + bm.getHeight());
+			}
+			return bm;
+
+		} catch (final OutOfMemoryError e) {
+			Log.e(TAG, "decode bitmap failed: " + e.getMessage());
+			options = null;
+		}
+
+		return null;
 	}
 
 }

@@ -1,5 +1,9 @@
 package com.dongji.market.helper;
-
+/**
+ * 分享功能常量
+ * @author yvon
+ *
+ */
 public class Constants {
 	public static final String IMGTYPE = "image/*";// mimeType 图片类型
 	public static final String TXTTYPE = "text/plain";// mimeType 文本类型
@@ -10,4 +14,5 @@ public class Constants {
 	public static final String TIMELINELABLE = "朋友圈";
 	public static final String WXPKGNAME = "com.tencent.mm";// 微信包名
 	public static final String APP_ID = "wx3ea8689414314421";// APP_ID为你的应用从官方网站申请到的合法appId
+	public static final String APKDETAIL_PREFIX="http://crosswaygd.com/ps/";//详情页url前缀
 }

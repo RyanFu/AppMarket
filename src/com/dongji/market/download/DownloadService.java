@@ -29,8 +29,7 @@ import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.pojo.ApkItem;
 import com.dongji.market.protocol.DataManager;
 
-public class DownloadService extends Service implements DownloadConstDefine,
-		OnDownloadListener {
+public class DownloadService extends Service implements DownloadConstDefine, OnDownloadListener {
 	private static final int EVENT_QUERY_DOWNLOAD = 1; // 查询所有下载
 	private static final int EVENT_ADD_DOWNLOAD = 2; // 添加应用到下载队列开始下载
 	private static final int EVENT_UPDATE_DATA_DONE = 3; // 当更新数据请求到了
@@ -101,8 +100,7 @@ public class DownloadService extends Service implements DownloadConstDefine,
 	}
 
 	private void initHandler() {
-		HandlerThread mHandlerThread = new HandlerThread(
-				"DownloadServiceHandler");
+		HandlerThread mHandlerThread = new HandlerThread("DownloadServiceHandler");
 		mHandlerThread.start();
 		mHandler = new MyHandler(mHandlerThread.getLooper());
 		mHandler.sendEmptyMessage(EVENT_QUERY_DOWNLOAD);
@@ -146,8 +144,7 @@ public class DownloadService extends Service implements DownloadConstDefine,
 		if (tempTraffic > 0) {
 			maxGprsTraffic = tempTraffic * 1024 * 1024;
 		}
-		SharedPreferences pref = getSharedPreferences(
-				AConstDefine.DONGJI_SHAREPREFERENCES, Context.MODE_PRIVATE);
+		SharedPreferences pref = getSharedPreferences(AConstDefine.DONGJI_SHAREPREFERENCES, Context.MODE_PRIVATE);
 		currentGprsTraffic = pref.getLong(AConstDefine.SHARE_DOWNLOADSIZE, 0);
 	}
 
@@ -155,8 +152,7 @@ public class DownloadService extends Service implements DownloadConstDefine,
 	 * 保存下载流量
 	 */
 	private void saveGprsTraffic() {
-		SharedPreferences pref = getSharedPreferences(
-				AConstDefine.DONGJI_SHAREPREFERENCES, Context.MODE_PRIVATE);
+		SharedPreferences pref = getSharedPreferences(AConstDefine.DONGJI_SHAREPREFERENCES, Context.MODE_PRIVATE);
 		SharedPreferences.Editor mEditor = pref.edit();
 		mEditor.putLong(AConstDefine.SHARE_DOWNLOADSIZE, currentGprsTraffic);
 		mEditor.commit();
@@ -186,8 +182,7 @@ public class DownloadService extends Service implements DownloadConstDefine,
 	private void checkPrepareDownload() {
 		for (int i = 0; i < downloadList.size(); i++) {
 			DownloadEntity entity = downloadList.get(i);
-			if (entity.getStatus() == STATUS_OF_PREPARE
-					|| entity.getStatus() == STATUS_OF_PAUSE_ON_EXIT_SYSTEM) {
+			if (entity.getStatus() == STATUS_OF_PREPARE || entity.getStatus() == STATUS_OF_PAUSE_ON_EXIT_SYSTEM) {
 				Intent intent = new Intent(BROADCAST_ACTION_CHECK_DOWNLOAD);
 				sendBroadcast(intent);
 				break;
@@ -209,8 +204,7 @@ public class DownloadService extends Service implements DownloadConstDefine,
 					downloadList.remove(i--);
 					db.deleteDownloadEntity(entity);
 				}
-			} else if (entity.getStatus() == STATUS_OF_DOWNLOADING
-					|| entity.getStatus() == STATUS_OF_EXCEPTION) {
+			} else if (entity.getStatus() == STATUS_OF_DOWNLOADING || entity.getStatus() == STATUS_OF_EXCEPTION) {
 				path += DOWNLOAD_FILE_PREPARE_SUFFIX;
 				File file = new File(path);
 				if (!file.exists()) {
@@ -229,11 +223,9 @@ public class DownloadService extends Service implements DownloadConstDefine,
 			if (BROADCAST_ACTION_ADD_DOWNLOAD.equals(intent.getAction())) {
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
-					DownloadEntity entity = bundle
-							.getParcelable(DOWNLOAD_ENTITY);
+					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
 					if (entity != null) {
-						System.out.println(entity.appName + " "
-								+ mHandler.hasMessages(EVENT_ADD_DOWNLOAD));
+						System.out.println(entity.appName + " " + mHandler.hasMessages(EVENT_ADD_DOWNLOAD));
 						Message msg = mHandler.obtainMessage();
 						msg.what = EVENT_ADD_DOWNLOAD;
 						msg.obj = entity;
@@ -242,18 +234,14 @@ public class DownloadService extends Service implements DownloadConstDefine,
 						// }
 					}
 				}
-			} else if (BROADCAST_ACTION_APP_UPDATE_DATADONE.equals(intent
-					.getAction())) {
+			} else if (BROADCAST_ACTION_APP_UPDATE_DATADONE.equals(intent.getAction())) {
 				mHandler.sendEmptyMessage(EVENT_UPDATE_DATA_DONE);
-			} else if (BROADCAST_ACTION_PAUSE_DOWNLOAD.equals(intent
-					.getAction())) {
+			} else if (BROADCAST_ACTION_PAUSE_DOWNLOAD.equals(intent.getAction())) {
 				mHandler.sendEmptyMessage(EVENT_DWONLOAD_NEXT);
-			} else if (BROADCAST_ACTION_CANCEL_DOWNLOAD.equals(intent
-					.getAction())) {
+			} else if (BROADCAST_ACTION_CANCEL_DOWNLOAD.equals(intent.getAction())) {
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
-					DownloadEntity entity = bundle
-							.getParcelable(DOWNLOAD_ENTITY);
+					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
 					if (entity != null) {
 						Message msg = mHandler.obtainMessage();
 						msg.what = EVENT_DOWNLOAD_CANCEL;
@@ -261,15 +249,12 @@ public class DownloadService extends Service implements DownloadConstDefine,
 						mHandler.sendMessage(msg);
 					}
 				}
-			} else if (BROADCAST_ACTION_ONEKEY_UPDATE
-					.equals(intent.getAction())) {
+			} else if (BROADCAST_ACTION_ONEKEY_UPDATE.equals(intent.getAction())) {
 				mHandler.sendEmptyMessage(EVENT_ONEKEY_UPDATE);
-			} else if (BROADCAST_ACTION_REMOVE_DOWNLOAD.equals(intent
-					.getAction())) {
+			} else if (BROADCAST_ACTION_REMOVE_DOWNLOAD.equals(intent.getAction())) {
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
-					DownloadEntity entity = bundle
-							.getParcelable(DOWNLOAD_ENTITY);
+					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
 					if (entity != null) {
 						Message msg = mHandler.obtainMessage();
 						msg.what = EVENT_REMOVE_DOWNLOAD;
@@ -277,8 +262,7 @@ public class DownloadService extends Service implements DownloadConstDefine,
 						mHandler.sendMessage(msg);
 					}
 				}
-			} else if (BROADCAST_ACTION_GPRS_SETTING_CHANGE.equals(intent
-					.getAction())) {
+			} else if (BROADCAST_ACTION_GPRS_SETTING_CHANGE.equals(intent.getAction())) {
 				Bundle bundle = intent.getExtras();
 				long limitTraffic = bundle.getLong("limitFlow", -1);
 				isOnlyWifi = bundle.getBoolean("isOnlyWifi", true);
@@ -287,12 +271,10 @@ public class DownloadService extends Service implements DownloadConstDefine,
 					maxGprsTraffic = limitTraffic * 1024 * 1024;
 				}
 				mHandler.sendEmptyMessage(EVENT_CONTINUE_DOWNLOAD);
-			} else if (BROADCAST_ACTION_IGNORE_UPDATE
-					.equals(intent.getAction())) {
+			} else if (BROADCAST_ACTION_IGNORE_UPDATE.equals(intent.getAction())) {
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
-					DownloadEntity entity = bundle
-							.getParcelable(DOWNLOAD_ENTITY);
+					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
 					if (entity != null) {
 						Message msg = mHandler.obtainMessage();
 						msg.what = EVENT_IGNORE_UPDATE;
@@ -300,12 +282,10 @@ public class DownloadService extends Service implements DownloadConstDefine,
 						mHandler.sendMessage(msg);
 					}
 				}
-			} else if (BROADCAST_ACTION_CANCEL_IGNORE
-					.equals(intent.getAction())) {
+			} else if (BROADCAST_ACTION_CANCEL_IGNORE.equals(intent.getAction())) {
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
-					DownloadEntity entity = bundle
-							.getParcelable(DOWNLOAD_ENTITY);
+					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
 					if (entity != null) {
 						Message msg = mHandler.obtainMessage();
 						msg.what = EVENT_CANCEL_IGNORE;
@@ -313,12 +293,10 @@ public class DownloadService extends Service implements DownloadConstDefine,
 						mHandler.sendMessage(msg);
 					}
 				}
-			} else if (BROADCAST_ACTION_SINGLE_UPDATE_DONE.equals(intent
-					.getAction())) {
+			} else if (BROADCAST_ACTION_SINGLE_UPDATE_DONE.equals(intent.getAction())) {
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
-					DownloadEntity entity = bundle
-							.getParcelable(DOWNLOAD_ENTITY);
+					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
 					if (entity != null) {
 						Message msg = mHandler.obtainMessage();
 						msg.what = EVENT_SINGLE_UPDATE_DATA_DONE;
@@ -329,11 +307,9 @@ public class DownloadService extends Service implements DownloadConstDefine,
 			} else if (Intent.ACTION_PACKAGE_ADDED.equals(intent.getAction())) {
 				if (!TextUtils.isEmpty(packageStr)) {
 					packageStr = DownloadUtils.parsePackageName(packageStr);
-					PackageInfo info = AndroidUtils.getPackageInfo(
-							mDownloadService, packageStr);
+					PackageInfo info = AndroidUtils.getPackageInfo(mDownloadService, packageStr);
 					if (info != null) {
-						DownloadEntity entity = removeDownloadEntity(
-								info.packageName, info.versionCode);
+						DownloadEntity entity = removeDownloadEntity(info.packageName, info.versionCode);
 						installDownloadEntityDone(entity);
 					}
 				}
@@ -342,15 +318,12 @@ public class DownloadService extends Service implements DownloadConstDefine,
 					packageStr = DownloadUtils.parsePackageName(packageStr);
 					onAppRemoved(packageStr);
 				}
-			} else if (BROADCAST_ACTION_START_ALL_DOWNLOAD.equals(intent
-					.getAction())) {
+			} else if (BROADCAST_ACTION_START_ALL_DOWNLOAD.equals(intent.getAction())) {
 				mHandler.sendEmptyMessage(EVENT_START_ALL_DOWNLOAD);
-			} else if (BROADCAST_ACTION_CLOUD_RESTORE
-					.equals(intent.getAction())) {
+			} else if (BROADCAST_ACTION_CLOUD_RESTORE.equals(intent.getAction())) {
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
-					ArrayList<ApkItem> items = bundle
-							.getParcelableArrayList("cloudList");
+					ArrayList<ApkItem> items = bundle.getParcelableArrayList("cloudList");
 					Message msg = mHandler.obtainMessage();
 					msg.what = EVENT_CLOUD_RESTORE;
 					msg.obj = items;
@@ -368,8 +341,7 @@ public class DownloadService extends Service implements DownloadConstDefine,
 	private void onAppRemoved(String packageName) {
 		for (int i = 0; i < downloadList.size(); i++) {
 			DownloadEntity entity = downloadList.get(i);
-			if (entity.packageName.equals(packageName)
-					&& entity.downloadType == TYPE_OF_UPDATE) { // 是否正在更新的应用保留？
+			if (entity.packageName.equals(packageName) && entity.downloadType == TYPE_OF_UPDATE) { // 是否正在更新的应用保留？
 				downloadList.remove(i);
 				Intent intent = new Intent(BROADCAST_ACTION_REMOVE_COMPLETE);
 				Bundle bundle = new Bundle();
@@ -393,11 +365,9 @@ public class DownloadService extends Service implements DownloadConstDefine,
 			bundle.putParcelable(DOWNLOAD_ENTITY, entity);
 			intent.putExtras(bundle);
 			sendBroadcast(intent);
-			boolean isDeleteApkFile = DJMarketUtils
-					.isAutoDelPkg(mDownloadService);
+			boolean isDeleteApkFile = DJMarketUtils.isAutoDelPkg(mDownloadService);
 			if (isDeleteApkFile) {
-				String path = DOWNLOAD_ROOT_PATH + entity.hashCode()
-						+ DOWNLOAD_FILE_POST_SUFFIX;
+				String path = DOWNLOAD_ROOT_PATH + entity.hashCode() + DOWNLOAD_FILE_POST_SUFFIX;
 				DownloadUtils.deleteDownloadFile(path);
 			}
 			if (mHandler != null) {
@@ -418,11 +388,7 @@ public class DownloadService extends Service implements DownloadConstDefine,
 			if (entity.getStatus() == STATUS_OF_DOWNLOADING) {
 				entity.setStatus(STATUS_OF_PAUSE_ON_EXIT_SYSTEM);
 			}
-			if (entity.downloadType != TYPE_OF_UPDATE
-					|| (entity.downloadType == TYPE_OF_UPDATE && entity
-							.getStatus() != STATUS_OF_INITIAL)
-					|| entity.getStatus() == STATUS_OF_PAUSE_ON_EXIT_SYSTEM
-					|| entity.downloadType == TYPE_OF_IGNORE) {
+			if (entity.downloadType != TYPE_OF_UPDATE || (entity.downloadType == TYPE_OF_UPDATE && entity.getStatus() != STATUS_OF_INITIAL) || entity.getStatus() == STATUS_OF_PAUSE_ON_EXIT_SYSTEM || entity.downloadType == TYPE_OF_IGNORE) {
 				db.addOrUpdateDownload(entity);
 			}
 		}
@@ -435,8 +401,7 @@ public class DownloadService extends Service implements DownloadConstDefine,
 		for (int i = 0; i < downloadList.size(); i++) {
 			DownloadEntity entity = downloadList.get(i);
 			if (entity.downloadType == TYPE_OF_UPDATE) {
-				if (entity.getStatus() != STATUS_OF_DOWNLOADING
-						&& entity.getStatus() != STATUS_OF_COMPLETE) {
+				if (entity.getStatus() != STATUS_OF_DOWNLOADING && entity.getStatus() != STATUS_OF_COMPLETE) {
 					entity.setStatus(STATUS_OF_PREPARE); // 否则无法显示进度条
 					if (currentDownloadNum < MAX_DOWNLOAD_NUM) {
 						entity.setStatus(STATUS_OF_PREPARE);
@@ -496,8 +461,7 @@ public class DownloadService extends Service implements DownloadConstDefine,
 			for (int i = 0; i < downloadList.size(); i++) {
 				final DownloadEntity entity = downloadList.get(i);
 				// 当此应用为初始化状态或应用退出后暂停状态时，则需要立即开始下载
-				if (entity.getStatus() == STATUS_OF_PREPARE
-						|| entity.getStatus() == STATUS_OF_PAUSE_ON_EXIT_SYSTEM) {
+				if (entity.getStatus() == STATUS_OF_PREPARE || entity.getStatus() == STATUS_OF_PAUSE_ON_EXIT_SYSTEM) {
 					entity.setOnDownloadListener(DownloadService.this);
 					currentDownloadNum++;
 					new Thread(entity).start();
@@ -558,8 +522,7 @@ public class DownloadService extends Service implements DownloadConstDefine,
 		if (entity.canDownload()) {
 			entity.setOnDownloadListener(this);
 			currentDownloadNum++;
-			System.out.println("====================currentDownloadNum:"
-					+ currentDownloadNum);
+			System.out.println("====================currentDownloadNum:" + currentDownloadNum);
 			entity.setStatus(STATUS_OF_DOWNLOADING);
 			new Thread(entity).start();
 			// mHandler.post(entity);
@@ -599,14 +562,11 @@ public class DownloadService extends Service implements DownloadConstDefine,
 		}
 		if (i == downloadList.size() && !hasEntity) { // downloadList.size() > 0
 														// &&
-			System.out.println("add entity " + entity.appName + ", "
-					+ entity.getStatus() + ", " + entity.downloadType + ", "
-					+ downloadList.size());
+			System.out.println("add entity " + entity.appName + ", " + entity.getStatus() + ", " + entity.downloadType + ", " + downloadList.size());
 			downloadList.add(entity);
 			int lastIndex = downloadList.size() - 1;
 			downloadList.get(lastIndex).downloadType = TYPE_OF_DOWNLOAD;
-			if (currentDownloadNum < MAX_DOWNLOAD_NUM
-					&& entity.getStatus() == STATUS_OF_PREPARE) {
+			if (currentDownloadNum < MAX_DOWNLOAD_NUM && entity.getStatus() == STATUS_OF_PREPARE) {
 				startDownloadByEntity(downloadList.get(lastIndex));
 			} else {
 				downloadList.get(lastIndex).setStatus(STATUS_OF_PREPARE);
@@ -637,15 +597,11 @@ public class DownloadService extends Service implements DownloadConstDefine,
 		 */
 		for (int i = 0; i < downloadList.size(); i++) {
 			DownloadEntity d = downloadList.get(i);
-			if (d.packageName.equals(entity.packageName)
-					&& d.versionCode == entity.versionCode) {
+			if (d.packageName.equals(entity.packageName) && d.versionCode == entity.versionCode) {
 				if (d.downloadType == TYPE_OF_DOWNLOAD) {
 					d.setStatus(STATUS_OF_PAUSE);
 					downloadList.remove(i);
-					boolean flag = DownloadUtils
-							.deleteDownloadFile(DOWNLOAD_ROOT_PATH
-									+ d.hashCode()
-									+ DOWNLOAD_FILE_PREPARE_SUFFIX);
+					boolean flag = DownloadUtils.deleteDownloadFile(DOWNLOAD_ROOT_PATH + d.hashCode() + DOWNLOAD_FILE_PREPARE_SUFFIX);
 					db.deleteDownloadEntity(d);
 					if (mDownloadStatusListener != null) {
 						mDownloadStatusListener.onRemoveDownload(d);
@@ -653,10 +609,7 @@ public class DownloadService extends Service implements DownloadConstDefine,
 					// startNextDownload();
 				} else if (d.downloadType == TYPE_OF_UPDATE) {
 					d.reset();
-					boolean flag = DownloadUtils
-							.deleteDownloadFile(DOWNLOAD_ROOT_PATH
-									+ d.hashCode()
-									+ DOWNLOAD_FILE_PREPARE_SUFFIX);
+					boolean flag = DownloadUtils.deleteDownloadFile(DOWNLOAD_ROOT_PATH + d.hashCode() + DOWNLOAD_FILE_PREPARE_SUFFIX);
 					// startNextDownload();
 					db.deleteDownloadEntity(d);
 				}
@@ -680,8 +633,7 @@ public class DownloadService extends Service implements DownloadConstDefine,
 					DownloadEntity entity = downloadList.get(j);
 					// if(entity.downloadType==TYPE_OF_DOWNLOAD ||
 					// entity.downloadType==TYPE_OF_COMPLETE) {
-					if (entity.appId == item.appId
-							&& entity.category == item.category) {
+					if (entity.appId == item.appId && entity.category == item.category) {
 						break;
 					}
 					// }
@@ -715,8 +667,7 @@ public class DownloadService extends Service implements DownloadConstDefine,
 			final DownloadEntity entity = updateList.get(i);
 			entity.setStatus(STATUS_OF_PREPARE);
 			if (currentDownloadNum < MAX_DOWNLOAD_NUM) {
-				if (entity.getStatus() == STATUS_OF_PREPARE
-						|| entity.getStatus() == STATUS_OF_PAUSE_ON_EXIT_SYSTEM) {
+				if (entity.getStatus() == STATUS_OF_PREPARE || entity.getStatus() == STATUS_OF_PAUSE_ON_EXIT_SYSTEM) {
 					entity.setOnDownloadListener(DownloadService.this);
 					currentDownloadNum++;
 					new Thread(entity).start();
@@ -736,8 +687,7 @@ public class DownloadService extends Service implements DownloadConstDefine,
 
 	@Override
 	public void onDownloadStatusChanged(DownloadEntity entity) {
-		System.out.println(entity.appName + " onDownloadStatusChanged status:"
-				+ entity.getStatus());
+		System.out.println(entity.appName + " onDownloadStatusChanged status:" + entity.getStatus());
 
 		// synchronized (obj) {
 		switch (entity.getStatus()) {
@@ -757,9 +707,7 @@ public class DownloadService extends Service implements DownloadConstDefine,
 			break;
 		case STATUS_OF_PAUSE_ON_TRAFFIC_LIMIT:
 			currentDownloadNum--;
-			System.out
-					.println("STATUS_OF_PAUSE_ON_TRAFFIC_LIMIT currentDownloadNum:"
-							+ currentDownloadNum);
+			System.out.println("STATUS_OF_PAUSE_ON_TRAFFIC_LIMIT currentDownloadNum:" + currentDownloadNum);
 			break;
 		case STATUS_OF_INITIAL:
 			mHandler.sendEmptyMessage(EVENT_DWONLOAD_NEXT);
@@ -791,15 +739,13 @@ public class DownloadService extends Service implements DownloadConstDefine,
 				break;
 			case EVENT_DWONLOAD_NEXT:
 				currentDownloadNum--;
-				System.out.println("EVENT_DWONLOAD_NEXT currentDownloadNum:"
-						+ currentDownloadNum + ", ");
+				System.out.println("EVENT_DWONLOAD_NEXT currentDownloadNum:" + currentDownloadNum + ", ");
 				startNextDownload();
 				break;
 			case EVENT_DOWNLOAD_CANCEL:
 				entity = (DownloadEntity) msg.obj;
 				// currentDownloadNum--;
-				System.out.println("EVENT_DOWNLOAD_CANCEL currentDownloadNum:"
-						+ currentDownloadNum);
+				System.out.println("EVENT_DOWNLOAD_CANCEL currentDownloadNum:" + currentDownloadNum);
 				cancelDownload(entity);
 				break;
 			case EVENT_ONEKEY_UPDATE:
@@ -849,9 +795,7 @@ public class DownloadService extends Service implements DownloadConstDefine,
 	 * @param entity
 	 */
 	private void sendStatisticsInstall(DownloadEntity entity) {
-		System.out.println("send "
-				+ DataManager.newInstance().statisticsForInstall(entity.appId,
-						entity.category));
+		System.out.println("send " + DataManager.newInstance().statisticsForInstall(entity.appId, entity.category));
 	}
 
 	/**
@@ -863,8 +807,7 @@ public class DownloadService extends Service implements DownloadConstDefine,
 			int i = 0;
 			for (; i < downloadList.size(); i++) {
 				DownloadEntity entity = downloadList.get(i);
-				if (entity.packageName.equals(item.packageName)
-						&& entity.versionCode == item.versionCode) {
+				if (entity.packageName.equals(item.packageName) && entity.versionCode == item.versionCode) {
 					break;
 				}
 			}
@@ -905,13 +848,11 @@ public class DownloadService extends Service implements DownloadConstDefine,
 	private void cancelIgnore(DownloadEntity entity) {
 		for (int i = 0; i < downloadList.size(); i++) {
 			DownloadEntity d = downloadList.get(i);
-			if (d.packageName.equals(entity.packageName)
-					&& d.versionCode == entity.versionCode) {
+			if (d.packageName.equals(entity.packageName) && d.versionCode == entity.versionCode) {
 				downloadList.remove(i);
 				db.deleteDownloadEntity(d);
 
-				Intent intent = new Intent(
-						BROADCAST_ACTION_REQUEST_SINGLE_UPDATE);
+				Intent intent = new Intent(BROADCAST_ACTION_REQUEST_SINGLE_UPDATE);
 				Bundle bundle = new Bundle();
 				bundle.putParcelable(DOWNLOAD_ENTITY, entity);
 				intent.putExtras(bundle);
@@ -929,8 +870,7 @@ public class DownloadService extends Service implements DownloadConstDefine,
 	private void ignoreUpdateEntity(DownloadEntity entity) {
 		for (int i = 0; i < downloadList.size(); i++) {
 			DownloadEntity d = downloadList.get(i);
-			if (d.packageName.equals(entity.packageName)
-					&& d.versionCode == entity.versionCode) {
+			if (d.packageName.equals(entity.packageName) && d.versionCode == entity.versionCode) {
 				d.reset();
 				break;
 			}
@@ -943,13 +883,11 @@ public class DownloadService extends Service implements DownloadConstDefine,
 	 * @param entity
 	 */
 	private void checkDownloadCompleteApk(DownloadEntity entity) {
-		String filePath = DOWNLOAD_ROOT_PATH + entity.hashCode()
-				+ DOWNLOAD_FILE_POST_SUFFIX;
+		String filePath = DOWNLOAD_ROOT_PATH + entity.hashCode() + DOWNLOAD_FILE_POST_SUFFIX;
 		// 验证此 apk 文件是否正确
 		boolean flag = DownloadUtils.checkApkFile(filePath);
 
-		System.out
-				.println(entity.appName + " checkDownloadCompleteApk " + flag);
+		System.out.println(entity.appName + " checkDownloadCompleteApk " + flag);
 
 		if (flag) {
 			entity.downloadType = TYPE_OF_COMPLETE;
@@ -975,8 +913,7 @@ public class DownloadService extends Service implements DownloadConstDefine,
 	 * @param entity
 	 */
 	private void installApp(final DownloadEntity entity) {
-		final String path = DOWNLOAD_ROOT_PATH + entity.hashCode()
-				+ DOWNLOAD_FILE_POST_SUFFIX;
+		final String path = DOWNLOAD_ROOT_PATH + entity.hashCode() + DOWNLOAD_FILE_POST_SUFFIX;
 		if (DJMarketUtils.isDefaultInstall(this)) {
 			if (AndroidUtils.isRoot()) {
 				// System.out.println("root install ......");
@@ -990,19 +927,15 @@ public class DownloadService extends Service implements DownloadConstDefine,
 						// succeed);
 						if (!succeed) {
 							// DownloadUtils.installApk(this, path);
-							for (int i = 0; i < DownloadAdapter.rootApkList
-									.size(); i++) {
-								if (DownloadAdapter.rootApkList.get(i).equals(
-										entity.packageName)) {
-									DownloadAdapter.rootApkList
-											.remove(entity.packageName);
+							for (int i = 0; i < DownloadAdapter.rootApkList.size(); i++) {
+								if (DownloadAdapter.rootApkList.get(i).equals(entity.packageName)) {
+									DownloadAdapter.rootApkList.remove(entity.packageName);
 									break;
 								}
 							}
 							Intent intent = new Intent();
 							intent.setAction(BROADCAST_ACTION_UPDATE_ROOTSTATUS);
-							intent.putExtra(DOWNLOAD_APKPACKAGENAME,
-									entity.packageName);
+							intent.putExtra(DOWNLOAD_APKPACKAGENAME, entity.packageName);
 							sendBroadcast(intent);
 						}
 					}
@@ -1031,13 +964,11 @@ public class DownloadService extends Service implements DownloadConstDefine,
 					int j = 0;
 					for (; j < updateList.size(); j++) {
 						ApkItem item = updateList.get(j);
-						if (item.packageName.equals(d.packageName)
-								&& item.versionCode == d.versionCode) {
+						if (item.packageName.equals(d.packageName) && item.versionCode == d.versionCode) {
 							d.downloadType = TYPE_OF_UPDATE;
 							boolean flag = d.reset(); // 判断是否已经重置，防止在下载页面已安装栏进行重复点击删除
 							if (flag) {
-								Intent intent = new Intent(
-										BROADCAST_ACTION_ADD_UPDATE);
+								Intent intent = new Intent(BROADCAST_ACTION_ADD_UPDATE);
 								Bundle bundle = new Bundle();
 								bundle.putParcelable(DOWNLOAD_ENTITY, d);
 								intent.putExtras(bundle);
@@ -1048,8 +979,7 @@ public class DownloadService extends Service implements DownloadConstDefine,
 						}
 					}
 					if (j == updateList.size()) {
-						System.out.println("removeDownloadEntity "
-								+ entity.appName);
+						System.out.println("removeDownloadEntity " + entity.appName);
 						db.deleteDownloadEntity(d);
 						return downloadList.remove(i) != null;
 					}
@@ -1112,12 +1042,10 @@ public class DownloadService extends Service implements DownloadConstDefine,
 	 * @param versionCode
 	 * @return
 	 */
-	private DownloadEntity removeDownloadEntity(String packageName,
-			int versionCode) {
+	private DownloadEntity removeDownloadEntity(String packageName, int versionCode) {
 		for (int i = 0; i < downloadList.size(); i++) {
 			DownloadEntity d = downloadList.get(i);
-			if (d.packageName.equals(packageName)
-					&& d.versionCode == versionCode) {
+			if (d.packageName.equals(packageName) && d.versionCode == versionCode) {
 				return downloadList.remove(i);
 			}
 		}

@@ -470,6 +470,7 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 				if (!isFinishing()) {
 					final CustomDialog clearSearchDialog = new CustomDialog(Setting_Activity.this).setIcon(R.drawable.icon);
 					clearSearchDialog.setTitle(R.string.clear_record);
+					
 					clearSearchDialog.setMessage(R.string.confirm_clear_record).setPositiveButton(R.string.confirm, new OnClickListener() {
 
 						@Override

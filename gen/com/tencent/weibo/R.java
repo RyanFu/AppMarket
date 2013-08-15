@@ -35,38 +35,38 @@ public final class R {
 		public static final int ic_launcher = 0x7f020036;
 	}
 	public static final class id {
-		public static final int btnAPItest = 0x7f0b015f;
-		public static final int btnAPItest3 = 0x7f0b0161;
-		public static final int btnAccess = 0x7f0b015d;
-		public static final int btnAuthorize = 0x7f0b015b;
-		public static final int btnGetUsrInfo = 0x7f0b0167;
-		public static final int btnImplicitGrant = 0x7f0b0160;
-		public static final int btnOAuthV1 = 0x7f0b016b;
-		public static final int btnOAuthV2ImplicitGrant = 0x7f0b016c;
-		public static final int btnRequest = 0x7f0b0159;
-		public static final int btnSendMsg = 0x7f0b0168;
-		public static final int btnSendMsgWithPic = 0x7f0b0169;
-		public static final int loadinglayout = 0x7f0b011e;
-		public static final int send_twitter = 0x7f0b0165;
-		public static final int sharing_layout = 0x7f0b0166;
-		public static final int sharing_progressbar = 0x7f0b0143;
-		public static final int sharing_textview = 0x7f0b0144;
-		public static final int surplus_text = 0x7f0b0163;
-		public static final int textAccess = 0x7f0b015e;
-		public static final int textRequest = 0x7f0b015a;
-		public static final int textResponse = 0x7f0b016a;
-		public static final int textVerifier = 0x7f0b015c;
-		public static final int text_limit_num = 0x7f0b0164;
-		public static final int twitter_content = 0x7f0b0162;
+		public static final int btnAPItest = 0x7f0b0159;
+		public static final int btnAPItest3 = 0x7f0b015b;
+		public static final int btnAccess = 0x7f0b0157;
+		public static final int btnAuthorize = 0x7f0b0155;
+		public static final int btnGetUsrInfo = 0x7f0b0161;
+		public static final int btnImplicitGrant = 0x7f0b015a;
+		public static final int btnOAuthV1 = 0x7f0b0165;
+		public static final int btnOAuthV2ImplicitGrant = 0x7f0b0166;
+		public static final int btnRequest = 0x7f0b0153;
+		public static final int btnSendMsg = 0x7f0b0162;
+		public static final int btnSendMsgWithPic = 0x7f0b0163;
+		public static final int loadinglayout = 0x7f0b0118;
+		public static final int send_twitter = 0x7f0b015f;
+		public static final int sharing_layout = 0x7f0b0160;
+		public static final int sharing_progressbar = 0x7f0b013d;
+		public static final int sharing_textview = 0x7f0b013e;
+		public static final int surplus_text = 0x7f0b015d;
+		public static final int textAccess = 0x7f0b0158;
+		public static final int textRequest = 0x7f0b0154;
+		public static final int textResponse = 0x7f0b0164;
+		public static final int textVerifier = 0x7f0b0156;
+		public static final int text_limit_num = 0x7f0b015e;
+		public static final int twitter_content = 0x7f0b015c;
 	}
 	public static final class layout {
-		public static final int layout_sharing_progress = 0x7f03004b;
-		public static final int tencent_oauthv1 = 0x7f030052;
-		public static final int tencent_oauthv2 = 0x7f030053;
-		public static final int tencent_share_dialog = 0x7f030054;
-		public static final int tencent_weibo = 0x7f030055;
-		public static final int tencent_weibo_main = 0x7f030056;
-		public static final int test_tencent_main = 0x7f030057;
+		public static final int layout_sharing_progress = 0x7f03004a;
+		public static final int tencent_oauthv1 = 0x7f030051;
+		public static final int tencent_oauthv2 = 0x7f030052;
+		public static final int tencent_share_dialog = 0x7f030053;
+		public static final int tencent_weibo = 0x7f030054;
+		public static final int tencent_weibo_main = 0x7f030055;
+		public static final int test_tencent_main = 0x7f030056;
 	}
 	public static final class string {
 		public static final int app_name = 0x7f080000;

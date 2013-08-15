@@ -42,7 +42,6 @@ import com.dongji.market.activity.MainActivity;
 import com.dongji.market.activity.Search_Activity2;
 import com.dongji.market.activity.Search_Result_Activity;
 import com.dongji.market.activity.Setting_Activity;
-import com.dongji.market.activity.ShareActivity;
 import com.dongji.market.activity.SoftwareManageActivity;
 import com.dongji.market.adapter.SearchHistoryAdapter;
 import com.dongji.market.application.AppMarket;
@@ -65,6 +64,7 @@ import com.dongji.market.widget.CustomSearchView;
 import com.dongji.market.widget.CustomSearchView.OnItemClickListener;
 import com.dongji.market.widget.CustomSearchView.OnKeyDownListener;
 import com.dongji.market.widget.CustomSearchView.OnTextChangeListener;
+import com.dongji.market.widget.ShareDialog;
 import com.tencent.weibo.demo.OAuthV2ImplicitGrant;
 import com.tencent.weibo.oauthv2.OAuthV2;
 import com.weibo.net.Weibo;
@@ -408,28 +408,14 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 			}
 			break;
 		case R.id.shareButton:
-			Intent intent2 = new Intent(cxt, ShareActivity.class);
-//			String share_title="";
-//			String share_subject=cxt.getResources().getString(R.string.share_us_subject);
-//			String share_iconUrl="";
-//			String share_content = "";
-//			if (cxt.getClass().equals(MainActivity.class)) {
-//				share_title=cxt.getResources().getString(R.string.share_us_title);
-//				share_content = cxt.getResources().getString(R.string.share_us_content) + DataManager.newInstance().getShortUrlByLongUrl(cxt.getResources().getString(R.string.share_us_url)) + cxt.getResources().getString(R.string.share_us_content2);
-//			} else 
-			if (cxt.getClass().equals(ApkDetailActivity.class)) {
-				boolean isApkDetailPage=true;
-				ApkItem apkItem = bundle.getParcelable("apkItem");
-				String share_content = cxt.getResources().getString(R.string.share_text1) + apkItem.appName + cxt.getResources().getString(R.string.share_text2) + DataManager.newInstance().getShortUrlByLongUrl(apkItem.apkUrl) + cxt.getResources().getString(R.string.share_text3);
-				String share_content1=cxt.getResources().getString(R.string.share_us_content);
-				intent2.putExtra("title",apkItem.appName);
-				intent2.putExtra("content", share_content); // 分享内容1
-				intent2.putExtra("content1", share_content1);//分享内容2
-				intent2.putExtra("iconUrl", apkItem.appIconUrl);
-				intent2.putExtra("appId",apkItem.appId);
-				intent2.putExtra("isApkDetailPage", isApkDetailPage);
+			if (!cxt.isFinishing()) {
+				boolean isApkDetailPage = false;
+				if (cxt.getClass().equals(ApkDetailActivity.class)) {
+					isApkDetailPage = true;
+				}
+				ShareDialog shareDialog = new ShareDialog(cxt, bundle, isApkDetailPage);
+				shareDialog.show();
 			}
-			cxt.startActivity(intent2);
 			break;
 		case R.id.popup_sms_share:
 			if (!isSharing) {

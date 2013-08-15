@@ -331,7 +331,8 @@
     <string name="sms">簡訊</string>
     <string name="sina_twitter">新浪微博</string>
     <string name="tencent_twitter">騰訊微博</string>
-    <string name="share_to_friends">分享給朋友</string>
+    <string name="share_custom">自定義分享</string>
+    <string name="share_system">系統自帶分享</string>
     <string name="share_text1">這年頭，發現好的東西不拿出來分享壹下，實在是不厚道，在動機市場發現個有趣的APP：</string>
     <string name="share_text2"> ，下載地址：</string>
     <string name="share_text3">  圍觀排隊中</string>

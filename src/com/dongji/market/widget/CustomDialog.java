@@ -39,18 +39,12 @@ public class CustomDialog extends Dialog {
 	}
 
 	private void initViews() {
-		mContentView = getLayoutInflater().inflate(
-				R.layout.widget_uninstall_dialog, null);
-		mIcon = (ImageView) mContentView
-				.findViewById(R.id.uninstall_dialog_icon);
-		mTitle = (TextView) mContentView
-				.findViewById(R.id.uninstall_dialog_name);
-		mMessage = (TextView) mContentView
-				.findViewById(R.id.uninstall_dialog_message);
-		mPositiveBtn = (Button) mContentView
-				.findViewById(R.id.confirm_uninstall);
-		mNegativeBtn = (Button) mContentView
-				.findViewById(R.id.cancel_uninstall);
+		mContentView = getLayoutInflater().inflate(R.layout.widget_uninstall_dialog, null);
+		mIcon = (ImageView) mContentView.findViewById(R.id.uninstall_dialog_icon);
+		mTitle = (TextView) mContentView.findViewById(R.id.uninstall_dialog_name);
+		mMessage = (TextView) mContentView.findViewById(R.id.uninstall_dialog_message);
+		mPositiveBtn = (Button) mContentView.findViewById(R.id.confirm_uninstall);
+		mNegativeBtn = (Button) mContentView.findViewById(R.id.cancel_uninstall);
 		defaultPositiveOnClickListener();
 		defaultNegativeOnClickListener();
 	}
@@ -86,8 +80,7 @@ public class CustomDialog extends Dialog {
 	}
 
 	public CustomDialog setTextHeight(int height) {
-		LinearLayout.LayoutParams mParams = (LinearLayout.LayoutParams) mMessage
-				.getLayoutParams();
+		LinearLayout.LayoutParams mParams = (LinearLayout.LayoutParams) mMessage.getLayoutParams();
 		mParams.height = height;
 		mMessage.setLayoutParams(mParams);
 		return this;
@@ -106,7 +99,7 @@ public class CustomDialog extends Dialog {
 	}
 
 	public CustomDialog setMessage(int id) {
-		if(mMessage!=null) {
+		if (mMessage != null) {
 			mMessage.setText(cxt.getResources().getString(id));
 		}
 		return this;
@@ -132,8 +125,7 @@ public class CustomDialog extends Dialog {
 		});
 	}
 
-	public CustomDialog setPositiveButton(String name,
-			View.OnClickListener listener) {
+	public CustomDialog setPositiveButton(String name, View.OnClickListener listener) {
 		mPositiveBtn.setText(name);
 		if (listener != null) {
 			mPositiveBtn.setOnClickListener(listener);
@@ -141,8 +133,7 @@ public class CustomDialog extends Dialog {
 		return this;
 	}
 
-	public CustomDialog setNegativeButton(String name,
-			View.OnClickListener listener) {
+	public CustomDialog setNegativeButton(String name, View.OnClickListener listener) {
 		mNegativeBtn.setText(name);
 		if (listener != null) {
 			mNegativeBtn.setOnClickListener(listener);

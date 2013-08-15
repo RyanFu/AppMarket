@@ -21,7 +21,7 @@ import com.dongji.market.download.AConstDefine;
 import com.dongji.market.protocol.DataManager;
 import com.dongji.market.receiver.CommonReceiver;
 import com.dongji.market.widget.AboutDialog;
-import com.dongji.market.widget.ShareDialog_unuse;
+import com.dongji.market.widget.ShareDialog;
 
 public class AboutUsActivity extends Activity {
 	private TextView mPublishDateTV, mVersionInfoTV;

@@ -11,7 +11,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
     <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
     <uses-permission android:name="android.permission.READ_LOGS" >
@@ -21,8 +20,8 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.RESTART_PACKAGES"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.RESTART_PACKAGES" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.INSTALL_PACKAGES" />
 
     <application
@@ -47,8 +46,8 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.kaizhang" >
-            <intent-filter >
-                <category android:name="android.intent.category.HOME"/>
+            <intent-filter>
+                <category android:name="android.intent.category.HOME" />
             </intent-filter>
         </activity>
         <activity
@@ -210,18 +209,17 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.kaizhang" >
         </activity>
-
-        <activity 
+        <activity
             android:name=".activity.ThemeActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.kaizhang">
+            android:theme="@style/Theme.kaizhang" >
         </activity>
-        <activity 
+        <activity
             android:name=".activity.ThemeListActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.kaizhang">
+            android:theme="@style/Theme.kaizhang" >
         </activity>
-        
+
         <service
             android:name=".download.ADownloadService"
             android:enabled="true" />
@@ -250,10 +248,18 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.kaizhang" >
-            <intent-filter >
-                <action android:name="android.intent.action.SEND"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+        </activity>
+        <!-- 分享页 -->
+        <activity
+            android:name=".activity.ShareActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.kaizhang" >
         </activity>
 
         <service android:name=".download.DownloadService" />

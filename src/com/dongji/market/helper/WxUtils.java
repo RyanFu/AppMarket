@@ -2,13 +2,10 @@ package com.dongji.market.helper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.io.RandomAccessFile;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 
 import junit.framework.Assert;
 
@@ -18,6 +15,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.Bitmap.CompressFormat;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.tencent.mm.sdk.openapi.IWXAPI;
@@ -36,6 +34,14 @@ public class WxUtils {
 	private static IWXAPI api;
 	private static final String TAG = "SDK_Sample.Util";
 	private static final int MAX_DECODE_PICTURE_SIZE = 1920 * 1440;
+	private static final String EXTERNAL_STORAGE_DIRECTORY_PATH = AndroidUtils.getSdcardFile().getPath() + "/.dongji/dongjiMarket/cache/images/";
+	private static final BitmapFactory.Options mOptions = new BitmapFactory.Options();
+
+	static {
+		mOptions.inPreferredConfig = Bitmap.Config.RGB_565;// 16位位图
+		mOptions.inPurgeable = true;// BitmapFactory创建的Bitmap用于存储Pixel的内存空间在系统内存不足时可以被回收
+		mOptions.inInputShareable = true;// 位图能够共享一个指向数据源的引用，或者是进行一份拷贝
+	}
 
 	/**
 	 * 
@@ -219,7 +225,39 @@ public class WxUtils {
 		localWXMediaMessage.title = title;
 		localWXMediaMessage.description = text;
 		if (bitmap != null) {
-			localWXMediaMessage.thumbData = bmpToByteArray(bitmap, true);
+			localWXMediaMessage.thumbData = bmpToByteArray(bitmap, false);
+		}
+		SendMessageToWX.Req localReq = new SendMessageToWX.Req();
+		localReq.transaction = System.currentTimeMillis() + "";
+		localReq.message = localWXMediaMessage;
+		localReq.scene = scene;
+		api.sendReq(localReq);
+
+	}
+
+	/**
+	 * 发布链接
+	 * 
+	 * @param url
+	 *            链接的地址
+	 * @param title
+	 *            链接的标题
+	 * @param text
+	 *            链接的内容
+	 * @param bitmap
+	 *            链接的图片资源
+	 * @param scene
+	 *            SendMessageToWX.Req.WXSceneTimeline 发送到朋友圈
+	 *            SendMessageToWX.Req.WXSceneSession 发送到会话
+	 */
+	public static void sendWebPageWx(String url, String title, String text, byte[] bytes, int scene) {
+		WXWebpageObject localWXWebpageObject = new WXWebpageObject();
+		localWXWebpageObject.webpageUrl = url;
+		WXMediaMessage localWXMediaMessage = new WXMediaMessage(localWXWebpageObject);
+		localWXMediaMessage.title = title;
+		localWXMediaMessage.description = text;
+		if (bytes != null) {
+			localWXMediaMessage.thumbData = bytes;
 		}
 		SendMessageToWX.Req localReq = new SendMessageToWX.Req();
 		localReq.transaction = System.currentTimeMillis() + "";
@@ -293,33 +331,6 @@ public class WxUtils {
 	}
 
 	/**
-	 * 获取html数据字节数组
-	 * 
-	 * @param url
-	 * @return
-	 */
-	public static byte[] getHtmlByteArray(final String url) {
-		URL htmlUrl = null;
-		InputStream inStream = null;
-		try {
-			htmlUrl = new URL(url);
-			URLConnection connection = htmlUrl.openConnection();
-			HttpURLConnection httpConnection = (HttpURLConnection) connection;
-			int responseCode = httpConnection.getResponseCode();
-			if (responseCode == HttpURLConnection.HTTP_OK) {
-				inStream = httpConnection.getInputStream();
-			}
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		byte[] data = inputStreamToByte(inStream);
-
-		return data;
-	}
-
-	/**
 	 * 输入流转字节数组
 	 * 
 	 * @param is
@@ -340,59 +351,6 @@ public class WxUtils {
 		}
 
 		return null;
-	}
-
-	/**
-	 * 文件转字节数组
-	 * 
-	 * @param fileName
-	 * @param offset
-	 * @param len
-	 * @return
-	 */
-	public static byte[] readFromFile(String fileName, int offset, int len) {
-		if (fileName == null) {
-			return null;
-		}
-
-		File file = new File(fileName);
-		if (!file.exists()) {
-			Log.i(TAG, "readFromFile: file not found");
-			return null;
-		}
-
-		if (len == -1) {
-			len = (int) file.length();
-		}
-
-		Log.d(TAG, "readFromFile : offset = " + offset + " len = " + len + " offset + len = " + (offset + len));
-
-		if (offset < 0) {
-			Log.e(TAG, "readFromFile invalid offset:" + offset);
-			return null;
-		}
-		if (len <= 0) {
-			Log.e(TAG, "readFromFile invalid len:" + len);
-			return null;
-		}
-		if (offset + len > (int) file.length()) {
-			Log.e(TAG, "readFromFile invalid file len:" + file.length());
-			return null;
-		}
-
-		byte[] b = null;
-		try {
-			RandomAccessFile in = new RandomAccessFile(fileName, "r");
-			b = new byte[len]; // 创建合适文件大小的数组
-			in.seek(offset);
-			in.readFully(b);
-			in.close();
-
-		} catch (Exception e) {
-			Log.e(TAG, "readFromFile : errMsg = " + e.getMessage());
-			e.printStackTrace();
-		}
-		return b;
 	}
 
 	/**
@@ -480,6 +438,42 @@ public class WxUtils {
 			options = null;
 		}
 
+		return null;
+	}
+
+	/**
+	 * 获取图片缓存
+	 * 
+	 * @param url
+	 * @return
+	 */
+	public static Bitmap getBitmapFromFile(String url) {
+		String filePath = null;
+		Bitmap bm = null;
+		try {
+			filePath = EXTERNAL_STORAGE_DIRECTORY_PATH + getHashCode(url) + "_" + url.substring(url.lastIndexOf(".") + 1, url.length());
+			File imageFile = new File(filePath);
+			bm = BitmapFactory.decodeStream(new FileInputStream(imageFile), null, mOptions);
+		} catch (FileNotFoundException e) {
+			System.out.println("============" + filePath + ", " + e);
+		} catch (OutOfMemoryError e) {
+			if (bm != null && !bm.isRecycled()) {
+				bm.recycle();
+			}
+		}
+		return bm;
+	}
+
+	/**
+	 * 获取url的hashcode
+	 * 
+	 * @param url
+	 * @return
+	 */
+	private static String getHashCode(String url) {
+		if (!TextUtils.isEmpty(url)) {
+			return String.valueOf(url.hashCode());
+		}
 		return null;
 	}
 

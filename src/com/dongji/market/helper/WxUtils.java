@@ -225,7 +225,7 @@ public class WxUtils {
 		localWXMediaMessage.title = title;
 		localWXMediaMessage.description = text;
 		if (bitmap != null) {
-			localWXMediaMessage.thumbData = bmpToByteArray(bitmap, false);
+			localWXMediaMessage.thumbData = bmpToByteArray(bitmap, true);
 		}
 		SendMessageToWX.Req localReq = new SendMessageToWX.Req();
 		localReq.transaction = System.currentTimeMillis() + "";
@@ -453,7 +453,9 @@ public class WxUtils {
 		try {
 			filePath = EXTERNAL_STORAGE_DIRECTORY_PATH + getHashCode(url) + "_" + url.substring(url.lastIndexOf(".") + 1, url.length());
 			File imageFile = new File(filePath);
-			bm = BitmapFactory.decodeStream(new FileInputStream(imageFile), null, mOptions);
+			if (imageFile.exists()) {
+				bm = BitmapFactory.decodeStream(new FileInputStream(imageFile), null, mOptions);
+			}
 		} catch (FileNotFoundException e) {
 			System.out.println("============" + filePath + ", " + e);
 		} catch (OutOfMemoryError e) {

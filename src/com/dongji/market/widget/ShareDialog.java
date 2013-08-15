@@ -15,12 +15,8 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.view.Display;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
@@ -54,8 +50,8 @@ public class ShareDialog extends Dialog {
 			apkItem = bundle.getParcelable("apkItem");
 			title = apkItem.appName;
 			content = apkItem.discription;
-			icon = WxUtils.getBitmapFromFile(apkItem.apkUrl);
-			shareUrl = Constants.APKDETAIL_PREFIX + intent.getStringExtra("appId");
+			icon = WxUtils.getBitmapFromFile(apkItem.appIconUrl);
+			shareUrl = Constants.APKDETAIL_PREFIX + apkItem.appId;
 		} else {
 			title = context.getResources().getString(R.string.DJ_app_center);
 			content = context.getResources().getString(R.string.share_us_content);
@@ -149,7 +145,7 @@ public class ShareDialog extends Dialog {
 					intent.setComponent(componetName);
 					intent.setType(Constants.TXTTYPE);
 					intent.putExtra(Intent.EXTRA_SUBJECT, title); // 分享主题
-					intent.putExtra(Intent.EXTRA_TEXT, content);
+					intent.putExtra(Intent.EXTRA_TEXT, content + shareUrl);
 					context.startActivity(intent);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -157,7 +153,6 @@ public class ShareDialog extends Dialog {
 				dismiss();
 			}
 		});
-
 	}
 
 }

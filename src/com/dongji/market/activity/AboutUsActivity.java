@@ -61,13 +61,8 @@ public class AboutUsActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				Intent intent = new Intent(Intent.ACTION_SEND);
-				intent.setType("text/plain");
-				intent.putExtra(Intent.EXTRA_SUBJECT, share_subject);	//分享主题
-				intent.putExtra(Intent.EXTRA_TEXT, share_content);		//分享内容
-//				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);	
-				startActivity(Intent.createChooser(intent, share_dialog_title));//选择对话框标题
+				ShareDialog shareDialog = new ShareDialog(AboutUsActivity.this, null, false);
+				shareDialog.show();
 			}
 		});
 		

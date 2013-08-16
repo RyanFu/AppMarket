@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.myjson.JSONException;
+
 import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -15,6 +17,10 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,10 +30,12 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.dongji.market.R;
+import com.dongji.market.activity.ApkDetailActivity;
 import com.dongji.market.adapter.ShareAdapter;
 import com.dongji.market.helper.Constants;
 import com.dongji.market.helper.WxUtils;
 import com.dongji.market.pojo.ApkItem;
+import com.dongji.market.protocol.DataManager;
 import com.tencent.mm.sdk.openapi.SendMessageToWX;
 
 public class ShareDialog extends Dialog {
@@ -42,6 +50,9 @@ public class ShareDialog extends Dialog {
 	private String shareUrl;// 分享url
 	private ArrayList<HashMap<String, Object>> appInfoList;
 	private boolean wxInstall;
+	private ApkItem item;
+	private MyHandler mHandler;
+	private static final int EVENT_REQUEST_WX_DATA = 1;
 
 	public ShareDialog(Context context, Bundle bundle, boolean isApkDetailPage) {
 		super(context, R.style.dialog_progress_default);
@@ -51,15 +62,22 @@ public class ShareDialog extends Dialog {
 			title = apkItem.appName;
 			content = apkItem.discription;
 			icon = WxUtils.getBitmapFromFile(apkItem.appIconUrl);
-			shareUrl = Constants.APKDETAIL_PREFIX + apkItem.appId;
+			shareUrl = Constants.APKDETAIL_PREFIX + apkItem.category + "/" + apkItem.appId + ".html";
 		} else {
 			title = context.getResources().getString(R.string.DJ_app_center);
 			content = context.getResources().getString(R.string.share_us_content);
 			icon = BitmapFactory.decodeResource(context.getResources(), R.drawable.icon);
-			shareUrl = Constants.APKDETAIL_PREFIX + "88888";
+			shareUrl = Constants.DONGJI_MARKET_URL;
 		}
 		getAppInfo();
 		initView();
+	}
+
+	private void initHandler() {
+		HandlerThread mHandlerThread = new HandlerThread("handler");
+		mHandlerThread.start();
+		mHandler = new MyHandler(mHandlerThread.getLooper());
+		mHandler.sendEmptyMessage(EVENT_REQUEST_WX_DATA);
 	}
 
 	@Override
@@ -98,6 +116,9 @@ public class ShareDialog extends Dialog {
 			tempHashMap.put("name", lableName);
 			appInfoList.add(tempHashMap);
 		}
+		if (!wxInstall) {
+			initHandler();
+		}
 	}
 
 	private void initView() {
@@ -118,6 +139,13 @@ public class ShareDialog extends Dialog {
 					WxUtils.sendWebPageWx(shareUrl, title, content, icon, SendMessageToWX.Req.WXSceneSession);
 				} else {
 					Toast.makeText(context, "跳转到微信详情页面！", Toast.LENGTH_SHORT).show();
+					intent = new Intent(context, ApkDetailActivity.class);
+					Bundle bundle = new Bundle();
+					if (item != null) {
+						bundle.putParcelable("apkItem", item);
+						intent.putExtras(bundle);
+						context.startActivity(intent);
+					}
 				}
 				dismiss();
 			}
@@ -155,4 +183,22 @@ public class ShareDialog extends Dialog {
 		});
 	}
 
+	private class MyHandler extends Handler {
+		public MyHandler(Looper looper) {
+			super(looper);
+		}
+
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case EVENT_REQUEST_WX_DATA:
+				try {
+					item = DataManager.newInstance().getWxApp(context);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				break;
+			}
+		}
+	}
 }

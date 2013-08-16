@@ -51,9 +51,11 @@ public class DataManager {
 
 	private static final String SINA_WEIBO_SHORT_URL_API = "http://api.t.sina.com.cn/short_url/shorten.json?source=2849184197&url_long=";
 
-	private static final String DOMAIN_NAME = "http://www.91dongji.com/";// http://192.168.0.106/
+	private static final String DOMAIN_NAME = "http://192.168.1.200/cms/";// http://192.168.0.106/
+																			// http://www.91dongji.com/
 																			// http://192.168.1.200/cms/
-    // private static final String DOMAIN_NAME2 = "http://192.168.1.200/cms/";// 测试
+	// private static final String DOMAIN_NAME2 = "http://192.168.1.200/cms/";//
+	// 测试
 	// private static final String DOMAIN_NAME =
 	// "http://192.168.1.200/cms/";//测试
 
@@ -77,6 +79,7 @@ public class DataManager {
 	private static final String GRADE_URL = "index.php?g=api&m=soft2&a=SoftScore"; // 评分url
 	private static final String TOP_50_URL = "json2/top50/top50.txt"; // Top50
 	private static final String MAIN_DATA_URL = "index.php?g=Api&m=MobileApi2&a=index&catid="; // 编辑推荐、最近更新、装机必备、软件分类url
+	private static final String SINGLE_DATA_URL = "index.php?g=Api&m=MobileApi2&a=Wechatinfo";// 单个应用详情信息
 	private static final String SOFT_SORT_URL = "index.php?g=Api&m=MobileApi2&a=Sortdata&type="; // 软件分类列表url
 	private static final String SOFT_DETAIL_URL = "index.php?g=Api&m=MobileApi2&a=Appdata&id="; // 软件详情url
 	private static final String SHAKE_GUESSLIKE_URL = "index.php?g=Api&m=MobileApi2&a=Rocklike"; // 摇一摇、猜你喜欢url
@@ -84,7 +87,6 @@ public class DataManager {
 	private static final String ALLSUBJECT_URL = "index.php?g=Api&m=MobileApi2&a=Gettopic"; // 所有的专题url
 	private static final String SUBJECTITEM_URL = "index.php?g=Api&m=MobileApi2&a=Topicinfo&id="; // 专题详情url
 	private static final String SUBJECTCOUNT_URL = "index.php?g=Api&m=MobileApi2&a=Writevists&id="; // 专题详情url
-
 	private static final String ONLINE_DOMAIN_NAME = "http://dl.91dongji.com/file/"; // http://www.91dongji.com/app/d/file/
 	// private static final String
 	// ONLINE_DOMAIN_NAME="http://192.168.1.200/cms/d/file/";
@@ -151,19 +153,14 @@ public class DataManager {
 					JSONObject jsonObject = jsonArray.getJSONObject(i);
 					info.id = jsonObject.getInt("catid");
 					info.name = jsonObject.getString("catname");
-					JSONObject childJsonObject = jsonObject
-							.getJSONObject("datalist");
+					JSONObject childJsonObject = jsonObject.getJSONObject("datalist");
 					info.staticAddress = new StaticAddress[2];
 					StaticAddress gameStaticAddress = new StaticAddress();
-					gameStaticAddress.url = childJsonObject
-							.getString("game_url");
-					gameStaticAddress.md5Value = childJsonObject
-							.getString("game_md5");
+					gameStaticAddress.url = childJsonObject.getString("game_url");
+					gameStaticAddress.md5Value = childJsonObject.getString("game_md5");
 					StaticAddress appStaticAddress = new StaticAddress();
-					appStaticAddress.url = childJsonObject
-							.getString("soft_url");
-					appStaticAddress.md5Value = childJsonObject
-							.getString("soft_md5");
+					appStaticAddress.url = childJsonObject.getString("soft_url");
+					appStaticAddress.md5Value = childJsonObject.getString("soft_md5");
 
 					info.staticAddress[0] = appStaticAddress;
 					info.staticAddress[1] = gameStaticAddress;
@@ -184,8 +181,7 @@ public class DataManager {
 	 * @throws IOException
 	 * @throws JSONException
 	 */
-	public ArrayList<NavigationInfo> getNavigationList(int catid)
-			throws JSONException {
+	public ArrayList<NavigationInfo> getNavigationList(int catid) throws JSONException {
 		ArrayList<NavigationInfo> list = null;
 		HttpClientApi httpClientApi = HttpClientApi.getInstance();
 		String result = null;
@@ -207,19 +203,14 @@ public class DataManager {
 					JSONObject jsonObject = jsonArray.getJSONObject(i);
 					info.id = jsonObject.getInt("catid");
 					info.name = jsonObject.getString("catname");
-					JSONObject childJsonObject = jsonObject
-							.getJSONObject("datalist");
+					JSONObject childJsonObject = jsonObject.getJSONObject("datalist");
 					info.staticAddress = new StaticAddress[2];
 					StaticAddress gameStaticAddress = new StaticAddress();
-					gameStaticAddress.url = childJsonObject
-							.getString("game_url");
-					gameStaticAddress.md5Value = childJsonObject
-							.getString("game_md5");
+					gameStaticAddress.url = childJsonObject.getString("game_url");
+					gameStaticAddress.md5Value = childJsonObject.getString("game_md5");
 					StaticAddress appStaticAddress = new StaticAddress();
-					appStaticAddress.url = childJsonObject
-							.getString("soft_url");
-					appStaticAddress.md5Value = childJsonObject
-							.getString("soft_md5");
+					appStaticAddress.url = childJsonObject.getString("soft_url");
+					appStaticAddress.md5Value = childJsonObject.getString("soft_md5");
 
 					info.staticAddress[0] = appStaticAddress;
 					info.staticAddress[1] = gameStaticAddress;
@@ -239,8 +230,7 @@ public class DataManager {
 	 * @return
 	 * @throws JSONException
 	 */
-	public ArrayList<ChannelListInfo> getChannelListData(Context context)
-			throws JSONException {
+	public ArrayList<ChannelListInfo> getChannelListData(Context context) throws JSONException {
 		ArrayList<ChannelListInfo> list = null;
 		HttpClientApi httpClientApi = HttpClientApi.getInstance();
 		String result = null;
@@ -248,8 +238,7 @@ public class DataManager {
 		try {
 			// result = httpClientApi.getContentFromUrl(DOMAIN_NAME
 			// + APP_CHANNEL_URL);
-			result = httpClientApi.getContentFromUrl(DOMAIN_NAME
-					+ MAIN_DATA_URL + SOFT_CHANNEL_ID + getLanguageType());
+			result = httpClientApi.getContentFromUrl(DOMAIN_NAME + MAIN_DATA_URL + SOFT_CHANNEL_ID + getLanguageType());
 			System.out.println("channel data -------> " + result);
 		} catch (IOException e) {
 			isLocal = true;
@@ -306,8 +295,7 @@ public class DataManager {
 		return list;
 	}
 
-	public ArrayList<ApkItem> getApps(Context context,
-			NavigationInfo currentInfo, boolean isApp) throws JSONException {
+	public ArrayList<ApkItem> getApps(Context context, NavigationInfo currentInfo, boolean isApp) throws JSONException {
 		ArrayList<ApkItem> list = null;
 		int position = isApp ? 0 : 1;
 		StaticAddress currentSd = (StaticAddress) currentInfo.staticAddress[position];
@@ -319,8 +307,7 @@ public class DataManager {
 		if (TextUtils.isEmpty(result)) {
 			HttpClientApi httpClientApi = HttpClientApi.getInstance();
 			try {
-				result = httpClientApi.getContentFromUrl(DOMAIN_NAME
-						+ suffixUrl);
+				result = httpClientApi.getContentFromUrl(DOMAIN_NAME + suffixUrl);
 			} catch (IOException e) {
 				isLocal = true;
 				// result=FsCache.getCacheString(md5Value);
@@ -372,8 +359,7 @@ public class DataManager {
 				}
 
 				MarketDatabase db = new MarketDatabase(context);
-				NavigationInfo saveInfo = db
-						.getNavigationByNavId(currentInfo.id);
+				NavigationInfo saveInfo = db.getNavigationByNavId(currentInfo.id);
 				if (saveInfo == null) {
 					FsCache.cacheFileByMd5(result, md5Value);
 					db.addNavigation(currentInfo);
@@ -394,8 +380,7 @@ public class DataManager {
 		return list;
 	}
 
-	public ArrayList<ApkItem> getApps(Context context, int catid, boolean isApp)
-			throws JSONException {
+	public ArrayList<ApkItem> getApps(Context context, int catid, boolean isApp) throws JSONException {
 		ArrayList<ApkItem> list = null;
 		String result = null;
 		String cacheSuffix = catid + (isApp ? "soft" : "game");
@@ -406,27 +391,22 @@ public class DataManager {
 			String suffixUrl = null;
 			switch (catid) {
 			case EDITOR_RECOMMEND_ID: // 编辑推荐
-				suffixUrl = MAIN_DATA_URL + EDITOR_RECOMMEND_ID + type
-						+ getLanguageType();
+				suffixUrl = MAIN_DATA_URL + EDITOR_RECOMMEND_ID + type + getLanguageType();
 				break;
 			case RECENT_UPDATA_ID: // 最近更新
-				suffixUrl = MAIN_DATA_URL + RECENT_UPDATA_ID + type
-						+ getLanguageType();
+				suffixUrl = MAIN_DATA_URL + RECENT_UPDATA_ID + type + getLanguageType();
 				break;
 			case ESSENTIAL_ID: // 装机必备
-				suffixUrl = MAIN_DATA_URL + ESSENTIAL_ID + type
-						+ getLanguageType();
+				suffixUrl = MAIN_DATA_URL + ESSENTIAL_ID + type + getLanguageType();
 				break;
 			default:
 				break;
 			}
 
-			System.out.println("=========suffixUrl=========" + DOMAIN_NAME
-					+ suffixUrl);
+			System.out.println("=========suffixUrl=========" + DOMAIN_NAME + suffixUrl);
 			HttpClientApi httpClientApi = HttpClientApi.getInstance();
 			try {
-				result = httpClientApi.getContentFromUrl(DOMAIN_NAME
-						+ suffixUrl);
+				result = httpClientApi.getContentFromUrl(DOMAIN_NAME + suffixUrl);
 			} catch (IOException e) {
 				result = FsCache.getCacheString(cacheSuffix);
 				System.out.println("getApps:" + e);
@@ -483,6 +463,74 @@ public class DataManager {
 		return list;
 	}
 
+	/**
+	 * 获取微信详情
+	 * 
+	 * @param context
+	 * @param catid
+	 *            分类id
+	 * @param id
+	 *            软件id
+	 * @return
+	 */
+	public ApkItem getWxApp(Context context) throws JSONException {
+		String result = null;
+		String cacheSuffix = SINGLE_DATA_URL;
+		if (!AndroidUtils.isNetworkAvailable(context)) {
+			result = FsCache.getCacheString(cacheSuffix);
+		} else {
+			String suffixUrl = null;
+			suffixUrl = SINGLE_DATA_URL;
+			System.out.println("=========suffixUrl=========" + DOMAIN_NAME + suffixUrl);
+			HttpClientApi httpClientApi = HttpClientApi.getInstance();
+			try {
+				result = httpClientApi.getContentFromUrl(DOMAIN_NAME + suffixUrl);
+			} catch (IOException e) {
+				result = FsCache.getCacheString(cacheSuffix);
+				System.out.println("getApps:" + e);
+			}
+			if (!TextUtils.isEmpty(result)) {
+				FsCache.deleteCacheFileByMd5Value(cacheSuffix);
+				FsCache.cacheFileByMd5(result, cacheSuffix);
+			}
+		}
+		ApkItem item = new ApkItem();
+		if (!TextUtils.isEmpty(result)) {
+			JSONObject jsonObject = new JSONObject(result);
+			item.appId = jsonObject.getInt("id");
+			String category = jsonObject.getString("catcid");
+			if (!TextUtils.isEmpty(category)) {
+				item.category = Integer.parseInt(category);
+			}
+			String language = jsonObject.getString("language");
+			if (TextUtils.isEmpty(language)) {
+				item.language = 1;
+			} else {
+				item.language = Integer.parseInt(language);
+			}
+			item.company = jsonObject.getString("developer");
+			String apkUrl = jsonObject.getString("down_url");
+			if (!TextUtils.isEmpty(apkUrl)) {
+				item.apkUrl = ONLINE_STATIC_DOMAIN_NAME + apkUrl;
+			}
+			item.downloadNum = jsonObject.getLong("down_count");
+			String iconUrl = jsonObject.getString("apk_icon");
+
+			if (!TextUtils.isEmpty(iconUrl)) {
+				item.appIconUrl = ONLINE_DOMAIN_NAME + iconUrl;
+			}
+			item.appName = jsonObject.getString("apk_name");
+			item.fileSize = jsonObject.getLong("apk_size");
+			item.versionCode = jsonObject.getInt("apk_versioncode");
+			item.version = jsonObject.getString("apk_versionname");
+			item.packageName = jsonObject.getString("apk_packagename");
+			if (jsonObject.has("heavy")) {
+				item.heavy = jsonObject.getInt("heavy");
+			}
+		}
+		return item;
+	}
+
 	// private StringBuilder sb=new StringBuilder();
 	/**
 	 * 
@@ -493,16 +541,13 @@ public class DataManager {
 	 * @return
 	 * @throws JSONException
 	 */
-	public ArrayList<ApkItem> getApps(ChannelListInfo channelInfo,
-			Context context, int sortType) throws JSONException {
+	public ArrayList<ApkItem> getApps(ChannelListInfo channelInfo, Context context, int sortType) throws JSONException {
 		ArrayList<ApkItem> list = null;
 		// if(sb.length()>0) {
 		// sb.delete(0, sb.length());
 		// }
 		// sb.append(DOMAIN_NAME).append("json2/cat/").append(channelInfo.id+"/").append(String.valueOf(channelInfo.currentPage)).append("_").append(sortType).append(".txt");
-		String sb = DOMAIN_NAME + SOFT_SORT_URL + sortType + "&catid="
-				+ channelInfo.id + "&page=" + channelInfo.currentPage
-				+ getLanguageType();
+		String sb = DOMAIN_NAME + SOFT_SORT_URL + sortType + "&catid=" + channelInfo.id + "&page=" + channelInfo.currentPage + getLanguageType();
 		System.out.println("sort url ===========> " + sb);
 		String result = null;
 		if (TextUtils.isEmpty(result)) {
@@ -550,8 +595,7 @@ public class DataManager {
 					if (!TextUtils.isEmpty(fileSize)) {
 						item.fileSize = Long.valueOf(fileSize);
 					}
-					String versionCode = jsonObject
-							.getString("apk_versioncode");
+					String versionCode = jsonObject.getString("apk_versioncode");
 					if (!TextUtils.isEmpty(versionCode)) {
 						item.versionCode = Integer.valueOf(versionCode);
 					}
@@ -570,8 +614,7 @@ public class DataManager {
 	/**
 	 * 清除失效的垃圾缓存数据
 	 */
-	public void clearRubbishCacheData(Context context,
-			List<ChannelListInfo> list) {
+	public void clearRubbishCacheData(Context context, List<ChannelListInfo> list) {
 		/*
 		 * MarketDatabase db=new MarketDatabase(context); List<ChannelListInfo>
 		 * saveList=db.getAllChannel(); if(saveList==null) {
@@ -594,15 +637,13 @@ public class DataManager {
 		 */
 	}
 
-	public ApkItem getApkItemDetailByAppId(int category, int appId)
-			throws IOException, JSONException {
+	public ApkItem getApkItemDetailByAppId(int category, int appId) throws IOException, JSONException {
 		HttpClientApi httpClientApi = HttpClientApi.getInstance();
 		// String url = DOMAIN_NAME + "json2/app/" + category + "/" + appId
 		// + ".txt";
 		// String url = DOMAIN_NAME + SOFT_DETAIL_URL + appId + "&catid="
 		// + category;
-		String url = DOMAIN_NAME + SOFT_DETAIL_URL + appId + "&catid="
-				+ category + getLanguageType();
+		String url = DOMAIN_NAME + SOFT_DETAIL_URL + appId + "&catid=" + category + getLanguageType();
 		System.out.println("detail url -------------> " + url);
 		String result = httpClientApi.getContentFromUrl(url);
 		System.out.println("detail data=====> " + result);
@@ -621,8 +662,7 @@ public class DataManager {
 			}
 			item.company = jsonObject.getString("developer");
 			item.score = jsonObject.getDouble("score");
-			JSONArray screenShotJsonArray = jsonObject
-					.getJSONArray("screenshot");
+			JSONArray screenShotJsonArray = jsonObject.getJSONArray("screenshot");
 			if (screenShotJsonArray != null && screenShotJsonArray.length() > 0) {
 				for (int j = 0; j < screenShotJsonArray.length(); j++) {
 					String screenShot = screenShotJsonArray.getString(j);
@@ -636,32 +676,23 @@ public class DataManager {
 				item.historys = new HistoryApkItem[historyJsonArray.length()];
 				for (int j = 0; j < historyJsonArray.length(); j++) {
 					HistoryApkItem historyItem = new HistoryApkItem();
-					JSONObject historyJsonObject = historyJsonArray
-							.getJSONObject(j);
+					JSONObject historyJsonObject = historyJsonArray.getJSONObject(j);
 					historyItem.appId = historyJsonObject.getInt("id");
 					historyItem.category = item.category;
-					historyItem.appName = historyJsonObject
-							.getString("apk_name");
-					String historyIcon = historyJsonObject
-							.getString("apk_icon");
+					historyItem.appName = historyJsonObject.getString("apk_name");
+					String historyIcon = historyJsonObject.getString("apk_icon");
 					if (!TextUtils.isEmpty(historyIcon)) {
-						historyItem.appIconUrl = ONLINE_DOMAIN_NAME
-								+ historyIcon;
+						historyItem.appIconUrl = ONLINE_DOMAIN_NAME + historyIcon;
 					}
-					historyItem.updateDate = historyJsonObject
-							.getString("time");
-					historyItem.versionName = historyJsonObject
-							.getString("apk_versionname");
-					historyItem.downloadNum = historyJsonObject
-							.getLong("down_count");
+					historyItem.updateDate = historyJsonObject.getString("time");
+					historyItem.versionName = historyJsonObject.getString("apk_versionname");
+					historyItem.downloadNum = historyJsonObject.getLong("down_count");
 					historyItem.appSize = historyJsonObject.getLong("apk_size");
 					String historyUrl = historyJsonObject.getString("down_url");
 					if (!TextUtils.isEmpty(historyUrl)) {
-						historyItem.url = ONLINE_STATIC_DOMAIN_NAME
-								+ historyUrl;
+						historyItem.url = ONLINE_STATIC_DOMAIN_NAME + historyUrl;
 					}
-					historyItem.versionCode = historyJsonObject
-							.getInt("apk_versioncode");
+					historyItem.versionCode = historyJsonObject.getInt("apk_versioncode");
 					if (historyJsonObject.has("heavy")) {
 						historyItem.heavy = historyJsonObject.getInt("heavy");
 					}
@@ -685,8 +716,7 @@ public class DataManager {
 
 			item.fileSize = jsonObject.getLong("apk_size");
 			item.appName = jsonObject.getString("apk_name");
-			JSONArray permisionJsonArray = jsonObject
-					.getJSONArray("apk_permision");
+			JSONArray permisionJsonArray = jsonObject.getJSONArray("apk_permision");
 			if (permisionJsonArray != null && permisionJsonArray.length() > 0) {
 				for (int j = 0; j < permisionJsonArray.length(); j++) {
 					item.permisions.add(permisionJsonArray.getString(j));
@@ -766,10 +796,8 @@ public class DataManager {
 	public List<String> getKeywords() throws IOException, JSONException {
 		HttpClientApi httpClientApi = HttpClientApi.getInstance();
 		List<String> list = null;
-		String result = httpClientApi.getContentFromUrl(DOMAIN_NAME
-				+ HOTWORD_URL + getLanguageType());
-		System.out.println("0717....keyword...." + DOMAIN_NAME + HOTWORD_URL
-				+ getLanguageType());
+		String result = httpClientApi.getContentFromUrl(DOMAIN_NAME + HOTWORD_URL + getLanguageType());
+		System.out.println("0717....keyword...." + DOMAIN_NAME + HOTWORD_URL + getLanguageType());
 		System.out.println("hotword ========> " + result);
 		JSONArray jsonArray = new JSONArray(result);
 		list = new ArrayList<String>();
@@ -789,14 +817,12 @@ public class DataManager {
 	 * @throws IOException
 	 * @throws JSONException
 	 */
-	public List<ApkItem> getSearchResult(String keyword) throws IOException,
-			JSONException {
+	public List<ApkItem> getSearchResult(String keyword) throws IOException, JSONException {
 		HttpClientApi httpClientApi = HttpClientApi.getInstance();
 		List<ApkItem> list = null;
 		keyword = URLEncoder.encode(keyword, "UTF-8");
 		System.out.println("keyword:" + keyword);
-		String searchUrl = DOMAIN_NAME + SEARCH_RESULT_URL + keyword
-				+ "&numList=" + MAX_SEARCH_RESULT_COUNT + getLanguageType();
+		String searchUrl = DOMAIN_NAME + SEARCH_RESULT_URL + keyword + "&numList=" + MAX_SEARCH_RESULT_COUNT + getLanguageType();
 		System.out.println("search url ====> " + searchUrl);
 		String result = httpClientApi.getContentFromUrl(searchUrl);
 		System.out.println("search result =====> " + result);
@@ -904,8 +930,7 @@ public class DataManager {
 	String requestSoftUpdateList(Context context) throws IOException {
 		List<String[]> list = initRequestUpdateList(context);
 		HttpClientApi httpClientApi = HttpClientApi.getInstance();
-		String result = httpClientApi.getContentFromUrlByPost(DOMAIN_NAME
-				+ UPDATE_URL + getLanguageType(), list);
+		String result = httpClientApi.getContentFromUrlByPost(DOMAIN_NAME + UPDATE_URL + getLanguageType(), list);
 		// parseJson(list, result);
 		if (!TextUtils.isEmpty(result)) {
 			FsCache.cacheSofeUpdateData(result);
@@ -913,8 +938,7 @@ public class DataManager {
 		return result;
 	}
 
-	public ArrayList<ApkItem> getUpdateList(Context context)
-			throws IOException, JSONException {
+	public ArrayList<ApkItem> getUpdateList(Context context) throws IOException, JSONException {
 		// String result=FsCache.getCacheSoftUpdateData();
 		// if(TextUtils.isEmpty(result)) {
 		String result = requestSoftUpdateList(context);
@@ -936,13 +960,11 @@ public class DataManager {
 	 * @throws IOException
 	 * @throws JSONException
 	 */
-	public ApkItem getUpdateBySingle(Context context, String[] data)
-			throws IOException, JSONException {
+	public ApkItem getUpdateBySingle(Context context, String[] data) throws IOException, JSONException {
 		HttpClientApi httpClientApi = HttpClientApi.getInstance();
 		List<String[]> list = new ArrayList<String[]>();
 		list.add(data);
-		String result = httpClientApi.getContentFromUrlByPost(DOMAIN_NAME
-				+ UPDATE_URL + getLanguageType(), list);
+		String result = httpClientApi.getContentFromUrlByPost(DOMAIN_NAME + UPDATE_URL + getLanguageType(), list);
 		if (!TextUtils.isEmpty(result)) {
 			ArrayList<ApkItem> resultList = parseJson(result);
 			if (resultList != null && resultList.size() > 0) {
@@ -971,8 +993,7 @@ public class DataManager {
 	 * @param category
 	 */
 	public boolean statisticsForInstall(int appId, int category) {
-		String url = DOMAIN_NAME + STATISTICS_INSTALL + category + "&appid="
-				+ appId;
+		String url = DOMAIN_NAME + STATISTICS_INSTALL + category + "&appid=" + appId;
 		HttpClientApi httpClientApi = HttpClientApi.getInstance();
 		try {
 			httpClientApi.getContentFromUrl(url);
@@ -991,22 +1012,17 @@ public class DataManager {
 	 * @return
 	 * @throws IOException
 	 */
-	public boolean cloudBackup(List<String[]> list, String userSessionId,
-			Context context) throws IOException {
+	public boolean cloudBackup(List<String[]> list, String userSessionId, Context context) throws IOException {
 		HttpClientApi httpClientApi = HttpClientApi.getInstance();
-		boolean result = httpClientApi.postCloundBackup(DOMAIN_NAME
-				+ CLOUND_BACKUP_URL + getLanguageType(), list, userSessionId,
-				context);
+		boolean result = httpClientApi.postCloundBackup(DOMAIN_NAME + CLOUND_BACKUP_URL + getLanguageType(), list, userSessionId, context);
 		System.out.println("cloundBackup:" + result);
 		return result;
 	}
 
-	public ArrayList<ApkItem> getCloudRecoverList(String value)
-			throws IOException, JSONException {
+	public ArrayList<ApkItem> getCloudRecoverList(String value) throws IOException, JSONException {
 		HttpClientApi httpClientApi = HttpClientApi.getInstance();
 		ArrayList<ApkItem> list = null;
-		String result = httpClientApi.postCloundRestore(DOMAIN_NAME
-				+ CLOUND_RECOVER_URL + getLanguageType(), value);
+		String result = httpClientApi.postCloundRestore(DOMAIN_NAME + CLOUND_RECOVER_URL + getLanguageType(), value);
 		if (!TextUtils.isEmpty(result)) {
 			JSONArray jsonArray = new JSONArray(result);
 			list = new ArrayList<ApkItem>();
@@ -1049,13 +1065,9 @@ public class DataManager {
 		PackageManager pm = context.getPackageManager();
 		PackageInfo packageInfo;
 		try {
-			packageInfo = pm.getPackageInfo(packageName,
-					PackageManager.GET_ACTIVITIES);
-			int versionCode = packageInfo.versionCode == 0 ? 1
-					: packageInfo.versionCode;
-			String url = DOMAIN_NAME
-					+ "index.php?g=Api&m=Soft2&a=upgrade&versioncode="
-					+ versionCode + "&packagename=" + packageName;
+			packageInfo = pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
+			int versionCode = packageInfo.versionCode == 0 ? 1 : packageInfo.versionCode;
+			String url = DOMAIN_NAME + "index.php?g=Api&m=Soft2&a=upgrade&versioncode=" + versionCode + "&packagename=" + packageName;
 			// String
 			// url="http://192.168.0.101/wuxiuwu/index.php?g=Api&m=Soft22&a=upgrade&versioncode=1&packagename=cn.com.wali.walisms";
 			HttpClientApi httpClientApi = HttpClientApi.getInstance();
@@ -1092,8 +1104,7 @@ public class DataManager {
 		}
 		HttpClientApi httpClientApi = HttpClientApi.getInstance();
 		try {
-			String result = httpClientApi
-					.getContentFromUrl(SINA_WEIBO_SHORT_URL_API + url);
+			String result = httpClientApi.getContentFromUrl(SINA_WEIBO_SHORT_URL_API + url);
 			if (!TextUtils.isEmpty(result)) {
 				JSONArray jsonArray = new JSONArray(result);
 				if (jsonArray.length() > 0) {
@@ -1120,13 +1131,11 @@ public class DataManager {
 	 * @throws IOException
 	 * @throws JSONException
 	 */
-	public int login(String emailStr, String passwdStr) throws IOException,
-			JSONException {
+	public int login(String emailStr, String passwdStr) throws IOException, JSONException {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("email", emailStr);
 		params.put("password", passwdStr);
-		String result = HttpClientApi.getInstance().postResponseData(
-				DOMAIN_NAME + LOGIN_URL, params);
+		String result = HttpClientApi.getInstance().postResponseData(DOMAIN_NAME + LOGIN_URL, params);
 		System.out.println("login response ===> " + result);
 		if (!TextUtils.isEmpty(result)) {
 			JSONObject jsonObject = new JSONObject(result);
@@ -1150,14 +1159,12 @@ public class DataManager {
 	 * @throws IOException
 	 * @throws JSONException
 	 */
-	public int register(String emailStr, String passwdStr, String repeatPwd)
-			throws IOException, JSONException {
+	public int register(String emailStr, String passwdStr, String repeatPwd) throws IOException, JSONException {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("email", emailStr);
 		params.put("password", passwdStr);
 		params.put("rpassword", repeatPwd);
-		String result = HttpClientApi.getInstance().postResponseData(
-				DOMAIN_NAME + REGISTER_URL, params);
+		String result = HttpClientApi.getInstance().postResponseData(DOMAIN_NAME + REGISTER_URL, params);
 		System.out.println("register response ===> " + result);
 		if (!TextUtils.isEmpty(result)) {
 			JSONObject jsonObject = new JSONObject(result);
@@ -1183,15 +1190,13 @@ public class DataManager {
 	 * @throws IOException
 	 * @throws JSONException
 	 */
-	public int modifyPwd(String email, String oldPwd, String newPwd,
-			String rNewPwd) throws IOException, JSONException {
+	public int modifyPwd(String email, String oldPwd, String newPwd, String rNewPwd) throws IOException, JSONException {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("email", email);
 		params.put("oldpwd", oldPwd);
 		params.put("newpwd", newPwd);
 		params.put("newrpwd", rNewPwd);
-		String result = HttpClientApi.getInstance().postResponseData(
-				DOMAIN_NAME + CHANGE_PWD_URL, params);
+		String result = HttpClientApi.getInstance().postResponseData(DOMAIN_NAME + CHANGE_PWD_URL, params);
 		System.out.println("modify pwd response ===> " + result);
 		if (!TextUtils.isEmpty(result)) {
 			JSONObject jsonObject = new JSONObject(result);
@@ -1212,8 +1217,7 @@ public class DataManager {
 	public int findPwd(String email) throws IOException, JSONException {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("email", email);
-		String result = HttpClientApi.getInstance().postResponseData(
-				DOMAIN_NAME + FIND_PWD_URL, params);
+		String result = HttpClientApi.getInstance().postResponseData(DOMAIN_NAME + FIND_PWD_URL, params);
 		System.out.println("find pwd response ===> " + result); // 无返回值
 		if (!TextUtils.isEmpty(result)) {
 			JSONObject jsonObject = new JSONObject(result);
@@ -1241,9 +1245,7 @@ public class DataManager {
 	 * @throws IOException
 	 * @throws JSONException
 	 */
-	public int feedback(String appName, String version, String type,
-			String sysType, String contact, String content) throws IOException,
-			JSONException {
+	public int feedback(String appName, String version, String type, String sysType, String contact, String content) throws IOException, JSONException {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("aplicname", appName);
 		params.put("version", version);
@@ -1251,8 +1253,7 @@ public class DataManager {
 		params.put("systemtype", sysType);
 		params.put("contact", contact);
 		params.put("content", content);
-		String result = HttpClientApi.getInstance().postResponseData(
-				DOMAIN_NAME + FEEDBACK_URL, params);
+		String result = HttpClientApi.getInstance().postResponseData(DOMAIN_NAME + FEEDBACK_URL, params);
 		System.out.println("feedback response ===> " + result);
 		if (!TextUtils.isEmpty(result)) {
 			JSONObject jsonObject = new JSONObject(result);
@@ -1273,16 +1274,13 @@ public class DataManager {
 	 * @return 0:打分失败 1:打分成功
 	 * @throws IOException
 	 */
-	public int appGrade(String catId, String appId, String score)
-			throws IOException {
+	public int appGrade(String catId, String appId, String score) throws IOException {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("catid", catId);
 		params.put("appid", appId);
 		params.put("score", score);
-		String result = HttpClientApi.getInstance().postResponseData(
-				DOMAIN_NAME + GRADE_URL, params);
-		System.out
-				.println("app grade response ===> " + Integer.valueOf(result));
+		String result = HttpClientApi.getInstance().postResponseData(DOMAIN_NAME + GRADE_URL, params);
+		System.out.println("app grade response ===> " + Integer.valueOf(result));
 		return Integer.valueOf(result != null ? result : "0");
 	}
 
@@ -1297,8 +1295,7 @@ public class DataManager {
 		HttpClientApi httpClientApi = HttpClientApi.getInstance();
 		// String
 		// result=httpClientApi.getContentFromUrl(DOMAIN_NAME+TOP_50_URL);
-		String result = httpClientApi.getContentFromUrl(DOMAIN_NAME
-				+ SHAKE_GUESSLIKE_URL + getLanguageType());
+		String result = httpClientApi.getContentFromUrl(DOMAIN_NAME + SHAKE_GUESSLIKE_URL + getLanguageType());
 		System.out.println("top 50 ====> " + result);
 		if (!TextUtils.isEmpty(result)) {
 			JSONArray jsonArray = new JSONArray(result);
@@ -1345,12 +1342,9 @@ public class DataManager {
 	 * @throws IOException
 	 * @throws JSONException
 	 */
-	public ApkItem getApkItemDetailByPackage(String packageName, int versionCode)
-			throws IOException, JSONException {
+	public ApkItem getApkItemDetailByPackage(String packageName, int versionCode) throws IOException, JSONException {
 		HttpClientApi httpClientApi = HttpClientApi.getInstance();
-		String url = DOMAIN_NAME
-				+ "index.php?g=Api&m=Soft2&a=Appdetail&packagename="
-				+ packageName + "&versioncode=" + versionCode;
+		String url = DOMAIN_NAME + "index.php?g=Api&m=Soft2&a=Appdetail&packagename=" + packageName + "&versioncode=" + versionCode;
 		String result = httpClientApi.getContentFromUrl(url);
 		if (!TextUtils.isEmpty(result)) {
 			ApkItem item = new ApkItem();
@@ -1367,8 +1361,7 @@ public class DataManager {
 			}
 			item.company = jsonObject.getString("developer");
 			item.score = jsonObject.getDouble("score");
-			JSONArray screenShotJsonArray = jsonObject
-					.getJSONArray("screenshot");
+			JSONArray screenShotJsonArray = jsonObject.getJSONArray("screenshot");
 			if (screenShotJsonArray != null && screenShotJsonArray.length() > 0) {
 				for (int j = 0; j < screenShotJsonArray.length(); j++) {
 					String screenShot = screenShotJsonArray.getString(j);
@@ -1382,26 +1375,19 @@ public class DataManager {
 				item.historys = new HistoryApkItem[historyJsonArray.length()];
 				for (int j = 0; j < historyJsonArray.length(); j++) {
 					HistoryApkItem historyItem = new HistoryApkItem();
-					JSONObject historyJsonObject = historyJsonArray
-							.getJSONObject(j);
+					JSONObject historyJsonObject = historyJsonArray.getJSONObject(j);
 					historyItem.appId = historyJsonObject.getInt("id");
 					historyItem.category = item.category;
-					historyItem.appIconUrl = historyJsonObject
-							.getString("apk_icon");
-					historyItem.updateDate = historyJsonObject
-							.getString("time");
-					historyItem.versionName = historyJsonObject
-							.getString("apk_versionname");
-					historyItem.downloadNum = historyJsonObject
-							.getLong("down_count");
+					historyItem.appIconUrl = historyJsonObject.getString("apk_icon");
+					historyItem.updateDate = historyJsonObject.getString("time");
+					historyItem.versionName = historyJsonObject.getString("apk_versionname");
+					historyItem.downloadNum = historyJsonObject.getLong("down_count");
 					historyItem.appSize = historyJsonObject.getLong("apk_size");
 					String historyUrl = historyJsonObject.getString("down_url");
 					if (!TextUtils.isEmpty(historyUrl)) {
-						historyItem.url = ONLINE_STATIC_DOMAIN_NAME
-								+ historyUrl;
+						historyItem.url = ONLINE_STATIC_DOMAIN_NAME + historyUrl;
 					}
-					historyItem.versionCode = historyJsonObject
-							.getInt("apk_versioncode");
+					historyItem.versionCode = historyJsonObject.getInt("apk_versioncode");
 					if (historyJsonObject.has("heavy")) {
 						historyItem.heavy = historyJsonObject.getInt("heavy");
 					}
@@ -1424,8 +1410,7 @@ public class DataManager {
 
 			item.fileSize = jsonObject.getLong("apk_size");
 			item.appName = jsonObject.getString("apk_name");
-			JSONArray permisionJsonArray = jsonObject
-					.getJSONArray("apk_permision");
+			JSONArray permisionJsonArray = jsonObject.getJSONArray("apk_permision");
 			if (permisionJsonArray != null && permisionJsonArray.length() > 0) {
 				for (int j = 0; j < permisionJsonArray.length(); j++) {
 					item.permisions.add(permisionJsonArray.getString(j));
@@ -1465,8 +1450,7 @@ public class DataManager {
 	public int collectLocalData(Context cxt) throws IOException {
 		Map<String, String> deviceInfo = AndroidUtils.getDeviceInfo(cxt);
 		Map<String, String> dataMap = new HashMap<String, String>();
-		List<InstalledAppInfo> installedAppsList = DJMarketUtils
-				.getInstalledApps(cxt);
+		List<InstalledAppInfo> installedAppsList = DJMarketUtils.getInstalledApps(cxt);
 		// for (InstalledAppInfo info : installedAppsList) {
 		// installedApps.put(info.getPkgName(), info.getName());
 		// }
@@ -1493,8 +1477,7 @@ public class DataManager {
 		// System.out.println("installed app ====> " + jsonArray.toString());
 		dataMap.put("device_info", deviceInfoJson.toString());
 		dataMap.put("app_info", appJsonArray.toString());
-		String result = HttpClientApi.getInstance().postResponseData(
-				DOMAIN_NAME + COLLECT_LOCAL_INFO_URL, dataMap);
+		String result = HttpClientApi.getInstance().postResponseData(DOMAIN_NAME + COLLECT_LOCAL_INFO_URL, dataMap);
 		System.out.println("collect info =====> " + result);
 		if (null != result) {
 			try {
@@ -1508,11 +1491,11 @@ public class DataManager {
 		return 0;
 		// return Integer.valueOf(result != null ? result : "0");
 	}
+
 	public List<SubjectInfo> getAllSubject() throws IOException, JSONException {
 		HttpClientApi httpClientApi = HttpClientApi.getInstance();
-		String result = httpClientApi.getContentFromUrl(DOMAIN_NAME
-				+ ALLSUBJECT_URL + getLanguageType());
-		System.out.println("DOMAIN_NAME2  --- > " +DOMAIN_NAME+ ALLSUBJECT_URL + getLanguageType()+ "result ----- > "+ result );
+		String result = httpClientApi.getContentFromUrl(DOMAIN_NAME + ALLSUBJECT_URL + getLanguageType());
+		System.out.println("DOMAIN_NAME2  --- > " + DOMAIN_NAME + ALLSUBJECT_URL + getLanguageType() + "result ----- > " + result);
 		if (!TextUtils.isEmpty(result)) {
 			JSONArray jsonArray = new JSONArray(result);
 			List<SubjectInfo> list = new ArrayList<SubjectInfo>();
@@ -1522,8 +1505,7 @@ public class DataManager {
 					SubjectInfo subjectInfo = new SubjectInfo();
 					subjectInfo.subjectId = jsonObject.getInt("id");
 					subjectInfo.title = jsonObject.getString("title");
-					subjectInfo.subjectIconUrl = DOMAIN_NAME + "d/file/"
-							+ jsonObject.getString("pic");
+					subjectInfo.subjectIconUrl = DOMAIN_NAME + "d/file/" + jsonObject.getString("pic");
 					list.add(subjectInfo);
 				}
 				return list;
@@ -1531,10 +1513,10 @@ public class DataManager {
 		}
 		return null;
 	}
+
 	public SubjectInfo getSubjectApk(int subjectId) throws JSONException {
 		HttpClientApi httpClientApi = HttpClientApi.getInstance();
-		String url = DOMAIN_NAME + SUBJECTITEM_URL + subjectId
-				+ getLanguageType();
+		String url = DOMAIN_NAME + SUBJECTITEM_URL + subjectId + getLanguageType();
 
 		System.out.println("  url ----- > " + url);
 
@@ -1558,30 +1540,20 @@ public class DataManager {
 				SubjectItem subjectItem;
 				for (int i = 0; i < listJsonArray.length(); i++) {
 					subjectItem = new SubjectItem();
-					JSONObject subjectJsonObject = listJsonArray
-							.getJSONObject(i);
-					subjectItem.apkSize = subjectJsonObject
-							.getString("apk_size");
-					subjectItem.apkVerion = subjectJsonObject
-							.getString("apk_sdkversion");
+					JSONObject subjectJsonObject = listJsonArray.getJSONObject(i);
+					subjectItem.apkSize = subjectJsonObject.getString("apk_size");
+					subjectItem.apkVerion = subjectJsonObject.getString("apk_sdkversion");
 					subjectItem.appId = subjectJsonObject.getInt("appid");
 					subjectItem.catpId = subjectJsonObject.getInt("catcid");
-					subjectItem.comment = subjectJsonObject
-							.getString("comment");
-					subjectItem.downloadNum = subjectJsonObject
-							.getLong("down_count");
-					subjectItem.downUrl = DOMAIN_NAME
-							+ subjectJsonObject.getString("down_url");
-					subjectItem.iconUrl = DOMAIN_NAME + "d/file/"
-							+ subjectJsonObject.getString("apk_ico");
-					subjectItem.inputTime = subjectJsonObject
-							.getString("inputtime");
+					subjectItem.comment = subjectJsonObject.getString("comment");
+					subjectItem.downloadNum = subjectJsonObject.getLong("down_count");
+					subjectItem.downUrl = DOMAIN_NAME + subjectJsonObject.getString("down_url");
+					subjectItem.iconUrl = DOMAIN_NAME + "d/file/" + subjectJsonObject.getString("apk_ico");
+					subjectItem.inputTime = subjectJsonObject.getString("inputtime");
 					subjectItem.language = subjectJsonObject.getInt("language");
 					subjectItem.title = subjectJsonObject.getString("title");
-					subjectItem.packageName = subjectJsonObject
-							.getString("apk_packagename");
-					subjectItem.versionCode = subjectJsonObject
-							.getInt("apk_versioncode");
+					subjectItem.packageName = subjectJsonObject.getString("apk_packagename");
+					subjectItem.versionCode = subjectJsonObject.getInt("apk_versioncode");
 					subjectInfo.subjectItems.add(subjectItem);
 				}
 			}
@@ -1589,6 +1561,7 @@ public class DataManager {
 		}
 		return null;
 	}
+
 	public int subjectCount(int subjectId) throws IOException, JSONException {
 		HttpClientApi httpClientApi = HttpClientApi.getInstance();
 		String url = DOMAIN_NAME + SUBJECTCOUNT_URL + subjectId;

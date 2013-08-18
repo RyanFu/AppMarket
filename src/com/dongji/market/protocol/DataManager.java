@@ -51,7 +51,7 @@ public class DataManager {
 
 	private static final String SINA_WEIBO_SHORT_URL_API = "http://api.t.sina.com.cn/short_url/shorten.json?source=2849184197&url_long=";
 
-	private static final String DOMAIN_NAME = "http://192.168.1.200/cms/";// http://192.168.0.106/
+	private static final String DOMAIN_NAME = "http://www.91dongji.com/";// http://192.168.0.106/
 																			// http://www.91dongji.com/
 																			// http://192.168.1.200/cms/
 	// private static final String DOMAIN_NAME2 = "http://192.168.1.200/cms/";//
@@ -79,7 +79,8 @@ public class DataManager {
 	private static final String GRADE_URL = "index.php?g=api&m=soft2&a=SoftScore"; // 评分url
 	private static final String TOP_50_URL = "json2/top50/top50.txt"; // Top50
 	private static final String MAIN_DATA_URL = "index.php?g=Api&m=MobileApi2&a=index&catid="; // 编辑推荐、最近更新、装机必备、软件分类url
-	private static final String SINGLE_DATA_URL = "index.php?g=Api&m=MobileApi2&a=Wechatinfo";// 单个应用详情信息
+	private static final String DJ_ADRESS_URL = "webapp/index.php?g=Api&m=MobileApi2&a=Marketapp";// 动机市场详情地址
+	private static final String WX_DATA_URL = "index.php?g=Api&m=MobileApi2&a=Wechatinfo";// 微信详情信息
 	private static final String SOFT_SORT_URL = "index.php?g=Api&m=MobileApi2&a=Sortdata&type="; // 软件分类列表url
 	private static final String SOFT_DETAIL_URL = "index.php?g=Api&m=MobileApi2&a=Appdata&id="; // 软件详情url
 	private static final String SHAKE_GUESSLIKE_URL = "index.php?g=Api&m=MobileApi2&a=Rocklike"; // 摇一摇、猜你喜欢url
@@ -461,74 +462,6 @@ public class DataManager {
 
 		}
 		return list;
-	}
-
-	/**
-	 * 获取微信详情
-	 * 
-	 * @param context
-	 * @param catid
-	 *            分类id
-	 * @param id
-	 *            软件id
-	 * @return
-	 */
-	public ApkItem getWxApp(Context context) throws JSONException {
-		String result = null;
-		String cacheSuffix = SINGLE_DATA_URL;
-		if (!AndroidUtils.isNetworkAvailable(context)) {
-			result = FsCache.getCacheString(cacheSuffix);
-		} else {
-			String suffixUrl = null;
-			suffixUrl = SINGLE_DATA_URL;
-			System.out.println("=========suffixUrl=========" + DOMAIN_NAME + suffixUrl);
-			HttpClientApi httpClientApi = HttpClientApi.getInstance();
-			try {
-				result = httpClientApi.getContentFromUrl(DOMAIN_NAME + suffixUrl);
-			} catch (IOException e) {
-				result = FsCache.getCacheString(cacheSuffix);
-				System.out.println("getApps:" + e);
-			}
-			if (!TextUtils.isEmpty(result)) {
-				FsCache.deleteCacheFileByMd5Value(cacheSuffix);
-				FsCache.cacheFileByMd5(result, cacheSuffix);
-			}
-		}
-		ApkItem item = new ApkItem();
-		if (!TextUtils.isEmpty(result)) {
-			JSONObject jsonObject = new JSONObject(result);
-			item.appId = jsonObject.getInt("id");
-			String category = jsonObject.getString("catcid");
-			if (!TextUtils.isEmpty(category)) {
-				item.category = Integer.parseInt(category);
-			}
-			String language = jsonObject.getString("language");
-			if (TextUtils.isEmpty(language)) {
-				item.language = 1;
-			} else {
-				item.language = Integer.parseInt(language);
-			}
-			item.company = jsonObject.getString("developer");
-			String apkUrl = jsonObject.getString("down_url");
-			if (!TextUtils.isEmpty(apkUrl)) {
-				item.apkUrl = ONLINE_STATIC_DOMAIN_NAME + apkUrl;
-			}
-			item.downloadNum = jsonObject.getLong("down_count");
-			String iconUrl = jsonObject.getString("apk_icon");
-
-			if (!TextUtils.isEmpty(iconUrl)) {
-				item.appIconUrl = ONLINE_DOMAIN_NAME + iconUrl;
-			}
-			item.appName = jsonObject.getString("apk_name");
-			item.fileSize = jsonObject.getLong("apk_size");
-			item.versionCode = jsonObject.getInt("apk_versioncode");
-			item.version = jsonObject.getString("apk_versionname");
-			item.packageName = jsonObject.getString("apk_packagename");
-			if (jsonObject.has("heavy")) {
-				item.heavy = jsonObject.getInt("heavy");
-			}
-		}
-		return item;
 	}
 
 	// private StringBuilder sb=new StringBuilder();
@@ -1583,4 +1516,114 @@ public class DataManager {
 		}
 		return "&lang=0";
 	}
+
+	/**
+	 * 获取动机市场详情url
+	 * 
+	 * @param context
+	 * @return
+	 */
+	public String getDJUrl(Context context) {
+		String result = null;
+		String cacheSuffix = DJ_ADRESS_URL;
+		if (!AndroidUtils.isNetworkAvailable(context)) {
+			result = FsCache.getCacheString(cacheSuffix);
+		} else {
+			String suffixUrl = null;
+			suffixUrl = WX_DATA_URL;
+			System.out.println("=========suffixUrl=========" + DOMAIN_NAME + suffixUrl);
+			HttpClientApi httpClientApi = HttpClientApi.getInstance();
+			try {
+				result = httpClientApi.getContentFromUrl(DOMAIN_NAME + suffixUrl);
+			} catch (IOException e) {
+				result = FsCache.getCacheString(cacheSuffix);
+				System.out.println("getApps:" + e);
+			}
+			if (!TextUtils.isEmpty(result)) {
+				FsCache.deleteCacheFileByMd5Value(cacheSuffix);
+				FsCache.cacheFileByMd5(result, cacheSuffix);
+			}
+		}
+		return DOMAIN_NAME +"webapp/"+ result+".html";
+	}
+
+	/**
+	 * 应用详情url
+	 * 
+	 * @param categoryId
+	 * @param appId
+	 * @return
+	 */
+	public String getAppDetailUrl(int categoryId, int appId) {
+		return DOMAIN_NAME + "webapp/" + categoryId + "/" + appId + ".html";
+	}
+
+	/**
+	 * 获取微信详情
+	 * 
+	 * @param context
+	 * @param catid
+	 *            分类id
+	 * @param id
+	 *            软件id
+	 * @return
+	 */
+	public ApkItem getWxApp(Context context) throws JSONException {
+		String result = null;
+		String cacheSuffix = WX_DATA_URL;
+		if (!AndroidUtils.isNetworkAvailable(context)) {
+			result = FsCache.getCacheString(cacheSuffix);
+		} else {
+			String suffixUrl = null;
+			suffixUrl = WX_DATA_URL;
+			System.out.println("=========suffixUrl=========" + DOMAIN_NAME + suffixUrl);
+			HttpClientApi httpClientApi = HttpClientApi.getInstance();
+			try {
+				result = httpClientApi.getContentFromUrl(DOMAIN_NAME + suffixUrl);
+			} catch (IOException e) {
+				result = FsCache.getCacheString(cacheSuffix);
+				System.out.println("getApps:" + e);
+			}
+			if (!TextUtils.isEmpty(result)) {
+				FsCache.deleteCacheFileByMd5Value(cacheSuffix);
+				FsCache.cacheFileByMd5(result, cacheSuffix);
+			}
+		}
+		ApkItem item = new ApkItem();
+		if (!TextUtils.isEmpty(result)) {
+			JSONObject jsonObject = new JSONObject(result);
+			item.appId = jsonObject.getInt("id");
+			String category = jsonObject.getString("catcid");
+			if (!TextUtils.isEmpty(category)) {
+				item.category = Integer.parseInt(category);
+			}
+			String language = jsonObject.getString("language");
+			if (TextUtils.isEmpty(language)) {
+				item.language = 1;
+			} else {
+				item.language = Integer.parseInt(language);
+			}
+			item.company = jsonObject.getString("developer");
+			String apkUrl = jsonObject.getString("down_url");
+			if (!TextUtils.isEmpty(apkUrl)) {
+				item.apkUrl = ONLINE_STATIC_DOMAIN_NAME + apkUrl;
+			}
+			item.downloadNum = jsonObject.getLong("down_count");
+			String iconUrl = jsonObject.getString("apk_icon");
+
+			if (!TextUtils.isEmpty(iconUrl)) {
+				item.appIconUrl = ONLINE_DOMAIN_NAME + iconUrl;
+			}
+			item.appName = jsonObject.getString("apk_name");
+			item.fileSize = jsonObject.getLong("apk_size");
+			item.versionCode = jsonObject.getInt("apk_versioncode");
+			item.version = jsonObject.getString("apk_versionname");
+			item.packageName = jsonObject.getString("apk_packagename");
+			if (jsonObject.has("heavy")) {
+				item.heavy = jsonObject.getInt("heavy");
+			}
+		}
+		return item;
+	}
+
 }

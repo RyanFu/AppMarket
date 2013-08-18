@@ -4,13 +4,14 @@
     android:layout_height="fill_parent"
     android:background="@drawable/shape_login_dialog_bg"
     android:orientation="vertical"
-    android:padding="15dp" >
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingTop="10dp" >
 
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="15dp"
-        android:layout_marginTop="5dp"
         android:text="@string/share_custom"
         android:textColor="#333"
         android:textSize="22sp" />
@@ -24,7 +25,9 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
-        android:orientation="horizontal" >
+        android:baselineAligned="false"
+        android:orientation="horizontal"
+        android:padding="5dp" >
 
         <LinearLayout
             android:id="@+id/layout_wx_friend"
@@ -33,7 +36,8 @@
             android:layout_weight="1"
             android:background="@drawable/android_listselector"
             android:clickable="true"
-            android:gravity="center" >
+            android:gravity="center_vertical"
+            android:padding="5dp" >
 
             <ImageView
                 android:id="@+id/wxfriend_icon"
@@ -57,7 +61,8 @@
             android:layout_weight="1"
             android:background="@drawable/android_listselector"
             android:clickable="true"
-            android:gravity="center" >
+            android:gravity="center_vertical"
+            android:padding="5dp" >
 
             <ImageView
                 android:id="@+id/wxtimeline_icon"
@@ -78,8 +83,9 @@
             android:id="@+id/layout_wx_uninstall"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="2"
+            android:layout_weight="1.5"
+            android:gravity="center_vertical"
+            android:padding="5dp"
             android:visibility="gone" >
 
             <TextView
@@ -92,29 +98,33 @@
     </LinearLayout>
 
     <TextView
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="15dp"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="15dp"
         android:text="@string/share_system"
         android:textColor="#333"
         android:textSize="22sp" />
 
     <View
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="2dip"
         android:background="#33b5e5" />
 
-    <GridView
-        android:id="@+id/share_gridview"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_marginTop="15dp"
-        android:fadingEdgeLength="0dp"
-        android:gravity="center"
-        android:horizontalSpacing="10dp"
-        android:listSelector="@color/transparent"
-        android:numColumns="2"
-        android:verticalSpacing="10dp" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp" >
+
+        <GridView
+            android:id="@+id/share_gridview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fadingEdgeLength="0dp"
+            android:listSelector="@color/transparent"
+            android:numColumns="2"
+            android:scrollbars="none"
+            />
+    </LinearLayout>
 
 </LinearLayout>

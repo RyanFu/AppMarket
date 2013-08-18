@@ -43,7 +43,7 @@ public class ShareAdapter extends BaseAdapter {
 		ViewHolder viewHolder = null;
 		if (convertView == null) {
 			viewHolder = new ViewHolder();
-			convertView = mInflater.inflate(R.layout.share_girdview_item, null);
+			convertView = mInflater.inflate(R.layout.item_share_girdview, null);
 			viewHolder.iv = (ImageView) convertView.findViewById(R.id.itemImage);
 			viewHolder.tv = (TextView) convertView.findViewById(R.id.itemText);
 			convertView.setTag(viewHolder);

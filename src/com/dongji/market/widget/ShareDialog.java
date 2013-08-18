@@ -27,7 +27,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.dongji.market.R;
 import com.dongji.market.activity.ApkDetailActivity;
@@ -45,39 +44,47 @@ public class ShareDialog extends Dialog {
 	private ApkItem apkItem;
 	private ShareAdapter adapter;
 	private String title;// 分享标题
-	private String content;// 分享内容
+	private String wxContent;// 微信分享内容
+	private String otherContent;// 其它分享内容
 	private Bitmap icon;// 分享应用icon
 	private String shareUrl;// 分享url
 	private ArrayList<HashMap<String, Object>> appInfoList;
 	private boolean wxInstall;
-	private ApkItem item;
+	private ApkItem wxItem;
 	private MyHandler mHandler;
-	private static final int EVENT_REQUEST_WX_DATA = 1;
+	private static final int EVENT_REQUEST_DJ_DATA = 1;
+	private static final int EVENT_REQUEST_WX_DATA = 2;
+
 
 	public ShareDialog(Context context, Bundle bundle, boolean isApkDetailPage) {
 		super(context, R.style.dialog_progress_default);
+		initHandler();
+		initDate(context, bundle, isApkDetailPage);
+		getAppInfo();
+		initView();
+	}
+
+	private void initDate(Context context, Bundle bundle, boolean isApkDetailPage) {
 		this.context = context;
 		if (isApkDetailPage && bundle != null) {
 			apkItem = bundle.getParcelable("apkItem");
 			title = apkItem.appName;
-			content = apkItem.discription;
+			wxContent = apkItem.discription;
 			icon = WxUtils.getBitmapFromFile(apkItem.appIconUrl);
-			shareUrl = Constants.APKDETAIL_PREFIX + apkItem.category + "/" + apkItem.appId + ".html";
+			shareUrl=DataManager.newInstance().getAppDetailUrl(apkItem.category, apkItem.appId);
+			otherContent = context.getResources().getString(R.string.share_text1) + apkItem.appName + context.getResources().getString(R.string.share_text2) + shareUrl + context.getResources().getString(R.string.share_text3);
 		} else {
+			mHandler.sendEmptyMessage(EVENT_REQUEST_DJ_DATA);
 			title = context.getResources().getString(R.string.DJ_app_center);
-			content = context.getResources().getString(R.string.share_us_content);
+			wxContent = context.getResources().getString(R.string.share_us_content);
 			icon = BitmapFactory.decodeResource(context.getResources(), R.drawable.icon);
-			shareUrl = Constants.DONGJI_MARKET_URL;
 		}
-		getAppInfo();
-		initView();
 	}
 
 	private void initHandler() {
 		HandlerThread mHandlerThread = new HandlerThread("handler");
 		mHandlerThread.start();
 		mHandler = new MyHandler(mHandlerThread.getLooper());
-		mHandler.sendEmptyMessage(EVENT_REQUEST_WX_DATA);
 	}
 
 	@Override
@@ -117,7 +124,7 @@ public class ShareDialog extends Dialog {
 			appInfoList.add(tempHashMap);
 		}
 		if (!wxInstall) {
-			initHandler();
+			mHandler.sendEmptyMessage(EVENT_REQUEST_WX_DATA);
 		}
 	}
 
@@ -136,13 +143,12 @@ public class ShareDialog extends Dialog {
 			public void onClick(View v) {
 				if (wxInstall) {
 					WxUtils.registWxApi(context);
-					WxUtils.sendWebPageWx(shareUrl, title, content, icon, SendMessageToWX.Req.WXSceneSession);
+					WxUtils.sendWebPageWx(shareUrl, title, wxContent, icon, SendMessageToWX.Req.WXSceneSession);
 				} else {
-					Toast.makeText(context, "跳转到微信详情页面！", Toast.LENGTH_SHORT).show();
 					intent = new Intent(context, ApkDetailActivity.class);
 					Bundle bundle = new Bundle();
-					if (item != null) {
-						bundle.putParcelable("apkItem", item);
+					if (wxItem != null) {
+						bundle.putParcelable("apkItem", wxItem);
 						intent.putExtras(bundle);
 						context.startActivity(intent);
 					}
@@ -155,11 +161,10 @@ public class ShareDialog extends Dialog {
 			@Override
 			public void onClick(View v) {
 				WxUtils.registWxApi(context);
-				WxUtils.sendWebPageWx(shareUrl, title, content, icon, SendMessageToWX.Req.WXSceneTimeline);
+				WxUtils.sendWebPageWx(shareUrl, title, wxContent, icon, SendMessageToWX.Req.WXSceneTimeline);
 				dismiss();
 			}
 		});
-
 		GridView gridView = (GridView) mContentView.findViewById(R.id.share_gridview);
 		adapter = new ShareAdapter(context, appInfoList);
 		gridView.setAdapter(adapter);
@@ -173,7 +178,7 @@ public class ShareDialog extends Dialog {
 					intent.setComponent(componetName);
 					intent.setType(Constants.TXTTYPE);
 					intent.putExtra(Intent.EXTRA_SUBJECT, title); // 分享主题
-					intent.putExtra(Intent.EXTRA_TEXT, content + shareUrl);
+					intent.putExtra(Intent.EXTRA_TEXT, otherContent);
 					context.startActivity(intent);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -191,9 +196,13 @@ public class ShareDialog extends Dialog {
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
+			case EVENT_REQUEST_DJ_DATA:
+					shareUrl=DataManager.newInstance().getDJUrl(context);
+					otherContent = wxContent + context.getResources().getString(R.string.text2) + shareUrl;
+				break;
 			case EVENT_REQUEST_WX_DATA:
 				try {
-					item = DataManager.newInstance().getWxApp(context);
+					wxItem = DataManager.newInstance().getWxApp(context);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}

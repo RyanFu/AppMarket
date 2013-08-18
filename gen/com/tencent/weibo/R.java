@@ -46,11 +46,11 @@ public final class R {
 		public static final int btnRequest = 0x7f0b0153;
 		public static final int btnSendMsg = 0x7f0b0162;
 		public static final int btnSendMsgWithPic = 0x7f0b0163;
-		public static final int loadinglayout = 0x7f0b0118;
+		public static final int loadinglayout = 0x7f0b011a;
 		public static final int send_twitter = 0x7f0b015f;
 		public static final int sharing_layout = 0x7f0b0160;
-		public static final int sharing_progressbar = 0x7f0b013d;
-		public static final int sharing_textview = 0x7f0b013e;
+		public static final int sharing_progressbar = 0x7f0b013f;
+		public static final int sharing_textview = 0x7f0b0140;
 		public static final int surplus_text = 0x7f0b015d;
 		public static final int textAccess = 0x7f0b0158;
 		public static final int textRequest = 0x7f0b0154;
@@ -60,7 +60,7 @@ public final class R {
 		public static final int twitter_content = 0x7f0b015c;
 	}
 	public static final class layout {
-		public static final int layout_sharing_progress = 0x7f03004a;
+		public static final int layout_sharing_progress = 0x7f03004b;
 		public static final int tencent_oauthv1 = 0x7f030051;
 		public static final int tencent_oauthv2 = 0x7f030052;
 		public static final int tencent_share_dialog = 0x7f030053;

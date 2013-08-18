@@ -54,13 +54,13 @@ public final class R {
 		public static final int ivImage = 0x7f0b0150;
 		public static final int llImage = 0x7f0b014b;
 		public static final int ll_text_limit_unit = 0x7f0b014d;
-		public static final int loadinglayout = 0x7f0b0118;
+		public static final int loadinglayout = 0x7f0b011a;
 		public static final int rlTitle = 0x7f0b0148;
 		public static final int rlTotal = 0x7f0b014c;
 		public static final int send_twitter = 0x7f0b015f;
 		public static final int sharing_layout = 0x7f0b0160;
-		public static final int sharing_progressbar = 0x7f0b013d;
-		public static final int sharing_textview = 0x7f0b013e;
+		public static final int sharing_progressbar = 0x7f0b013f;
+		public static final int sharing_textview = 0x7f0b0140;
 		public static final int surplus_text = 0x7f0b015d;
 		public static final int text_limit_num = 0x7f0b015e;
 		public static final int toast_txt = 0x7f0b00aa;
@@ -69,7 +69,7 @@ public final class R {
 	}
 	public static final class layout {
 		public static final int custom_toast = 0x7f03001a;
-		public static final int layout_sharing = 0x7f030049;
+		public static final int layout_sharing = 0x7f03004a;
 		public static final int share_mblog_view = 0x7f030050;
 		public static final int widget_share_dialog = 0x7f03005e;
 	}

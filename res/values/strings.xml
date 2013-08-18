@@ -335,7 +335,7 @@
     <string name="share_custom">自定义分享</string>
     <string name="share_system">系统自带分享</string>
     <string name="share_text1">这年头，发现好的东西不拿出来分享一下，实在是不厚道，在动机市场发现个有趣的APP：</string>
-    <string name="share_text2"> ，下载地址：</string>
+    <string name="share_text2"> ，详情地址：</string>
     <string name="share_text3">  围观排队中</string>
     <string name="not_recovery">当前无可恢复应用！</string>
     <string name="not_select_recovery">您没有选择需要恢复的应用！</string>

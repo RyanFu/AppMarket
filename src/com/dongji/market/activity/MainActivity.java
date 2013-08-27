@@ -1,6 +1,5 @@
 package com.dongji.market.activity;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +12,6 @@ import android.content.Intent;
 import android.content.Intent.ShortcutIconResource;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
@@ -24,7 +22,6 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
-import android.os.Process;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -78,38 +75,30 @@ import com.dongji.market.widget.HorizontalScrollLayout.OnPageChangedListener;
 import com.dongji.market.widget.SlideMenu;
 import com.umeng.analytics.MobclickAgent;
 
-public class MainActivity extends ActivityGroup implements OnClickListener, OnPageChangedListener, OnItemClickListener, AConstDefine, OnToolBarBlankClickListener {
+public class MainActivity extends ActivityGroup implements OnClickListener, OnPageChangedListener, AConstDefine, OnToolBarBlankClickListener {
 
 	private static final boolean DEBUG = true;
+	private static final int EVENT_LOADING_PROGRESS = 0;// 进度条加载中
+	private static final int EVENT_LOADDONE = 1;// 进度加载完成
+	private static final int EVENT_CHANGE_EXIT_STATUS = 2;// 改变退出状态
+	private static final int EVENT_LOADING_DATA = 3;// 加载数据
+	private static final int EVENT_CHECK_APP_UPDATE = 4;// 检查更新
 
-	private static final int EVENT_LOADING_PROGRESS = 0;
-	private static final int EVENT_LOADDONE = 1;
-	private static final int EVENT_CHANGE_EXIT_STATUS = 2;
-	private static final int EVENT_LOADING_DATA = 3;
-	private static final int EVENT_CHECK_APP_UPDATE = 4;
+	private RadioButton mChoicenessButton;// 推荐
+	private HorizontalScrollLayout mMainLayout;// 水平滑动布局
 
-	private RadioButton mChoicenessButton;
-	private HorizontalScrollLayout mMainLayout;
-
-	private boolean isAnimRunning;
+	private boolean isAnimRunning;// 动画运行中
 
 	private ImageView mSlideImageView; // 头部左右滑动控件
-	private float slideLeft;
+	private float slideLeft;// 滑动线距左边距离
 
-	private View mLeftBottomExpandView, mRightBottomExpandView;
+	private static final int CHOICENESS_POSITION = 0, UPDATE_POSITION = 1, THEME_POSITION = 2, INSTALL_POSITION = 3, CHANNEL_POSITION = 4;// 推荐、新品、专题、必备、分类
 
-	private static final int CHOICENESS_POSITION = 0, UPDATE_POSITION = 1, THEME_POSITION = 2, INSTALL_POSITION = 3, CHANNEL_POSITION = 4;
-
-	private FrameLayout mContentLayout;
-	private LinearLayout mBottomLeftPopup, mBottomRightPopup;
-	private LinearLayout mTouchLayout;
 	private RadioButton mAppBottomButton, mGameBottomButton;
 
 	private LayoutInflater mInflater;
 
 	private ProgressBar mProgressBar;
-
-	private LinearLayout.LayoutParams mParams;
 
 	private MyHandler mHandler;
 
@@ -126,13 +115,10 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 	private String[] activityIds;
 	private RadioButton[] mTopButtons;
 
-	private View mMaskView;
-
 	private View mSoftView;
 	private ImageView mTempIcon;
 	private CustomIconAnimation iconAnim;
 
-	private ArrayList<NavigationInfo> navigationInfos = null;
 	private ListView mGameBottomListView;
 	private ListView mAppBottomListView;
 
@@ -148,38 +134,162 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-
 		ADownloadService.isBackgroundRun = false;// 设置下载服务是否后台运行
-
 		mApp = (AppMarket) getApplication();
 		boolean flag = DJMarketUtils.isSaveFlow(this);// 是否开启流量模式
 		mApp.setRemoteImage(flag);// 是否下载图片
-
 		checkFirstLaunch();
-
 		if (DEBUG)
 			MobclickAgent.onError(this); // 友盟creash反馈
-
 		initData();
 		initViews();
 		initHandler();
 		registerPackageReceiver();
+	}
+
+	/**
+	 * 初始化内容activityID
+	 */
+	private void initData() {
+		activityIds = new String[5];
+		activityIds[0] = "choiceness";
+		activityIds[1] = "update";
+		activityIds[2] = "theme";
+		activityIds[3] = "install";
+		activityIds[4] = "channel";
+	}
+
+	/**
+	 * 初始化首页框架视图
+	 */
+	private void initViews() {
+		mInflater = LayoutInflater.from(this);
+		mMainLayout = (HorizontalScrollLayout) findViewById(R.id.mainlayout);// 水平滑动框架
+		mMainLayout.setOnPageChangedListener(this);
+		initHorizontalScrollLayout();
+		View mTopView = findViewById(R.id.main_top);// actionbar
+		titleUtil = new TitleUtil(this, mTopView, "", getIntent().getExtras(), this);// 初始化actionbar
+		mSoftView = (View) findViewById(R.id.softmanagerbutton);// 软件管理按钮
+		mProgressBar = (ProgressBar) findViewById(R.id.progress_horizontal);// 进度条
+
+		initTopButton();
+
+		initBottomButton();
+
+		initSlideImageView();
+
+		mChoicenessButton.performClick();
 
 	}
 
-	@Override
-	public boolean dispatchKeyEvent(KeyEvent event) {
-		if (event.getKeyCode() == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-			if (mMaskView != null && mMaskView.getVisibility() == View.VISIBLE) {
-				mMaskView.setVisibility(View.GONE);
-				return true;
-			}
-			if (event.getAction() == KeyEvent.ACTION_UP && Build.VERSION.SDK_INT > 11) { // google
-																							// bug!
-				getLocalActivityManager().removeAllActivities();
-			}
+	/**
+	 * 初始化handler，并发送数据加载、检查app更新消息
+	 */
+	private void initHandler() {
+		HandlerThread mHandlerThread = new HandlerThread("HandlerThread");
+		mHandlerThread.start();
+		mHandler = new MyHandler(mHandlerThread.getLooper());
+		mHandler.sendEmptyMessageDelayed(EVENT_LOADING_DATA, 1500L);
+		mHandler.sendEmptyMessage(EVENT_CHECK_APP_UPDATE);
+	}
+
+	/**
+	 * 注册检查所有下载广播接收器
+	 */
+	private void registerPackageReceiver() {
+		IntentFilter intentFilter = new IntentFilter();
+		intentFilter.addAction(DownloadConstDefine.BROADCAST_ACTION_CHECK_DOWNLOAD);
+		registerReceiver(mUpdateLoadedReceiver, intentFilter);
+
+	}
+
+	/**
+	 * 初始化标签按钮
+	 */
+	private void initTopButton() {
+		mTabLayout = (LinearLayout) findViewById(R.id.maintablayout);
+		mChoicenessButton = (RadioButton) findViewById(R.id.choicenessButton);
+		RadioButton mUpdateButton = (RadioButton) findViewById(R.id.updateButton);
+		RadioButton mInstallNecessaryButton = (RadioButton) findViewById(R.id.installNecessaryButton);
+		RadioButton mSoftChannelButton = (RadioButton) findViewById(R.id.softChannelButton);
+		RadioButton mThemeRecommendButton = (RadioButton) findViewById(R.id.themeRecommendButton);
+		mChoicenessButton.setOnClickListener(this);
+		mUpdateButton.setOnClickListener(this);
+		mInstallNecessaryButton.setOnClickListener(this);
+		mSoftChannelButton.setOnClickListener(this);
+		mThemeRecommendButton.setOnClickListener(this);
+		mTopButtons = new RadioButton[] { mChoicenessButton, mUpdateButton, mThemeRecommendButton, mInstallNecessaryButton, mSoftChannelButton };
+	}
+
+	/**
+	 * 初始化游戏、应用切换按钮
+	 */
+	private void initBottomButton() {
+		mMainBottomLayout = (LinearLayout) findViewById(R.id.mainbottomlayout);
+		mAppBottomButton = (RadioButton) findViewById(R.id.appbutton);
+		mGameBottomButton = (RadioButton) findViewById(R.id.gamebutton);
+		mAppBottomButton.setOnClickListener(this);
+		mGameBottomButton.setOnClickListener(this);
+	}
+
+	/**
+	 * 初始化标签页滑动线
+	 */
+	private void initSlideImageView() {
+		mSlideImageView = (ImageView) findViewById(R.id.slideimageview);
+		DisplayMetrics dm = AndroidUtils.getScreenSize(this);
+		int num = AndroidUtils.dip2px(this, 2);
+		float singleWidth = (dm.widthPixels - num * 3) / 5.0f;
+		LayoutParams mParams = (LayoutParams) mSlideImageView.getLayoutParams();
+		mParams.width = (int) singleWidth;
+		mSlideImageView.setLayoutParams(mParams);
+	}
+
+	/**
+	 * 隐藏View
+	 * 
+	 * @param v
+	 */
+	private void setVisibleForGone(View v) {
+		if (v != null && v.getVisibility() == View.VISIBLE) {
+			v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.down_fade_out));
+			v.setVisibility(View.GONE);
 		}
-		return super.dispatchKeyEvent(event);
+	}
+
+	@Override
+	public void onClick(View v) {
+		BaseActivity mCurrentActivity = null;
+		switch (v.getId()) {
+		case R.id.choicenessButton:// 推荐按钮
+			initAnimation(v);
+			mMainLayout.snapToScreen(CHOICENESS_POSITION);
+			break;
+		case R.id.updateButton:// 新品按钮
+			initAnimation(v);
+			mMainLayout.snapToScreen(UPDATE_POSITION);
+			break;
+		case R.id.installNecessaryButton:// 必备按钮
+			initAnimation(v);
+			mMainLayout.snapToScreen(INSTALL_POSITION);
+			break;
+		case R.id.softChannelButton:// 分类按钮
+			initAnimation(v);
+			mMainLayout.snapToScreen(CHANNEL_POSITION);
+			break;
+		case R.id.themeRecommendButton:// 专题按钮
+			initAnimation(v);
+			mMainLayout.snapToScreen(THEME_POSITION);
+			break;
+		case R.id.appbutton:// 底部应用按钮
+			mCurrentActivity = (BaseActivity) getLocalActivityManager().getCurrentActivity();
+			mCurrentActivity.onAppClick();
+			break;
+		case R.id.gamebutton:// 底部游戏按钮
+			mCurrentActivity = (BaseActivity) getLocalActivityManager().getCurrentActivity();
+			mCurrentActivity.onGameClick();
+			break;
+		}
 	}
 
 	@Override
@@ -187,28 +297,108 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		try {
 			super.onResume();
 		} catch (NullPointerException e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		MobclickAgent.onResume(this);
 		if (titleUtil != null) {
-			titleUtil.sendRefreshHandler();
+			titleUtil.sendRefreshHandler();// 刷新actionbar
 		}
 	}
 
 	@Override
 	protected void onPause() {
-		// TODO Auto-generated method stub
 		try {
 			super.onPause();
 		} catch (NullPointerException e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		MobclickAgent.onPause(this);
 		if (titleUtil != null) {
-			titleUtil.removeRefreshHandler();
+			titleUtil.removeRefreshHandler();// 停止刷新actionbar
 		}
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		unregisterReceiver(mUpdateLoadedReceiver);// 注销检查所有下载广播接收器(接收检查所有下载广播)
+		titleUtil.unregisterMyReceiver(this);// 注销流量用完广播接收器
+		try {
+			releaseRAM();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 释放内存
+	 */
+	private void releaseRAM() {
+		// 方法一,退出虚拟机
+		Intent intent = new Intent(Intent.ACTION_MAIN);
+		intent.addCategory(Intent.CATEGORY_HOME);
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		this.startActivity(intent);
+		System.exit(0);
+		// 方法二,kill掉当前应用进程
+		// android.os.Process.killProcess(android.os.Process.myPid());
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	/**
+	 * 显示设置项PopupWindow
+	 */
+	@Override
+	public boolean onMenuOpened(int featureId, Menu menu) {
+		titleUtil.showOrDismissSettingPopupWindow();
+		return false;
+	}
+
+	@Override
+	public boolean dispatchKeyEvent(KeyEvent event) {
+		if (event.getKeyCode() == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+			if (event.getAction() == KeyEvent.ACTION_UP && Build.VERSION.SDK_INT > 11) { // google
+				getLocalActivityManager().removeAllActivities();
+			}
+		}
+		return super.dispatchKeyEvent(event);
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {// 按一次回退键
+			if (isExit) {// 进行一些退出操作
+				isExit = false;
+				removeAllMessage();// 清除messagequeue里面所有消息
+				outLogin();// 退出登陆
+				if (DJMarketUtils.backgroundDownload(this)) {// 是否使用后台下载
+					if (DownloadService.mDownloadService != null && DownloadService.mDownloadService.hasDownloading()) {// 下载服务是否开启且是否正在下载
+						showExitAppDialog();// 是否退出下载
+						return true;
+					} else {
+						stopService(new Intent(this, ADownloadService.class));// 停止单个下载服务
+						stopService(new Intent(this, DataUpdateService.class));// 停止数据更新服务
+						stopService(new Intent(this, DownloadService.class));// 停止下载服务
+						NetTool.cancelNotification(this, 4);// 取消通知
+					}
+				} else {
+					stopService(new Intent(this, ADownloadService.class));
+					stopService(new Intent(this, DataUpdateService.class));
+					stopService(new Intent(this, DownloadService.class));
+					NetTool.cancelNotification(this, 4);
+				}
+			} else {
+				isExit = true;
+				AndroidUtils.showToast(this, R.string.back_message);
+				mHandler.sendEmptyMessageDelayed(EVENT_CHANGE_EXIT_STATUS, 2500);// 延时2.5秒发送退出广播，此处很妙，如果在2.5秒内再按一次，则可以退出
+				return true;
+			}
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 
 	/**
@@ -227,226 +417,6 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		mApp.setIs3GDownloadPrompt(true);
 	}
 
-	private void getDeleteData() {
-		SharedPreferences sharedPreferences = getSharedPreferences(DONGJI_SHAREPREFERENCES, Context.MODE_PRIVATE);
-		long newTime = System.currentTimeMillis();
-		long oldTime = sharedPreferences.getLong(SHARE_DELETEFILETIME, 0L);
-		if ((newTime - oldTime) / (1000 * 60 * 60 * 24) > 7) {
-			NetTool.deleteTempFile(MainActivity.this);
-			Editor editor = sharedPreferences.edit();
-			editor.putLong(SHARE_DELETEFILETIME, newTime);
-			editor.commit();
-		}
-	}
-
-	@Override
-	public void onClick(View v) {
-		BaseActivity mCurrentActivity = null;
-
-		// if ( v.getId() == R.id.themeRecommendButton) {
-		//
-		// if (mMainBottomLayout.getVisibility() == View.VISIBLE) {
-		// mMainBottomLayout.setVisibility(View.GONE);
-		// }
-		//
-		// } else {
-		//
-		// if (mMainBottomLayout.getVisibility() == View.GONE) {
-		// mMainBottomLayout.setVisibility(View.VISIBLE);
-		// }
-		// }
-
-		switch (v.getId()) {
-		case R.id.choicenessButton:
-			initAnimation(v);
-			// execute("choiceness", ChoicenessActivity.class, bundle);
-			mMainLayout.snapToScreen(CHOICENESS_POSITION);
-			break;
-		case R.id.updateButton:
-			initAnimation(v);
-			// bundle.putInt("type", 1);
-			// execute("update", UpdateActivity.class, bundle);
-			mMainLayout.snapToScreen(UPDATE_POSITION);
-			break;
-		case R.id.installNecessaryButton:
-			initAnimation(v);
-			// bundle.putInt("type", 2);
-			// execute("install", UpdateActivity.class, bundle);
-			mMainLayout.snapToScreen(INSTALL_POSITION);
-			break;
-		case R.id.softChannelButton:
-			initAnimation(v);
-			// bundle.putInt("type", 3);
-			// execute("channel", UpdateActivity.class, bundle);
-			mMainLayout.snapToScreen(CHANNEL_POSITION);
-			break;
-		case R.id.themeRecommendButton:
-			initAnimation(v);
-			// bundle.putInt("type", 3);
-			// execute("channel", UpdateActivity.class, bundle);
-			mMainLayout.snapToScreen(THEME_POSITION);
-			break;
-		case R.id.appbutton:
-			mCurrentActivity = (BaseActivity) getLocalActivityManager().getCurrentActivity();
-			mCurrentActivity.onAppClick();
-			break;
-		case R.id.gamebutton:
-			mCurrentActivity = (BaseActivity) getLocalActivityManager().getCurrentActivity();
-			mCurrentActivity.onGameClick();
-			break;
-		}
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		unregisterReceiver(mUpdateLoadedReceiver);
-		titleUtil.unregisterMyReceiver(this);
-		try {
-			releaseRAM();
-		} catch (SecurityException e) {
-			// TODO: handle exception
-			e.printStackTrace();
-		}
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add("test");
-		return super.onCreateOptionsMenu(menu);
-	}
-
-	@Override
-	public boolean onMenuOpened(int featureId, Menu menu) {
-		if (mMaskView != null && mMaskView.getVisibility() == View.VISIBLE) {
-			mMaskView.setVisibility(View.GONE);
-		}
-		titleUtil.showOrDismissSettingPopupWindow();
-		return false;
-	}
-
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-			if (mMaskView != null && mMaskView.getVisibility() == View.VISIBLE) {
-				mMaskView.setVisibility(View.GONE);
-				return true;
-			}
-
-			if (mTouchLayout.getVisibility() == View.VISIBLE) {
-				setVisibleForGone(mBottomLeftPopup);
-				setVisibleForGone(mBottomRightPopup);
-				mTouchLayout.setVisibility(View.GONE);
-				return true;
-			}
-			if (isExit) {
-				AndroidUtils.cancelToast();
-				isExit = false;
-				removeAllMessage();
-				outLogin();
-				if (DJMarketUtils.backgroundDownload(this)) {
-					/*
-					 * Intent serviceIntent = new Intent();
-					 * serviceIntent.setClass(MainActivity.this,
-					 * ADownloadService.class);
-					 * serviceIntent.putExtra(FLAG_ISSTOPALLDWONLOAD, true);
-					 * startService(serviceIntent);
-					 */
-
-					/*
-					 * if (ADownloadService.getDownloadcountByStatus(
-					 * STATUS_OF_PREPAREDOWNLOAD, STATUS_OF_DOWNLOADING) > 0 ||
-					 * ADownloadService.getUpdateCountByStatus(
-					 * STATUS_OF_PREPAREUPDATE, STATUS_OF_UPDATEING) != 0) {
-					 * showExitAppDialog(); return true; }
-					 */
-					if (DownloadService.mDownloadService != null && DownloadService.mDownloadService.hasDownloading()) {
-						showExitAppDialog();
-						return true;
-					} else {
-						stopService(new Intent(this, ADownloadService.class));
-						stopService(new Intent(this, DataUpdateService.class));
-						stopService(new Intent(this, DownloadService.class));
-
-						NetTool.cancelNotification(this, 4);
-					}
-				} else {
-					// closeApp();
-					stopService(new Intent(this, ADownloadService.class));
-					stopService(new Intent(this, DataUpdateService.class));
-					stopService(new Intent(this, DownloadService.class));
-
-					NetTool.cancelNotification(this, 4);
-				}
-			} else {
-				isExit = true;
-				AndroidUtils.showToast(this, R.string.back_message);
-				mHandler.sendEmptyMessageDelayed(EVENT_CHANGE_EXIT_STATUS, 2500);
-				return true;
-			}
-		}
-
-		return super.onKeyDown(keyCode, event);
-	}
-
-	/**
-	 * 释放内存
-	 */
-	private void releaseRAM() {
-		// 方法一,退出虚拟机
-		Intent intent = new Intent(Intent.ACTION_MAIN);
-		intent.addCategory(Intent.CATEGORY_HOME);
-		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		this.startActivity(intent);
-		System.exit(0);
-		// 方法二,kill掉当前应用进程
-		// android.os.Process.killProcess(android.os.Process.myPid());
-	}
-
-	/**
-	 * 初始化首页框架视图
-	 */
-	private void initViews() {
-		mInflater = LayoutInflater.from(this);
-		mMainLayout = (HorizontalScrollLayout) findViewById(R.id.mainlayout);
-		mMainLayout.setOnPageChangedListener(this);
-		initHorizontalScrollLayout();
-
-		mContentLayout = (FrameLayout) findViewById(R.id.contentlayout);
-
-		View mTopView = findViewById(R.id.main_top);
-		titleUtil = new TitleUtil(this, mTopView, "", getIntent().getExtras(), this);
-		mSoftView = (View) findViewById(R.id.softmanagerbutton);
-
-		mProgressBar = (ProgressBar) findViewById(R.id.progress_horizontal);
-
-		initBottomExpandView();
-
-		initTopButton();
-
-		initBottomButton();
-
-		initSlideImageView();
-
-		initTouchLayout();
-
-		mChoicenessButton.performClick();
-
-	}
-
-	/**
-	 * 列表滚动时菜单滑入滑出的动画
-	 * 
-	 * @param mListView
-	 */
-	void setListViewSlide(ListView mListView) {
-		if (mSlideMenu == null) {
-			mSlideMenu = new SlideMenu();
-			mSlideMenu.setMenuLayout(findViewById(R.id.menu_layout));
-		}
-		mSlideMenu.setListView(mListView);
-	}
-
 	/**
 	 * 判断是否显示setting popupWindow
 	 * 
@@ -459,126 +429,12 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		return false;
 	}
 
-	/**
-	 * 显示菜单栏
-	 */
-	public void showMenuBar() {
-		if (mSlideMenu != null) {
-			mSlideMenu.showMenu();
-		}
-	}
-
-	private void initBottomExpandView() {
-		mLeftBottomExpandView = findViewById(R.id.leftBottomExpand);
-		mRightBottomExpandView = findViewById(R.id.rightBottomExpand);
-	}
 
 	/**
-	 * 注册手机应用安装卸载广播
-	 */
-	private void registerPackageReceiver() {
-		// loginReceiver = new CommonReceiver();
-		// registerReceiver(loginReceiver, new IntentFilter(
-		// "com.dongji.market.loginReceiver"));
-
-		IntentFilter intentFilter = new IntentFilter();
-		intentFilter.addAction(DownloadConstDefine.BROADCAST_ACTION_CHECK_DOWNLOAD);
-		registerReceiver(mUpdateLoadedReceiver, intentFilter);
-
-	}
-
-	/**
-	 * 软件分类底部分类按钮点击处理
+	 * 初始化滑动线动画
 	 * 
-	 * @param isApp
+	 * @param v
 	 */
-	private void onChannelBottomClick(boolean isApp) {
-		BaseActivity mCurrentActivity = (BaseActivity) getLocalActivityManager().getCurrentActivity();
-		if (isApp) {
-			if (mCurrentActivity.isAppClicked()) {
-				if (mLeftBottomExpandView.getVisibility() == View.VISIBLE) {
-					showBottomPop(true);
-				}
-			} else {
-				mCurrentActivity.onAppClick();
-			}
-			setBottomExpandViewVisible(new boolean[] { true, true });
-		} else {
-			if (!mCurrentActivity.isAppClicked()) {
-				if (mRightBottomExpandView.getVisibility() == View.VISIBLE) {
-					showBottomPop(false);
-				}
-			} else {
-				mCurrentActivity.onGameClick();
-			}
-			setBottomExpandViewVisible(new boolean[] { true, false });
-		}
-	}
-
-	public void initBottomView(List<ChannelListInfo> list) {
-		if (list != null && list.size() > 0) {
-			String allString = getString(R.string.all_txt);
-			List<ChannelListInfo> appListInfo = new ArrayList<ChannelListInfo>();
-			List<ChannelListInfo> gameListInfo = new ArrayList<ChannelListInfo>();
-			int appId = 0;
-			int gameId = 0;
-			for (int i = 0; i < list.size(); i++) {
-				ChannelListInfo info = list.get(i);
-				if (APP_STRING.equals(info.name)) {
-					appId = info.id;
-					info.name = allString;
-					appListInfo.add(info);
-				} else if (GAME_STRING.equals(info.name)) {
-					gameId = info.id;
-					info.name = allString;
-					gameListInfo.add(info);
-				}
-			}
-			for (int i = 0; i < list.size(); i++) {
-				ChannelListInfo info = list.get(i);
-				if (info.parentId == appId) {
-					appListInfo.add(info);
-				} else if (info.parentId == gameId) {
-					gameListInfo.add(info);
-				}
-			}
-			if (mBottomLeftPopup == null) {
-				mBottomLeftPopup = initBottomPopup(true, appListInfo);
-				mContentLayout.addView(mBottomLeftPopup);
-			}
-			if (mBottomRightPopup == null) {
-				mBottomRightPopup = initBottomPopup(false, gameListInfo);
-				mContentLayout.addView(mBottomRightPopup);
-			}
-		}
-	}
-
-	private void showBottomPop(boolean isLeft) {
-		if (isLeft) {
-			if (mBottomLeftPopup != null) {
-				mBottomLeftPopup.startAnimation(AnimationUtils.loadAnimation(this, R.anim.up_fade_in));
-				mBottomLeftPopup.setVisibility(View.VISIBLE);
-				mTouchLayout.setVisibility(View.VISIBLE);
-			}
-		} else {
-			if (mBottomRightPopup != null) {
-				mBottomRightPopup.startAnimation(AnimationUtils.loadAnimation(this, R.anim.up_fade_in));
-				mBottomRightPopup.setVisibility(View.VISIBLE);
-				mTouchLayout.setVisibility(View.VISIBLE);
-			}
-		}
-	}
-
-	private void initSlideImageView() {
-		mSlideImageView = (ImageView) findViewById(R.id.slideimageview);
-		DisplayMetrics dm = AndroidUtils.getScreenSize(this);
-		int num = AndroidUtils.dip2px(this, 2);
-		float singleWidth = (dm.widthPixels - num * 3) / 5.0f;
-		LayoutParams mParams = (LayoutParams) mSlideImageView.getLayoutParams();
-		mParams.width = (int) singleWidth;
-		mSlideImageView.setLayoutParams(mParams);
-	}
-
 	private void initAnimation(final View v) {
 		if (!isAnimRunning && slideLeft != v.getLeft()) {
 			isAnimRunning = true;
@@ -605,31 +461,6 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		}
 	}
 
-	private void initTopButton() {
-		mTabLayout = (LinearLayout) findViewById(R.id.maintablayout);
-
-		mChoicenessButton = (RadioButton) findViewById(R.id.choicenessButton);
-		RadioButton mUpdateButton = (RadioButton) findViewById(R.id.updateButton);
-		RadioButton mInstallNecessaryButton = (RadioButton) findViewById(R.id.installNecessaryButton);
-		RadioButton mSoftChannelButton = (RadioButton) findViewById(R.id.softChannelButton);
-		RadioButton mThemeRecommendButton = (RadioButton) findViewById(R.id.themeRecommendButton);
-		mChoicenessButton.setOnClickListener(this);
-		mUpdateButton.setOnClickListener(this);
-		mInstallNecessaryButton.setOnClickListener(this);
-		mSoftChannelButton.setOnClickListener(this);
-		mThemeRecommendButton.setOnClickListener(this);
-
-		mTopButtons = new RadioButton[] { mChoicenessButton, mUpdateButton, mThemeRecommendButton, mInstallNecessaryButton, mSoftChannelButton };
-	}
-
-	private void initHandler() {
-		HandlerThread mHandlerThread = new HandlerThread("HandlerThread");
-		mHandlerThread.start();
-		mHandler = new MyHandler(mHandlerThread.getLooper());
-		mHandler.sendEmptyMessageDelayed(EVENT_LOADING_DATA, 1500L);
-		mHandler.sendEmptyMessage(EVENT_CHECK_APP_UPDATE);
-	}
-
 	/**
 	 * 初始化水平滑动布局
 	 */
@@ -639,133 +470,6 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		mMainLayout.addView(mInflater.inflate(R.layout.layout_loading, null));
 		mMainLayout.addView(mInflater.inflate(R.layout.layout_loading, null));
 		mMainLayout.addView(mInflater.inflate(R.layout.layout_loading, null));
-	}
-
-	private LinearLayout initBottomPopup(boolean isLeft, List<ChannelListInfo> list) {
-		LinearLayout view = (LinearLayout) mInflater.inflate(R.layout.layout_popup_bottom_left, null);
-		LinearLayout mListViewBg = (LinearLayout) view.findViewById(R.id.listview_bg);
-		TextView mTextView = (TextView) view.findViewById(R.id.shadowtextview);
-		ListView mListView = (ListView) view.findViewById(R.id.poplistview);
-		PopupAdapter mAdapter = new PopupAdapter(this, list);
-		mListView.setAdapter(mAdapter);
-		mListView.setOnItemClickListener(this);
-		DisplayMetrics dm = AndroidUtils.getScreenSize(this);
-		int width = dm.widthPixels / 2 + AndroidUtils.dip2px(this, 3);
-		int height = (int) (dm.heightPixels / 2.8f);
-		FrameLayout.LayoutParams mParams = new FrameLayout.LayoutParams(width, height);
-		FrameLayout.LayoutParams mTextViewParams = (FrameLayout.LayoutParams) mTextView.getLayoutParams();
-		int padding = AndroidUtils.dip2px(this, 4.0f);
-		if (isLeft) {
-			mAppBottomListView = mListView;
-			mParams.gravity = Gravity.BOTTOM;
-			mTextViewParams.gravity = Gravity.RIGHT;
-			mTextView.setBackgroundResource(R.drawable.pop_left_shadow);
-			mTextViewParams.rightMargin = AndroidUtils.dip2px(this, 0);
-			mListViewBg.setBackgroundResource(R.drawable.pop_left_top);
-			mListViewBg.setPadding(0, 0, padding, 0);
-		} else {
-			mGameBottomListView = mListView;
-			mParams.gravity = Gravity.BOTTOM | Gravity.RIGHT;
-			mTextViewParams.gravity = Gravity.LEFT;
-			mTextView.setBackgroundResource(R.drawable.pop_right_shadow);
-			mTextViewParams.leftMargin = AndroidUtils.dip2px(this, 0);
-			mListViewBg.setPadding(padding, 0, 0, 0);
-			mListViewBg.setBackgroundResource(R.drawable.pop_right_top);
-		}
-		mTextView.setLayoutParams(mTextViewParams);
-		view.setLayoutParams(mParams);
-		view.setVisibility(View.GONE);
-		return view;
-	}
-
-	private void initBottomButton() {
-		mMainBottomLayout = (LinearLayout) findViewById(R.id.mainbottomlayout);
-
-		mAppBottomButton = (RadioButton) findViewById(R.id.appbutton);
-		mGameBottomButton = (RadioButton) findViewById(R.id.gamebutton);
-		mAppBottomButton.setOnClickListener(this);
-		mGameBottomButton.setOnClickListener(this);
-	}
-
-	private void initTouchLayout() {
-		mTouchLayout = (LinearLayout) findViewById(R.id.touchlayout);
-		mTouchLayout.setOnTouchListener(new OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				setVisibleForGone(mBottomLeftPopup);
-				setVisibleForGone(mBottomRightPopup);
-				mTouchLayout.setVisibility(View.GONE);
-				return true;
-			}
-		});
-	}
-
-	private void setVisibleForGone(View v) {
-		if (v != null && v.getVisibility() == View.VISIBLE) {
-			v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.down_fade_out));
-			v.setVisibility(View.GONE);
-		}
-	}
-
-	private void execute(String id, Class<?> claxx, Bundle bundle) {
-		Intent intent = new Intent(this, claxx);
-		if (bundle != null) {
-			intent.putExtras(bundle);
-		}
-		mMainLayout.removeAllViews();
-		if (mParams == null) {
-			mParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT);
-		}
-		if (getLocalActivityManager().getActivity(id) != null) {
-			boolean isAppClicked = ((BaseActivity) getLocalActivityManager().getActivity(id)).isAppClicked();
-			if (isAppClicked) {
-				mAppBottomButton.setChecked(true);
-			} else {
-				mGameBottomButton.setChecked(true);
-			}
-			setBottomExpandViewVisible(new boolean[] { "channel".equals(id), isAppClicked });
-		} else {
-			if ("channel".equals(id)) {
-				mLeftBottomExpandView.setVisibility(View.VISIBLE);
-			} else {
-				mLeftBottomExpandView.setVisibility(View.GONE);
-				mRightBottomExpandView.setVisibility(View.GONE);
-			}
-			mAppBottomButton.setChecked(true);
-		}
-		mMainLayout.addView(getLocalActivityManager().startActivity(id, intent).getDecorView(), mParams);
-	}
-
-	/**
-	 * 设置底部应用游戏箭头是否显示
-	 * 
-	 * @param flag
-	 */
-	private void setBottomExpandViewVisible(boolean... flag) {
-		if (flag[0]) {
-			if (flag[1]) {
-				mLeftBottomExpandView.setVisibility(View.VISIBLE);
-				mRightBottomExpandView.setVisibility(View.GONE);
-			} else {
-				mLeftBottomExpandView.setVisibility(View.GONE);
-				mRightBottomExpandView.setVisibility(View.VISIBLE);
-			}
-		} else {
-			mLeftBottomExpandView.setVisibility(View.GONE);
-			mRightBottomExpandView.setVisibility(View.GONE);
-		}
-	}
-
-	/**
-	 * 初始化内容activityID
-	 */
-	private void initData() {
-		activityIds = new String[5];
-		activityIds[0] = "choiceness";
-		activityIds[1] = "update";
-		activityIds[2] = "theme";
-		activityIds[3] = "install";
-		activityIds[4] = "channel";
 	}
 
 	/**
@@ -781,27 +485,13 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 			if (!hasShortcut) {
 				createShortcut();
 			}
-			changeFirseLaunch(mSharedPreferences);
+			changeFirstLaunch(mSharedPreferences);
 			initSettingConfig();
-			// initMaskView();
 		}
 	}
 
-	private void initMaskView() {
-		mMaskView = findViewById(R.id.main_mask_layout);
-		mMaskView.setVisibility(View.VISIBLE);
-		mMaskView.setOnTouchListener(new OnTouchListener() {
-
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				mMaskView.setVisibility(View.GONE);
-				return false;
-			}
-		});
-	}
-
 	/**
-	 * 初始化设置信息
+	 * 初始化设置信息，向数据库中写入
 	 */
 	private void initSettingConfig() {
 		Setting_Service settingDB = new Setting_Service(this);
@@ -819,7 +509,11 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		settingDB.add(new SettingConf("renren_login", 0));
 	}
 
-	private void changeFirseLaunch(SharedPreferences mSharedPreferences) {
+	/**
+	 * 修改配置信息，首次运行
+	 * @param mSharedPreferences
+	 */
+	private void changeFirstLaunch(SharedPreferences mSharedPreferences) {
 		SharedPreferences.Editor mEditor = mSharedPreferences.edit();
 		mEditor.putBoolean(ShareParams.FIRST_LAUNCHER, false);
 		mEditor.commit();
@@ -833,16 +527,13 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		// 快捷方式的名称
 		shortcut.putExtra(Intent.EXTRA_SHORTCUT_NAME, getString(R.string.app_name));
 		shortcut.putExtra("duplicate", false); // 不允许重复创建
-
 		// 指定当前的Activity为快捷方式启动的对象: com.everest.video.VideoPlayer
 		// 注意: ComponentName的第二个参数必须加上点号(.)，否则快捷方式无法启动相应程
 		ComponentName comp = new ComponentName(this.getPackageName(), ShareParams.LAUNCHER_STR);
 		shortcut.putExtra(Intent.EXTRA_SHORTCUT_INTENT, new Intent(Intent.ACTION_MAIN).setComponent(comp));
-
 		// 快捷方式的图
 		ShortcutIconResource iconRes = Intent.ShortcutIconResource.fromContext(this, R.drawable.icon);
 		shortcut.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, iconRes);
-
 		sendBroadcast(shortcut);
 	}
 
@@ -873,6 +564,9 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		return result;
 	}
 
+	/**
+	 * 如果后台有应用正在下载，展示退出应用下载dialog
+	 */
 	private void showExitAppDialog() {
 		if (!isFinishing()) {
 			if (mExitDialog == null) {
@@ -903,17 +597,14 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 				});
 			}
 			if (mExitDialog != null) {
-				mExitDialog.show();
+				mExitDialog.show();	
 			}
 		}
 	}
 
-	public void showProgressBar() {
-		mProgressBar.setVisibility(View.VISIBLE);
-		mProgressBar.setProgress(0);
-		mHandler.sendEmptyMessage(EVENT_LOADING_PROGRESS);
-	}
-
+	/**
+	 * 停止进度条滚动
+	 */
 	public void stopProgressBar() {
 		if (mHandler.hasMessages(EVENT_LOADING_PROGRESS)) {
 			mHandler.removeMessages(EVENT_LOADING_PROGRESS);
@@ -923,10 +614,16 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		}
 	}
 
+	/**
+	 * 滚动条加载完成
+	 */
 	public void onProgressBarDone() {
 		mHandler.sendEmptyMessage(EVENT_LOADDONE);
 	}
 
+	/**
+	 * 隐藏进度条
+	 */
 	public void progressBarGone() {
 		if (mHandler != null && mHandler.hasMessages(EVENT_LOADING_PROGRESS)) {
 			mHandler.removeMessages(EVENT_LOADING_PROGRESS);
@@ -957,34 +654,19 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 	}
 
 	/**
-	 * 关闭当前应用
-	 */
-	private void closeApp() {
-		stopService(new Intent(this, ADownloadService.class));
-		outLogin();
-		finish();
-		Process.killProcess(Process.myPid());
-		System.exit(0);
-	}
-
-	/**
 	 * 退出应用时退出登录
 	 */
 	private void outLogin() {
-		// SharedPreferences loginPref = getSharedPreferences(
-		// AConstDefine.DONGJI_SHAREPREFERENCES, Context.MODE_PRIVATE);
-		// Editor editor = loginPref.edit();
-		// editor.putInt("loginState", 0);
-		// editor.putString("sina_user_name", "");
-		// editor.commit();
 		LoginParams loginParams = ((AppMarket) getApplicationContext()).getLoginParams();
 		loginParams.setSessionId(null);
 		loginParams.setUserName(null);
-		// loginParams.setLoginState(AConstDefine.LOGIN_OUT_FLAG);
 		loginParams.setSinaUserName(null);
 		loginParams.setTencentUserName(null);
 	}
 
+	/**
+	 * 水平滑动
+	 */
 	@Override
 	public void onPageChanged(int position) {
 		BaseActivity mCurrentActivity = (BaseActivity) getLocalActivityManager().getActivity(activityIds[position]);
@@ -993,7 +675,6 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		progressBarGone();
 		mTopButtons[position].setChecked(true);
 		initAnimation(mTopButtons[position]);
-
 		if (position == THEME_POSITION) {
 
 			if (mMainBottomLayout.getVisibility() == View.VISIBLE) {
@@ -1013,40 +694,21 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 				} else {
 					mGameBottomButton.setChecked(true);
 				}
-				// setBottomExpandViewVisible(new boolean[] {
-				// "channel".equals(activityIds[position]), isAppClicked });
 			} else {
-				/*
-				 * if ("channel".equals(activityIds[position])) {
-				 * mLeftBottomExpandView.setVisibility(View.VISIBLE); } else {
-				 */
-				mLeftBottomExpandView.setVisibility(View.GONE);
-				mRightBottomExpandView.setVisibility(View.GONE);
-				// }
 				mAppBottomButton.setChecked(true);
 			}
 
 		}
-
 		switch (position) {
 		case CHOICENESS_POSITION:
 			intent = new Intent(this, ChoicenessActivity.class);
 			bundle = new Bundle();
-			// if (navigationInfos != null) {
-			// NavigationInfo info = navigationInfos.get(CHOICENESS_POSITION);
-			// bundle.putParcelable("navigation", info);
 			bundle.putInt("type", CHOICENESS_POSITION);
-			// }
 			break;
 		case UPDATE_POSITION:
 			intent = new Intent(this, UpdateActivity.class);
 			bundle = new Bundle();
-			// if (navigationInfos != null) {
-			// NavigationInfo info = navigationInfos.get(2);
-			// bundle.putParcelable("navigation", info);
-			// bundle.putInt("type", UPDATE_POSITION);
 			intent.putExtra("type", UPDATE_POSITION);
-			// }
 			break;
 		case THEME_POSITION:
 			intent = new Intent(this, ThemeActivity.class);
@@ -1056,15 +718,9 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		case INSTALL_POSITION:
 			intent = new Intent(this, UpdateActivity.class);
 			bundle = new Bundle();
-			// if (navigationInfos != null) {
-			// NavigationInfo info = navigationInfos.get(1);
-			// bundle.putParcelable("navigation", info);
-			// bundle.putInt("type", INSTALL_POSITION);
 			intent.putExtra("type", INSTALL_POSITION);
-			// }
 			break;
 		case CHANNEL_POSITION:
-			// intent = new Intent(this, UpdateActivity.class);
 			intent = new Intent(this, ChannelActivity.class);
 			bundle = new Bundle();
 			bundle.putInt("type", CHANNEL_POSITION);
@@ -1073,76 +729,20 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		if (mCurrentActivity != null) {
 			getLocalActivityManager().startActivity(activityIds[position], intent);
 		} else {
-			// intent.putExtras(bundle);
 			mMainLayout.removeViewAt(position);
 			mMainLayout.addView(getLocalActivityManager().startActivity(activityIds[position], intent).getDecorView(), position);
 		}
 
 	}
 
+	/**
+	 * 这个不清楚干嘛
+	 * @param v
+	 */
 	public void setInterceptRange(View v) {
 		mMainLayout.setInterceptTouchView(v, CHOICENESS_POSITION);
 	}
 
-	/**
-	 * 是否隐藏顶部和底部
-	 * 
-	 * @param flag
-	 */
-	void scrollOperation(boolean flag) {
-		if (flag) {
-			if (!isScrollAnimRunning && mMainBottomLayout.getVisibility() == View.VISIBLE) {
-				Animation mTopCollapseAnimation = AnimationUtils.loadAnimation(this, R.anim.anim_tab_collapse);
-				Animation mBottomCollapseAnimation = AnimationUtils.loadAnimation(this, R.anim.anim_bottom_collapse);
-				mTopCollapseAnimation.setAnimationListener(new AnimationListener() {
-					@Override
-					public void onAnimationStart(Animation animation) {
-					}
-
-					@Override
-					public void onAnimationRepeat(Animation animation) {
-					}
-
-					@Override
-					public void onAnimationEnd(Animation animation) {
-						// TODO Auto-generated method stub
-						isScrollAnimRunning = false;
-						mTabLayout.setVisibility(View.GONE);
-					}
-				});
-				mBottomCollapseAnimation.setAnimationListener(new AnimationListener() {
-					@Override
-					public void onAnimationStart(Animation animation) {
-					}
-
-					@Override
-					public void onAnimationRepeat(Animation animation) {
-					}
-
-					@Override
-					public void onAnimationEnd(Animation animation) {
-						// TODO Auto-generated method stub
-						isScrollAnimRunning = false;
-						mMainBottomLayout.setVisibility(View.GONE);
-					}
-				});
-				isScrollAnimRunning = true;
-				// mTabLayout.startAnimation(mTopCollapseAnimation);
-				mMainBottomLayout.startAnimation(mBottomCollapseAnimation);
-			}
-		} else {
-			if (mMainBottomLayout.getVisibility() == View.GONE) {
-				// Animation
-				// mTopExpandAnimation=AnimationUtils.loadAnimation(this,
-				// R.anim.anim_tab_expand);
-				Animation mBottomExpandAnimation = AnimationUtils.loadAnimation(this, R.anim.anim_bottom_expand);
-				// mTabLayout.setVisibility(View.VISIBLE);
-				mMainBottomLayout.setVisibility(View.VISIBLE);
-				// mTabLayout.startAnimation(mTopExpandAnimation);
-				mMainBottomLayout.startAnimation(mBottomExpandAnimation);
-			}
-		}
-	}
 
 	private class MyHandler extends Handler {
 
@@ -1179,46 +779,23 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 					}
 				});
 				break;
-			case EVENT_CHANGE_EXIT_STATUS:
+			case EVENT_CHANGE_EXIT_STATUS://改变退出状态
 				isExit = false;
 				break;
 			case EVENT_LOADING_DATA:
-				Intent intent = new Intent(MainActivity.this, DataUpdateService.class);
+				Intent intent = new Intent(MainActivity.this, DataUpdateService.class);//开启数据更新服务
 				startService(intent);
 
-				Intent downloadIntent = new Intent(MainActivity.this, DownloadService.class);
+				Intent downloadIntent = new Intent(MainActivity.this, DownloadService.class);//开启下载服务
 				startService(downloadIntent);
 				break;
-			case EVENT_CHECK_APP_UPDATE:
+			case EVENT_CHECK_APP_UPDATE://检查更新服务
 				String downloadUrl = DataManager.newInstance().checkAppUpdate(MainActivity.this);
 				if (!TextUtils.isEmpty(downloadUrl)) {
 					DJMarketUtils.appUpdate(MainActivity.this, downloadUrl);
 				}
 				break;
 			}
-		}
-	}
-
-	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		switch (parent.getId()) {
-		case R.id.poplistview:
-			BaseActivity mCurrentActivity = (BaseActivity) getLocalActivityManager().getCurrentActivity();
-			if (mCurrentActivity.isAppClicked()) {
-				setVisibleForGone(mBottomLeftPopup);
-			} else {
-				setVisibleForGone(mBottomRightPopup);
-			}
-			PopupAdapter mAdapter = (PopupAdapter) parent.getAdapter();
-			mCurrentActivity.onItemClick((ChannelListInfo) mAdapter.getItem(position));
-			mTouchLayout.setVisibility(View.GONE);
-			break;
-		}
-	}
-
-	public void setNavigationList(ArrayList<NavigationInfo> list) {
-		if (list != null) {
-			this.navigationInfos = list;
 		}
 	}
 

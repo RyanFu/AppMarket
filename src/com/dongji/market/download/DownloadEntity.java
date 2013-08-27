@@ -32,7 +32,6 @@ public class DownloadEntity implements Runnable, DownloadConstDefine, Parcelable
 	public String url;   // 下载地址
 	private static final int REQUEST_TIME_OUT = 10000;   // 请求超时时间
 	private static final String REQUEST_METHOD_GET = "GET";   // 请求方式
-//	private boolean isRunning=false;    // 是否允许下载
 	public int downloadType;
 	public String versionName;
 	private int retryNum;

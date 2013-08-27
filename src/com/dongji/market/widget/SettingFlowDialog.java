@@ -45,21 +45,17 @@ public class SettingFlowDialog extends Dialog {
 	}
 
 	private void initViews() {
-		mContentView = getLayoutInflater().inflate(
-				R.layout.widget_settingflow_dialog, null);
-		etInputFlow = (EditText) mContentView
-				.findViewById(R.id.etInputFlow);
-		btnCancel = (Button) mContentView
-				.findViewById(R.id.btnCancel);
-		btnConfirm = (Button) mContentView
-		.findViewById(R.id.btnConfirm);
-		
+		mContentView = getLayoutInflater().inflate(R.layout.widget_settingflow_dialog, null);
+		etInputFlow = (EditText) mContentView.findViewById(R.id.etInputFlow);
+		btnCancel = (Button) mContentView.findViewById(R.id.btnCancel);
+		btnConfirm = (Button) mContentView.findViewById(R.id.btnConfirm);
+
 		etInputFlow.setOnFocusChangeListener(new OnFocusChangeListener() {
-			
+
 			@Override
 			public void onFocusChange(View v, final boolean hasFocus) {
 				(new Handler()).postDelayed(new Runnable() {
-					
+
 					@Override
 					public void run() {
 						imm = (InputMethodManager) cxt.getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -70,61 +66,58 @@ public class SettingFlowDialog extends Dialog {
 				}, 100);
 			}
 		});
-		
+
 		btnCancel.setOnClickListener(new View.OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				SettingFlowDialog.this.dismiss();
 			}
 		});
-		
+
 		btnConfirm.setOnClickListener(new View.OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
-				if("".equals(etInputFlow.getText().toString()) || Integer.valueOf(etInputFlow.getText().toString())==0){
-					Toast.makeText(cxt, cxt.getResources().getString(R.string.flow_val_prompt),Toast.LENGTH_SHORT).show();
-					return ;
+				if ("".equals(etInputFlow.getText().toString()) || Integer.valueOf(etInputFlow.getText().toString()) == 0) {
+					Toast.makeText(cxt, cxt.getResources().getString(R.string.flow_val_prompt), Toast.LENGTH_SHORT).show();
+					return;
 				}
-				Intent intent=new Intent(AConstDefine.BROADCAST_ACTION_DIALOG_LIMITFLOWCHANGE);
+				Intent intent = new Intent(AConstDefine.BROADCAST_ACTION_DIALOG_LIMITFLOWCHANGE);
 				cxt.sendBroadcast(intent);
-				
+
 				int setttingflow = Integer.valueOf(etInputFlow.getText().toString().trim());
 				// TODO 修改设置界面数据库的参数
 				Setting_Service service;
 				service = new Setting_Service(cxt);
 				service.update("limit_flow", setttingflow);
 				// 每次修改限制流量必须清零已使用流量
-				SharedPreferences pref = cxt.getSharedPreferences(
-						AConstDefine.DONGJI_SHAREPREFERENCES,
-						Context.MODE_PRIVATE);
+				SharedPreferences pref = cxt.getSharedPreferences(AConstDefine.DONGJI_SHAREPREFERENCES, Context.MODE_PRIVATE);
 				Editor editor = pref.edit();
 				editor.putLong(AConstDefine.SHARE_DOWNLOADSIZE, 0);
 				editor.commit();
-				
-				/*if (ADownloadService.isSelfStart()) {
-					Intent broadcastIntent = new Intent();
-					broadcastIntent
-							.setAction(AConstDefine.BROADCAST_ACTION_LIMITFLOWCHANGE);
-					Bundle bundle = new Bundle();
-					bundle.putLong("limitFlow", setttingflow);
-					bundle.putBoolean(AConstDefine.FLAG_BUNDLECONTINUEPAUSETASK, true);
-					broadcastIntent.putExtras(bundle);
-					cxt.sendBroadcast(broadcastIntent);
-				} else {
-					ADownloadService.changeDownloadParameter(setttingflow,
-							false, true);
-				}*/
-				
+
+				/*
+				 * if (ADownloadService.isSelfStart()) { Intent broadcastIntent
+				 * = new Intent(); broadcastIntent
+				 * .setAction(AConstDefine.BROADCAST_ACTION_LIMITFLOWCHANGE);
+				 * Bundle bundle = new Bundle(); bundle.putLong("limitFlow",
+				 * setttingflow);
+				 * bundle.putBoolean(AConstDefine.FLAG_BUNDLECONTINUEPAUSETASK,
+				 * true); broadcastIntent.putExtras(bundle);
+				 * cxt.sendBroadcast(broadcastIntent); } else {
+				 * ADownloadService.changeDownloadParameter(setttingflow, false,
+				 * true); }
+				 */
+
 				// 设置好流量后通知 service 继续下载
-				Intent trafficIntent=new Intent(DownloadConstDefine.BROADCAST_ACTION_GPRS_SETTING_CHANGE);
-				Bundle bundle=new Bundle();
+				Intent trafficIntent = new Intent(DownloadConstDefine.BROADCAST_ACTION_GPRS_SETTING_CHANGE);
+				Bundle bundle = new Bundle();
 				bundle.putLong("limitFlow", setttingflow);
 				bundle.putBoolean("isOnlyWifi", false);
 				trafficIntent.putExtras(bundle);
 				cxt.sendBroadcast(trafficIntent);
-				
+
 				SettingFlowDialog.this.dismiss();
 			}
 		});
@@ -136,9 +129,7 @@ public class SettingFlowDialog extends Dialog {
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
 			if (this.getCurrentFocus() != null) {
 				if (this.getCurrentFocus().getWindowToken() != null) {
-					imm.hideSoftInputFromWindow(this.getCurrentFocus()
-							.getWindowToken(),
-							InputMethodManager.HIDE_NOT_ALWAYS);
+					imm.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 				}
 			}
 		}

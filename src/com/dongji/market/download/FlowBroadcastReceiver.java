@@ -23,13 +23,16 @@ public class FlowBroadcastReceiver implements AConstDefine {
 
 	private MyBroadcastReceiver myBroadcastReceiver;
 
+	/**
+	 * 注册流量广播接收器(接收流量已用完，取消流量用完对话框广播）
+	 */
 	public void registerMyReceiver() {
 		IntentFilter intentFilter = new IntentFilter();
 		intentFilter.addAction(BROADCAST_ACTION_NOFLOW);
 		intentFilter.addAction(CANCELNOFLOWDIALOG);
 		myBroadcastReceiver = new MyBroadcastReceiver();
 		activity.registerReceiver(myBroadcastReceiver, intentFilter);
-		if (!activity.isFinishing()) {
+		if (!activity.isFinishing()) {//弹出流量已用完对话框，流量设置对话框
 			mFlowSettingDialog = new CustomNoTitleDialog(activity);
 			mFlowSettingDialog.setMessage(R.string.dialog_tip_noflow);
 			mFlowSettingDialog.setNeutralButton(activity.getString(R.string.dialog_setting), new View.OnClickListener() {
@@ -38,7 +41,6 @@ public class FlowBroadcastReceiver implements AConstDefine {
 					mFlowSettingDialog.dismiss();
 					SettingFlowDialog settingFlowDialog = new SettingFlowDialog(activity);
 					if (settingFlowDialog != null) {
-
 						settingFlowDialog.show();
 					}
 				}
@@ -49,7 +51,7 @@ public class FlowBroadcastReceiver implements AConstDefine {
 					mFlowSettingDialog.dismiss();
 				}
 			});
-			mFlowSettingDialog.setOnDismissListener(new OnDismissListener() {
+			mFlowSettingDialog.setOnDismissListener(new OnDismissListener() {//取消流量已用完对话框
 
 				@Override
 				public void onDismiss(DialogInterface dialog) {

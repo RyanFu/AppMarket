@@ -32,7 +32,7 @@ import com.tencent.mm.sdk.openapi.WXWebpageObject;
  */
 public class WxUtils {
 	private static IWXAPI api;
-	private static final String TAG = "SDK_Sample.Util";
+	private static final String TAG = "WxUtil";
 	private static final int MAX_DECODE_PICTURE_SIZE = 1920 * 1440;
 	private static final String EXTERNAL_STORAGE_DIRECTORY_PATH = AndroidUtils.getSdcardFile().getPath() + "/.dongji/dongjiMarket/cache/images/";
 	private static final BitmapFactory.Options mOptions = new BitmapFactory.Options();
@@ -50,8 +50,8 @@ public class WxUtils {
 	 */
 	public static IWXAPI registWxApi(Context context) {
 		if (api == null) {
-			api = WXAPIFactory.createWXAPI(context, Constants.APP_ID, false);
-			api.registerApp(Constants.APP_ID);
+			api = WXAPIFactory.createWXAPI(context, WXConstants.APP_ID, false);
+			api.registerApp(WXConstants.APP_ID);
 		}
 		return api;
 	}
@@ -74,7 +74,6 @@ public class WxUtils {
 		request.transaction = System.currentTimeMillis() + "";
 		request.message = wXMediaMessage;
 		api.sendReq(request);
-
 	}
 
 	/**

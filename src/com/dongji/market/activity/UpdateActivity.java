@@ -44,9 +44,7 @@ import com.dongji.market.widget.ScrollListView;
  * @author zhangkai
  * 
  */
-public class UpdateActivity extends BaseActivity implements
-		OnItemClickListener, OnScrollListener,
-		ScrollListView.OnScrollTouchListener {
+public class UpdateActivity extends BaseActivity implements OnItemClickListener, ScrollListView.OnScrollTouchListener {
 	private static final int EVENT_REQUEST_APPLIST_DATA = 1;
 	private static final int EVENT_REQUEST_GAMELIST_DATA = 2;
 	private static final int EVENT_NO_NETWORK_ERROR = 3;
@@ -57,8 +55,7 @@ public class UpdateActivity extends BaseActivity implements
 
 	private static final int SCROLL_DVALUE = 1;
 
-	private static final int TYPE_UPDATE = 1, TYPE_INSTALL = 3,
-			TYPE_CHANNEL = 4;
+	private static final int TYPE_UPDATE = 1, TYPE_INSTALL = 3, TYPE_CHANNEL = 4;
 
 	private int currentType;
 
@@ -157,8 +154,7 @@ public class UpdateActivity extends BaseActivity implements
 	private void initAppListView() {
 		mAppListView = (ScrollListView) findViewById(R.id.applistview);
 		if (isSingleRow) {
-			mAppSingleAdapter = new ListSingleTemplateAdapter(this, apps,
-					isRemoteImage);
+			mAppSingleAdapter = new ListSingleTemplateAdapter(this, apps, isRemoteImage);
 			mAppListView.setAdapter(mAppSingleAdapter);
 		} else {
 			mAppMultiAdapter = new ListMultiTemplateAdapter(this, apps);
@@ -181,8 +177,7 @@ public class UpdateActivity extends BaseActivity implements
 	private void initGameListView() {
 		mGameListView = (ScrollListView) findViewById(R.id.gamelistview);
 		if (isSingleRow) {
-			mGameSingleAdapter = new ListSingleTemplateAdapter(this, games,
-					isRemoteImage);
+			mGameSingleAdapter = new ListSingleTemplateAdapter(this, games, isRemoteImage);
 			mGameListView.setAdapter(mGameSingleAdapter);
 		} else {
 			mGameMultiAdapter = new ListMultiTemplateAdapter(this, games);
@@ -211,12 +206,12 @@ public class UpdateActivity extends BaseActivity implements
 			public boolean onTouch(View v, MotionEvent event) {
 				if (mLoadingProgressBar.getVisibility() == View.GONE) {
 					setPreLoading();
-					/*if (currentType != TYPE_CHANNEL) {
-						// if(navigationInfo==null) {
-						mHandler.sendEmptyMessage(EVENT_REQUEST_NAVIGATION_DATA);
-						return false;
-						// }
-					}*/
+					/*
+					 * if (currentType != TYPE_CHANNEL) { //
+					 * if(navigationInfo==null) {
+					 * mHandler.sendEmptyMessage(EVENT_REQUEST_NAVIGATION_DATA);
+					 * return false; // } }
+					 */
 					if (isAppClicked) {
 						mHandler.sendEmptyMessage(EVENT_REQUEST_APPLIST_DATA);
 					} else {
@@ -292,60 +287,15 @@ public class UpdateActivity extends BaseActivity implements
 		mHandler.sendEmptyMessage(EVENT_REQUEST_DOWNLOAD_DATA);
 	}
 
-	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position,
-			long id) {
-		Intent intent = new Intent(this, ApkDetailActivity.class);
-		Bundle bundle = new Bundle();
-		switch (parent.getId()) {
-		case R.id.applistview:
-			bundle.putParcelable("apkItem",
-					mAppSingleAdapter.getApkItemByPosition(position));
-			break;
-		case R.id.gamelistview:
-			bundle.putParcelable("apkItem",
-					mGameSingleAdapter.getApkItemByPosition(position));
-			break;
-		}
-		intent.putExtras(bundle);
-		startActivity(intent);
-	}
+
 
 	private List<ApkItem> getApps() throws IOException, JSONException {
-		if (currentType == TYPE_CHANNEL) {
-			if (channelList == null || channelList.size() == 0) {
-				channelList = dataManager.getChannelListData(this);
-				if (channelList != null && channelList.size() > 0) {
-					isLoadChannelData = true;
-					runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							getParentActivity().initBottomView(channelList);
-							getParentActivity().performClickOnBottomButton(
-									isAppClicked);
-						}
-					});
-					if (isClearDate) {
-						dataManager.clearRubbishCacheData(this, channelList);
-						DJMarketUtils.writeClearDate(context);
-					}
-				}
-			} else {
-			}
+		if (isAppClicked) {
+			hasAppData = false;
 		} else {
-			// int position = isAppClicked ? 0 : 1;
-			// StaticAddress
-			// staticAddress=(StaticAddress)navigationInfo.staticAddress[position];
-			if (isAppClicked) {
-				hasAppData = false;
-			} else {
-				hasGameData = false;
-			}
-			return dataManager.getApps(this,
-					currentType == TYPE_UPDATE ? DataManager.RECENT_UPDATA_ID
-							: DataManager.ESSENTIAL_ID, isAppClicked);
+			hasGameData = false;
 		}
-		return null;
+		return dataManager.getApps(this, currentType == TYPE_UPDATE ? DataManager.RECENT_UPDATA_ID : DataManager.ESSENTIAL_ID, isAppClicked);
 	}
 
 	private class MyHandler extends Handler {
@@ -379,8 +329,7 @@ public class UpdateActivity extends BaseActivity implements
 								getParentActivity().onProgressBarDone();
 								if (isAppClicked) {
 									if (mAppListView.getVisibility() == View.GONE) {
-										mAppListView
-												.setVisibility(View.VISIBLE);
+										mAppListView.setVisibility(View.VISIBLE);
 										mLoadingView.setVisibility(View.GONE);
 									}
 								}
@@ -438,8 +387,7 @@ public class UpdateActivity extends BaseActivity implements
 								getParentActivity().onProgressBarDone();
 								if (!isAppClicked) {
 									if (mGameListView.getVisibility() == View.GONE) {
-										mGameListView
-												.setVisibility(View.VISIBLE);
+										mGameListView.setVisibility(View.VISIBLE);
 										mLoadingView.setVisibility(View.GONE);
 									}
 								}
@@ -475,12 +423,10 @@ public class UpdateActivity extends BaseActivity implements
 				}
 				break;
 			case EVENT_NO_NETWORK_ERROR:
-				setErrorMessage(R.string.no_network_refresh_msg,
-						R.string.no_network_refresh_msg2);
+				setErrorMessage(R.string.no_network_refresh_msg, R.string.no_network_refresh_msg2);
 				break;
 			case EVENT_REQUEST_DATA_ERROR:
-				setErrorMessage(R.string.request_data_error_msg,
-						R.string.request_data_error_msg2);
+				setErrorMessage(R.string.request_data_error_msg, R.string.request_data_error_msg2);
 				break;
 			case EVENT_REQUEST_DOWNLOAD_DATA:
 				isClearDate = DJMarketUtils.isExceedDate(context);
@@ -530,16 +476,11 @@ public class UpdateActivity extends BaseActivity implements
 		if (!isAppClicked) {
 			isAppClicked = true;
 			getParentActivity().progressBarGone();
-			// if (currentType != TYPE_CHANNEL && navigationInfo==null) {
-			// mHandler.sendEmptyMessage(EVENT_REQUEST_NAVIGATION_DATA);
-			// return;
-			// }
 			if (currentAppPage == 0 && hasAppData) {
 				displayLoading();
 				if (currentType == TYPE_CHANNEL) {
 					if (currentAppChannel == null) {
-						boolean flag = getParentActivity()
-								.performClickOnBottomButton(false);
+						boolean flag = getParentActivity().performClickOnBottomButton(false);
 						if (!flag) {
 							mHandler.sendEmptyMessage(EVENT_REQUEST_APPLIST_DATA);
 						}
@@ -583,8 +524,7 @@ public class UpdateActivity extends BaseActivity implements
 				if (currentGameChannel == null) {
 					System.out.println("currentGameChannel is null");
 					if (currentType == TYPE_CHANNEL) {
-						boolean flag = getParentActivity()
-								.performClickOnBottomButton(false);
+						boolean flag = getParentActivity().performClickOnBottomButton(false);
 						if (!flag) {
 							mHandler.sendEmptyMessage(EVENT_REQUEST_GAMELIST_DATA);
 						}
@@ -612,8 +552,7 @@ public class UpdateActivity extends BaseActivity implements
 		}
 	}
 
-	private void addAdapterRunUiThread(final ListBaseAdapter mAdapter,
-			final List<ApkItem> items) {
+	private void addAdapterRunUiThread(final ListBaseAdapter mAdapter, final List<ApkItem> items) {
 		mAdapter.addList(items);
 		int what = 0;
 		if (isAppClicked) {
@@ -659,81 +598,6 @@ public class UpdateActivity extends BaseActivity implements
 		}
 	}
 
-	@Override
-	public void onScroll(AbsListView view, int firstVisibleItem,
-			int visibleItemCount, int totalItemCount) {
-
-		// System.out.println("isLoding:"+isLoading);
-		if (!isLoading
-				&& firstVisibleItem + visibleItemCount >= totalItemCount
-						- SCROLL_DVALUE) {
-			if (isAppClicked) {
-				if (!hasAppData) {
-					getParentActivity().onProgressBarDone();
-					return;
-				}
-			} else {
-				if (!hasGameData) {
-					getParentActivity().onProgressBarDone();
-					return;
-				}
-			}
-			isLoading = true;
-			getParentActivity().showProgressBar();
-			addAdapterData();
-			getParentActivity().stopProgressBar();
-		} else if (isLoading
-				&& !isRequestDelay
-				&& firstVisibleItem + visibleItemCount >= totalItemCount
-						- SCROLL_DVALUE) {
-			if (isAppClicked) {
-				if (!hasAppData) {
-					getParentActivity().onProgressBarDone();
-					return;
-				}
-			} else {
-				if (!hasGameData) {
-					getParentActivity().onProgressBarDone();
-					return;
-				}
-			}
-			isRequestDelay = true;
-			getParentActivity().showProgressBar();
-		}
-	}
-
-	@Override
-	public void onScrollStateChanged(AbsListView view, int scrollState) {
-	}
-
-	@Override
-	public void onItemClick(ChannelListInfo info) {
-		/*
-		 * setLoadingVisible(); if(isAppClicked) { if(isSingleRow) {
-		 * currentAppChannel=info; currentAppPage=0; // hasAppData =
-		 * currentAppChannel.staticAddress.length > 0; //
-		 * System.out.println("onitemclick!"
-		 * +currentAppChannel.staticAddress.length+", hasAppData:"+hasAppData);
-		 * if(mAppSingleAdapter!=null) { listViewFromTop(mAppListView);
-		 * mAppSingleAdapter.resetList(); }
-		 * mHandler.sendEmptyMessage(EVENT_REQUEST_APPLIST_DATA); }else {
-		 * if(mAppMultiAdapter!=null) { listViewFromTop(mAppListView);
-		 * mAppMultiAdapter.resetList();
-		 * mHandler.sendEmptyMessage(EVENT_REQUEST_APPLIST_DATA); } } }else {
-		 * if(isSingleRow) { currentGameChannel=info; currentGamePage=0; //
-		 * hasGameData = currentGameChannel.staticAddress.length > 0; // //
-		 * System
-		 * .out.println("game length:"+currentGameChannel.staticAddress.length
-		 * +", hasGameData:"+hasGameData);
-		 * 
-		 * if(mGameSingleAdapter!=null) { listViewFromTop(mGameListView);
-		 * mGameSingleAdapter.resetList(); }
-		 * mHandler.sendEmptyMessage(EVENT_REQUEST_GAMELIST_DATA); }else {
-		 * if(mGameMultiAdapter!=null) { listViewFromTop(mGameListView);
-		 * mGameMultiAdapter.resetList();
-		 * mHandler.sendEmptyMessage(EVENT_REQUEST_GAMELIST_DATA); } } }
-		 */
-	}
 
 	private void setLoadingVisible() {
 		getParentActivity().stopProgressBar();
@@ -741,12 +605,10 @@ public class UpdateActivity extends BaseActivity implements
 		if (mLoadingView.getVisibility() == View.GONE) {
 			setPreLoading();
 		}
-		if (mAppListView != null
-				&& mAppListView.getVisibility() == View.VISIBLE) {
+		if (mAppListView != null && mAppListView.getVisibility() == View.VISIBLE) {
 			mAppListView.setVisibility(View.GONE);
 		}
-		if (mGameListView != null
-				&& mGameListView.getVisibility() == View.VISIBLE) {
+		if (mGameListView != null && mGameListView.getVisibility() == View.VISIBLE) {
 			mGameListView.setVisibility(View.GONE);
 		}
 	}
@@ -764,24 +626,19 @@ public class UpdateActivity extends BaseActivity implements
 	}
 
 	@Override
-	public void onAppStatusChange(boolean isCancel, String packageName,
-			int versionCode) {
+	public void onAppStatusChange(boolean isCancel, String packageName, int versionCode) {
 		if (mAppListView != null && mAppListView.getAdapter() != null) {
 			if (isSingleRow) {
-				mAppSingleAdapter.changeApkStatusByAppId(isCancel, packageName,
-						versionCode);
+				mAppSingleAdapter.changeApkStatusByAppId(isCancel, packageName, versionCode);
 			} else {
-				mAppMultiAdapter.changeApkStatusByAppId(isCancel, packageName,
-						versionCode);
+				mAppMultiAdapter.changeApkStatusByAppId(isCancel, packageName, versionCode);
 			}
 		}
 		if (mGameListView != null && mGameListView.getAdapter() != null) {
 			if (isSingleRow) {
-				mGameSingleAdapter.changeApkStatusByAppId(isCancel,
-						packageName, versionCode);
+				mGameSingleAdapter.changeApkStatusByAppId(isCancel, packageName, versionCode);
 			} else {
-				mGameMultiAdapter.changeApkStatusByAppId(isCancel, packageName,
-						versionCode);
+				mGameMultiAdapter.changeApkStatusByAppId(isCancel, packageName, versionCode);
 			}
 		}
 	}
@@ -836,11 +693,9 @@ public class UpdateActivity extends BaseActivity implements
 	private void requestNavigationData() {
 		DataManager dataManager = DataManager.newInstance();
 		try {
-			ArrayList<NavigationInfo> navigationList = dataManager
-					.getNavigationList();
+			ArrayList<NavigationInfo> navigationList = dataManager.getNavigationList();
 			if (navigationList != null && navigationList.size() > 0) {
-				getParentActivity().setNavigationList(navigationList);
-				System.out.println("-----currentType:"+currentType);
+				System.out.println("-----currentType:" + currentType);
 				navigationInfo = navigationList.get(currentType);
 			}
 		} catch (JSONException e) {
@@ -886,9 +741,7 @@ public class UpdateActivity extends BaseActivity implements
 				// mAppListView.setStackFromBottom(true);
 				// }
 				// mAppListView.setStackFromBottom(false);
-				locStep = (int) Math.ceil(mAppListView
-						.getFirstVisiblePosition()
-						/ AConstDefine.AUTO_SCRLL_TIMES);
+				locStep = (int) Math.ceil(mAppListView.getFirstVisiblePosition() / AConstDefine.AUTO_SCRLL_TIMES);
 				mAppListView.post(appAutoScroll);
 			}
 		} else {
@@ -897,9 +750,7 @@ public class UpdateActivity extends BaseActivity implements
 				// mGameListView.setStackFromBottom(true);
 				// }
 				// mGameListView.setStackFromBottom(false);
-				locStep = (int) Math.ceil(mGameListView
-						.getFirstVisiblePosition()
-						/ AConstDefine.AUTO_SCRLL_TIMES);
+				locStep = (int) Math.ceil(mGameListView.getFirstVisiblePosition() / AConstDefine.AUTO_SCRLL_TIMES);
 				mGameListView.post(gameAutoScroll);
 			}
 		}
@@ -912,13 +763,9 @@ public class UpdateActivity extends BaseActivity implements
 			// TODO Auto-generated method stub
 			if (mAppListView.getFirstVisiblePosition() > 0) {
 				if (mAppListView.getFirstVisiblePosition() < AConstDefine.AUTO_SCRLL_TIMES) {
-					mAppListView.setSelection(mAppListView
-							.getFirstVisiblePosition() - 1);
+					mAppListView.setSelection(mAppListView.getFirstVisiblePosition() - 1);
 				} else {
-					mAppListView
-							.setSelection(Math.max(
-									mAppListView.getFirstVisiblePosition()
-											- locStep, 0));
+					mAppListView.setSelection(Math.max(mAppListView.getFirstVisiblePosition() - locStep, 0));
 				}
 				// mAppListView.postDelayed(this, 1);
 				mAppListView.post(this);
@@ -934,12 +781,9 @@ public class UpdateActivity extends BaseActivity implements
 			// TODO Auto-generated method stub
 			if (mGameListView.getFirstVisiblePosition() > 0) {
 				if (mGameListView.getFirstVisiblePosition() < AConstDefine.AUTO_SCRLL_TIMES) {
-					mGameListView.setSelection(mGameListView
-							.getFirstVisiblePosition() - 1);
+					mGameListView.setSelection(mGameListView.getFirstVisiblePosition() - 1);
 				} else {
-					mGameListView.setSelection(Math.max(
-							mGameListView.getFirstVisiblePosition() - locStep,
-							0));
+					mGameListView.setSelection(Math.max(mGameListView.getFirstVisiblePosition() - locStep, 0));
 				}
 				// mAppListView.postDelayed(this, 1);
 				mGameListView.post(this);
@@ -947,4 +791,25 @@ public class UpdateActivity extends BaseActivity implements
 			return;
 		}
 	};
+
+	@Override
+	public void onItemClick(ChannelListInfo info) {
+	}
+	
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		Intent intent = new Intent(this, ApkDetailActivity.class);
+		Bundle bundle = new Bundle();
+		switch (parent.getId()) {
+		case R.id.applistview:
+			bundle.putParcelable("apkItem", mAppSingleAdapter.getApkItemByPosition(position));
+			break;
+		case R.id.gamelistview:
+			bundle.putParcelable("apkItem", mGameSingleAdapter.getApkItemByPosition(position));
+			break;
+		}
+		intent.putExtras(bundle);
+		startActivity(intent);
+	}
+
 }

@@ -6,11 +6,11 @@ package com.dongji.market.helper;
  * @author yvon
  * 
  */
-public class Constants {
+public class WXConstants {
 	public static final String IMGTYPE = "image/*";// mimeType 图片类型
 	public static final String TXTTYPE = "text/plain";// mimeType 文本类型
 	public static final String ALLTYPE = "*/*";// 所有类型
-	public static final int THUMB_SIZE = 150;// 缩略图大小
+	public static final int THUMB_SIZE = 200;// 缩略图大小
 	public static final String FRIENDACTNAME = "com.tencent.mm.ui.tools.ShareImgUI";// 微信好友分享activity名
 	public static final String TIMELINEACTNAME = "com.tencent.mm.ui.tools.ShareToTimeLineUI";// 微信朋友圈分享activity名
 	public static final String TIMELINELABLE = "朋友圈";

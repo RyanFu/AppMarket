@@ -31,7 +31,7 @@ import android.widget.LinearLayout;
 import com.dongji.market.R;
 import com.dongji.market.activity.ApkDetailActivity;
 import com.dongji.market.adapter.ShareAdapter;
-import com.dongji.market.helper.Constants;
+import com.dongji.market.helper.WXConstants;
 import com.dongji.market.helper.WxUtils;
 import com.dongji.market.pojo.ApkItem;
 import com.dongji.market.protocol.DataManager;
@@ -55,7 +55,6 @@ public class ShareDialog extends Dialog {
 	private static final int EVENT_REQUEST_DJ_DATA = 1;
 	private static final int EVENT_REQUEST_WX_DATA = 2;
 
-
 	public ShareDialog(Context context, Bundle bundle, boolean isApkDetailPage) {
 		super(context, R.style.dialog_progress_default);
 		initHandler();
@@ -71,8 +70,8 @@ public class ShareDialog extends Dialog {
 			title = apkItem.appName;
 			wxContent = apkItem.discription;
 			icon = WxUtils.getBitmapFromFile(apkItem.appIconUrl);
-			shareUrl=DataManager.newInstance().getAppDetailUrl(apkItem.category, apkItem.appId);
-			otherContent = context.getResources().getString(R.string.share_text1) + apkItem.appName + context.getResources().getString(R.string.share_text2) + shareUrl + context.getResources().getString(R.string.share_text3);
+			shareUrl = DataManager.newInstance().getAppDetailUrl(apkItem.category, apkItem.appId);
+			otherContent = context.getResources().getString(R.string.share_text1) + apkItem.appName + context.getResources().getString(R.string.share_text2) + shareUrl;
 		} else {
 			mHandler.sendEmptyMessage(EVENT_REQUEST_DJ_DATA);
 			title = context.getResources().getString(R.string.DJ_app_center);
@@ -100,7 +99,7 @@ public class ShareDialog extends Dialog {
 	private void getAppInfo() {
 		intent = new Intent();
 		intent.setAction(Intent.ACTION_SEND);
-		intent.setType(Constants.TXTTYPE);
+		intent.setType(WXConstants.TXTTYPE);
 		PackageManager manager = context.getPackageManager();// 获取包管理器
 		List<ResolveInfo> resolveInfos = manager.queryIntentActivities(intent, 0);// 通过包管理器查询符合条件的ResolveInfo信息
 		appInfoList = new ArrayList<HashMap<String, Object>>();
@@ -112,7 +111,7 @@ public class ShareDialog extends Dialog {
 			CharSequence lableName = applicationInfo.loadLabel(manager).toString();
 			String packageName = applicationInfo.packageName;
 			String activityName = activityInfo.name;
-			if (Constants.WXPKGNAME.equals(packageName)) {
+			if (WXConstants.WXPKGNAME.equals(packageName)) {
 				wxInstall = true;
 				continue;
 			}
@@ -143,15 +142,19 @@ public class ShareDialog extends Dialog {
 			public void onClick(View v) {
 				if (wxInstall) {
 					WxUtils.registWxApi(context);
+					if (wxContent == null) {
+						wxContent = otherContent;
+					}
 					WxUtils.sendWebPageWx(shareUrl, title, wxContent, icon, SendMessageToWX.Req.WXSceneSession);
 				} else {
+					if (wxItem == null) {
+						return;
+					}
 					intent = new Intent(context, ApkDetailActivity.class);
 					Bundle bundle = new Bundle();
-					if (wxItem != null) {
-						bundle.putParcelable("apkItem", wxItem);
-						intent.putExtras(bundle);
-						context.startActivity(intent);
-					}
+					bundle.putParcelable("apkItem", wxItem);
+					intent.putExtras(bundle);
+					context.startActivity(intent);
 				}
 				dismiss();
 			}
@@ -161,6 +164,9 @@ public class ShareDialog extends Dialog {
 			@Override
 			public void onClick(View v) {
 				WxUtils.registWxApi(context);
+				if (wxContent == null) {
+					wxContent = otherContent;
+				}
 				WxUtils.sendWebPageWx(shareUrl, title, wxContent, icon, SendMessageToWX.Req.WXSceneTimeline);
 				dismiss();
 			}
@@ -176,8 +182,11 @@ public class ShareDialog extends Dialog {
 				try {
 					Intent intent = new Intent(Intent.ACTION_SEND);
 					intent.setComponent(componetName);
-					intent.setType(Constants.TXTTYPE);
+					intent.setType(WXConstants.TXTTYPE);
 					intent.putExtra(Intent.EXTRA_SUBJECT, title); // 分享主题
+					if (otherContent == null) {
+						otherContent = wxContent + context.getResources().getString(R.string.share_text2) + context.getResources().getString(R.string.productwebaddress);
+					}
 					intent.putExtra(Intent.EXTRA_TEXT, otherContent);
 					context.startActivity(intent);
 				} catch (Exception e) {
@@ -197,8 +206,8 @@ public class ShareDialog extends Dialog {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case EVENT_REQUEST_DJ_DATA:
-					shareUrl=DataManager.newInstance().getDJUrl(context);
-					otherContent = wxContent + context.getResources().getString(R.string.text2) + shareUrl;
+				shareUrl = DataManager.newInstance().getDJUrl(context);
+				otherContent = wxContent + context.getResources().getString(R.string.share_text2) + shareUrl;
 				break;
 			case EVENT_REQUEST_WX_DATA:
 				try {

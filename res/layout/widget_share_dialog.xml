@@ -49,7 +49,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:text="微信"
+                android:text="@string/weixin"
                 android:textColor="#333"
                 android:textSize="19sp" />
         </LinearLayout>
@@ -74,7 +74,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:text="朋友圈"
+                android:text="@string/pengyouquan"
                 android:textColor="#333"
                 android:textSize="19sp" />
         </LinearLayout>
@@ -91,7 +91,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="您还未安装微信，赶紧点击去安装体验吧~还可以分享到属于自己的朋友圈。"
+                android:text="@string/noweixin"
                 android:textColor="#333"
                 android:textSize="12sp" />
         </LinearLayout>

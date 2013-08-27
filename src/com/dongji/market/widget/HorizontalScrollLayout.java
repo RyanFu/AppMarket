@@ -110,7 +110,6 @@ public class HorizontalScrollLayout extends ViewGroup {
     }
     
     public void snapToScreen(int whichScreen) {
-    	// get the valid layout page
     	whichScreen = Math.max(0, Math.min(whichScreen, getChildCount()-1));
     	if (getScrollX() != (whichScreen*getWidth())) {
     		

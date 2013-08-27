@@ -53,7 +53,6 @@ import android.widget.Toast;
  * @author zhangkai
  */
 public class AndroidUtils {
-	private static Toast mToast;
 	private static TextView toast_txt;
 	public static String cachePath;
 	private static DisplayMetrics mDisplayMetrics;
@@ -117,16 +116,6 @@ public class AndroidUtils {
 	 * 自定义Toast
 	 */
 	public static void showToast(Context context, String text) {
-		/*
-		 * if (mToast == null) { mToast = new Toast(context); View view =
-		 * LayoutInflater.from(context).inflate( R.layout.custom_toast, null);
-		 * toast_txt = (TextView) view.findViewById(R.id.toast_txt);
-		 * mToast.setView(view); mToast.setDuration(Toast.LENGTH_SHORT);
-		 * mToast.setGravity(Gravity.CENTER, 0, 0); } toast_txt.setText(text);
-		 * // mToast.setText(text); // mToast.cancel(); // 4.0 及以上使用此方法则不会显示
-		 * Toast if (Build.VERSION.SDK_INT <= 8) { mToast.cancel(); }
-		 * mToast.show();
-		 */
 		Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
 	}
 
@@ -135,17 +124,6 @@ public class AndroidUtils {
 	 */
 	public static void showToast(Context context, int id) {
 		showToast(context, context.getResources().getString(id));
-	}
-
-	/**
-	 * 
-	 */
-	public static void cancelToast() {
-		if (mToast != null) {
-			// if(Build.VERSION.SDK_INT<=8) {
-			mToast.cancel();
-			// }
-		}
 	}
 
 	/**

@@ -117,7 +117,6 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 	public static final int SINA_SHARE = 107;
 
 	private FlowBroadcastReceiver flowBroadcastReceiver;
-	private MyInstallReceiver myInstallReceiver;
 
 	private MyHandler mHandler;
 
@@ -178,7 +177,7 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		mShareButton = (ImageView) titleView.findViewById(R.id.shareButton);
 		mSWeManageButton = (ImageView) titleView.findViewById(R.id.softmanagerbutton);
 
-		if (cxt.getClass().equals(ApkDetailActivity.class) || cxt.getClass().equals(MainActivity.class)) {
+		if (cxt.getClass().equals(ApkDetailActivity.class) || cxt.getClass().equals(MainActivity.class)) {//首页及详情页分享
 			mShareButton.setVisibility(View.VISIBLE);
 			mShareButton.setOnClickListener(this);
 		} else {
@@ -187,14 +186,14 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		if (!cxt.getClass().equals(Search_Activity2.class)) {// 非搜索页有页面名称
 			mPageNameTextView = (TextView) titleView.findViewById(R.id.page_name);
 			mPageNameTextView.setText(pageName);
-			if (cxt.getClass().equals(ChannelListActivity.class)) {
+			if (cxt.getClass().equals(ChannelListActivity.class)) {//分类页有排序
 				mSortPageShrinkIcon = (ImageView) titleView.findViewById(R.id.shrink_icon);
 				mSortPageShrinkIcon.setVisibility(View.VISIBLE);
 				mSortPageShrinkIcon.setOnClickListener(this);
 				mPageNameTextView.setOnClickListener(this);
 			}
 			View mLinearLayout = titleView.findViewById(R.id.outsidelayout);
-			mLinearLayout.setOnClickListener(new View.OnClickListener() {
+			mLinearLayout.setOnClickListener(new View.OnClickListener() {//分类页有排序icon
 				@Override
 				public void onClick(View v) {
 					if (mOnToolBarBlankClickListener != null) {
@@ -288,7 +287,7 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 	}
 
 	/**
-	 * 注册所有广播
+	 * 注册所有广播接收器（接收流量用完广播，普通广播（回到首页））
 	 */
 	private void registerAllReceiver() {
 		flowBroadcastReceiver = new FlowBroadcastReceiver(cxt);
@@ -297,6 +296,20 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		if (!(cxt instanceof MainActivity)) {
 			commonRecv = new CommonReceiver();
 			cxt.registerReceiver(commonRecv, new IntentFilter(AConstDefine.GO_HOME_BROADCAST));
+		}
+	}
+	
+	/**
+	 * 取消注册广播接收器
+	 * 
+	 * @param cxt
+	 */
+	public void unregisterMyReceiver(Activity cxt) {
+		if (null != flowBroadcastReceiver) {
+			flowBroadcastReceiver.unregisterMyReceiver();//注销流量用完广播接收器
+		}
+		if (null != commonRecv && !(cxt instanceof MainActivity)) {
+			cxt.unregisterReceiver(commonRecv);//注销普通广播接收器
 		}
 	}
 
@@ -479,57 +492,6 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		}
 	}
 
-	/**
-	 * 安装广播接收
-	 * 
-	 * @author yvon
-	 * 
-	 */
-	private class MyInstallReceiver extends BroadcastReceiver {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			String packageName = intent.getDataString();
-			packageName = DJMarketUtils.convertPackageName(packageName);
-			if (intent.getAction().equals(BROADCAST_SYS_ACTION_APPINSTALL)) {
-				ADownloadApkDBHelper db = new ADownloadApkDBHelper(context);
-				ADownloadApkItem aDownloadApkItem = db.selectApkByPackageName(packageName);
-				if (null != aDownloadApkItem) {
-					DataManager.newInstance().statisticsForInstall(aDownloadApkItem.apkId, aDownloadApkItem.category);
-					db.deleteDownloadByPAndV(aDownloadApkItem.apkPackageName, aDownloadApkItem.apkVersionCode);
-					NetTool.fillWaitingInstallNotifitcation(context);
-					Toast.makeText(context, aDownloadApkItem.apkName + context.getString(R.string.install_success_msg), Toast.LENGTH_SHORT).show();
-				}
-				List<InstalledAppInfo> installedAppInfos = NetTool.getAllInstallAppInfo(context);
-				for (int i = 0; i < ADownloadService.updateAPKList.apkList.size(); i++) {
-					aDownloadApkItem = ADownloadService.updateAPKList.apkList.get(i);
-					if (packageName.equals(aDownloadApkItem.apkPackageName)) {
-						for (int j = 0; j < installedAppInfos.size(); j++) {
-							if (installedAppInfos.get(j).getPkgName().equals(packageName)) {
-								if (installedAppInfos.get(j).getVersionCode() >= aDownloadApkItem.apkVersionCode) {
-									ADownloadService.updateAPKList.apkList.remove(aDownloadApkItem);
-									NetTool.fillUpdateNotification(context);
-									break;
-								}
-							}
-						}
-					}
-				}
-			} else if (intent.getAction().equals(BROADCAST_SYS_ACTION_APPREMOVE)) {
-				ADownloadApkItem aDownloadApkItem;
-				for (int i = 0; i < ADownloadService.updateAPKList.apkList.size(); i++) {
-					aDownloadApkItem = ADownloadService.updateAPKList.apkList.get(i);
-					if (aDownloadApkItem.apkPackageName.equals(packageName)) {
-						ADownloadService.updateAPKList.apkList.remove(aDownloadApkItem);
-						NetTool.fillotherUpdate(context);
-						break;
-					}
-				}
-			} else if (BROADCAST_UPDATE_DATA_REFRESH.equals(intent.getAction())) {
-				setDownloadCount();
-			}
-			context.sendBroadcast(new Intent(BROADCAST_ACTION_UPDATECOUNT));
-		}
-	}
 
 	/**
 	 * 取消搜索Pop
@@ -868,22 +830,7 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		}
 	}
 
-	/**
-	 * 取消注册广播
-	 * 
-	 * @param cxt
-	 */
-	public void unregisterMyReceiver(Activity cxt) {
-		if (null != flowBroadcastReceiver) {
-			flowBroadcastReceiver.unregisterMyReceiver();
-		}
-		if (null != myInstallReceiver) {
-			cxt.unregisterReceiver(myInstallReceiver);
-		}
-		if (null != commonRecv && !(cxt instanceof MainActivity)) {
-			cxt.unregisterReceiver(commonRecv);
-		}
-	}
+	
 
 	/**************** kevin logic ********************/
 	private DownloadRefreshHandler mRefreshTitleHandler;
@@ -897,7 +844,7 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-			case EVENT_REFRESH_DOWNLOAD:
+			case EVENT_REFRESH_DOWNLOAD://刷新下载
 				if (cxt != null && DownloadService.mDownloadService != null) {
 					List<DownloadEntity> downloadList = DownloadService.mDownloadService.getAllDownloadList();
 					long downloadLength = 0;
@@ -905,15 +852,15 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 					int updateCount = 0;
 					for (int i = 0; i < downloadList.size(); i++) {
 						DownloadEntity entity = downloadList.get(i);
-						if (entity.downloadType == DownloadConstDefine.TYPE_OF_DOWNLOAD) {
-							downloadLength += entity.fileLength;
-							downloadCur += entity.currentPosition;
-						} else if (entity.downloadType == DownloadConstDefine.TYPE_OF_UPDATE) {
+						if (entity.downloadType == DownloadConstDefine.TYPE_OF_DOWNLOAD) {//需下载的类型
+							downloadLength += entity.fileLength;//下载的的总长度
+							downloadCur += entity.currentPosition;//已经下载的数量
+						} else if (entity.downloadType == DownloadConstDefine.TYPE_OF_UPDATE) {//需更新的类型
 							if (entity.getStatus() != DownloadConstDefine.STATUS_OF_INITIAL && entity.getStatus() != DownloadConstDefine.STATUS_OF_IGNORE) {
 								downloadLength += entity.fileLength;
 								downloadCur += entity.currentPosition;
-							} else {
-								updateCount++;
+							} else {//下载状态为初始化状态或忽略更新状态
+								updateCount++;//更新数量自增
 							}
 						}
 					}

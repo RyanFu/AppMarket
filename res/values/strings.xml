@@ -424,4 +424,12 @@
    	<string name="flow_val_prompt">请输入正确的流量数值.</string> 
 
 	<string name="update_time_txt">更新时间：</string>
+	
+	<!-- 分享 -->
+	<string name="share_custom">自定义分享</string>
+    <string name="share_system">系统自带分享</string>
+    <string name="weixin">微信</string>
+    <string name="pengyouquan">朋友圈</string>
+    <string name="noweixin">您还未安装微信，赶紧点击去安装体验吧~还可以分享到属于自己的朋友圈</string>
+    <string name="detail_text"> ，详情地址：</string>
 </resources>

@@ -51,7 +51,7 @@ public class DataManager {
 
 	private static final String SINA_WEIBO_SHORT_URL_API = "http://api.t.sina.com.cn/short_url/shorten.json?source=2849184197&url_long=";
 
-	private static final String DOMAIN_NAME = "http://www.91dongji.com/";// http://192.168.0.106/
+	private static final String DOMAIN_NAME = "http://192.168.1.200/cms/";// http://192.168.0.106/
 																			// http://www.91dongji.com/
 																			// http://192.168.1.200/cms/
 	// private static final String DOMAIN_NAME2 = "http://192.168.1.200/cms/";//
@@ -79,7 +79,7 @@ public class DataManager {
 	private static final String GRADE_URL = "index.php?g=api&m=soft2&a=SoftScore"; // 评分url
 	private static final String TOP_50_URL = "json2/top50/top50.txt"; // Top50
 	private static final String MAIN_DATA_URL = "index.php?g=Api&m=MobileApi2&a=index&catid="; // 编辑推荐、最近更新、装机必备、软件分类url
-	private static final String DJ_ADRESS_URL = "webapp/index.php?g=Api&m=MobileApi2&a=Marketapp";// 动机市场详情地址
+	private static final String DJ_ADRESS_URL = "index.php?g=Api&m=MobileApi2&a=Marketapp";// 动机市场详情地址
 	private static final String WX_DATA_URL = "index.php?g=Api&m=MobileApi2&a=Wechatinfo";// 微信详情信息
 	private static final String SOFT_SORT_URL = "index.php?g=Api&m=MobileApi2&a=Sortdata&type="; // 软件分类列表url
 	private static final String SOFT_DETAIL_URL = "index.php?g=Api&m=MobileApi2&a=Appdata&id="; // 软件详情url
@@ -1530,7 +1530,7 @@ public class DataManager {
 			result = FsCache.getCacheString(cacheSuffix);
 		} else {
 			String suffixUrl = null;
-			suffixUrl = WX_DATA_URL;
+			suffixUrl = DJ_ADRESS_URL;
 			System.out.println("=========suffixUrl=========" + DOMAIN_NAME + suffixUrl);
 			HttpClientApi httpClientApi = HttpClientApi.getInstance();
 			try {
@@ -1544,7 +1544,7 @@ public class DataManager {
 				FsCache.cacheFileByMd5(result, cacheSuffix);
 			}
 		}
-		return DOMAIN_NAME +"webapp/"+ result+".html";
+		return DOMAIN_NAME + result;
 	}
 
 	/**

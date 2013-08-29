@@ -693,7 +693,7 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 			case EVENT_LOADING_DATA:
 				Intent intent = new Intent(MainActivity.this, DataUpdateService.class);//开启数据更新服务
 				startService(intent);
-
+				
 				Intent downloadIntent = new Intent(MainActivity.this, DownloadService.class);//开启下载服务
 				startService(downloadIntent);
 				break;

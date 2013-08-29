@@ -45,7 +45,6 @@ public class DataUpdateService extends Service {
 	private static long lastUpdateTime = 0L; // 最后更新次的时间
 	private boolean isMobileUpdate = true; // 是否开启蜂窝网络下的数据更新
 	private NetWodkStatusReceiver mNetWorkReceiver; // 网络状态监听广播
-	// private
 
 	private static final int EVENT_REQUEST_UPDATE = 1; // 向服务器请求更新数据
 	private static final int EVENT_REQUEST_CACHE_UPDATE = 2; // 请求缓存数据
@@ -78,12 +77,6 @@ public class DataUpdateService extends Service {
 	@Override
 	public void onStart(Intent intent, int startId) {
 		super.onStart(intent, startId);
-		/*
-		 * boolean isUpdateTimeOut=isUpdateTimeOut(); if (isUpdateTimeOut) {
-		 * System.out.println("===========handle request!");
-		 * mHandler.sendEmptyMessage(EVENT_REQUEST_UPDATE); } else {
-		 * mHandler.sendEmptyMessage(EVENT_REQUEST_CACHE_UPDATE); }
-		 */
 		isNetwork = false;
 		mHandler.sendEmptyMessage(EVENT_REQUEST_UPDATE);
 	}
@@ -124,7 +117,6 @@ public class DataUpdateService extends Service {
 	 * 请求软件更新数据
 	 */
 	private void requestSoftUpdateData() throws IOException, JSONException {
-		// dataManager.requestSoftUpdateList(this);
 		requestCacheData();
 	}
 
@@ -136,7 +128,6 @@ public class DataUpdateService extends Service {
 			System.out.println("request update data!" + new SimpleDateFormat("yyyy-MM-dd hh:mm").format(new Date(lastUpdateTime)));
 			requestSoftUpdateData();
 			writeLastUpdateTime();
-			// sendMessageByWhat(EVENT_REQUEST_UPDATE);
 			currentRetry = 0;
 		} catch (IOException e) {
 			System.out.println("request update data error!" + e);
@@ -166,7 +157,7 @@ public class DataUpdateService extends Service {
 				}
 			}
 			int num = mApp.getUpdateList().size();//可更新应用数（包括系统应用）
-			int n = num - k;//
+			int n = num - k;
 			if (n > 0) {
 				System.out.println("count:" + count + ", num:" + num);
 				for (int i = 0; i < n; i++) {
@@ -175,8 +166,6 @@ public class DataUpdateService extends Service {
 					}
 				}
 			}
-			// Intent intent=new
-			// Intent(AConstDefine.BROADCAST_REQUEST_UPDATE_ACTION);
 			Intent intent = new Intent(DownloadConstDefine.BROADCAST_ACTION_APP_UPDATE_DATADONE);
 			sendBroadcast(intent);
 		}
@@ -185,23 +174,6 @@ public class DataUpdateService extends Service {
 	private class NetWodkStatusReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			/*
-			 * boolean isNight=isNight(); boolean
-			 * isUpdateTimeOut=isUpdateTimeOut();
-			 * System.out.println("isNight:"+isNight+", "+isUpdateTimeOut);
-			 * if(!isNight && isUpdateTimeOut) { ConnectivityManager
-			 * connectivityManager = (ConnectivityManager) context
-			 * .getSystemService(Context.CONNECTIVITY_SERVICE); NetworkInfo
-			 * wifiNetworkInfo
-			 * =connectivityManager.getNetworkInfo(ConnectivityManager
-			 * .TYPE_WIFI); NetworkInfo
-			 * mobileNetworkInfo=connectivityManager.getNetworkInfo
-			 * (ConnectivityManager.TYPE_MOBILE);
-			 * if(wifiNetworkInfo.isAvailable() &&
-			 * wifiNetworkInfo.isConnected()) { // requestUpdateData(); } else
-			 * if (isMobileUpdate && mobileNetworkInfo.isAvailable() &&
-			 * mobileNetworkInfo.isConnected()) { // requestUpdateData(); } }
-			 */
 			if (ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction())) {
 				onNetworkStatusReceiver(context);
 			} else if (DownloadConstDefine.BROADCAST_ACTION_REQUEST_SINGLE_UPDATE.equals(intent.getAction())) {
@@ -273,35 +245,9 @@ public class DataUpdateService extends Service {
 	}
 
 	private void onAppRemoveReceiver(Context context, String packageName) {
-
+		//未做处理
 	}
 
-	/**
-	 * 判断当前时间是否为夜晚
-	 * 
-	 * @return
-	 */
-	private boolean isNight() {
-		Calendar calendar = Calendar.getInstance();
-		int hour = calendar.get(Calendar.HOUR_OF_DAY);
-		if (hour > 23 || hour < 7) {
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * 当前是否到了可更新数据的时间
-	 * 
-	 * @return
-	 */
-	private boolean isUpdateTimeOut() {
-		long currentTime = System.currentTimeMillis();
-		if (currentTime - lastUpdateTime >= UPDATE_TIME) {
-			return true;
-		}
-		return false;
-	}
 
 	private void initData() {
 		initLastUpdateTime();
@@ -379,13 +325,6 @@ public class DataUpdateService extends Service {
 			if (item != null) {
 				mApp.addUpdate(item);
 				System.out.println("broadcast single update!");
-				/*
-				 * Intent intent=new
-				 * Intent(AConstDefine.BROADCAST_REQUEST_UPDATE_ACTION); Bundle
-				 * bundle = new Bundle(); bundle.putInt("type", 1);
-				 * bundle.putParcelable("apkItem", item);
-				 * intent.putExtras(bundle); sendBroadcast(intent);
-				 */
 				Intent intent = new Intent(DownloadConstDefine.BROADCAST_ACTION_SINGLE_UPDATE_DONE);
 				DownloadEntity entity = new DownloadEntity(item);
 				Bundle bundle = new Bundle();
@@ -400,14 +339,6 @@ public class DataUpdateService extends Service {
 		}
 	}
 
-	private void sendMessageByWhat(int what) {
-		if (mHandler != null) {
-			if (mHandler.hasMessages(what)) {
-				mHandler.removeMessages(what);
-			}
-			mHandler.sendEmptyMessageDelayed(what, UPDATE_TIME);
-		}
-	}
 
 	private void removeAllMessage() {
 		if (mHandler != null) {

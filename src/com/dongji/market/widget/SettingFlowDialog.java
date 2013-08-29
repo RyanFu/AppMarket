@@ -97,19 +97,6 @@ public class SettingFlowDialog extends Dialog {
 				editor.putLong(AConstDefine.SHARE_DOWNLOADSIZE, 0);
 				editor.commit();
 
-				/*
-				 * if (ADownloadService.isSelfStart()) { Intent broadcastIntent
-				 * = new Intent(); broadcastIntent
-				 * .setAction(AConstDefine.BROADCAST_ACTION_LIMITFLOWCHANGE);
-				 * Bundle bundle = new Bundle(); bundle.putLong("limitFlow",
-				 * setttingflow);
-				 * bundle.putBoolean(AConstDefine.FLAG_BUNDLECONTINUEPAUSETASK,
-				 * true); broadcastIntent.putExtras(bundle);
-				 * cxt.sendBroadcast(broadcastIntent); } else {
-				 * ADownloadService.changeDownloadParameter(setttingflow, false,
-				 * true); }
-				 */
-
 				// 设置好流量后通知 service 继续下载
 				Intent trafficIntent = new Intent(DownloadConstDefine.BROADCAST_ACTION_GPRS_SETTING_CHANGE);
 				Bundle bundle = new Bundle();

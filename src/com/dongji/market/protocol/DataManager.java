@@ -807,7 +807,6 @@ public class DataManager {
 			String downloadUrl = obj.getString("down_url");
 			if (!TextUtils.isEmpty(downloadUrl)) {
 				item.apkUrl = ONLINE_STATIC_DOMAIN_NAME + downloadUrl;
-				// item.apkUrl = ONLINE_DOMAIN_NAME + downloadUrl;
 			}
 			item.packageName = obj.getString("apk_packagename");
 			item.firmwareVersion = obj.getString("apk_sdkversion");
@@ -831,24 +830,12 @@ public class DataManager {
 		List<String[]> items = null;
 		if (infos != null && infos.size() > 0) {
 			items = new ArrayList<String[]>();
-			// ADownloadApkDBHelper db=new ADownloadApkDBHelper(context);
-			// ADownloadApkList list=db.selectAllIgnoreApp();
 			for (int i = 0; i < infos.size(); i++) {
 				PackageInfo info = infos.get(i);
-				/*
-				 * int j=0; if(list!=null && list.ignoreAppList!=null &&
-				 * list.ignoreAppList.size()>0) {
-				 * for(;j<list.ignoreAppList.size();j++) {
-				 * if(info.packageName.equals
-				 * (list.ignoreAppList.get(j).apkPackageName)) {
-				 * infos.remove(i--); break; } } }
-				 * if(j==list.ignoreAppList.size()) {
-				 */
 				String[] arr = new String[2];
 				arr[1] = info.packageName;
 				arr[0] = String.valueOf(info.versionCode);
 				items.add(arr);
-				// }
 			}
 		}
 		System.out.println("=============initRequestUpdateList:" + items.size());
@@ -859,7 +846,6 @@ public class DataManager {
 		List<String[]> list = initRequestUpdateList(context);
 		HttpClientApi httpClientApi = HttpClientApi.getInstance();
 		String result = httpClientApi.getContentFromUrlByPost(DOMAIN_NAME + UPDATE_URL + getLanguageType(), list);
-		// parseJson(list, result);
 		if (!TextUtils.isEmpty(result)) {
 			FsCache.cacheSofeUpdateData(result);
 		}
@@ -867,10 +853,7 @@ public class DataManager {
 	}
 
 	public ArrayList<ApkItem> getUpdateList(Context context) throws IOException, JSONException {
-		// String result=FsCache.getCacheSoftUpdateData();
-		// if(TextUtils.isEmpty(result)) {
 		String result = requestSoftUpdateList(context);
-		// }
 		if (!TextUtils.isEmpty(result)) {
 			System.out.println("update:" + result);
 			ArrayList<ApkItem> list = parseJson(result);

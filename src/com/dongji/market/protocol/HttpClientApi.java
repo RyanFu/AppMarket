@@ -88,7 +88,6 @@ public class HttpClientApi {
 		sb.append("[");
 		for(int i=0;i<list.size();i++) {
 			String[] arr=list.get(i);
-//			System.out.println(arr[0]+", "+arr[1]);
 			sb.append("{\"apk_versioncode\":\"").append(arr[0]).append("\",\"apk_packagename\":\"").append(arr[1]).append("\"}");
 			if(i<list.size()-1) {
 				sb.append(",");
@@ -112,7 +111,6 @@ public class HttpClientApi {
 				return strResult;
 			}
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			System.out.println(e);
 		}
 		return null;

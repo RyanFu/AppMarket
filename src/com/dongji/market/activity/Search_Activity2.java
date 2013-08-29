@@ -526,7 +526,6 @@ public class Search_Activity2 extends BaseActivity implements OnDownloadChangeSt
 		mInstallTextView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				// checkDownload(item, holder.mInstallTextView);
 				if (item.status == AConstDefine.STATUS_APK_UNINSTALL || item.status == AConstDefine.STATUS_APK_UNUPDATE) {
 					int[] location = new int[2];
 					mAppIconImageView.getLocationOnScreen(location);
@@ -534,14 +533,8 @@ public class Search_Activity2 extends BaseActivity implements OnDownloadChangeSt
 					map.put("X", location[0]);
 					map.put("Y", location[1]);
 					map.put("icon", mAppIconImageView.getDrawable());
-
-					// DJMarketUtils.checkDownload(Search_Activity2.this, item,
-					// mInstallTextView, Search_Activity2.this, map);
 					DownloadUtils.checkDownload(Search_Activity2.this, item, mInstallTextView, Search_Activity2.this, map);
 				} else {
-					// DJMarketUtils.cancelListDownload(Search_Activity2.this,
-					// item);
-
 					Intent intent = new Intent(DownloadConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD);
 					DownloadEntity entity = new DownloadEntity(item);
 					Bundle bundle = new Bundle();

@@ -72,7 +72,6 @@ public class DownloadEntity implements Runnable, DownloadConstDefine, Parcelable
 	@Override
 	public void run() {
 		isOver = false;
-		// status = STATUS_OF_DOWNLOADING;
 		setStatus(STATUS_OF_DOWNLOADING);
 
 		InputStream is = null;
@@ -84,15 +83,12 @@ public class DownloadEntity implements Runnable, DownloadConstDefine, Parcelable
 			}
 		} catch (MalformedURLException e) {
 			System.out.println("MalformedURLException " + e);
-			// status = STATUS_OF_EXCEPTION;
 			status = STATUS_OF_PAUSE;
 		} catch (FileNotFoundException e) {
-			// status = STATUS_OF_EXCEPTION;
 			status = STATUS_OF_PAUSE;
 			System.out.println("FileNotFoundException:" + e + ", " + getPrepareAbsoluteFilePath());
 		} catch (IOException e) {
 			System.out.println("IOException:" + e);
-			// status = STATUS_OF_EXCEPTION;
 			status = STATUS_OF_PAUSE;
 		} finally {
 			postExecute();
@@ -107,7 +103,6 @@ public class DownloadEntity implements Runnable, DownloadConstDefine, Parcelable
 				System.out.println("close exception:" + e);
 			}
 			isOver = true;
-			// System.out.println(appName+" over "+isOver);
 		}
 	}
 
@@ -164,19 +159,13 @@ public class DownloadEntity implements Runnable, DownloadConstDefine, Parcelable
 		RandomAccessFile randomAccessFile = new RandomAccessFile(getPrepareAbsoluteFilePath(), "rw");
 		randomAccessFile.seek(currentPosition);
 		byte[] data = new byte[1024 * 4];
-		// isRunning=true;
 		int num = 0;
-		// status = STATUS_OF_DOWNLOADING;
-
-		// System.out.println("start download "+appName);
-
 		int networkType = NetTool.getNetWorkType(DownloadService.mDownloadService);
 		boolean useMobileGprs = false;
 		if (networkType == 3) {
 			useMobileGprs = true;
 		}
 		while (status == STATUS_OF_DOWNLOADING && (num = is.read(data)) != -1) {
-			// System.out.println("thread name:"+Thread.currentThread().getName()+", "+isRunning);
 			if (useMobileGprs) {
 				if (!DownloadService.mDownloadService.addGprsTraffic(num)) {
 					status = STATUS_OF_PAUSE_ON_TRAFFIC_LIMIT;

@@ -128,7 +128,7 @@ public class DownloadService extends Service implements DownloadConstDefine, OnD
 				}
 			} else if (BROADCAST_ACTION_APP_UPDATE_DATADONE.equals(intent.getAction())) {
 				mHandler.sendEmptyMessage(EVENT_UPDATE_DATA_DONE);
-			} else if (BROADCAST_ACTION_PAUSE_DOWNLOAD.equals(intent.getAction())) {
+			} else if (BROADCAST_ACTION_PAUSE_DOWNLOAD.equals(intent.getAction())) {//好像没有谁发送此广播
 				mHandler.sendEmptyMessage(EVENT_DWONLOAD_NEXT);
 			} else if (BROADCAST_ACTION_CANCEL_DOWNLOAD.equals(intent.getAction())) {
 				Bundle bundle = intent.getExtras();
@@ -163,7 +163,7 @@ public class DownloadService extends Service implements DownloadConstDefine, OnD
 					maxGprsTraffic = limitTraffic * 1024 * 1024;
 				}
 				mHandler.sendEmptyMessage(EVENT_CONTINUE_DOWNLOAD);
-			} else if (BROADCAST_ACTION_IGNORE_UPDATE.equals(intent.getAction())) {
+			} else if (BROADCAST_ACTION_IGNORE_UPDATE.equals(intent.getAction())) {//好像没有谁发送此广播
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
 					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);

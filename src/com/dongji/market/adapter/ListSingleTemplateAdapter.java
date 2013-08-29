@@ -90,7 +90,6 @@ public class ListSingleTemplateAdapter extends ListBaseAdapter implements AConst
 			holder=new ViewHolder();
 			holder.mAppIconImageView=(ImageView)convertView.findViewById(R.id.iconImageview);
 			holder.mAppNameTextView=(TextView)convertView.findViewById(R.id.appnametextview);
-//			holder.mAppVersionTextView=(TextView)convertView.findViewById(R.id.appversiontextview);
 			holder.mAppLanguageImageView=(ImageView)convertView.findViewById(R.id.languageimageview);
 			holder.mAppOwnerTextView=(TextView)convertView.findViewById(R.id.appownertextview);
 			holder.mAppSizeTextView=(TextView)convertView.findViewById(R.id.appsizetextview);
@@ -102,7 +101,6 @@ public class ListSingleTemplateAdapter extends ListBaseAdapter implements AConst
 		}else holder=(ViewHolder)convertView.getTag();
 		final ApkItem item=list.get(position);
 		holder.mAppNameTextView.setText(item.appName);
-//		holder.mAppVersionTextView.setText("V"+item.version);
 		holder.mAppOwnerTextView.setText(item.company);
 		holder.mAppSizeTextView.setText(context.getString(R.string.app_size)+NetTool.sizeFormat((int)item.fileSize));
 		holder.mAppInstallNumTextView.setText(context.getString(R.string.detail_installCount2)+DJMarketUtils.convertionInstallNumber(context, item.downloadNum));
@@ -111,7 +109,6 @@ public class ListSingleTemplateAdapter extends ListBaseAdapter implements AConst
 		holder.mInstallTextView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-//				checkDownload(item, holder.mInstallTextView);
 				if(item.status==STATUS_APK_UNINSTALL || item.status==STATUS_APK_UNUPDATE) {
 					int[] location = new int[2];
 					holder.mAppIconImageView.getLocationOnScreen(location);
@@ -119,11 +116,8 @@ public class ListSingleTemplateAdapter extends ListBaseAdapter implements AConst
 					map.put("X", location[0]);
 					map.put("Y", location[1]);
 					map.put("icon", holder.mAppIconImageView.getDrawable());
-					
 					DownloadUtils.checkDownload(context, item, holder.mInstallTextView, ListSingleTemplateAdapter.this, map);
-//					DJMarketUtils.checkDownload(context, item, holder.mInstallTextView, ListSingleTemplateAdapter.this, map);
 				}else {
-//					DJMarketUtils.cancelListDownload(context, item);
 					Intent intent=new Intent(DownloadConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD);
 					DownloadEntity entity=new DownloadEntity(item);
 					Bundle bundle=new Bundle();

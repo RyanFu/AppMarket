@@ -70,8 +70,7 @@ import com.dongji.market.widget.CustomGalleryDialog;
  * @author quhm
  * 
  */
-public class ApkDetailActivity extends PublicActivity implements AConstDefine,
-		OnDownloadChangeStatusListener, OnToolBarBlankClickListener {
+public class ApkDetailActivity extends PublicActivity implements AConstDefine, OnDownloadChangeStatusListener, OnToolBarBlankClickListener {
 
 	private static final int EVENT_SCROLL_TOBOTTOM = 0;
 
@@ -192,22 +191,19 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 		ivdongji_head = (ImageView) findViewById(R.id.ivdongji_head);
 
 		try {
-			InputStream is = getResources().openRawResource(
-					R.drawable.gallery_default);
+			InputStream is = getResources().openRawResource(R.drawable.gallery_default);
 			defaultBitmap_gallery = BitmapFactory.decodeStream(is);
 			// defaultBitmap_gallery =
 			// BitmapFactory.decodeResource(getResources(),
 			// R.drawable.gallery_default);
 		} catch (OutOfMemoryError e) {
-			if (defaultBitmap_gallery != null
-					&& !defaultBitmap_gallery.isRecycled()) {
+			if (defaultBitmap_gallery != null && !defaultBitmap_gallery.isRecycled()) {
 				defaultBitmap_gallery.recycle();
 			}
 		}
 
 		try {
-			InputStream is = getResources().openRawResource(
-					R.drawable.app_default_icon);
+			InputStream is = getResources().openRawResource(R.drawable.app_default_icon);
 			defaultBitmap_icon = BitmapFactory.decodeStream(is);
 			// mDefaultBitmap = BitmapFactory.decodeResource(getResources(),
 			// R.drawable.app_default_icon);
@@ -227,8 +223,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 
 		initLoadingView();
 		if (null != apkItem) {
-			titleUtil = new TitleUtil(ApkDetailActivity.this, mTopView,
-					apkItem.appName, getIntent().getExtras(), this);
+			titleUtil = new TitleUtil(ApkDetailActivity.this, mTopView, apkItem.appName, getIntent().getExtras(), this);
 		}
 
 	}
@@ -243,9 +238,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 			if (tempString != null && tempString.length() > 20) {
 				packageName = tempString.substring(20);
 				// packageName = "com.dongji.market";
-				versionCode = DJMarketUtils
-						.getInstalledAppVersionCodeByPackageName(
-								ApkDetailActivity.this, packageName);
+				versionCode = DJMarketUtils.getInstalledAppVersionCodeByPackageName(ApkDetailActivity.this, packageName);
 				return FLAG_OPENFROMOTHER;
 			}
 		}
@@ -263,8 +256,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 		super.onResume();
 		if (!isFirstResume) {
 			if (apkItem != null) {
-				System.out.println("detail " + apkItem.appName + ", "
-						+ apkItem.status);
+				System.out.println("detail " + apkItem.appName + ", " + apkItem.status);
 				apkItem = setApkStatus(apkItem);
 				displayApkStatus(btnInstall, apkItem.status);
 			}
@@ -337,15 +329,12 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 		// LinearLayout.LayoutParams.FILL_PARENT));
 		llPrintScreen.addView(initPrintScreenView());
 		llLikeApp.addView(initLikeAppView());
-		if (null == apkItem.discription
-				|| apkItem.discription.trim().equals("")) {
+		if (null == apkItem.discription || apkItem.discription.trim().equals("")) {
 
-			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-					LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
+			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
 			tvDetailAbstruct.setLayoutParams(lp);
 			tvDetailAbstruct.setGravity(Gravity.CENTER);
-			tvDetailAbstruct.setTextColor(getResources().getColor(
-					android.R.color.black));
+			tvDetailAbstruct.setTextColor(getResources().getColor(android.R.color.black));
 			tvDetailAbstruct.setPadding(15, 15, 15, 15);
 			tvDetailAbstruct.setTextSize(15);
 			tvDetailAbstruct.setText(R.string.none_abstruct);
@@ -465,25 +454,21 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 					llPermission.requestFocus();
 					llPermission.setFocusableInTouchMode(true);
 					// llPermission.invalidate();
-					ivGroupSelector_permission.setImageDrawable(getResources()
-							.getDrawable(R.drawable.pic_down));
+					ivGroupSelector_permission.setImageDrawable(getResources().getDrawable(R.drawable.pic_down));
 					mHandler.sendEmptyMessageDelayed(EVENT_SCROLL_TOBOTTOM, 50L);
 				} else {
 					llPermission.setVisibility(View.GONE);
-					ivGroupSelector_permission.setImageDrawable(getResources()
-							.getDrawable(R.drawable.pic_up));
+					ivGroupSelector_permission.setImageDrawable(getResources().getDrawable(R.drawable.pic_up));
 				}
 				break;
 			case R.id.ivGroupSelector_oldVersion:
 			case R.id.llGroup_oldVersions:
 				if (llOldVersion.getVisibility() == View.GONE) {
 					llOldVersion.setVisibility(View.VISIBLE);
-					ivGroupSelector_oldVersion.setImageDrawable(getResources()
-							.getDrawable(R.drawable.pic_down));
+					ivGroupSelector_oldVersion.setImageDrawable(getResources().getDrawable(R.drawable.pic_down));
 				} else {
 					llOldVersion.setVisibility(View.GONE);
-					ivGroupSelector_oldVersion.setImageDrawable(getResources()
-							.getDrawable(R.drawable.pic_up));
+					ivGroupSelector_oldVersion.setImageDrawable(getResources().getDrawable(R.drawable.pic_up));
 				}
 				break;
 			case R.id.ivGroupSelector_grade:
@@ -491,33 +476,27 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 				if (rating == -1) {
 					if (llgrade_click.getVisibility() == View.GONE) {
 						llgrade_click.setVisibility(View.VISIBLE);
-						ivGroupSelector_grade.setImageDrawable(getResources()
-								.getDrawable(R.drawable.pic_down));
+						ivGroupSelector_grade.setImageDrawable(getResources().getDrawable(R.drawable.pic_down));
 					} else {
 						llgrade_click.setVisibility(View.GONE);
-						ivGroupSelector_grade.setImageDrawable(getResources()
-								.getDrawable(R.drawable.pic_up));
+						ivGroupSelector_grade.setImageDrawable(getResources().getDrawable(R.drawable.pic_up));
 					}
 				} else {
 					if (llgrade_noclick.getVisibility() == View.GONE) {
 						llgrade_noclick.setVisibility(View.VISIBLE);
-						ivGroupSelector_grade.setImageDrawable(getResources()
-								.getDrawable(R.drawable.pic_down));
+						ivGroupSelector_grade.setImageDrawable(getResources().getDrawable(R.drawable.pic_down));
 					} else {
 						llgrade_noclick.setVisibility(View.GONE);
-						ivGroupSelector_grade.setImageDrawable(getResources()
-								.getDrawable(R.drawable.pic_up));
+						ivGroupSelector_grade.setImageDrawable(getResources().getDrawable(R.drawable.pic_up));
 					}
 				}
 				break;
 			case R.id.ivGalleryLeft:
 				int flagInt = AndroidUtils.dip2px(ApkDetailActivity.this, 170);
-				if (mScrollView.getScrollX() % flagInt == 0
-						|| mScrollView.getScrollX() == 0) {
+				if (mScrollView.getScrollX() % flagInt == 0 || mScrollView.getScrollX() == 0) {
 					mScrollView.scrollBy(-flagInt, 0);
 				} else {
-					mScrollView
-							.scrollBy(-mScrollView.getScrollX() % flagInt, 0);
+					mScrollView.scrollBy(-mScrollView.getScrollX() % flagInt, 0);
 				}
 
 				break;
@@ -527,8 +506,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 				// mScrollView.getScrollX()==0){
 				// mScrollView.scrollBy(flagInt, 0);
 				// }else{
-				mScrollView.scrollBy(flagInt - mScrollView.getScrollX()
-						% flagInt, 0);
+				mScrollView.scrollBy(flagInt - mScrollView.getScrollX() % flagInt, 0);
 				// }
 
 				break;
@@ -550,8 +528,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 
 		if (null == likeApkItems || likeApkItems.size() == 0) {
 			TextView tvTips = new TextView(ApkDetailActivity.this);
-			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-					LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
+			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
 			tvTips.setLayoutParams(lp);
 			tvTips.setGravity(Gravity.CENTER);
 			tvTips.setTextColor(getResources().getColor(android.R.color.black));
@@ -562,10 +539,8 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 			return tvTips;
 		}
 
-		HorizontalScrollView mScrollView2 = (HorizontalScrollView) LayoutInflater
-				.from(this).inflate(R.layout.layout_detail_scrollview, null);
-		mContentLayout2 = (LinearLayout) mScrollView2
-				.findViewById(R.id.contentlayout);
+		HorizontalScrollView mScrollView2 = (HorizontalScrollView) LayoutInflater.from(this).inflate(R.layout.layout_detail_scrollview, null);
+		mContentLayout2 = (LinearLayout) mScrollView2.findViewById(R.id.contentlayout);
 
 		// mContentLayout2 = (LinearLayout) findViewById(R.id.show_gridview);
 		int columnWidth = AndroidUtils.dip2px(this, 48);
@@ -573,9 +548,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 		int padding_10 = AndroidUtils.dip2px(this, 10);
 		// int padding_5 = AndroidUtils.dip2px(this, 5);
 		// mGuessLikeGrid = (GridView) findViewById(R.id.guess_gridview);
-		LayoutParams params = new LayoutParams(likeApkItems.size()
-				* columnWidth + likeApkItems.size() * padding_10, columnWidth
-				+ padding_10 * 4);
+		LayoutParams params = new LayoutParams(likeApkItems.size() * columnWidth + likeApkItems.size() * padding_10, columnWidth + padding_10 * 4);
 		GridView gvPrintScreen = new GridView(this);
 		gvPrintScreen.setLayoutParams(params);
 		gvPrintScreen.setColumnWidth(columnWidth);
@@ -587,8 +560,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 		gvPrintScreen.setStretchMode(GridView.NO_STRETCH);
 		// gvPrintScreen
 		// .setOnItemClickListener(new onMyItemClickListener(likeApkItems.));
-		GuessLikeAdapter adapter = new GuessLikeAdapter(this, likeApkItems,
-				defaultBitmap_icon);
+		GuessLikeAdapter adapter = new GuessLikeAdapter(this, likeApkItems, defaultBitmap_icon);
 		gvPrintScreen.setAdapter(adapter);
 		mContentLayout2.addView(gvPrintScreen);
 
@@ -617,50 +589,31 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 		int size = historyApkItems.length > 4 ? 5 : historyApkItems.length;
 		mOldTextViews = new TextView[size];
 		for (int i = 0; i < size; i++) {
-			itemOldVersionView = (LinearLayout) LayoutInflater.from(this)
-					.inflate(R.layout.item_list_oldversion, null);
-			ImageView ivOldVersionLogo = (ImageView) itemOldVersionView
-					.findViewById(R.id.ivOldVersionLogo);
-			ImageView ivdongji_oldversion = (ImageView) itemOldVersionView
-					.findViewById(R.id.ivdongji_oldversion);
-			TextView tvOldVersionName = (TextView) itemOldVersionView
-					.findViewById(R.id.tvOldVersionName);
-			TextView tvOldVersionVersion = (TextView) itemOldVersionView
-					.findViewById(R.id.tvOldVersionVersion);
-			ImageView ivOldVersionType = (ImageView) itemOldVersionView
-					.findViewById(R.id.ivOldVersionType);
-			TextView tvOldVersionPublishDate = (TextView) itemOldVersionView
-					.findViewById(R.id.tvOldVersionPublishDate);
-			TextView tvOldVersionApkSize = (TextView) itemOldVersionView
-					.findViewById(R.id.tvOldVersionApkSize);
-			TextView tvOldVersionInstallCount = (TextView) itemOldVersionView
-					.findViewById(R.id.tvOldVersionInstallCount);
-			mOldTextViews[i] = (TextView) itemOldVersionView
-					.findViewById(R.id.btnInstall);
+			itemOldVersionView = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.item_list_oldversion, null);
+			ImageView ivOldVersionLogo = (ImageView) itemOldVersionView.findViewById(R.id.ivOldVersionLogo);
+			ImageView ivdongji_oldversion = (ImageView) itemOldVersionView.findViewById(R.id.ivdongji_oldversion);
+			TextView tvOldVersionName = (TextView) itemOldVersionView.findViewById(R.id.tvOldVersionName);
+			TextView tvOldVersionVersion = (TextView) itemOldVersionView.findViewById(R.id.tvOldVersionVersion);
+			ImageView ivOldVersionType = (ImageView) itemOldVersionView.findViewById(R.id.ivOldVersionType);
+			TextView tvOldVersionPublishDate = (TextView) itemOldVersionView.findViewById(R.id.tvOldVersionPublishDate);
+			TextView tvOldVersionApkSize = (TextView) itemOldVersionView.findViewById(R.id.tvOldVersionApkSize);
+			TextView tvOldVersionInstallCount = (TextView) itemOldVersionView.findViewById(R.id.tvOldVersionInstallCount);
+			mOldTextViews[i] = (TextView) itemOldVersionView.findViewById(R.id.btnInstall);
 			mOldTextViews[i].setOnClickListener(new OldOnClickListener(i));
 
 			switch (historyApkItems[i].status) {
 			case STATUS_APK_UNINSTALL:
-				setvisibleInstallTextView(mOldTextViews[i], true,
-						R.string.install,
-						R.drawable.button_has_border_selector, Color.BLACK);
+				setvisibleInstallTextView(mOldTextViews[i], true, R.string.install, R.drawable.button_has_border_selector, Color.BLACK);
 				break;
 			case STATUS_APK_INSTALL:
 			case STATUS_APK_UPDATE:
-				setvisibleInstallTextView(mOldTextViews[i], true,
-						R.string.cancel, R.drawable.cancel_selector,
-						Color.parseColor("#7f5100"));
+				setvisibleInstallTextView(mOldTextViews[i], true, R.string.cancel, R.drawable.cancel_selector, Color.parseColor("#7f5100"));
 				break;
 			case STATUS_APK_INSTALL_DONE:
-				setvisibleInstallTextView(mOldTextViews[i], false,
-						R.string.has_installed,
-						R.drawable.button_has_border_selector,
-						Color.parseColor("#999999"));
+				setvisibleInstallTextView(mOldTextViews[i], false, R.string.has_installed, R.drawable.button_has_border_selector, Color.parseColor("#999999"));
 				break;
 			case STATUS_APK_UNUPDATE:
-				setvisibleInstallTextView(mOldTextViews[i], true,
-						R.string.update, R.drawable.update_selector,
-						Color.parseColor("#0e567d"));
+				setvisibleInstallTextView(mOldTextViews[i], true, R.string.update, R.drawable.update_selector, Color.parseColor("#0e567d"));
 				break;
 			}
 
@@ -670,27 +623,21 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 				ivdongji_oldversion.setVisibility(View.GONE);
 			}
 
-			FileService.getBitmap(apkItem.appIconUrl, ivOldVersionLogo,
-					defaultBitmap_icon, 0);
+			FileService.getBitmap(apkItem.appIconUrl, ivOldVersionLogo, defaultBitmap_icon, 0);
 
 			tvOldVersionName.setText(historyApkItems[i].appName);
 			tvOldVersionVersion.setText("V" + historyApkItems[i].versionName);
-			ivOldVersionType
-					.setImageResource(getOldVersionApkTypeImage(historyApkItems[i].appType));
+			ivOldVersionType.setImageResource(getOldVersionApkTypeImage(historyApkItems[i].appType));
 			tvOldVersionPublishDate.setText(historyApkItems[i].updateDate);
-			tvOldVersionApkSize.setText(NetTool
-					.sizeFormat((int) historyApkItems[i].appSize));
-			tvOldVersionInstallCount.setText(NetTool
-					.numberFormat(historyApkItems[i].downloadNum));
+			tvOldVersionApkSize.setText(NetTool.sizeFormat((int) historyApkItems[i].appSize));
+			tvOldVersionInstallCount.setText(NetTool.numberFormat(historyApkItems[i].downloadNum));
 			itemOldVersionView.setClickable(true);
 			ApkItem tempApkItem = new ApkItem();
 			tempApkItem.category = historyApkItems[i].category;
 			tempApkItem.appId = historyApkItems[i].appId;
 			tempApkItem.appName = historyApkItems[i].appName;
-			itemOldVersionView.setOnClickListener(new onMyClickListener(
-					tempApkItem));
-			itemOldVersionView
-					.setBackgroundResource(R.drawable.android_listselector);
+			itemOldVersionView.setOnClickListener(new onMyClickListener(tempApkItem));
+			itemOldVersionView.setBackgroundResource(R.drawable.android_listselector);
 			llOldVersion.addView(itemOldVersionView);
 		}
 	}
@@ -704,7 +651,6 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 
 		@Override
 		public void onClick(View v) {
-			// TODO Auto-generated method stub
 			HistoryApkItem historyItem = apkItem.historys[position];
 			ApkItem item = new ApkItem();
 			item.appIconUrl = historyItem.appIconUrl;
@@ -718,24 +664,13 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 			item.versionCode = historyItem.versionCode;
 			item.version = historyItem.versionName;
 			item.packageName = apkItem.packageName;
-			if (historyItem.status == STATUS_APK_UNINSTALL
-					|| historyItem.status == STATUS_APK_UNUPDATE) {
-				// DJMarketUtils.checkDownload(ApkDetailActivity.this,
-				// apkItem, btnInstall, ApkDetailActivity.this, null);
-				DownloadUtils.checkDownload(ApkDetailActivity.this, item,
-						btnInstall, ApkDetailActivity.this, null);
-				// historyItem=
+			if (historyItem.status == STATUS_APK_UNINSTALL || historyItem.status == STATUS_APK_UNUPDATE) {
+				DownloadUtils.checkDownload(ApkDetailActivity.this, item, btnInstall, ApkDetailActivity.this, null);
 			} else {
-				/*
-				 * DJMarketUtils.cancelListDownload(ApkDetailActivity.this,
-				 * apkItem);
-				 */
-				Intent intent = new Intent(
-						DownloadConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD);
+				Intent intent = new Intent(DownloadConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD);
 				DownloadEntity entity = new DownloadEntity(item);
 				Bundle bundle = new Bundle();
-				bundle.putParcelable(DownloadConstDefine.DOWNLOAD_ENTITY,
-						entity);
+				bundle.putParcelable(DownloadConstDefine.DOWNLOAD_ENTITY, entity);
 				intent.putExtras(bundle);
 				sendBroadcast(intent);
 			}
@@ -780,31 +715,22 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 		int spacing = AndroidUtils.dip2px(this, 10.0f);
 		while (n < permissionList.size()) {
 			LinearLayout mLinearLayout = getLinearLayout();
-			LinearLayout mChildLayout = (LinearLayout) mInflater.inflate(
-					R.layout.layout_permission, null);
-			TextView mTextView = (TextView) mChildLayout
-					.findViewById(R.id.textview);
-			float textWidth = mTextView.getPaint().measureText(
-					permissionList.get(n));
+			LinearLayout mChildLayout = (LinearLayout) mInflater.inflate(R.layout.layout_permission, null);
+			TextView mTextView = (TextView) mChildLayout.findViewById(R.id.textview);
+			float textWidth = mTextView.getPaint().measureText(permissionList.get(n));
 			mTextView.setText(permissionList.get(n++));
 			mLinearLayout.addView(mChildLayout);
 			float tempWidth = imageWidth;
 			textWidth += (spacing + imageWidth);
-			while (textWidth + tempWidth < maxWidth
-					&& n < permissionList.size()) {
-				LinearLayout mChildLayout2 = (LinearLayout) mInflater.inflate(
-						R.layout.layout_permission, null);
-				TextView mTextView2 = (TextView) mChildLayout2
-						.findViewById(R.id.textview);
-				ImageView mImageView = (ImageView) mChildLayout2
-						.findViewById(R.id.imageview);
-				tempWidth = mTextView2.getPaint().measureText(
-						permissionList.get(n));
+			while (textWidth + tempWidth < maxWidth && n < permissionList.size()) {
+				LinearLayout mChildLayout2 = (LinearLayout) mInflater.inflate(R.layout.layout_permission, null);
+				TextView mTextView2 = (TextView) mChildLayout2.findViewById(R.id.textview);
+				ImageView mImageView = (ImageView) mChildLayout2.findViewById(R.id.imageview);
+				tempWidth = mTextView2.getPaint().measureText(permissionList.get(n));
 				tempWidth += (spacing + imageWidth);
 				if (textWidth + tempWidth <= maxWidth) {
 					mTextView2.setText(permissionList.get(n++));
-					LinearLayout.LayoutParams mParams = (LinearLayout.LayoutParams) mImageView
-							.getLayoutParams();
+					LinearLayout.LayoutParams mParams = (LinearLayout.LayoutParams) mImageView.getLayoutParams();
 					mParams.leftMargin = spacing;
 					mLinearLayout.addView(mChildLayout2);
 					textWidth += tempWidth;
@@ -819,9 +745,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 
 	private LinearLayout getLinearLayout() {
 		LinearLayout mLinearLayout = new LinearLayout(this);
-		LinearLayout.LayoutParams mParams = new LinearLayout.LayoutParams(
-				LinearLayout.LayoutParams.FILL_PARENT,
-				LinearLayout.LayoutParams.WRAP_CONTENT);
+		LinearLayout.LayoutParams mParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 		mLinearLayout.setLayoutParams(mParams);
 		return mLinearLayout;
 	}
@@ -835,8 +759,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 
 		if (null == arr || arr.size() == 0) {
 			TextView tvTips = new TextView(ApkDetailActivity.this);
-			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-					LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
+			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
 			tvTips.setLayoutParams(lp);
 			tvTips.setGravity(Gravity.CENTER);
 			tvTips.setTextColor(getResources().getColor(android.R.color.black));
@@ -849,10 +772,8 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 			return tvTips;
 		}
 
-		mScrollView = (HorizontalScrollView) LayoutInflater.from(this).inflate(
-				R.layout.layout_detail_scrollview, null);
-		mContentLayout = (LinearLayout) mScrollView
-				.findViewById(R.id.contentlayout);
+		mScrollView = (HorizontalScrollView) LayoutInflater.from(this).inflate(R.layout.layout_detail_scrollview, null);
+		mContentLayout = (LinearLayout) mScrollView.findViewById(R.id.contentlayout);
 
 		/*
 		 * LinearLayout.LayoutParams llParams = new LinearLayout.LayoutParams(
@@ -885,8 +806,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 		// int horizontalSpacing = AndroidUtils.dip2px(this, 10);
 		int padding = AndroidUtils.dip2px(this, 10);
 		// mGuessLikeGrid = (GridView) findViewById(R.id.guess_gridview);
-		LayoutParams params = new LayoutParams(arr.size() * columnWidth
-				+ arr.size() * padding, AndroidUtils.dip2px(this, 240));
+		LayoutParams params = new LayoutParams(arr.size() * columnWidth + arr.size() * padding, AndroidUtils.dip2px(this, 240));
 		GridView mGuessLikeGrid = new GridView(ApkDetailActivity.this);
 		mGuessLikeGrid.setLayoutParams(params);
 		mGuessLikeGrid.setColumnWidth(columnWidth);
@@ -901,13 +821,11 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 		mGuessLikeGrid.setStretchMode(GridView.NO_STRETCH);
 		mGuessLikeGrid.setOnItemClickListener(new OnItemClickListener() {
 			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-					long arg3) {
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 				showGalleryDetailDialog(arr, (int) arg3);
 			}
 		});
-		ApkDetailImageAdapter adapter = new ApkDetailImageAdapter(this, arr,
-				defaultBitmap_gallery);
+		ApkDetailImageAdapter adapter = new ApkDetailImageAdapter(this, arr, defaultBitmap_gallery);
 		mGuessLikeGrid.setAdapter(adapter);
 		mContentLayout.addView(mGuessLikeGrid);
 
@@ -966,19 +884,15 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 		View headView = findViewById(R.id.detail_head_view);
 		mIvApkIcon = (ImageView) headView.findViewById(R.id.ivApkIcon);
 		ivdongji_head = (ImageView) headView.findViewById(R.id.ivdongji_head);
-		RatingBar detail_head_RatingBar = (RatingBar) headView
-				.findViewById(R.id.detail_head_RatingBar);
+		RatingBar detail_head_RatingBar = (RatingBar) headView.findViewById(R.id.detail_head_RatingBar);
 
-		FileService.getBitmap(apkItem.appIconUrl, mIvApkIcon,
-				defaultBitmap_icon, 0);
+		FileService.getBitmap(apkItem.appIconUrl, mIvApkIcon, defaultBitmap_icon, 0);
 
 		tvApkName = (TextView) headView.findViewById(R.id.tvApkName);
 		tvApkVersion = (TextView) headView.findViewById(R.id.tvApkVersion);
 		tvApkSize = (TextView) headView.findViewById(R.id.tvApkSize);
-		tvApkPublishDate = (TextView) headView
-				.findViewById(R.id.tvApkPublishDate);
-		tvApkInstallCount = (TextView) headView
-				.findViewById(R.id.tvApkInstallCount);
+		tvApkPublishDate = (TextView) headView.findViewById(R.id.tvApkPublishDate);
+		tvApkInstallCount = (TextView) headView.findViewById(R.id.tvApkInstallCount);
 		tvApkDeveloper = (TextView) headView.findViewById(R.id.tvApkDeveloper);
 		btnInstall = (TextView) headView.findViewById(R.id.btnInstall);
 
@@ -1009,8 +923,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 		} else {
 			tvApkPublishDate.setText(apkItem.updateDate);
 		}
-		tvApkInstallCount.setText(DJMarketUtils.convertionInstallNumber(this,
-				apkItem.downloadNum));
+		tvApkInstallCount.setText(DJMarketUtils.convertionInstallNumber(this, apkItem.downloadNum));
 		if (null == apkItem.company || apkItem.company.trim().equals("")) {
 			tvApkDeveloper.setText(R.string.none);
 		} else {
@@ -1028,32 +941,16 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 
 			@Override
 			public void onClick(View v) {
-				if (apkItem.status == STATUS_APK_UNINSTALL
-						|| apkItem.status == STATUS_APK_UNUPDATE) {
-					// DJMarketUtils.checkDownload(ApkDetailActivity.this,
-					// apkItem, btnInstall, ApkDetailActivity.this, null);
-					DownloadUtils.checkDownload(ApkDetailActivity.this,
-							apkItem, btnInstall, ApkDetailActivity.this, null);
+				if (apkItem.status == STATUS_APK_UNINSTALL || apkItem.status == STATUS_APK_UNUPDATE) {
+					DownloadUtils.checkDownload(ApkDetailActivity.this, apkItem, btnInstall, ApkDetailActivity.this, null);
 				} else {
-					/*
-					 * DJMarketUtils.cancelListDownload(ApkDetailActivity.this,
-					 * apkItem);
-					 */
-					Intent intent = new Intent(
-							DownloadConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD);
+					Intent intent = new Intent(DownloadConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD);
 					DownloadEntity entity = new DownloadEntity(apkItem);
 					Bundle bundle = new Bundle();
-					bundle.putParcelable(DownloadConstDefine.DOWNLOAD_ENTITY,
-							entity);
+					bundle.putParcelable(DownloadConstDefine.DOWNLOAD_ENTITY, entity);
 					intent.putExtras(bundle);
 					sendBroadcast(intent);
 				}
-				// NetTool.onDownloadBtnClick(ApkDetailActivity.this,
-				// new ADownloadApkItem(apkItem, STATUS_OF_DOWNLOADING));
-
-				// DJMarketUtils.checkDownload("ApkDetailActivity",ApkDetailActivity.this,
-				// apkItem.appId, new ADownloadApkItem(apkItem,
-				// STATUS_OF_DOWNLOADING));
 			}
 		});
 
@@ -1089,14 +986,11 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 			for (int i = 0; i < gridView.getCount(); i++) {
 				View view = gridView.getChildAt(i);
 				if (null != view) {
-					ImageView mIconImage = (ImageView) view
-							.findViewById(R.id.app_icon);
+					ImageView mIconImage = (ImageView) view.findViewById(R.id.app_icon);
 					if (null != mIconImage) {
-						BitmapDrawable bitmapDrawable = (BitmapDrawable) mIconImage
-								.getDrawable();
+						BitmapDrawable bitmapDrawable = (BitmapDrawable) mIconImage.getDrawable();
 
-						if (null != bitmapDrawable
-								&& null != bitmapDrawable.getBitmap()) {
+						if (null != bitmapDrawable && null != bitmapDrawable.getBitmap()) {
 							Bitmap bitmap = bitmapDrawable.getBitmap();
 							if (null != bitmap && !bitmap.isRecycled()) {
 								bitmap.recycle();
@@ -1114,14 +1008,11 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 			for (int i = 0; i < gridView.getCount(); i++) {
 				View view = gridView.getChildAt(i);
 				if (null != view) {
-					ImageView mIconImage = (ImageView) view
-							.findViewById(R.id.app_icon);
+					ImageView mIconImage = (ImageView) view.findViewById(R.id.app_icon);
 					if (null != mIconImage) {
-						BitmapDrawable bitmapDrawable = (BitmapDrawable) mIconImage
-								.getDrawable();
+						BitmapDrawable bitmapDrawable = (BitmapDrawable) mIconImage.getDrawable();
 
-						if (null != bitmapDrawable
-								&& null != bitmapDrawable.getBitmap()) {
+						if (null != bitmapDrawable && null != bitmapDrawable.getBitmap()) {
 							Bitmap bitmap = bitmapDrawable.getBitmap();
 							if (null != bitmap && !bitmap.isRecycled()) {
 								bitmap.recycle();
@@ -1134,8 +1025,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 			}
 		}
 
-		if (defaultBitmap_gallery != null
-				&& !defaultBitmap_gallery.isRecycled()) {
+		if (defaultBitmap_gallery != null && !defaultBitmap_gallery.isRecycled()) {
 			defaultBitmap_gallery.recycle();
 			defaultBitmap_gallery = null;
 		}
@@ -1144,8 +1034,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 			defaultBitmap_icon = null;
 		}
 		if (mIvApkIcon != null) {
-			BitmapDrawable bitmapDrawable = (BitmapDrawable) mIvApkIcon
-					.getDrawable();
+			BitmapDrawable bitmapDrawable = (BitmapDrawable) mIvApkIcon.getDrawable();
 			if (null != bitmapDrawable) {
 				Bitmap bitmap = bitmapDrawable.getBitmap();
 				if (null != bitmap && !bitmap.isRecycled()) {
@@ -1158,14 +1047,11 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 
 		if (null != llOldVersion) {
 			for (int i = 0; i < llOldVersion.getChildCount(); i++) {
-				ImageView ivOldVersionLogo = (ImageView) llOldVersion
-						.getChildAt(i).findViewById(R.id.ivOldVersionLogo);
+				ImageView ivOldVersionLogo = (ImageView) llOldVersion.getChildAt(i).findViewById(R.id.ivOldVersionLogo);
 				if (null != ivOldVersionLogo) {
-					BitmapDrawable bitmapDrawable = (BitmapDrawable) ivOldVersionLogo
-							.getDrawable();
+					BitmapDrawable bitmapDrawable = (BitmapDrawable) ivOldVersionLogo.getDrawable();
 
-					if (null != bitmapDrawable
-							&& null != bitmapDrawable.getBitmap()) {
+					if (null != bitmapDrawable && null != bitmapDrawable.getBitmap()) {
 						Bitmap bitmap = bitmapDrawable.getBitmap();
 						if (null != bitmap && !bitmap.isRecycled()) {
 							bitmap.recycle();
@@ -1184,8 +1070,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 	}
 
 	@Override
-	public void onDownload(ApkItem item, TextView mTextView,
-			Map<String, Object> map) {
+	public void onDownload(ApkItem item, TextView mTextView, Map<String, Object> map) {
 		if (item.status == STATUS_APK_UNINSTALL) {
 			item.status = STATUS_APK_INSTALL;
 		} else if (item.status == STATUS_APK_UNUPDATE) {
@@ -1197,62 +1082,46 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 	private void displayApkStatus(TextView mTextView, int status) {
 		switch (status) {
 		case STATUS_APK_UNINSTALL:
-			setvisibleInstallTextView(mTextView, true, R.string.install,
-					R.drawable.button_has_border_selector, Color.BLACK);
+			setvisibleInstallTextView(mTextView, true, R.string.install, R.drawable.button_has_border_selector, Color.BLACK);
 			break;
 		case STATUS_APK_INSTALL:
 		case STATUS_APK_UPDATE:
-			setvisibleInstallTextView(mTextView, true, R.string.cancel,
-					R.drawable.cancel_selector, Color.parseColor("#7f5100"));
+			setvisibleInstallTextView(mTextView, true, R.string.cancel, R.drawable.cancel_selector, Color.parseColor("#7f5100"));
 			break;
 		case STATUS_APK_INSTALL_DONE:
 			// if (DJMarketUtils.IS_INSTALLING) {
 			// DJMarketUtils.IS_INSTALLING = false;
 			// }
-			setvisibleInstallTextView(mTextView, false, R.string.has_installed,
-					R.drawable.button_has_border_selector,
-					Color.parseColor("#999999"));
+			setvisibleInstallTextView(mTextView, false, R.string.has_installed, R.drawable.button_has_border_selector, Color.parseColor("#999999"));
 			break;
 		case STATUS_APK_UNUPDATE:
-			setvisibleInstallTextView(mTextView, true, R.string.update,
-					R.drawable.update_selector, Color.parseColor("#0e567d"));
+			setvisibleInstallTextView(mTextView, true, R.string.update, R.drawable.update_selector, Color.parseColor("#0e567d"));
 			break;
 		}
 		System.out.println("=======dadasdasdasdas");
-		if (apkItem.historys != null && apkItem.historys.length > 0
-				&& mOldTextViews != null) {
+		if (apkItem.historys != null && apkItem.historys.length > 0 && mOldTextViews != null) {
 			for (int i = 0; i < apkItem.historys.length; i++) {
 				HistoryApkItem historyItem = apkItem.historys[i];
 				switch (historyItem.status) {
 				case STATUS_APK_UNINSTALL:
-					setvisibleInstallTextView(mOldTextViews[i], true,
-							R.string.install,
-							R.drawable.button_has_border_selector, Color.BLACK);
+					setvisibleInstallTextView(mOldTextViews[i], true, R.string.install, R.drawable.button_has_border_selector, Color.BLACK);
 					break;
 				case STATUS_APK_INSTALL:
 				case STATUS_APK_UPDATE:
-					setvisibleInstallTextView(mOldTextViews[i], true,
-							R.string.cancel, R.drawable.cancel_selector,
-							Color.parseColor("#7f5100"));
+					setvisibleInstallTextView(mOldTextViews[i], true, R.string.cancel, R.drawable.cancel_selector, Color.parseColor("#7f5100"));
 					break;
 				case STATUS_APK_INSTALL_DONE:
-					setvisibleInstallTextView(mOldTextViews[i], false,
-							R.string.has_installed,
-							R.drawable.button_has_border_selector,
-							Color.parseColor("#999999"));
+					setvisibleInstallTextView(mOldTextViews[i], false, R.string.has_installed, R.drawable.button_has_border_selector, Color.parseColor("#999999"));
 					break;
 				case STATUS_APK_UNUPDATE:
-					setvisibleInstallTextView(mOldTextViews[i], true,
-							R.string.update, R.drawable.update_selector,
-							Color.parseColor("#0e567d"));
+					setvisibleInstallTextView(mOldTextViews[i], true, R.string.update, R.drawable.update_selector, Color.parseColor("#0e567d"));
 					break;
 				}
 			}
 		}
 	}
 
-	private void setvisibleInstallTextView(TextView mTextView, boolean enable,
-			int rId, int resid, int textColor) {
+	private void setvisibleInstallTextView(TextView mTextView, boolean enable, int rId, int resid, int textColor) {
 		if (mTextView != null) {
 			mTextView.setEnabled(enable);
 			mTextView.setText(rId);
@@ -1272,8 +1141,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 			super.handleMessage(msg);
 			switch (msg.what) {
 			case EVENT_SCROLL_TOBOTTOM:
-				int y = svApkDetail.getChildAt(0).getHeight()
-						- svApkDetail.getHeight();
+				int y = svApkDetail.getChildAt(0).getHeight() - svApkDetail.getHeight();
 				// svApkDetail.scrollTo(0, y);
 				svApkDetail.smoothScrollTo(0, y);
 				break;
@@ -1335,9 +1203,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 				final float score = commitCommentRatingBar.getRating();
 				int responseStatus;
 				try {
-					responseStatus = DataManager.newInstance().appGrade(
-							apkItem.category + "", apkItem.appId + "",
-							score + "");
+					responseStatus = DataManager.newInstance().appGrade(apkItem.category + "", apkItem.appId + "", score + "");
 					if (responseStatus == 1) {
 						runOnUiThread(new Runnable() {
 							@Override
@@ -1355,8 +1221,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 							@Override
 							public void run() {
 								btnGrade.setEnabled(true);
-								AndroidUtils.showToast(ApkDetailActivity.this,
-										R.string.grade_failed);
+								AndroidUtils.showToast(ApkDetailActivity.this, R.string.grade_failed);
 							}
 						});
 					}
@@ -1364,7 +1229,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+
 				break;
 			}
 		}
@@ -1384,7 +1249,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 
 	private void requestDetailData(int openflag) {
 		try {
-			
+
 			if (openflag == FLAG_OPENFROMOWN) {
 				apkItem = DataManager.newInstance().getApkItemDetailByAppId(apkItem.category, apkItem.appId);
 			} else {
@@ -1396,9 +1261,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 						if (null != apkItem) {
 							Bundle bundle = new Bundle();
 							bundle.putParcelable("apkItem", apkItem);
-							titleUtil = new TitleUtil(ApkDetailActivity.this,
-									mTopView, apkItem.appName, bundle,
-									ApkDetailActivity.this);
+							titleUtil = new TitleUtil(ApkDetailActivity.this, mTopView, apkItem.appName, bundle, ApkDetailActivity.this);
 						}
 					}
 				});
@@ -1486,11 +1349,9 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 	}
 
 	@Override
-	public void onAppStatusChange(boolean isCancel, String packageName,
-			int versionCode) {
+	public void onAppStatusChange(boolean isCancel, String packageName, int versionCode) {
 		System.out.println("========= onAppStatusChange");
-		if (packageName.equals(apkItem.packageName)
-				&& versionCode == apkItem.versionCode) {
+		if (packageName.equals(apkItem.packageName) && versionCode == apkItem.versionCode) {
 			if (isCancel && apkItem.status == STATUS_APK_INSTALL) {
 				apkItem.status = STATUS_APK_UNINSTALL;
 			} else if (isCancel && apkItem.status == STATUS_APK_UPDATE) {
@@ -1505,20 +1366,15 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine,
 			if (apkItem.historys != null && apkItem.historys.length > 0) {
 				for (int i = 0; i < apkItem.historys.length; i++) {
 					HistoryApkItem historyItem = apkItem.historys[i];
-					if (packageName.equals(apkItem.packageName)
-							&& versionCode == historyItem.versionCode) {
+					if (packageName.equals(apkItem.packageName) && versionCode == historyItem.versionCode) {
 						System.out.println("==========" + historyItem.status);
-						if (isCancel
-								&& historyItem.status == STATUS_APK_INSTALL) {
+						if (isCancel && historyItem.status == STATUS_APK_INSTALL) {
 							historyItem.status = STATUS_APK_UNINSTALL;
-						} else if (isCancel
-								&& historyItem.status == STATUS_APK_UPDATE) {
+						} else if (isCancel && historyItem.status == STATUS_APK_UPDATE) {
 							historyItem.status = STATUS_APK_UNUPDATE;
-						} else if (!isCancel
-								&& historyItem.status == STATUS_APK_UNINSTALL) {
+						} else if (!isCancel && historyItem.status == STATUS_APK_UNINSTALL) {
 							historyItem.status = STATUS_APK_INSTALL;
-						} else if (!isCancel
-								&& historyItem.status == STATUS_APK_UNUPDATE) {
+						} else if (!isCancel && historyItem.status == STATUS_APK_UNUPDATE) {
 							historyItem.status = STATUS_APK_UPDATE;
 						}
 						displayApkStatus(btnInstall, apkItem.status);

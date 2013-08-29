@@ -36,7 +36,6 @@ import com.dongji.market.application.AppMarket;
 import com.dongji.market.download.AConstDefine;
 import com.dongji.market.helper.AndroidUtils;
 import com.dongji.market.helper.TitleUtil;
-import com.dongji.market.helper.TitleUtil.LoginListener;
 import com.dongji.market.pojo.LoginParams;
 import com.dongji.market.protocol.DataManager;
 import com.dongji.market.protocol.HttpClientApi;

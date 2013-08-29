@@ -41,7 +41,6 @@ public class DownloadActivity extends Activity implements DownloadConstDefine {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_download);
 		mApp=(AppMarket)getApplication();
@@ -52,7 +51,6 @@ public class DownloadActivity extends Activity implements DownloadConstDefine {
 	
 	@Override
 	protected void onDestroy() {
-		// TODO Auto-generated method stub
 		super.onDestroy();
 		unRegisterAllReceiver();
 		if(mHandler!=null) {
@@ -65,7 +63,6 @@ public class DownloadActivity extends Activity implements DownloadConstDefine {
 	
 	@Override
 	protected void onResume() {
-		// TODO Auto-generated method stub
 		super.onResume();
 		MobclickAgent.onResume(this);
 	}

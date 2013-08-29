@@ -199,7 +199,7 @@ public class ChannelActivity extends BaseActivity implements ScrollListView.OnSc
 		// TODO Auto-generated method stub
 		if(!isAppClicked) {
 			isAppClicked=true;
-			getParentActivity().progressBarGone();
+//			getParentActivity().progressBarGone();
 			if(isDataLoaded) {
 				setDisplayVisible();
 			}else {
@@ -241,7 +241,7 @@ public class ChannelActivity extends BaseActivity implements ScrollListView.OnSc
 	public void onGameClick() {
 		// TODO Auto-generated method stub
 		isAppClicked=false;
-		getParentActivity().progressBarGone();
+//		getParentActivity().progressBarGone();
 		if(isDataLoaded) {
 			setDisplayVisible();
 		}else {
@@ -320,7 +320,6 @@ public class ChannelActivity extends BaseActivity implements ScrollListView.OnSc
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				getParentActivity().stopProgressBar();
 				if(mLoadingView.getVisibility()==View.VISIBLE) {
 					mLoadingProgressBar.setVisibility(View.GONE);
 					mLoadingTextView.setText(rId);

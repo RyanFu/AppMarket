@@ -61,7 +61,6 @@ public class Search_Result_Activity extends PublicActivity implements
 	private static final int EVENT_LOADING = 5;
 	private static final int EVENT_LOADED = 6;
 
-	private static final int EVENT_REQUEST_DOWNLOAD_DATA = 7;
 	private static final int EVENT_REFRENSH_DATA = 8;
 	private static final int EVENT_REQUEST_GUESS_LIST = 9;
 
@@ -199,7 +198,7 @@ public class Search_Result_Activity extends PublicActivity implements
 		HandlerThread mHandlerThread = new HandlerThread("handler");
 		mHandlerThread.start();
 		handler = new MyHandler(mHandlerThread.getLooper());
-		handler.sendEmptyMessage(EVENT_REQUEST_DOWNLOAD_DATA);
+		handler.sendEmptyMessage(EVENT_REQUEST_SEARCH_LIST);
 	}
 
 	private void initGuessLoading() {
@@ -398,10 +397,6 @@ public class Search_Result_Activity extends PublicActivity implements
 					}
 				});
 				break;
-			case EVENT_REQUEST_DOWNLOAD_DATA:
-				initDownloadAndUpdateData();
-				sendEmptyMessage(EVENT_REQUEST_SEARCH_LIST);
-				break;
 			case EVENT_REFRENSH_DATA:
 				refreshData();
 				break;
@@ -501,7 +496,6 @@ public class Search_Result_Activity extends PublicActivity implements
 	 * 刷新数据
 	 */
 	private void refreshData() {
-		initDownloadAndUpdateData();
 		setApkStatus(adapter.getItemList());
 		runOnUiThread(new Runnable() {
 			@Override

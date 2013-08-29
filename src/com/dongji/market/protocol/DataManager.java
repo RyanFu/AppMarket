@@ -51,13 +51,8 @@ public class DataManager {
 
 	private static final String SINA_WEIBO_SHORT_URL_API = "http://api.t.sina.com.cn/short_url/shorten.json?source=2849184197&url_long=";
 
-	private static final String DOMAIN_NAME = "http://192.168.1.200/cms/";// http://192.168.0.106/
-																			// http://www.91dongji.com/
-																			// http://192.168.1.200/cms/
-	// private static final String DOMAIN_NAME2 = "http://192.168.1.200/cms/";//
-	// 测试
-	// private static final String DOMAIN_NAME =
-	// "http://192.168.1.200/cms/";//测试
+//	private static final String DOMAIN_NAME = "http://192.168.1.200/cms/"
+	private static final String DOMAIN_NAME = "http://www.91dongji.com/";
 
 	private static final String NAV_URL = "json2/nav.txt";
 	private static final String APP_CHANNEL_URL = "json2/cat.txt";

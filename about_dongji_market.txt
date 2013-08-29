@@ -1,0 +1,37 @@
+接口、广播的使用
+1.应用、游戏按钮点击事件处理可以进行优化
+2.模块组成：
+（1）TitleUtil：这个类的设计比较巧妙，实现了actionbar的重用，应用内所有的actionbar操作都聚合在此类中
+	实现OnClickListener, AConstDefine接口，监听actionbar上按钮点击事件，获取常量定义数据（通过实现接口这种方式很奇葩，为什么不直接定义一个类呢？）
+	三个接口，三种构造方式，实现对被监听者actionbar的toolbarblank点击,回退，排序等相关操作的监听，然后监听者做出对应的响应：
+		public interface OnSortChangeListener {//监听排序改变
+			static final int SORT_BY_DOWNLOAD = 1; // 按时间排序
+			static final int SORT_BY_SCORE = 2; // 按评分排序
+			static final int SORT_BY_RISE = 3; // 按下载次数排序
+			void onSortChanged(int sort);
+		}
+		public interface OnToolBarBlankClickListener {//监听空白栏点击
+			void onClick();
+		}
+		public static interface SaveSettingListener {//后退保存(针对设置页）设置信息
+			public void exitVerify(boolean isFinish, int pageFlag);
+		}
+		TitleUtil(Activity cxt, View titleView, int pageNameId, Bundle params, OnToolBarBlankClickListener mOnToolBarBlankClickListener)
+		TitleUtil(Activity cxt, View titleView, int pageNameId, SaveSettingListener saveListener, Bundle params, OnToolBarBlankClickListener mOnToolBarBlankClickListener)
+		TitleUtil(Activity cxt, View titleView, String pageName, Bundle bundle, OnSortChangeListener listener, OnToolBarBlankClickListener mOnToolBarBlankClickListener)
+（2）activity的继承：
+	 CustomActivity---->BaseActivity------>PublicActivity------------>Activity
+	 PublicActivity
+（3）设置是否可以下载图片不合理
+	boolean flag = DJMarketUtils.isSaveFlow(this);// 是否开启流量模式
+	mApp.setRemoteImage(flag);// 是否下载图片
+	if (mApp.isRemoteImage()) {
+		isRemoteImage = false;
+	}
+	isEconomizeTraffic =mApp.isRemoteImage();
+	应该改成以下方式：
+	
+	boolean flag = DJMarketUtils.isSaveFlow(this);// 是否开启流量模式
+	mApp.setRemoteImage(!flag);// 是否下载图片
+	isRemoteImage = mApp.isRemoteImage();
+	isEconomizeTraffic =!mApp.isRemoteImage();

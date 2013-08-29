@@ -219,7 +219,6 @@ public class ThemeActivity extends BaseActivity implements ScrollListView.OnScro
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				getParentActivity().stopProgressBar();
 				if(mLoadingView.getVisibility()==View.VISIBLE) {
 					mLoadingProgressBar.setVisibility(View.GONE);
 					mLoadingTextView.setText(rId);

@@ -40,15 +40,13 @@ import com.dongji.market.helper.AndroidUtils;
 import com.dongji.market.pojo.ApkItem;
 import com.umeng.common.net.r;
 
-public class DownloadAdapter extends BaseExpandableListAdapter implements
-		DownloadConstDefine, DownloadService.DownloadStatusListener {
+public class DownloadAdapter extends BaseExpandableListAdapter implements DownloadConstDefine, DownloadService.DownloadStatusListener {
 	private Context context;
 	private List<List<DownloadEntity>> childList;
 	private List<String> groupList;
 	private String downloadingString, updatingString;
 	private Bitmap mDefaultBitmap;
-	private String continueString, cancelString, pauseString, installString,
-			ignoreString, cancelIgnoreString, deleteString, updateString;
+	private String continueString, cancelString, pauseString, installString, ignoreString, cancelIgnoreString, deleteString, updateString;
 
 	private static final int EVENT_REFRESH_DATA = 2;
 
@@ -61,8 +59,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 	// public static int isRootInstalling = 0;
 	public static List<String> rootApkList = new ArrayList<String>();
 
-	public DownloadAdapter(Context context, List<List<DownloadEntity>> list,
-			List<String> groupList, DownloadActivity.MyHandler mHandler) {
+	public DownloadAdapter(Context context, List<List<DownloadEntity>> list, List<String> groupList, DownloadActivity.MyHandler mHandler) {
 		this.context = context;
 		this.childList = list;
 		this.groupList = groupList;
@@ -76,8 +73,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 		initString();
 		df = new DecimalFormat("##0.00");
 		try {
-			mDefaultBitmap = BitmapFactory.decodeResource(
-					context.getResources(), R.drawable.app_default_icon);
+			mDefaultBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.app_default_icon);
 		} catch (OutOfMemoryError e) {
 			if (mDefaultBitmap != null && !mDefaultBitmap.isRecycled()) {
 				mDefaultBitmap.recycle();
@@ -128,37 +124,23 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 	}
 
 	@Override
-	public View getChildView(int groupPosition, int childPosition,
-			boolean isLastChild, View convertView, ViewGroup parent) {
+	public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
 		ChildViewHolder holder;
 		if (convertView == null) {
-			convertView = LayoutInflater.from(context).inflate(
-					R.layout.item_list_download, null);
+			convertView = LayoutInflater.from(context).inflate(R.layout.item_list_download, null);
 			holder = new ChildViewHolder();
-			holder.mImageView = (ImageView) convertView
-					.findViewById(R.id.iconImageview);
-			holder.mAppNameTextView = (TextView) convertView
-					.findViewById(R.id.appnametextview);
-			holder.mAppVersionTextView = (TextView) convertView
-					.findViewById(R.id.appversiontextview);
-			holder.mProgressBar = (ProgressBar) convertView
-					.findViewById(R.id.progress_horizontal);
-			holder.mCenterTextView = (TextView) convertView
-					.findViewById(R.id.centertextview);
-			holder.mBottomTextView = (TextView) convertView
-					.findViewById(R.id.bottomtextview);
-			holder.mFirstButton = (Button) convertView
-					.findViewById(R.id.firstButton);
-			holder.mSecondButton = (Button) convertView
-					.findViewById(R.id.secondButton);
-			holder.mLongButton = (Button) convertView
-					.findViewById(R.id.longButton);
-			holder.mEmptyTextView = (TextView) convertView
-					.findViewById(R.id.emptytextview);
-			holder.mContentLayout = convertView
-					.findViewById(R.id.contentlayout);
-			holder.mAuthorityImageview = (ImageView) convertView
-					.findViewById(R.id.authorityimageview);
+			holder.mImageView = (ImageView) convertView.findViewById(R.id.iconImageview);
+			holder.mAppNameTextView = (TextView) convertView.findViewById(R.id.appnametextview);
+			holder.mAppVersionTextView = (TextView) convertView.findViewById(R.id.appversiontextview);
+			holder.mProgressBar = (ProgressBar) convertView.findViewById(R.id.progress_horizontal);
+			holder.mCenterTextView = (TextView) convertView.findViewById(R.id.centertextview);
+			holder.mBottomTextView = (TextView) convertView.findViewById(R.id.bottomtextview);
+			holder.mFirstButton = (Button) convertView.findViewById(R.id.firstButton);
+			holder.mSecondButton = (Button) convertView.findViewById(R.id.secondButton);
+			holder.mLongButton = (Button) convertView.findViewById(R.id.longButton);
+			holder.mEmptyTextView = (TextView) convertView.findViewById(R.id.emptytextview);
+			holder.mContentLayout = convertView.findViewById(R.id.contentlayout);
+			holder.mAuthorityImageview = (ImageView) convertView.findViewById(R.id.authorityimageview);
 
 			convertView.setTag(holder);
 		} else {
@@ -168,8 +150,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 
 		DownloadEntity entity = null;
 		// System.out.println(childList.size()+", "+groupPosition+", "+childPosition);
-		if (childList.size() > groupPosition
-				&& childList.get(groupPosition).size() > childPosition) {
+		if (childList.size() > groupPosition && childList.get(groupPosition).size() > childPosition) {
 			entity = childList.get(groupPosition).get(childPosition);
 			// System.out.println("groupPosition:"+groupPosition+", "+childPosition+", "+entity.downloadType+", "+entity.iconUrl);
 			switch (entity.downloadType) {
@@ -177,11 +158,9 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 				fillDownloadChildView(entity, holder);
 				if (!TextUtils.isEmpty(entity.iconUrl)) {
 					try {
-						FileService.getBitmap(entity.iconUrl,
-								holder.mImageView, mDefaultBitmap, 0);
+						FileService.getBitmap(entity.iconUrl, holder.mImageView, mDefaultBitmap, 0);
 					} catch (OutOfMemoryError e) {
-						if (mDefaultBitmap != null
-								&& !mDefaultBitmap.isRecycled()) {
+						if (mDefaultBitmap != null && !mDefaultBitmap.isRecycled()) {
 							mDefaultBitmap.recycle();
 						}
 					}
@@ -190,9 +169,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 			case DownloadConstDefine.TYPE_OF_UPDATE:
 				fillUpdateChildView(entity, holder);
 				if (entity != null && entity.installedIcon != null) {
-					holder.mImageView
-							.setImageBitmap(((BitmapDrawable) entity.installedIcon)
-									.getBitmap());
+					holder.mImageView.setImageBitmap(((BitmapDrawable) entity.installedIcon).getBitmap());
 				} else {
 					holder.mImageView.setImageBitmap(mDefaultBitmap);
 				}
@@ -201,11 +178,9 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 				fillWaitInstallChildView(entity, holder);
 				if (!TextUtils.isEmpty(entity.iconUrl)) {
 					try {
-						FileService.getBitmap(entity.iconUrl,
-								holder.mImageView, mDefaultBitmap, 0);
+						FileService.getBitmap(entity.iconUrl, holder.mImageView, mDefaultBitmap, 0);
 					} catch (OutOfMemoryError e) {
-						if (mDefaultBitmap != null
-								&& !mDefaultBitmap.isRecycled()) {
+						if (mDefaultBitmap != null && !mDefaultBitmap.isRecycled()) {
 							mDefaultBitmap.recycle();
 						}
 					}
@@ -214,9 +189,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 			case TYPE_OF_IGNORE:
 				fillIgnoreChildView(entity, holder);
 				if (entity != null && entity.installedIcon != null) {
-					holder.mImageView
-							.setImageBitmap(((BitmapDrawable) entity.installedIcon)
-									.getBitmap());
+					holder.mImageView.setImageBitmap(((BitmapDrawable) entity.installedIcon).getBitmap());
 				} else {
 					holder.mImageView.setImageBitmap(mDefaultBitmap);
 				}
@@ -226,16 +199,13 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 			if (childList.size() == 4) {
 				if (groupPosition == 0) {
 					if (childList.get(groupPosition).size() > childPosition) {
-						entity = childList.get(groupPosition)
-								.get(childPosition);
+						entity = childList.get(groupPosition).get(childPosition);
 						fillDownloadChildView(entity, holder);
 						if (!TextUtils.isEmpty(entity.iconUrl)) {
 							try {
-								FileService.getBitmap(entity.iconUrl,
-										holder.mImageView, mDefaultBitmap, 0);
+								FileService.getBitmap(entity.iconUrl, holder.mImageView, mDefaultBitmap, 0);
 							} catch (OutOfMemoryError e) {
-								if (mDefaultBitmap != null
-										&& !mDefaultBitmap.isRecycled()) {
+								if (mDefaultBitmap != null && !mDefaultBitmap.isRecycled()) {
 									mDefaultBitmap.recycle();
 								}
 							}
@@ -243,12 +213,9 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 					}
 				} else if (groupPosition == 1) {
 					if (childList.get(groupPosition).size() > childPosition) {
-						entity = childList.get(groupPosition)
-								.get(childPosition);
+						entity = childList.get(groupPosition).get(childPosition);
 						if (entity != null && entity.installedIcon != null) {
-							holder.mImageView
-									.setImageBitmap(((BitmapDrawable) entity.installedIcon)
-											.getBitmap());
+							holder.mImageView.setImageBitmap(((BitmapDrawable) entity.installedIcon).getBitmap());
 						} else {
 							holder.mImageView.setImageBitmap(mDefaultBitmap);
 						}
@@ -256,14 +223,11 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 					fillUpdateChildView(entity, holder);
 				} else if (groupPosition == 2) {
 					if (childList.get(groupPosition).size() > childPosition) {
-						if (entity != null
-								&& !TextUtils.isEmpty(entity.iconUrl)) {
+						if (entity != null && !TextUtils.isEmpty(entity.iconUrl)) {
 							try {
-								FileService.getBitmap(entity.iconUrl,
-										holder.mImageView, mDefaultBitmap, 0);
+								FileService.getBitmap(entity.iconUrl, holder.mImageView, mDefaultBitmap, 0);
 							} catch (OutOfMemoryError e) {
-								if (mDefaultBitmap != null
-										&& !mDefaultBitmap.isRecycled()) {
+								if (mDefaultBitmap != null && !mDefaultBitmap.isRecycled()) {
 									mDefaultBitmap.recycle();
 								}
 							}
@@ -272,12 +236,9 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 					fillWaitInstallChildView(entity, holder);
 				} else if (groupPosition == 3) {
 					if (childList.get(groupPosition).size() > childPosition) {
-						entity = childList.get(groupPosition)
-								.get(childPosition);
+						entity = childList.get(groupPosition).get(childPosition);
 						if (entity != null && entity.installedIcon != null) {
-							holder.mImageView
-									.setImageBitmap(((BitmapDrawable) entity.installedIcon)
-											.getBitmap());
+							holder.mImageView.setImageBitmap(((BitmapDrawable) entity.installedIcon).getBitmap());
 						} else {
 							holder.mImageView.setImageBitmap(mDefaultBitmap);
 						}
@@ -287,12 +248,9 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 			} else {
 				if (groupPosition == 0) {
 					if (childList.get(0).size() > childPosition) {
-						entity = childList.get(groupPosition)
-								.get(childPosition);
+						entity = childList.get(groupPosition).get(childPosition);
 						if (entity != null && entity.installedIcon != null) {
-							holder.mImageView
-									.setImageBitmap(((BitmapDrawable) entity.installedIcon)
-											.getBitmap());
+							holder.mImageView.setImageBitmap(((BitmapDrawable) entity.installedIcon).getBitmap());
 						} else {
 							holder.mImageView.setImageBitmap(mDefaultBitmap);
 						}
@@ -300,16 +258,12 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 					fillUpdateChildView(entity, holder);
 				} else if (groupPosition == 1) {
 					if (childList.get(groupPosition).size() > childPosition) {
-						entity = childList.get(groupPosition)
-								.get(childPosition);
-						if (entity != null
-								&& !TextUtils.isEmpty(entity.iconUrl)) {
+						entity = childList.get(groupPosition).get(childPosition);
+						if (entity != null && !TextUtils.isEmpty(entity.iconUrl)) {
 							try {
-								FileService.getBitmap(entity.iconUrl,
-										holder.mImageView, mDefaultBitmap, 0);
+								FileService.getBitmap(entity.iconUrl, holder.mImageView, mDefaultBitmap, 0);
 							} catch (OutOfMemoryError e) {
-								if (mDefaultBitmap != null
-										&& !mDefaultBitmap.isRecycled()) {
+								if (mDefaultBitmap != null && !mDefaultBitmap.isRecycled()) {
 									mDefaultBitmap.recycle();
 								}
 							}
@@ -318,12 +272,9 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 					fillWaitInstallChildView(entity, holder);
 				} else if (groupPosition == 2) {
 					if (childList.get(groupPosition).size() > childPosition) {
-						entity = childList.get(groupPosition)
-								.get(childPosition);
+						entity = childList.get(groupPosition).get(childPosition);
 						if (entity != null && entity.installedIcon != null) {
-							holder.mImageView
-									.setImageBitmap(((BitmapDrawable) entity.installedIcon)
-											.getBitmap());
+							holder.mImageView.setImageBitmap(((BitmapDrawable) entity.installedIcon).getBitmap());
 						} else {
 							holder.mImageView.setImageBitmap(mDefaultBitmap);
 						}
@@ -342,24 +293,20 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 	 * @param entity
 	 * @param holder
 	 */
-	private void fillDownloadChildView(DownloadEntity entity,
-			ChildViewHolder holder) {
+	private void fillDownloadChildView(DownloadEntity entity, ChildViewHolder holder) {
 		holder.mEmptyTextView.setVisibility(View.GONE);
 		holder.mContentLayout.setVisibility(View.VISIBLE);
 
 		holder.mAppNameTextView.setText(entity.appName);
 		holder.mAppVersionTextView.setVisibility(View.VISIBLE);
 		holder.mAppVersionTextView.setText(entity.versionName);
-		String currentDownloadSize = df
-				.format(entity.currentPosition / 1048576.0);
+		String currentDownloadSize = df.format(entity.currentPosition / 1048576.0);
 		String currentTotalSize = df.format(entity.fileLength / 1048576.0);
-		holder.mBottomTextView.setText(currentDownloadSize + "M/"
-				+ currentTotalSize + "M");
+		holder.mBottomTextView.setText(currentDownloadSize + "M/" + currentTotalSize + "M");
 
 		setButtonStatus(entity, holder);
 
-		holder.mContentLayout.setOnClickListener(new DetailOnClickListener(
-				entity));
+		holder.mContentLayout.setOnClickListener(new DetailOnClickListener(entity));
 
 		if (entity.heavy > 0) {
 			holder.mAuthorityImageview.setVisibility(View.VISIBLE);
@@ -374,8 +321,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 			holder.mCenterTextView.setVisibility(View.GONE);
 			holder.mProgressBar.setVisibility(View.VISIBLE);
 			if (entity.fileLength > 0 && entity.currentPosition > 0) {
-				double progress = entity.currentPosition * 100.0
-						/ entity.fileLength;
+				double progress = entity.currentPosition * 100.0 / entity.fileLength;
 				holder.mProgressBar.setProgress((int) progress);
 			}
 			break;
@@ -405,8 +351,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 	 * @param entity
 	 * @param holder
 	 */
-	private void fillUpdateChildView(DownloadEntity entity,
-			ChildViewHolder holder) {
+	private void fillUpdateChildView(DownloadEntity entity, ChildViewHolder holder) {
 		if (entity == null) {
 			holder.mEmptyTextView.setVisibility(View.VISIBLE);
 			holder.mContentLayout.setVisibility(View.GONE);
@@ -418,12 +363,10 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 		holder.mContentLayout.setVisibility(View.VISIBLE);
 		holder.mAppNameTextView.setText(entity.appName);
 		holder.mAppVersionTextView.setVisibility(View.VISIBLE);
-		holder.mAppVersionTextView.setText("V" + entity.installedVersionName
-				+ "/" + NetTool.sizeFormat((int) entity.installedFileLength));
+		holder.mAppVersionTextView.setText("V" + entity.installedVersionName + "/" + NetTool.sizeFormat((int) entity.installedFileLength));
 		holder.mBottomTextView.setVisibility(View.VISIBLE);
 
-		holder.mBottomTextView.setText("V" + entity.versionName + "/"
-				+ NetTool.sizeFormat((int) entity.fileLength));
+		holder.mBottomTextView.setText("V" + entity.versionName + "/" + NetTool.sizeFormat((int) entity.fileLength));
 
 		setButtonStatus(entity, holder);
 
@@ -433,8 +376,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 			holder.mAuthorityImageview.setVisibility(View.GONE);
 		}
 
-		holder.mContentLayout.setOnClickListener(new DetailOnClickListener(
-				entity));
+		holder.mContentLayout.setOnClickListener(new DetailOnClickListener(entity));
 		switch (entity.getStatus()) {
 		case STATUS_OF_DOWNLOADING:
 		case STATUS_OF_COMPLETE:
@@ -442,8 +384,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 			holder.mCenterTextView.setVisibility(View.GONE);
 			holder.mProgressBar.setVisibility(View.VISIBLE);
 			if (entity.fileLength > 0 && entity.currentPosition >= 0) {
-				double progress = entity.currentPosition * 100.0
-						/ entity.fileLength;
+				double progress = entity.currentPosition * 100.0 / entity.fileLength;
 				holder.mProgressBar.setProgress((int) progress);
 			}
 			break;
@@ -471,18 +412,15 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 	 * @param entity
 	 * @param holder
 	 */
-	private void fillWaitInstallChildView(DownloadEntity entity,
-			ChildViewHolder holder) {
+	private void fillWaitInstallChildView(DownloadEntity entity, ChildViewHolder holder) {
 		if (entity == null) {
 			holder.mEmptyTextView.setVisibility(View.VISIBLE);
 			holder.mContentLayout.setVisibility(View.GONE);
 			holder.mEmptyTextView.setText(R.string.current_not_install_app);
 			return;
 		}
-		System.out.println("..........test0522.....fillWaitInstallChildView..."
-				+ entity.appName + "," + entity.downloadType);
-		holder.mContentLayout.setOnClickListener(new DetailOnClickListener(
-				entity));
+		System.out.println("..........test0522.....fillWaitInstallChildView..." + entity.appName + "," + entity.downloadType);
+		holder.mContentLayout.setOnClickListener(new DetailOnClickListener(entity));
 		holder.mEmptyTextView.setVisibility(View.GONE);
 		holder.mContentLayout.setVisibility(View.VISIBLE);
 		holder.mAppNameTextView.setText(entity.appName);
@@ -490,8 +428,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 		holder.mCenterTextView.setVisibility(View.GONE);
 		holder.mProgressBar.setVisibility(View.GONE);
 		holder.mBottomTextView.setVisibility(View.VISIBLE);
-		holder.mBottomTextView.setText("V" + entity.versionName + "/"
-				+ NetTool.sizeFormat((int) entity.fileLength));
+		holder.mBottomTextView.setText("V" + entity.versionName + "/" + NetTool.sizeFormat((int) entity.fileLength));
 
 		setButtonStatus(entity, holder);
 
@@ -502,8 +439,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 		}
 	}
 
-	private void fillIgnoreChildView(DownloadEntity entity,
-			ChildViewHolder holder) {
+	private void fillIgnoreChildView(DownloadEntity entity, ChildViewHolder holder) {
 		if (entity == null) {
 			holder.mEmptyTextView.setVisibility(View.VISIBLE);
 			holder.mContentLayout.setVisibility(View.GONE);
@@ -519,15 +455,12 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 
 		holder.mAppVersionTextView.setVisibility(View.GONE);
 
-		holder.mBottomTextView.setText("V" + entity.installedVersionName + "/"
-				+ NetTool.formatString(entity.installedFileLength / 1048576.0)
-				+ "M");
+		holder.mBottomTextView.setText("V" + entity.installedVersionName + "/" + NetTool.formatString(entity.installedFileLength / 1048576.0) + "M");
 		holder.mProgressBar.setVisibility(View.GONE);
 
 		setButtonStatus(entity, holder);
 
-		holder.mContentLayout.setOnClickListener(new DetailOnClickListener(
-				entity));
+		holder.mContentLayout.setOnClickListener(new DetailOnClickListener(entity));
 
 	}
 
@@ -546,21 +479,15 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 				holder.mFirstButton.setVisibility(View.GONE);
 
 				setFirstButtonStyle(holder.mSecondButton, pauseString);
-				holder.mSecondButton
-						.setOnClickListener(new OnDownloadClickListener(entity,
-								holder));
+				holder.mSecondButton.setOnClickListener(new OnDownloadClickListener(entity, holder));
 				break;
 			case STATUS_OF_EXCEPTION:
 			case STATUS_OF_PAUSE:
 			case STATUS_OF_PAUSE_ON_EXIT_SYSTEM:
 				setSecondButtonStyle(holder.mFirstButton, continueString);
 				setFirstButtonStyle(holder.mSecondButton, cancelString);
-				holder.mSecondButton
-						.setOnClickListener(new OnDownloadClickListener(entity,
-								holder));
-				holder.mFirstButton
-						.setOnClickListener(new OnDownloadClickListener(entity,
-								holder));
+				holder.mSecondButton.setOnClickListener(new OnDownloadClickListener(entity, holder));
+				holder.mFirstButton.setOnClickListener(new OnDownloadClickListener(entity, holder));
 				break;
 			case STATUS_OF_COMPLETE:
 				holder.mFirstButton.setVisibility(View.GONE);
@@ -580,9 +507,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 			case STATUS_OF_IGNORE:
 				holder.mLongButton.setVisibility(View.VISIBLE);
 
-				holder.mLongButton
-						.setOnClickListener(new OnDownloadClickListener(entity,
-								holder));
+				holder.mLongButton.setOnClickListener(new OnDownloadClickListener(entity, holder));
 				break;
 			case STATUS_OF_INITIAL:
 				holder.mLongButton.setVisibility(View.GONE);
@@ -591,12 +516,8 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 
 				setSecondButtonStyle(holder.mFirstButton, ignoreString);
 
-				holder.mFirstButton
-						.setOnClickListener(new OnDownloadClickListener(entity,
-								holder));
-				holder.mSecondButton
-						.setOnClickListener(new OnDownloadClickListener(entity,
-								holder));
+				holder.mFirstButton.setOnClickListener(new OnDownloadClickListener(entity, holder));
+				holder.mSecondButton.setOnClickListener(new OnDownloadClickListener(entity, holder));
 
 				break;
 			case STATUS_OF_DOWNLOADING:
@@ -605,12 +526,8 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 
 				setSecondButtonStyle(holder.mFirstButton, pauseString);
 				setFirstButtonStyle(holder.mSecondButton, cancelString);
-				holder.mFirstButton
-						.setOnClickListener(new OnDownloadClickListener(entity,
-								holder));
-				holder.mSecondButton
-						.setOnClickListener(new OnDownloadClickListener(entity,
-								holder));
+				holder.mFirstButton.setOnClickListener(new OnDownloadClickListener(entity, holder));
+				holder.mSecondButton.setOnClickListener(new OnDownloadClickListener(entity, holder));
 				break;
 			case STATUS_OF_EXCEPTION:
 			case STATUS_OF_PAUSE:
@@ -618,12 +535,8 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 
 				setSecondButtonStyle(holder.mFirstButton, continueString);
 				setFirstButtonStyle(holder.mSecondButton, cancelString);
-				holder.mFirstButton
-						.setOnClickListener(new OnDownloadClickListener(entity,
-								holder));
-				holder.mSecondButton
-						.setOnClickListener(new OnDownloadClickListener(entity,
-								holder));
+				holder.mFirstButton.setOnClickListener(new OnDownloadClickListener(entity, holder));
+				holder.mSecondButton.setOnClickListener(new OnDownloadClickListener(entity, holder));
 				break;
 			case STATUS_OF_COMPLETE:
 				holder.mLongButton.setVisibility(View.GONE);
@@ -642,15 +555,11 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 
 			setSecondButtonStyle(holder.mSecondButton, deleteString);
 
-			holder.mSecondButton
-					.setOnClickListener(new OnDownloadClickListener(entity,
-							holder));
-			holder.mFirstButton.setOnClickListener(new OnDownloadClickListener(
-					entity, holder));
+			holder.mSecondButton.setOnClickListener(new OnDownloadClickListener(entity, holder));
+			holder.mFirstButton.setOnClickListener(new OnDownloadClickListener(entity, holder));
 
 			for (int i = 0; i < rootApkList.size(); i++) {
-				if (null != entity.packageName
-						&& rootApkList.get(i).equals(entity.packageName)) {
+				if (null != entity.packageName && rootApkList.get(i).equals(entity.packageName)) {
 					holder.mFirstButton.setFocusable(false);
 					holder.mFirstButton.setFocusableInTouchMode(false);
 					holder.mFirstButton.setEnabled(false);
@@ -667,14 +576,12 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 			// holder.mLongButton.setText(context
 			// .getString(R.string.cancle_ignore));
 
-			setSecondButtonStyle(holder.mLongButton,
-					context.getString(R.string.cancle_ignore));
+			setSecondButtonStyle(holder.mLongButton, context.getString(R.string.cancle_ignore));
 
 			holder.mFirstButton.setVisibility(View.GONE);
 			holder.mSecondButton.setVisibility(View.GONE);
 			holder.mLongButton.setVisibility(View.VISIBLE);
-			holder.mLongButton.setOnClickListener(new OnDownloadClickListener(
-					entity, holder));
+			holder.mLongButton.setOnClickListener(new OnDownloadClickListener(entity, holder));
 		}
 	}
 
@@ -739,46 +646,31 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 
 					setSecondButtonStyle(holder.mFirstButton, continueString);
 
-					holder.mFirstButton
-							.setOnClickListener(new OnDownloadClickListener(
-									entity, holder));
-					holder.mSecondButton
-							.setOnClickListener(new OnDownloadClickListener(
-									entity, holder));
+					holder.mFirstButton.setOnClickListener(new OnDownloadClickListener(entity, holder));
+					holder.mSecondButton.setOnClickListener(new OnDownloadClickListener(entity, holder));
 
 					holder.mProgressBar.setVisibility(View.GONE);
 					holder.mCenterTextView.setText(R.string.paused);
 
 					entity.setStatus(STATUS_OF_PAUSE);
 
-					// Bundle bundle=new Bundle();
-					// bundle.putParcelable(DOWNLOAD_ENTITY, entity);
-					// sendServiceBroadcastByAction(BROADCAST_ACTION_PAUSE_DOWNLOAD,
-					// bundle);
-					// }
 				} else if (continueString.equals(text)) {
 					if (entity.canDownload()) {
 						holder.mFirstButton.setVisibility(View.GONE);
 
 						setFirstButtonStyle(holder.mSecondButton, pauseString);
-						holder.mSecondButton
-								.setOnClickListener(new OnDownloadClickListener(
-										entity, holder));
+						holder.mSecondButton.setOnClickListener(new OnDownloadClickListener(entity, holder));
 						holder.mCenterTextView.setVisibility(View.GONE);
 						holder.mProgressBar.setVisibility(View.VISIBLE);
 						if (entity.fileLength > 0 && entity.currentPosition > 0) {
-							double progress = entity.currentPosition * 100.0
-									/ entity.fileLength;
+							double progress = entity.currentPosition * 100.0 / entity.fileLength;
 							holder.mProgressBar.setProgress((int) progress);
 						} else {
 							holder.mProgressBar.setProgress(0);
 						}
-						String currentDownloadSize = df
-								.format(entity.currentPosition / 1048576.0);
-						String currentTotalSize = df
-								.format(entity.fileLength / 1048576.0);
-						holder.mBottomTextView.setText(currentDownloadSize
-								+ "M/" + currentTotalSize + "M");
+						String currentDownloadSize = df.format(entity.currentPosition / 1048576.0);
+						String currentTotalSize = df.format(entity.fileLength / 1048576.0);
+						holder.mBottomTextView.setText(currentDownloadSize + "M/" + currentTotalSize + "M");
 
 						DownloadUtils.checkDownload(context, entity);
 					}
@@ -789,8 +681,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 
 					Bundle bundle = new Bundle();
 					bundle.putParcelable(DOWNLOAD_ENTITY, entity);
-					sendServiceBroadcastByAction(
-							BROADCAST_ACTION_CANCEL_DOWNLOAD, bundle);
+					sendServiceBroadcastByAction(BROADCAST_ACTION_CANCEL_DOWNLOAD, bundle);
 
 					System.out.println("on download cancel!");
 				}
@@ -802,8 +693,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 					holder.mProgressBar.setVisibility(View.VISIBLE);
 
 					if (entity.fileLength > 0 && entity.currentPosition > 0) {
-						double progress = entity.currentPosition * 100.0
-								/ entity.fileLength;
+						double progress = entity.currentPosition * 100.0 / entity.fileLength;
 						holder.mProgressBar.setProgress((int) progress);
 					} else {
 						holder.mProgressBar.setProgress(0);
@@ -835,22 +725,19 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 					setSecondButtonStyle(holder.mFirstButton, ignoreString);
 					holder.mProgressBar.setVisibility(View.GONE);
 
-					DownloadUtils.fillUpdateAndUpdatingNotifycation(context,
-							false);
+					DownloadUtils.fillUpdateAndUpdatingNotifycation(context, false);
 
 					// entity.reset();
 					Bundle bundle = new Bundle();
 					bundle.putParcelable(DOWNLOAD_ENTITY, entity);
-					sendServiceBroadcastByAction(
-							BROADCAST_ACTION_CANCEL_DOWNLOAD, bundle);
+					sendServiceBroadcastByAction(BROADCAST_ACTION_CANCEL_DOWNLOAD, bundle);
 				} else if (continueString.equals(text)) { // 当按钮为继续状态时
 					setFirstButtonStyle(holder.mSecondButton, cancelString);
 					setSecondButtonStyle(holder.mFirstButton, pauseString);
 					holder.mCenterTextView.setVisibility(View.GONE);
 					holder.mProgressBar.setVisibility(View.VISIBLE);
 					if (entity.fileLength > 0 && entity.currentPosition > 0) {
-						double progress = entity.currentPosition * 100.0
-								/ entity.fileLength;
+						double progress = entity.currentPosition * 100.0 / entity.fileLength;
 						holder.mProgressBar.setProgress((int) progress);
 					}
 
@@ -858,42 +745,33 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 				}
 			} else if (entity.downloadType == TYPE_OF_COMPLETE) {
 				if (installString.equals(text)) {
-					String path = DOWNLOAD_ROOT_PATH + entity.hashCode()
-							+ DOWNLOAD_FILE_POST_SUFFIX;
+					String path = DOWNLOAD_ROOT_PATH + entity.hashCode() + DOWNLOAD_FILE_POST_SUFFIX;
 					File file = new File(path);
 					if (file.exists()) {
 						DownloadUtils.installApk(context, path);
 					} else {
-						Toast.makeText(context,
-								R.string.download_file_delete_prompt,
-								Toast.LENGTH_SHORT).show();
+						Toast.makeText(context, R.string.download_file_delete_prompt, Toast.LENGTH_SHORT).show();
 						deleteWaitInstallApk(entity);
 						Bundle bundle = new Bundle();
 						bundle.putParcelable(DOWNLOAD_ENTITY, entity);
-						sendServiceBroadcastByAction(
-								BROADCAST_ACTION_REMOVE_DOWNLOAD, bundle);
+						sendServiceBroadcastByAction(BROADCAST_ACTION_REMOVE_DOWNLOAD, bundle);
 					}
 				} else if (deleteString.equals(text)) {
-					String path = DOWNLOAD_ROOT_PATH + entity.hashCode()
-							+ DOWNLOAD_FILE_POST_SUFFIX;
+					String path = DOWNLOAD_ROOT_PATH + entity.hashCode() + DOWNLOAD_FILE_POST_SUFFIX;
 					boolean flag = DownloadUtils.deleteDownloadFile(path);
 					if (flag) {
 						deleteWaitInstallApk(entity);
-						System.out.println(entity.appName + ", "
-								+ entity.downloadType + ", "
-								+ entity.getStatus());
+						System.out.println(entity.appName + ", " + entity.downloadType + ", " + entity.getStatus());
 						Bundle bundle = new Bundle();
 						bundle.putParcelable(DOWNLOAD_ENTITY, entity);
-						sendServiceBroadcastByAction(
-								BROADCAST_ACTION_REMOVE_DOWNLOAD, bundle);
+						sendServiceBroadcastByAction(BROADCAST_ACTION_REMOVE_DOWNLOAD, bundle);
 					}
 				}
 			} else if (entity.downloadType == TYPE_OF_IGNORE) {
 				deleteIgnore(entity);
 				Bundle bundle = new Bundle();
 				bundle.putParcelable(DOWNLOAD_ENTITY, entity);
-				sendServiceBroadcastByAction(BROADCAST_ACTION_CANCEL_IGNORE,
-						bundle);
+				sendServiceBroadcastByAction(BROADCAST_ACTION_CANCEL_IGNORE, bundle);
 			}
 		}
 	}
@@ -953,8 +831,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 	 * @param entity
 	 */
 	private void removeCompleteToInstall(DownloadEntity entity) {
-		System.out.println(".........test0522....removeCompleteToInstall..."
-				+ entity.downloadType);
+		System.out.println(".........test0522....removeCompleteToInstall..." + entity.downloadType);
 		boolean removed = false;
 		removeMessage();
 		for (int i = 0; i < childList.size(); i++) {
@@ -962,12 +839,10 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 			for (; j < childList.get(i).size(); j++) {
 				DownloadEntity d = childList.get(i).get(j);
 				if (d.appId == entity.appId && d.category == entity.category) {
-					System.out.println("removeCompleteToInstall:"
-							+ entity.appName + ", " + mHandler.hasMessages(2));
+					System.out.println("removeCompleteToInstall:" + entity.appName + ", " + mHandler.hasMessages(2));
 
 					childList.get(i).remove(j);
-					if (childList.size() > 3 && i == 0
-							&& childList.get(i).size() == 0) {
+					if (childList.size() > 3 && i == 0 && childList.get(i).size() == 0) {
 						groupList.remove(i);
 						childList.remove(i);
 					}
@@ -999,8 +874,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 		}
 		for (int i = 0; i < childList.get(position).size(); i++) {
 			DownloadEntity d = childList.get(position).get(i);
-			if (d.packageName.equals(entity.packageName)
-					&& d.versionCode == entity.versionCode) {
+			if (d.packageName.equals(entity.packageName) && d.versionCode == entity.versionCode) {
 				if (d.downloadType == TYPE_OF_UPDATE) {
 					childList.get(position).remove(i);
 					d.downloadType = TYPE_OF_IGNORE;
@@ -1023,8 +897,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 		int position = childList.size() - 1;
 		for (int i = 0; i < childList.get(position).size(); i++) {
 			DownloadEntity d = childList.get(position).get(i);
-			if (d.packageName.equals(entity.packageName)
-					&& d.versionCode == entity.versionCode) {
+			if (d.packageName.equals(entity.packageName) && d.versionCode == entity.versionCode) {
 				childList.get(position).remove(i);
 				break;
 			}
@@ -1042,8 +915,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 		List<DownloadEntity> list = childList.get(childList.size() - 2);
 		for (int i = 0; i < list.size(); i++) {
 			DownloadEntity mDownloadEntity = list.get(i);
-			if (mDownloadEntity.packageName.equals(entity.packageName)
-					&& mDownloadEntity.versionCode == entity.versionCode) {
+			if (mDownloadEntity.packageName.equals(entity.packageName) && mDownloadEntity.versionCode == entity.versionCode) {
 				System.out.println("remove dasdasdasdasd");
 				list.remove(i);
 				break;
@@ -1100,9 +972,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 	@Override
 	public int getChildrenCount(int groupPosition) {
 		// TODO Auto-generated method stub
-		return childList == null ? 0
-				: childList.get(groupPosition).size() == 0 ? 1 : childList.get(
-						groupPosition).size();
+		return childList == null ? 0 : childList.get(groupPosition).size() == 0 ? 1 : childList.get(groupPosition).size();
 		// return childList==null?0:childList.size();
 	}
 
@@ -1125,19 +995,14 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 	}
 
 	@Override
-	public View getGroupView(int groupPosition, boolean isExpanded,
-			View convertView, ViewGroup parent) {
+	public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
 		GroupViewHolder holder = null;
 		if (convertView == null) {
-			convertView = LayoutInflater.from(context).inflate(
-					R.layout.adownloadexpandgroup, null);
+			convertView = LayoutInflater.from(context).inflate(R.layout.adownloadexpandgroup, null);
 			holder = new GroupViewHolder();
-			holder.mTextView = (TextView) convertView
-					.findViewById(R.id.tvExpandGroupTitle);
-			holder.mButton = (Button) convertView
-					.findViewById(R.id.btnOneKeyUpdate);
-			holder.mImageView = (ImageView) convertView
-					.findViewById(R.id.ivExpandGroupPic);
+			holder.mTextView = (TextView) convertView.findViewById(R.id.tvExpandGroupTitle);
+			holder.mButton = (Button) convertView.findViewById(R.id.btnOneKeyUpdate);
+			holder.mImageView = (ImageView) convertView.findViewById(R.id.ivExpandGroupPic);
 
 			holder.mButton.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -1158,11 +1023,9 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 			holder.mTextView.setText(str);
 		}
 		if (isExpanded) {
-			holder.mImageView.setImageDrawable(context.getResources()
-					.getDrawable(R.drawable.pic_down));
+			holder.mImageView.setImageDrawable(context.getResources().getDrawable(R.drawable.pic_down));
 		} else {
-			holder.mImageView.setImageDrawable(context.getResources()
-					.getDrawable(R.drawable.pic_up));
+			holder.mImageView.setImageDrawable(context.getResources().getDrawable(R.drawable.pic_up));
 		}
 		holder.mImageView.setVisibility(View.VISIBLE);
 		if (downloadingString.equals(str)) {
@@ -1185,8 +1048,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 	 * @return
 	 */
 	public boolean canClickGroup(int groupPosition) {
-		if (!locked && groupList.size() > 3
-				&& downloadingString.equals(groupList.get(groupPosition))) {
+		if (!locked && groupList.size() > 3 && downloadingString.equals(groupList.get(groupPosition))) {
 			return true;
 		}
 		return false;
@@ -1249,12 +1111,10 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 	private void addUpdate(DownloadEntity entity) {
 		removeMessage();
 
-		List<DownloadEntity> downloadList = DownloadService.mDownloadService
-				.getAllDownloadList();
+		List<DownloadEntity> downloadList = DownloadService.mDownloadService.getAllDownloadList();
 		for (int i = 0; i < downloadList.size(); i++) {
 			DownloadEntity d = downloadList.get(i);
-			if (d.packageName.equals(entity.packageName)
-					&& d.versionCode == entity.versionCode) {
+			if (d.packageName.equals(entity.packageName) && d.versionCode == entity.versionCode) {
 				int position = 0;
 				if (childList.size() > 3) {
 					position = 1;
@@ -1279,8 +1139,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 		}
 		for (int i = 0; i < childList.get(position).size(); i++) {
 			DownloadEntity d = childList.get(position).get(i);
-			if (d.packageName.equals(entity.packageName)
-					&& d.versionCode == entity.versionCode) {
+			if (d.packageName.equals(entity.packageName) && d.versionCode == entity.versionCode) {
 				childList.get(position).remove(i);
 				break;
 			}
@@ -1291,15 +1150,12 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 	private void updateInstallFailStatus(String apkPackageName) {
 		removeMessage();
 		System.out.println("...........test0522...0....." + apkPackageName);
-		System.out.println("...........test0522....0.0.1......."
-				+ childList.size());
+		System.out.println("...........test0522....0.0.1......." + childList.size());
 		if (childList.size() == 3) {
-			System.out.println("...........test0522...0..3......"
-					+ childList.get(1).size());
+			System.out.println("...........test0522...0..3......" + childList.get(1).size());
 			for (int i = 0; i < childList.get(1).size(); i++) {
 				DownloadEntity downloadEntity = childList.get(1).get(i);
-				System.out.println(".............test0522........0.1.."
-						+ downloadEntity.packageName);
+				System.out.println(".............test0522........0.1.." + downloadEntity.packageName);
 				if (apkPackageName.equals(downloadEntity.packageName)) {
 					downloadEntity.downloadType = TYPE_OF_COMPLETE;
 					System.out.println("...........test0522........");
@@ -1326,17 +1182,14 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 	 */
 	private void addDownloadList(DownloadEntity entity) {
 		removeMessage();
-		List<DownloadEntity> downloadList = DownloadService.mDownloadService
-				.getAllDownloadList();
+		List<DownloadEntity> downloadList = DownloadService.mDownloadService.getAllDownloadList();
 		for (int i = 0; i < downloadList.size(); i++) {
 			DownloadEntity d = downloadList.get(i);
-			if (d.packageName.equals(entity.packageName)
-					&& d.versionCode == entity.versionCode) {
+			if (d.packageName.equals(entity.packageName) && d.versionCode == entity.versionCode) {
 				System.out.println("==========" + groupList.size());
 				if (groupList.size() > 3) {
 					childList.get(0).add(d);
-					System.out.println("========="
-							+ childList.get(childList.size() - 1).size());
+					System.out.println("=========" + childList.get(childList.size() - 1).size());
 				} else {
 					groupList.add(0, context.getString(R.string.transferapk));
 					List<DownloadEntity> downloadingList = new ArrayList<DownloadEntity>();
@@ -1355,8 +1208,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 			if (BROADCAST_ACTION_COMPLETE_DOWNLOAD.equals(intent.getAction())) {
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
-					DownloadEntity entity = bundle
-							.getParcelable(DOWNLOAD_ENTITY);
+					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
 					locked = true;
 					removeCompleteToInstall(entity);
 					locked = false;
@@ -1364,16 +1216,13 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 			} else if (BROADCAST_ACTION_ADD_UPDATE.equals(intent.getAction())) {
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
-					DownloadEntity entity = bundle
-							.getParcelable(DOWNLOAD_ENTITY);
+					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
 					addUpdate(entity);
 				}
-			} else if (BROADCAST_ACTION_INSTALL_COMPLETE.equals(intent
-					.getAction())) {
+			} else if (BROADCAST_ACTION_INSTALL_COMPLETE.equals(intent.getAction())) {
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
-					DownloadEntity entity = bundle
-							.getParcelable(DOWNLOAD_ENTITY);
+					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
 					deleteWaitInstallApk(entity);
 					for (int i = 0; i < rootApkList.size(); i++) {
 						if (rootApkList.get(i).equals(entity.packageName)) {
@@ -1381,29 +1230,22 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements
 						}
 					}
 				}
-			} else if (BROADCAST_ACTION_REMOVE_COMPLETE.equals(intent
-					.getAction())) {
+			} else if (BROADCAST_ACTION_REMOVE_COMPLETE.equals(intent.getAction())) {
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
-					DownloadEntity entity = bundle
-							.getParcelable(DOWNLOAD_ENTITY);
+					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
 					deleteUpdateDownloadEntity(entity);
 				}
-			} else if (BROADCAST_ACTION_ADD_DOWNLOAD_LIST.equals(intent
-					.getAction())) {
+			} else if (BROADCAST_ACTION_ADD_DOWNLOAD_LIST.equals(intent.getAction())) {
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
-					DownloadEntity entity = bundle
-							.getParcelable(DOWNLOAD_ENTITY);
+					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
 					addDownloadList(entity);
 				}
-			} else if (BROADCAST_ACTION_UPDATE_DATA_MERGE_DONE.equals(intent
-					.getAction())) {
+			} else if (BROADCAST_ACTION_UPDATE_DATA_MERGE_DONE.equals(intent.getAction())) {
 
-			} else if (BROADCAST_ACTION_UPDATE_ROOTSTATUS.equals(intent
-					.getAction())) {
-				updateInstallFailStatus(intent
-						.getStringExtra(DOWNLOAD_APKPACKAGENAME));
+			} else if (BROADCAST_ACTION_UPDATE_ROOTSTATUS.equals(intent.getAction())) {
+				updateInstallFailStatus(intent.getStringExtra(DOWNLOAD_APKPACKAGENAME));
 			}
 		}
 	};

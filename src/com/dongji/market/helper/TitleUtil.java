@@ -106,7 +106,6 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 	private TextView mPopDownloadMost, mPopGradeTop, mPopRiseFastest;
 	private int popLenParam;
 	private SaveSettingListener saveListener;
-	private LoginListener loginListener;
 	public static final int SEARCH_PAGE_FLAG = 100;
 	public static final int SOFTMNG_PAGE_FLAG = 101;
 	public static final int LOGIN_PAGE_FLAG = 102;
@@ -155,11 +154,6 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 	public TitleUtil(Activity cxt, View titleView, int pageNameId, SaveSettingListener saveListener, Bundle params, OnToolBarBlankClickListener mOnToolBarBlankClickListener) {
 		this(cxt, titleView, pageNameId, params, mOnToolBarBlankClickListener);
 		this.saveListener = saveListener;
-	}
-
-	public TitleUtil(Activity cxt, View titleView, int pageNameId, LoginListener loginListener, Bundle params, OnToolBarBlankClickListener mOnToolBarBlankClickListener) {
-		this(cxt, titleView, pageNameId, params, mOnToolBarBlankClickListener);
-		this.loginListener = loginListener;
 	}
 
 	public TitleUtil(Activity cxt, View titleView, String pageName, Bundle bundle, OnSortChangeListener listener, OnToolBarBlankClickListener mOnToolBarBlankClickListener) {
@@ -953,16 +947,5 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		public void exitVerify(boolean isFinish, int pageFlag);
 	}
 
-	/**
-	 * 登陆监听接口
-	 * 
-	 * @author yvon
-	 * 
-	 */
-	public static interface LoginListener {
-		public void titleBack();
-
-		public void pageBack();
-	}
 
 }

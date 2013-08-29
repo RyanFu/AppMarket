@@ -423,7 +423,6 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 //									sendEmptyMessage(EVENT_REQUEST_APPLIST_DATA);
 //									isLoading=true;
 								}else {
-									getParentActivity().onProgressBarDone();
 									if(isRequestDelay) {
 										addAdapterData();
 										sendEmptyMessage(EVENT_REQUEST_APPLIST_DATA);
@@ -475,7 +474,6 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 //									sendEmptyMessage(EVENT_REQUEST_GAMELIST_DATA);
 //									isLoading=true;
 								}else {
-									getParentActivity().onProgressBarDone();
 									if(isRequestDelay) {
 										addAdapterData();
 										sendEmptyMessage(EVENT_REQUEST_GAMELIST_DATA);
@@ -573,7 +571,6 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				getParentActivity().stopProgressBar();
 				isLoading=false;
 				if(mLoadingView.getVisibility()==View.VISIBLE) {
 					mLoadingProgressBar.setVisibility(View.GONE);
@@ -791,7 +788,7 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 	public void onAppClick() {
 		if(!isAppClicked) {
 			isAppClicked=true;
-			getParentActivity().progressBarGone();
+//			getParentActivity().progressBarGone();
 //			if(navigationInfo!=null) {
 				if(currentAppPage==0) {
 					displayLoading();
@@ -810,7 +807,6 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 	public void onGameClick() {
 		if(isAppClicked) {
 			isAppClicked=false;
-			getParentActivity().progressBarGone();
 //			if(navigationInfo!=null) {
 				if(currentGamePage==0) {
 					displayLoading();

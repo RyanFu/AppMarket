@@ -1,7 +1,5 @@
 package com.dongji.market.activity;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import android.app.ActivityGroup;
@@ -22,33 +20,23 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
-import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.RadioButton;
-import android.widget.TextView;
 
 import com.dongji.market.R;
-import com.dongji.market.adapter.PopupAdapter;
 import com.dongji.market.application.AppMarket;
 import com.dongji.market.database.MarketDatabase.Setting_Service;
 import com.dongji.market.download.AConstDefine;
@@ -62,11 +50,8 @@ import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.helper.ShareParams;
 import com.dongji.market.helper.TitleUtil;
 import com.dongji.market.helper.TitleUtil.OnToolBarBlankClickListener;
-import com.dongji.market.pojo.ChannelListInfo;
 import com.dongji.market.pojo.LoginParams;
-import com.dongji.market.pojo.NavigationInfo;
 import com.dongji.market.pojo.SettingConf;
-import com.dongji.market.protocol.DataManager;
 import com.dongji.market.protocol.DataUpdateService;
 import com.dongji.market.widget.CustomIconAnimation;
 import com.dongji.market.widget.CustomNoTitleDialog;
@@ -78,8 +63,6 @@ import com.umeng.analytics.MobclickAgent;
 public class MainActivity extends ActivityGroup implements OnClickListener, OnPageChangedListener, AConstDefine, OnToolBarBlankClickListener {
 
 	private static final boolean DEBUG = true;
-	private static final int EVENT_LOADING_PROGRESS = 0;// 进度条加载中
-	private static final int EVENT_LOADDONE = 1;// 进度加载完成
 	private static final int EVENT_CHANGE_EXIT_STATUS = 2;// 改变退出状态
 	private static final int EVENT_LOADING_DATA = 3;// 加载数据
 	private static final int EVENT_CHECK_APP_UPDATE = 4;// 检查更新
@@ -97,8 +80,6 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 	private RadioButton mAppBottomButton, mGameBottomButton;
 
 	private LayoutInflater mInflater;
-
-	private ProgressBar mProgressBar;
 
 	private MyHandler mHandler;
 
@@ -137,7 +118,7 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		ADownloadService.isBackgroundRun = false;// 设置下载服务是否后台运行
 		mApp = (AppMarket) getApplication();
 		boolean flag = DJMarketUtils.isSaveFlow(this);// 是否开启流量模式
-		mApp.setRemoteImage(flag);// 是否下载图片
+		mApp.setRemoteImage(!flag);// 是否下载图片
 		checkFirstLaunch();
 		if (DEBUG)
 			MobclickAgent.onError(this); // 友盟creash反馈
@@ -170,7 +151,7 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		View mTopView = findViewById(R.id.main_top);// actionbar
 		titleUtil = new TitleUtil(this, mTopView, "", getIntent().getExtras(), this);// 初始化actionbar
 		mSoftView = (View) findViewById(R.id.softmanagerbutton);// 软件管理按钮
-		mProgressBar = (ProgressBar) findViewById(R.id.progress_horizontal);// 进度条
+//		mProgressBar = (ProgressBar) findViewById(R.id.progress_horizontal);// 进度条
 
 		initTopButton();
 
@@ -583,16 +564,12 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 						NetTool.cancelNotification(MainActivity.this, 4);
 
 						finish();
-						// closeApp();
 					}
 				}).setNeutralButton(getString(R.string.ok), new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
 						mExitDialog.dismiss();
-						// ADownloadService.isBackgroundRun = true;
 						finish();
-						// service 继续后台下载
-						// closeApp();
 					}
 				});
 			}
@@ -602,51 +579,12 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		}
 	}
 
-	/**
-	 * 停止进度条滚动
-	 */
-	public void stopProgressBar() {
-		if (mHandler.hasMessages(EVENT_LOADING_PROGRESS)) {
-			mHandler.removeMessages(EVENT_LOADING_PROGRESS);
-		}
-		if (mHandler.hasMessages(EVENT_LOADDONE)) {
-			mHandler.removeMessages(EVENT_LOADDONE);
-		}
-	}
-
-	/**
-	 * 滚动条加载完成
-	 */
-	public void onProgressBarDone() {
-		mHandler.sendEmptyMessage(EVENT_LOADDONE);
-	}
-
-	/**
-	 * 隐藏进度条
-	 */
-	public void progressBarGone() {
-		if (mHandler != null && mHandler.hasMessages(EVENT_LOADING_PROGRESS)) {
-			mHandler.removeMessages(EVENT_LOADING_PROGRESS);
-		}
-		if (mHandler != null && mHandler.hasMessages(EVENT_LOADDONE)) {
-			mHandler.removeMessages(EVENT_LOADDONE);
-		}
-		if (mProgressBar != null) {
-			mProgressBar.setVisibility(View.GONE);
-		}
-	}
 
 	/**
 	 * 退出前清除所有消息
 	 */
 	private void removeAllMessage() {
 		if (mHandler != null) {
-			if (mHandler.hasMessages(EVENT_LOADING_PROGRESS)) {
-				mHandler.removeMessages(EVENT_LOADING_PROGRESS);
-			}
-			if (mHandler.hasMessages(EVENT_LOADDONE)) {
-				mHandler.removeMessages(EVENT_LOADDONE);
-			}
 			if (mHandler.hasMessages(EVENT_CHANGE_EXIT_STATUS)) {
 				mHandler.removeMessages(EVENT_CHANGE_EXIT_STATUS);
 			}
@@ -672,21 +610,17 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		BaseActivity mCurrentActivity = (BaseActivity) getLocalActivityManager().getActivity(activityIds[position]);
 		Intent intent = null;
 		Bundle bundle = null;
-		progressBarGone();
 		mTopButtons[position].setChecked(true);
 		initAnimation(mTopButtons[position]);
 		if (position == THEME_POSITION) {
-
 			if (mMainBottomLayout.getVisibility() == View.VISIBLE) {
 				mMainBottomLayout.setVisibility(View.GONE);
 			}
 
 		} else {
-
 			if (mMainBottomLayout.getVisibility() == View.GONE) {
 				mMainBottomLayout.setVisibility(View.VISIBLE);
 			}
-
 			if (mCurrentActivity != null) {
 				boolean isAppClicked = mCurrentActivity.isAppClicked();
 				if (isAppClicked) {
@@ -753,32 +687,6 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-			case EVENT_LOADING_PROGRESS:
-				runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						int progress = mProgressBar.getProgress();
-						if (progress < 80) {
-							mProgressBar.setProgress(progress + 10);
-							sendEmptyMessageDelayed(EVENT_LOADING_PROGRESS, 300);
-						}
-					}
-				});
-				break;
-			case EVENT_LOADDONE:
-				runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						int progress = mProgressBar.getProgress();
-						if (progress == 100) {
-							mProgressBar.setVisibility(View.GONE);
-						} else {
-							mProgressBar.setProgress(100);
-							sendEmptyMessageDelayed(EVENT_LOADDONE, 500);
-						}
-					}
-				});
-				break;
 			case EVENT_CHANGE_EXIT_STATUS://改变退出状态
 				isExit = false;
 				break;
@@ -790,10 +698,10 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 				startService(downloadIntent);
 				break;
 			case EVENT_CHECK_APP_UPDATE://检查更新服务
-				String downloadUrl = DataManager.newInstance().checkAppUpdate(MainActivity.this);
-				if (!TextUtils.isEmpty(downloadUrl)) {
-					DJMarketUtils.appUpdate(MainActivity.this, downloadUrl);
-				}
+//				String downloadUrl = DataManager.newInstance().checkAppUpdate(MainActivity.this);
+//				if (!TextUtils.isEmpty(downloadUrl)) {
+//					DJMarketUtils.appUpdate(MainActivity.this, downloadUrl);
+//				}
 				break;
 			}
 		}

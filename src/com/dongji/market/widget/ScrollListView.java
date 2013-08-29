@@ -14,17 +14,14 @@ public class ScrollListView extends ListView {
 
 	public ScrollListView(Context context) {
 		super(context);
-		// TODO Auto-generated constructor stub
 	}
 
 	public ScrollListView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		// TODO Auto-generated constructor stub
 	}
 
 	public ScrollListView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -32,14 +29,10 @@ public class ScrollListView extends ListView {
 		switch(ev.getAction()) {
 			case MotionEvent.ACTION_DOWN:
 				tempY=ev.getRawY();
-				
-//				System.out.println("  ScrollListView  --->   "  + MotionEvent.ACTION_DOWN );
-				
 				break;
 			case MotionEvent.ACTION_MOVE:
 			case MotionEvent.ACTION_UP:
 				float temp=tempY-ev.getRawY();
-				System.out.println(temp);
 				if (temp > SCROLL_VALUE) {
 					tempY=ev.getRawY();
 					if(mOnScrollTouchListener!=null) {
@@ -53,7 +46,6 @@ public class ScrollListView extends ListView {
 				}
 				break;
 		}
-		
 		return super.onTouchEvent(ev);
 	}
 	
@@ -64,24 +56,19 @@ public class ScrollListView extends ListView {
 	public interface OnScrollTouchListener {
 		static final int SCROLL_TOP = 1;
 		static final int SCROLL_BOTTOM = 2;
-		
 		void onScrollTouch(int scrollState);
 	}
 	
 	@Override
 	public boolean onInterceptTouchEvent(MotionEvent ev) {
-		
 		if(ev.getAction()==MotionEvent.ACTION_DOWN)
 		{
 			tempY=ev.getRawY();
-			
 			if(mOnTouchDwon!=null)
 			{
 				mOnTouchDwon.onTouchDown(ev.getY());
 			}
-			System.out.println("  onInterceptTouchEvent  --->   "  + MotionEvent.ACTION_DOWN );
 		}
-		
 		return super.onInterceptTouchEvent(ev);
 	}
 	

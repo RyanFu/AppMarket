@@ -673,14 +673,10 @@ public class DownloadUtils implements DownloadConstDefine {
 		try {
 			PackageInfo packageInfo = pm.getPackageInfo(entity.packageName, PackageManager.GET_ACTIVITIES);
 			ApplicationInfo appInfo = packageInfo.applicationInfo;
-			// if ((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0
-			// && (appInfo.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) ==
-			// 0) {
 			entity.installedIcon = appInfo.loadIcon(pm);
 			entity.installedVersionName = packageInfo.versionName;
 			String dir = appInfo.publicSourceDir;
 			entity.installedFileLength = (new File(dir).length());
-			// }
 		} catch (NameNotFoundException e) {
 		}
 	}

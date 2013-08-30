@@ -56,19 +56,13 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 
 	private DecimalFormat df = null;
 
-	// public static int isRootInstalling = 0;
 	public static List<String> rootApkList = new ArrayList<String>();
 
 	public DownloadAdapter(Context context, List<List<DownloadEntity>> list, List<String> groupList, DownloadActivity.MyHandler mHandler) {
 		this.context = context;
 		this.childList = list;
 		this.groupList = groupList;
-
 		this.mHandler = mHandler;
-		/*
-		 * if(DownloadService.mDownloadService!=null) {
-		 * DownloadService.mDownloadService.setDownloadStatusListener(this); }
-		 */
 		DownloadService.setDownloadStatusListener(this);
 		initString();
 		df = new DecimalFormat("##0.00");
@@ -113,13 +107,11 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 
 	@Override
 	public Object getChild(int groupPosition, int childPosition) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public long getChildId(int groupPosition, int childPosition) {
-		// TODO Auto-generated method stub
 		return childPosition;
 	}
 
@@ -141,7 +133,6 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 			holder.mEmptyTextView = (TextView) convertView.findViewById(R.id.emptytextview);
 			holder.mContentLayout = convertView.findViewById(R.id.contentlayout);
 			holder.mAuthorityImageview = (ImageView) convertView.findViewById(R.id.authorityimageview);
-
 			convertView.setTag(holder);
 		} else {
 			holder = (ChildViewHolder) convertView.getTag();
@@ -149,10 +140,8 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 		}
 
 		DownloadEntity entity = null;
-		// System.out.println(childList.size()+", "+groupPosition+", "+childPosition);
 		if (childList.size() > groupPosition && childList.get(groupPosition).size() > childPosition) {
 			entity = childList.get(groupPosition).get(childPosition);
-			// System.out.println("groupPosition:"+groupPosition+", "+childPosition+", "+entity.downloadType+", "+entity.iconUrl);
 			switch (entity.downloadType) {
 			case DownloadConstDefine.TYPE_OF_DOWNLOAD:
 				fillDownloadChildView(entity, holder);
@@ -282,7 +271,6 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 					fillIgnoreChildView(entity, holder);
 				}
 			}
-
 		}
 		return convertView;
 	}
@@ -296,7 +284,6 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 	private void fillDownloadChildView(DownloadEntity entity, ChildViewHolder holder) {
 		holder.mEmptyTextView.setVisibility(View.GONE);
 		holder.mContentLayout.setVisibility(View.VISIBLE);
-
 		holder.mAppNameTextView.setText(entity.appName);
 		holder.mAppVersionTextView.setVisibility(View.VISIBLE);
 		holder.mAppVersionTextView.setText(entity.versionName);
@@ -325,11 +312,6 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 				holder.mProgressBar.setProgress((int) progress);
 			}
 			break;
-		/*
-		 * holder.mCenterTextView.setVisibility(View.VISIBLE);
-		 * holder.mProgressBar.setVisibility(View.GONE);
-		 * holder.mCenterTextView.setText("正在获取连接"); break;
-		 */
 		case STATUS_OF_EXCEPTION:
 			holder.mCenterTextView.setVisibility(View.VISIBLE);
 			holder.mProgressBar.setVisibility(View.GONE);
@@ -573,8 +555,6 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 			}
 
 		} else if (entity.downloadType == TYPE_OF_IGNORE) {
-			// holder.mLongButton.setText(context
-			// .getString(R.string.cancle_ignore));
 
 			setSecondButtonStyle(holder.mLongButton, context.getString(R.string.cancle_ignore));
 
@@ -641,7 +621,6 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 			String text = ((TextView) v).getText().toString();
 			if (entity.downloadType == TYPE_OF_DOWNLOAD) {
 				if (pauseString.equals(text)) {
-					// if(entity.canPause()) {
 					setFirstButtonStyle(holder.mSecondButton, cancelString);
 
 					setSecondButtonStyle(holder.mFirstButton, continueString);
@@ -675,7 +654,6 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 						DownloadUtils.checkDownload(context, entity);
 					}
 				} else if (cancelString.equals(text)) {
-					// entity.setStatus(status_of)
 					cancelDownloadEntity(entity);
 					DownloadUtils.fillDownloadNotifycation(context, false);
 
@@ -701,11 +679,6 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 
 					DownloadUtils.checkDownload(context, entity);
 				} else if (ignoreString.equals(text)) { // 当按钮为忽略时
-					// entity.downloadType = TYPE_OF_IGNORE;
-					// Bundle bundle=new Bundle();
-					// bundle.putParcelable(DOWNLOAD_ENTITY, entity);
-					// sendServiceBroadcastByAction(BROADCAST_ACTION_IGNORE_UPDATE,
-					// bundle);
 
 					updateToIgnore(entity);
 				} else if (pauseString.equals(text)) { // 当按钮为暂停状态时，点击需暂停此下载
@@ -715,11 +688,6 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 
 					entity.setStatus(STATUS_OF_PAUSE);
 
-					// Bundle bundle=new Bundle();
-					// bundle.putParcelable(DOWNLOAD_ENTITY, entity);
-					// sendServiceBroadcastByAction(BROADCAST_ACTION_PAUSE_DOWNLOAD,
-					// bundle);
-
 				} else if (cancelString.equals(text)) { // 当按钮为取消状态时，点击需要取消此次更新操作，其它相关状态还原
 					setFirstButtonStyle(holder.mSecondButton, updateString);
 					setSecondButtonStyle(holder.mFirstButton, ignoreString);
@@ -727,7 +695,6 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 
 					DownloadUtils.fillUpdateAndUpdatingNotifycation(context, false);
 
-					// entity.reset();
 					Bundle bundle = new Bundle();
 					bundle.putParcelable(DOWNLOAD_ENTITY, entity);
 					sendServiceBroadcastByAction(BROADCAST_ACTION_CANCEL_DOWNLOAD, bundle);
@@ -785,7 +752,6 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 
 		@Override
 		public void onClick(View v) {
-			// TODO Auto-generated method stub
 			if (entity != null) {
 				if (entity.downloadType != TYPE_OF_IGNORE) {
 					Intent intent = new Intent(context, ApkDetailActivity.class);
@@ -1253,11 +1219,6 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 	@Override
 	public void onRemoveDownload(DownloadEntity entity) {
 		removeMessage();
-		/*
-		 * if(childList.size()>3) { int count=childList.get(0).size(); for(int
-		 * i=0;i<count;i++) { DownloadEntity d=childList.get(0).get(i); if(d.) }
-		 * }
-		 */
 		cancelDownloadEntity(entity);
 		sendMessage();
 	}

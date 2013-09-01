@@ -975,7 +975,6 @@ public class DJMarketUtils implements AConstDefine {
 			// 显示用户安装应用，而不显示系统程序
 			if ((info.flags & ApplicationInfo.FLAG_SYSTEM) == 0 && (info.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) == 0 && !info.packageName.equals("com.dongji.market")) {
 				installedAppInfo.setAppInfo(info);
-				// installedAppInfo.setIcon(info.loadIcon(pm));
 				installedAppInfo.setName(info.loadLabel(pm) + "");
 				installedAppInfo.setVersion(pInfo.versionName);
 				installedAppInfo.setVersionCode(pInfo.versionCode);
@@ -986,9 +985,6 @@ public class DJMarketUtils implements AConstDefine {
 				String dir = info.publicSourceDir;
 				int size = Integer.valueOf((int) new File(dir).length());
 				installedAppInfo.setSize(sizeFormat(size));
-				// installedAppInfo.setSize(String.valueOf(value)new
-				// File(dir).length());
-
 				list.add(installedAppInfo);
 			}
 		}

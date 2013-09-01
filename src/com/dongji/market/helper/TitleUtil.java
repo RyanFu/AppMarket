@@ -171,7 +171,7 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		mShareButton = (ImageView) titleView.findViewById(R.id.shareButton);
 		mSWeManageButton = (ImageView) titleView.findViewById(R.id.softmanagerbutton);
 
-		if (cxt.getClass().equals(ApkDetailActivity.class) || cxt.getClass().equals(MainActivity.class)) {//首页及详情页分享
+		if (cxt.getClass().equals(ApkDetailActivity.class) || cxt.getClass().equals(MainActivity.class)) {// 首页及详情页分享
 			mShareButton.setVisibility(View.VISIBLE);
 			mShareButton.setOnClickListener(this);
 		} else {
@@ -180,21 +180,21 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		if (!cxt.getClass().equals(Search_Activity2.class)) {// 非搜索页有页面名称
 			mPageNameTextView = (TextView) titleView.findViewById(R.id.page_name);
 			mPageNameTextView.setText(pageName);
-			if (cxt.getClass().equals(ChannelListActivity.class)) {//分类页有排序
+			if (cxt.getClass().equals(ChannelListActivity.class)) {// 分类页有排序图标
 				mSortPageShrinkIcon = (ImageView) titleView.findViewById(R.id.shrink_icon);
 				mSortPageShrinkIcon.setVisibility(View.VISIBLE);
 				mSortPageShrinkIcon.setOnClickListener(this);
 				mPageNameTextView.setOnClickListener(this);
 			}
 			View mLinearLayout = titleView.findViewById(R.id.outsidelayout);
-			mLinearLayout.setOnClickListener(new View.OnClickListener() {//分类页有排序icon
-				@Override
-				public void onClick(View v) {
-					if (mOnToolBarBlankClickListener != null) {
-						mOnToolBarBlankClickListener.onClick();
-					}
-				}
-			});
+			mLinearLayout.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							if (mOnToolBarBlankClickListener != null) {
+								mOnToolBarBlankClickListener.onClick();
+							}
+						}
+					});
 		} else {// 搜索页
 			if (!cxt.isFinishing()) {
 				View mClearLayout = titleView.findViewById(R.id.clearLayout);
@@ -292,7 +292,7 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 			cxt.registerReceiver(commonRecv, new IntentFilter(AConstDefine.GO_HOME_BROADCAST));
 		}
 	}
-	
+
 	/**
 	 * 取消注册广播接收器
 	 * 
@@ -300,10 +300,10 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 	 */
 	public void unregisterMyReceiver(Activity cxt) {
 		if (null != flowBroadcastReceiver) {
-			flowBroadcastReceiver.unregisterMyReceiver();//注销流量用完广播接收器
+			flowBroadcastReceiver.unregisterMyReceiver();// 注销流量用完广播接收器
 		}
 		if (null != commonRecv && !(cxt instanceof MainActivity)) {
-			cxt.unregisterReceiver(commonRecv);//注销普通广播接收器
+			cxt.unregisterReceiver(commonRecv);// 注销普通广播接收器
 		}
 	}
 
@@ -485,7 +485,6 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 			break;
 		}
 	}
-
 
 	/**
 	 * 取消搜索Pop
@@ -772,21 +771,7 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 			if (mSettingPopup.isShowing()) {
 				mSettingPopup.dismiss();
 			} else {
-				if (cxt.getClass().equals(MainActivity.class)) {
-					if (((MainActivity) cxt).showSettingPop()) {
-						mSettingPopup.showAsDropDown(cxt.getWindow().getDecorView(), AndroidUtils.getScreenSize(cxt).widthPixels, -cxt.getWindow().getDecorView().getHeight() + AndroidUtils.getStatusBarInfo(cxt).top);
-					} else {
-						mSettingPopup.showAsDropDown(titleView, AndroidUtils.getScreenSize(cxt).widthPixels, 3);
-					}
-				} else if (cxt.getClass().equals(SoftwareManageActivity.class)) {
-					if (((SoftwareManageActivity) cxt).showSettingPop()) {
-						mSettingPopup.showAsDropDown(cxt.getWindow().getDecorView(), AndroidUtils.getScreenSize(cxt).widthPixels, -cxt.getWindow().getDecorView().getHeight() + AndroidUtils.getStatusBarInfo(cxt).top);
-					} else {
-						mSettingPopup.showAsDropDown(titleView, AndroidUtils.getScreenSize(cxt).widthPixels, 3);
-					}
-				} else {
-					mSettingPopup.showAsDropDown(titleView, AndroidUtils.getScreenSize(cxt).widthPixels, 3);
-				}
+				mSettingPopup.showAsDropDown(titleView, AndroidUtils.getScreenSize(cxt).widthPixels, 3);
 			}
 		}
 	}
@@ -824,8 +809,6 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		}
 	}
 
-	
-
 	/**************** kevin logic ********************/
 	private DownloadRefreshHandler mRefreshTitleHandler;
 	private static final int EVENT_REFRESH_DOWNLOAD = 1;
@@ -838,7 +821,7 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-			case EVENT_REFRESH_DOWNLOAD://刷新下载
+			case EVENT_REFRESH_DOWNLOAD:// 刷新下载
 				if (cxt != null && DownloadService.mDownloadService != null) {
 					List<DownloadEntity> downloadList = DownloadService.mDownloadService.getAllDownloadList();
 					long downloadLength = 0;
@@ -846,15 +829,15 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 					int updateCount = 0;
 					for (int i = 0; i < downloadList.size(); i++) {
 						DownloadEntity entity = downloadList.get(i);
-						if (entity.downloadType == DownloadConstDefine.TYPE_OF_DOWNLOAD) {//需下载的类型
-							downloadLength += entity.fileLength;//下载的的总长度
-							downloadCur += entity.currentPosition;//已经下载的数量
-						} else if (entity.downloadType == DownloadConstDefine.TYPE_OF_UPDATE) {//需更新的类型
+						if (entity.downloadType == DownloadConstDefine.TYPE_OF_DOWNLOAD) {// 需下载的类型
+							downloadLength += entity.fileLength;// 下载的的总长度
+							downloadCur += entity.currentPosition;// 已经下载的数量
+						} else if (entity.downloadType == DownloadConstDefine.TYPE_OF_UPDATE) {// 需更新的类型
 							if (entity.getStatus() != DownloadConstDefine.STATUS_OF_INITIAL && entity.getStatus() != DownloadConstDefine.STATUS_OF_IGNORE) {
 								downloadLength += entity.fileLength;
 								downloadCur += entity.currentPosition;
-							} else {//下载状态为初始化状态或忽略更新状态
-								updateCount++;//更新数量自增
+							} else {// 下载状态为初始化状态或忽略更新状态
+								updateCount++;// 更新数量自增
 							}
 						}
 					}
@@ -946,6 +929,5 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 	public static interface SaveSettingListener {
 		public void exitVerify(boolean isFinish, int pageFlag);
 	}
-
 
 }

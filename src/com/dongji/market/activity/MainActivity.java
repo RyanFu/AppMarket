@@ -57,7 +57,6 @@ import com.dongji.market.widget.CustomIconAnimation;
 import com.dongji.market.widget.CustomNoTitleDialog;
 import com.dongji.market.widget.HorizontalScrollLayout;
 import com.dongji.market.widget.HorizontalScrollLayout.OnPageChangedListener;
-import com.dongji.market.widget.SlideMenu;
 import com.umeng.analytics.MobclickAgent;
 
 public class MainActivity extends ActivityGroup implements OnClickListener, OnPageChangedListener, AConstDefine, OnToolBarBlankClickListener {
@@ -86,8 +85,6 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 	private TitleUtil titleUtil;
 
 	private CustomNoTitleDialog mExitDialog;
-
-	private SlideMenu mSlideMenu;
 
 	private boolean isExit;
 
@@ -397,19 +394,6 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 	public void set3GDownloadPromptUser() {
 		mApp.setIs3GDownloadPrompt(true);
 	}
-
-	/**
-	 * 判断是否显示setting popupWindow
-	 * 
-	 * @return
-	 */
-	public boolean showSettingPop() {
-		if (mSlideMenu != null) {
-			return mSlideMenu.isShowSettingPop();
-		}
-		return false;
-	}
-
 
 	/**
 	 * 初始化滑动线动画

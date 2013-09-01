@@ -91,17 +91,17 @@ public abstract class PublicActivity extends Activity {
 						DownloadEntity entity = downloadList.get(j);
 						if (item.packageName.equals(entity.packageName) && item.versionCode == entity.versionCode) {//将正在下载的包与获取apk数据列表做比较
 							switch (entity.downloadType) {
-							case DownloadConstDefine.TYPE_OF_DOWNLOAD:
-								items.get(i).status = AConstDefine.STATUS_APK_INSTALL;//可安装
+							case DownloadConstDefine.TYPE_OF_DOWNLOAD://下载
+								items.get(i).status = AConstDefine.STATUS_APK_INSTALL;
 								break;
-							case DownloadConstDefine.TYPE_OF_UPDATE:
+							case DownloadConstDefine.TYPE_OF_UPDATE://更新
 								if (entity.getStatus() != DownloadConstDefine.STATUS_OF_INITIAL && entity.getStatus() != DownloadConstDefine.STATUS_OF_IGNORE) {
-									items.get(i).status = AConstDefine.STATUS_APK_UPDATE;//更新
+									items.get(i).status = AConstDefine.STATUS_APK_UPDATE;
 								} else {
 									items.get(i).status = AConstDefine.STATUS_APK_UNUPDATE;
 								}
 								break;
-							case DownloadConstDefine.TYPE_OF_COMPLETE:
+							case DownloadConstDefine.TYPE_OF_COMPLETE://完成
 								if (item.status == AConstDefine.STATUS_APK_INSTALL) {
 									items.get(i).status = AConstDefine.STATUS_APK_UNINSTALL;//未安装
 								} else if (item.status == AConstDefine.STATUS_APK_UPDATE) {

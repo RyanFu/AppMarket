@@ -39,7 +39,6 @@ import com.dongji.market.pojo.ApkItem;
 import com.dongji.market.pojo.ChannelListInfo;
 import com.dongji.market.protocol.DataManager;
 import com.dongji.market.widget.CustomIconAnimation;
-import com.dongji.market.widget.SlideMenu;
 import com.umeng.analytics.MobclickAgent;
 
 /**

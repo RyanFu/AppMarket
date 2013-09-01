@@ -173,7 +173,7 @@ public class DataUpdateService extends Service {
 
 	private class NetWodkStatusReceiver extends BroadcastReceiver {
 		@Override
-		public void onReceive(Context context, Intent intent) {
+		public void onReceive(Context context, Intent intent) { 
 			if (ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction())) {
 				onNetworkStatusReceiver(context);
 			} else if (DownloadConstDefine.BROADCAST_ACTION_REQUEST_SINGLE_UPDATE.equals(intent.getAction())) {

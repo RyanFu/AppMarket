@@ -29,15 +29,13 @@ import com.dongji.market.helper.FileLoadTask;
 import com.dongji.market.pojo.InstalledAppInfo;
 import com.dongji.market.widget.ScrollListView;
 
-public class SoftwareMove_list_Activity extends Activity implements
-		OnClickListener, ScrollListView.OnScrollTouchListener {
+public class SoftwareMove_list_Activity extends Activity implements OnClickListener{
 
 	// TODO 这里与云备份那边的标志相冲突。最好写在一起
 	public static final int FLAG_SDCARD = 7;
 	public static final int FLAG_PHONECARD = 8;
 
 	private static final int EVENT_REQUEST_SOFTWARE_LIST = 0;
-	// private static final int EVENT_LOADED = 1;
 
 	private SoftwareMoveAdapter softwareMoveAdapter;
 	private LinearLayout llBottomBtn;
@@ -47,7 +45,6 @@ public class SoftwareMove_list_Activity extends Activity implements
 	private ScrollListView mListView;
 	private TextView tvNoAppTips;
 
-	// private LoginReceiver loginReceiver;
 	private FileLoadTask task;
 	private View mLoadingView;
 	private int flag = FLAG_PHONECARD;
@@ -60,7 +57,6 @@ public class SoftwareMove_list_Activity extends Activity implements
 		setContentView(R.layout.activity_softwaremovelist);
 
 		mListView = (ScrollListView) findViewById(R.id.list);
-		mListView.setOnScrollTouchListener(this);
 		tvNoAppTips = (TextView) findViewById(R.id.tvNoAppTips);
 		mLoadingView = findViewById(R.id.loadinglayout);
 		initBottomButton();
@@ -68,14 +64,6 @@ public class SoftwareMove_list_Activity extends Activity implements
 			initHandler();
 
 			startLoad();
-
-			// loginReceiver = new LoginReceiver();
-			// registerReceiver(loginReceiver, new IntentFilter(
-			// "com.dongji.market.loginReceiver"));
-			// IntentFilter filter = new IntentFilter();
-			// filter.addAction("android.intent.action.PACKAGE_REMOVED");
-			// filter.addDataScheme("package");
-			// registerReceiver(loginReceiver, filter);
 
 			IntentFilter filter = new IntentFilter();
 			filter.addAction(AConstDefine.BROADCAST_SYS_ACTION_APPREMOVE);
@@ -95,50 +83,14 @@ public class SoftwareMove_list_Activity extends Activity implements
 			tvNoAppTips.setVisibility(View.VISIBLE);
 		}
 
-		// ((SoftwareManageActivity) getParent()).setMenuSlide(mListView);
-
 	}
 
 	public static boolean isCanMove(Context context) {
-		// String[] modelList = context.getResources().getStringArray(
-		// R.array.phoneModel);
-		// String localmodel = Build.MODEL;
-		// System.out.println("localmodel............" + localmodel);
-		// for (int i = 0; i < modelList.length; i++) {
-		// if (localmodel.equals(modelList[i])) {
-		// return false;
-		// }
-		// }
-		// return true;
-
-		// int i = 0;
-		// if ((Build.VERSION.SDK_INT > 7) && (Build.VERSION.SDK_INT < 11))
-		// i = 1;
-		// while (true) {
-		// if (Build.VERSION.SDK_INT < 11)
-		// continue;
-		// try {
-		// boolean bool = ((Boolean) Environment.class.getMethod(
-		// "isExternalStorageEmulated", null).invoke(null, null))
-		// .booleanValue();
-		// if (!bool)
-		// ;
-		// for (int j = 1;; j = 0) {
-		// i = j;
-		// break;
-		// }
-		// } catch (Exception localException) {
-		// localException.printStackTrace();
-		// }
-		// return Boolean.parseBoolean(String.valueOf(i));
-		// }
 		if ((Build.VERSION.SDK_INT > 7) && (Build.VERSION.SDK_INT < 11)) {
 			return true;
 		}
 		try {
-			return !((Boolean) Environment.class.getMethod(
-					"isExternalStorageEmulated", null).invoke(null, null))
-					.booleanValue();
+			return !((Boolean) Environment.class.getMethod("isExternalStorageEmulated", null).invoke(null, null)).booleanValue();
 		} catch (Exception e) {
 			System.out.println("sdcardmove........exception.........");
 			e.printStackTrace();
@@ -172,10 +124,6 @@ public class SoftwareMove_list_Activity extends Activity implements
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		/*
-		 * if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0){
-		 * finish(); }
-		 */
 		return getParent().onKeyDown(keyCode, event);
 	}
 
@@ -230,19 +178,9 @@ public class SoftwareMove_list_Activity extends Activity implements
 						mLoadingView.setVisibility(View.VISIBLE);
 						tvNoAppTips.setVisibility(View.GONE);
 						mListView.setVisibility(View.GONE);
-						// if (softwareMoveAdapter == null) {
-						// softwareMoveAdapter = new SoftwareMoveAdapter(
-						// SoftwareMove_list_Activity.this,
-						// new ArrayList<InstalledAppInfo>());
-						// mListView.setAdapter(softwareMoveAdapter);
-						// }
-						softwareMoveAdapter = new SoftwareMoveAdapter(
-								SoftwareMove_list_Activity.this,
-								new ArrayList<InstalledAppInfo>());
+						softwareMoveAdapter = new SoftwareMoveAdapter(SoftwareMove_list_Activity.this, new ArrayList<InstalledAppInfo>());
 						mListView.setAdapter(softwareMoveAdapter);
-						task = new FileLoadTask(
-								SoftwareMove_list_Activity.this,
-								softwareMoveAdapter, mHandler, flag);// 本地图片异步加载
+						task = new FileLoadTask(SoftwareMove_list_Activity.this, softwareMoveAdapter, mHandler, flag);// 本地图片异步加载
 						task.execute();
 					}
 				});
@@ -258,11 +196,9 @@ public class SoftwareMove_list_Activity extends Activity implements
 							if (flag == FLAG_PHONECARD) {
 								tvNoAppTips.setText(R.string.noMoveToSDCardApp);
 							} else {
-								tvNoAppTips
-										.setText(R.string.noMoveToPhoneCardApp);
+								tvNoAppTips.setText(R.string.noMoveToPhoneCardApp);
 							}
 							tvNoAppTips.setVisibility(View.VISIBLE);
-							// ((SoftwareManageActivity)getParent()).showMenuBar();
 						} else {
 							mListView.setVisibility(View.VISIBLE);
 							tvNoAppTips.setVisibility(View.GONE);
@@ -284,11 +220,9 @@ public class SoftwareMove_list_Activity extends Activity implements
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if (AConstDefine.BROADCAST_SYS_ACTION_APPREMOVE.equals(intent
-					.getAction())) {
+			if (AConstDefine.BROADCAST_SYS_ACTION_APPREMOVE.equals(intent.getAction())) {
 				mHandler.sendEmptyMessage(EVENT_REQUEST_SOFTWARE_LIST);
-			} else if (AConstDefine.BROADCAST_SYS_ACTION_APPINSTALL
-					.equals(intent.getAction())) {
+			} else if (AConstDefine.BROADCAST_SYS_ACTION_APPINSTALL.equals(intent.getAction())) {
 				mHandler.sendEmptyMessage(EVENT_REQUEST_SOFTWARE_LIST);
 			}
 		}
@@ -298,53 +232,34 @@ public class SoftwareMove_list_Activity extends Activity implements
 	private class MyMoveBroadcastReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if (intent.getAction().equals(
-					"android.intent.action.EXTERNAL_APPLICATIONS_AVAILABLE")) {
+			if (intent.getAction().equals("android.intent.action.EXTERNAL_APPLICATIONS_AVAILABLE")) {
 				mHandler.sendEmptyMessage(EVENT_REQUEST_SOFTWARE_LIST);
-			} else if (intent.getAction().equals(
-					"android.intent.action.EXTERNAL_APPLICATIONS_UNAVAILABLE")) {
+			} else if (intent.getAction().equals("android.intent.action.EXTERNAL_APPLICATIONS_UNAVAILABLE")) {
 				startLoad();
 			}
 		}
 	}
 
-	@Override
-	public void onScrollTouch(int scrollState) {
-		switch (scrollState) {
-		case ScrollListView.OnScrollTouchListener.SCROLL_BOTTOM:
-			// ((SoftwareManageActivity) getParent()).scrollOperation(true);
-			break;
-		case ScrollListView.OnScrollTouchListener.SCROLL_TOP:
-			// ((SoftwareManageActivity) getParent()).scrollOperation(false);
-			break;
-		}
-	}
 
 	private int locStep;
+
 	void onToolBarClick() {
-		if(mListView!=null) {
-//			if (!mListView.isStackFromBottom()) {
-//				mListView.setStackFromBottom(true);
-//			}
-//			mListView.setStackFromBottom(false);
-			locStep = (int) Math.ceil(mListView.getFirstVisiblePosition()/AConstDefine.AUTO_SCRLL_TIMES);
+		if (mListView != null) {
+			locStep = (int) Math.ceil(mListView.getFirstVisiblePosition() / AConstDefine.AUTO_SCRLL_TIMES);
 			mListView.post(scrollToTop);
 		}
 	}
-	
+
 	Runnable scrollToTop = new Runnable() {
 
 		@Override
 		public void run() {
-			// TODO Auto-generated method stub
 			if (mListView.getFirstVisiblePosition() > 0) {
 				if (mListView.getFirstVisiblePosition() < AConstDefine.AUTO_SCRLL_TIMES) {
-					mListView.setSelection(mListView
-							.getFirstVisiblePosition() - 1);
+					mListView.setSelection(mListView.getFirstVisiblePosition() - 1);
 				} else {
 					mListView.setSelection(Math.max(mListView.getFirstVisiblePosition() - locStep, 0));
 				}
-				// mAppListView.postDelayed(this, 1);
 				mListView.post(this);
 			}
 			return;

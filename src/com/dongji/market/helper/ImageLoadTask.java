@@ -41,9 +41,7 @@ public class ImageLoadTask extends AsyncTask<Void, Void, Void> {
 			for (int i = 0; i < uninstallAdapter.getCount(); i++) {
 				InstalledAppInfo info = (InstalledAppInfo) uninstallAdapter
 						.getItem(i);
-
 				Drawable icon = getIcon(info.getAppInfo());// 获取软件图标过程
-
 				if (icon != null) {
 					info.setIcon(icon);// 将取到的图标存入map
 					publishProgress();// 通知更新ui
@@ -96,7 +94,6 @@ public class ImageLoadTask extends AsyncTask<Void, Void, Void> {
 
 	private Drawable getIcon(ApplicationInfo appInfo) {
 		PackageManager pm = context.getPackageManager();
-
 		return appInfo.loadIcon(pm);
 	}
 

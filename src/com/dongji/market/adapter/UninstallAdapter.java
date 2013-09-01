@@ -103,16 +103,11 @@ public class UninstallAdapter extends BaseAdapter {
 		if (convertView == null) {
 			convertView = inflater.inflate(R.layout.item_list_uninstall, null);
 			holder = new ViewHolder();
-			holder.mIconImageView = (ImageView) convertView
-					.findViewById(R.id.app_icon);
-			holder.mNameTextView = (TextView) convertView
-					.findViewById(R.id.app_name);
-			holder.mVersionTextView = (TextView) convertView
-					.findViewById(R.id.app_version);
-			holder.mSizeTextView = (TextView) convertView
-					.findViewById(R.id.app_size);
-			holder.mUninstallView = (Button) convertView
-					.findViewById(R.id.uninstallButton);
+			holder.mIconImageView = (ImageView) convertView.findViewById(R.id.app_icon);
+			holder.mNameTextView = (TextView) convertView.findViewById(R.id.app_name);
+			holder.mVersionTextView = (TextView) convertView.findViewById(R.id.app_version);
+			holder.mSizeTextView = (TextView) convertView.findViewById(R.id.app_size);
+			holder.mUninstallView = (Button) convertView.findViewById(R.id.uninstallButton);
 
 			convertView.setTag(holder);
 		} else {
@@ -123,46 +118,24 @@ public class UninstallAdapter extends BaseAdapter {
 		if (null != info && info.getIcon() != null) {
 			appIcon = info.getIcon();
 		} else {
-			appIcon = context.getResources().getDrawable(
-					R.drawable.app_default_icon);
+			appIcon = context.getResources().getDrawable(R.drawable.app_default_icon);
 		}
 		holder.mIconImageView.setImageDrawable(appIcon);
-		if(null != info && null!=info.getName()){
+		if (null != info && null != info.getName()) {
 			holder.mNameTextView.setText(info.getName());
 		}
 		if (info != null) {
-			String version = TextUtils.isEmpty(info.getVersion()) ? "1.0" : info
-					.getVersion();
+			String version = TextUtils.isEmpty(info.getVersion()) ? "1.0" : info.getVersion();
 			holder.mVersionTextView.setText("V" + version);
 		}
-		if(null != info && null!=info.getSize()){
+		if (null != info && null != info.getSize()) {
 			holder.mSizeTextView.setText("/" + info.getSize());
 		}
 
 		holder.mUninstallView.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
-				/*
-				 * final CustomDialog dialog = new CustomDialog(context)
-				 * .setIcon(info.getIcon()); dialog.setTitle(info.getName());
-				 * dialog.setPositiveButton(
-				 * context.getResources().getString(R.string.confirm), new
-				 * OnClickListener() {
-				 * 
-				 * @Override public void onClick(View v) {
-				 * uninstallApp(info.getPkgName()); data.remove(position);
-				 * dialog.dismiss(); } }).setNegativeButton(
-				 * context.getResources().getString(R.string.cancel), new
-				 * OnClickListener() {
-				 * 
-				 * @Override public void onClick(View v) { // TODO
-				 * Auto-generated method stub dialog.dismiss(); } });
-				 * 
-				 * dialog.show();
-				 */
-
 				uninstallApp(info.getPkgName());
-				// data.remove(position);
 				curItem = position;
 			}
 

@@ -75,8 +75,7 @@ public class LoginDialog extends Dialog implements AConstDefine {
 	};
 
 	private void initViews() {
-		mContentView = getLayoutInflater().inflate(
-				R.layout.widget_login_dialog, null);
+		mContentView = getLayoutInflater().inflate(R.layout.widget_login_dialog, null);
 		// mPrompt = (TextView)
 		// mContentView.findViewById(R.id.login_dialog_prompt);
 		/*
@@ -94,8 +93,7 @@ public class LoginDialog extends Dialog implements AConstDefine {
 
 		tvLocalTip = (TextView) mContentView.findViewById(R.id.tvLocalTip);
 		tvCloudTip = (TextView) mContentView.findViewById(R.id.tvCloudTip);
-		btnLocalBackupOrRestore = (Button) mContentView
-				.findViewById(R.id.btnLocalBackupOrRestore);
+		btnLocalBackupOrRestore = (Button) mContentView.findViewById(R.id.btnLocalBackupOrRestore);
 
 		// refreshContent();
 
@@ -107,17 +105,14 @@ public class LoginDialog extends Dialog implements AConstDefine {
 		if (flag == Uninstall_list_Activity.FLAG_BACKUP) {
 			tvLocalTip.setText(cxt.getString(R.string.local_backup));
 			tvCloudTip.setText(cxt.getString(R.string.cloud_backup));
-			btnLocalBackupOrRestore.setText(cxt
-					.getString(R.string.local_backup));
+			btnLocalBackupOrRestore.setText(cxt.getString(R.string.local_backup));
 		} else if (flag == Uninstall_list_Activity.FLAG_RESTORE) {
 			tvLocalTip.setText(cxt.getString(R.string.cloud_restore_local));
 			tvCloudTip.setText(cxt.getString(R.string.cloud_restore));
-			btnLocalBackupOrRestore.setText(cxt
-					.getString(R.string.cloud_restore_local));
+			btnLocalBackupOrRestore.setText(cxt.getString(R.string.cloud_restore_local));
 		}
 
-		btnLocalBackupOrRestore
-				.setOnClickListener(new onBtnClickListener(flag));
+		btnLocalBackupOrRestore.setOnClickListener(new onBtnClickListener(flag));
 
 		mLoginButton.setOnClickListener(new View.OnClickListener() {
 
@@ -174,26 +169,19 @@ public class LoginDialog extends Dialog implements AConstDefine {
 				if (url.indexOf(AConstDefine.REGISTER_LOGIN_SUCCESS_URL) != -1) {
 					// String sessionId = DJMarketUtils.getCookieValue(
 					// cxt.getApplicationContext(), url, "sessionid");
-					String userName = DJMarketUtils.urlDecode(DJMarketUtils
-							.getCookieValue(cxt.getApplicationContext(), url,
-									"market_username"));
-					LoginParams loginParams = ((AppMarket) cxt
-							.getApplicationContext()).getLoginParams();
+					String userName = DJMarketUtils.urlDecode(DJMarketUtils.getCookieValue(cxt.getApplicationContext(), url, "market_username"));
+					LoginParams loginParams = ((AppMarket) cxt.getApplicationContext()).getLoginParams();
 					// loginParams.setSessionId(sessionId);
 					loginParams.setUserName(userName);
 					// loginParams.setLoginState(AConstDefine.LOGIN_SUCCESS_FLAG);
 					if (flag == Uninstall_list_Activity.FLAG_BACKUP) {
-						Intent intent = new Intent(
-								BROADCAST_ACTION_SHOWBANDRLIST);
-						intent.putExtra(FLAG_ACTIVITY_BANDR,
-								ACTIVITY_CLOUD_BACKUP);
+						Intent intent = new Intent(BROADCAST_ACTION_SHOWBANDRLIST);
+						intent.putExtra(FLAG_ACTIVITY_BANDR, ACTIVITY_CLOUD_BACKUP);
 						cxt.sendBroadcast(intent);
 						dismiss();
 					} else if (flag == Uninstall_list_Activity.FLAG_RESTORE) {
-						Intent intent = new Intent(
-								BROADCAST_ACTION_SHOWBANDRLIST);
-						intent.putExtra(FLAG_ACTIVITY_BANDR,
-								ACTIVITY_CLOUD_RESTORE);
+						Intent intent = new Intent(BROADCAST_ACTION_SHOWBANDRLIST);
+						intent.putExtra(FLAG_ACTIVITY_BANDR, ACTIVITY_CLOUD_RESTORE);
 						cxt.sendBroadcast(intent);
 						dismiss();
 					}
@@ -227,96 +215,59 @@ public class LoginDialog extends Dialog implements AConstDefine {
 			if (flag == Uninstall_list_Activity.FLAG_BACKUP) {
 				if (!((Activity) cxt).isFinishing()) {
 					if (localBackupDialog == null) {
-						localBackupDialog = new CustomDialog(cxt)
-								.setIcon(R.drawable.icon);
+						localBackupDialog = new CustomDialog(cxt).setIcon(R.drawable.icon);
 						localBackupDialog.setTitle(R.string.local_backup);
 
-						localBackupDialog
-								.setTextHeight(AndroidUtils
-										.dip2px(cxt,
-												getHeightFromText(R.string.cloud_backup_local_tip)));
-						localBackupDialog
-								.setMessage(R.string.cloud_backup_local_tip)
-								.setPositiveButton(R.string.chooseapptobackup,
-										new View.OnClickListener() {
+						localBackupDialog.setTextHeight(AndroidUtils.dip2px(cxt, getHeightFromText(R.string.cloud_backup_local_tip)));
+						localBackupDialog.setMessage(R.string.cloud_backup_local_tip).setPositiveButton(R.string.chooseapptobackup, new View.OnClickListener() {
 
-											@Override
-											public void onClick(View v) {
-												Intent intent = new Intent(
-														BROADCAST_ACTION_SHOWBANDRLIST);
-												intent.putExtra(
-														FLAG_ACTIVITY_BANDR,
-														ACTIVITY_BACKUP);
-												cxt.sendBroadcast(intent);
-												// Intent intent=new Intent();
-												// intent.putExtra(FLAG_ACTIVITY_BANDR,
-												// ACTIVITY_BACKUP);
-												// intent.setClass(cxt,
-												// BackupOrRestoreActivity.class);
-												// cxt.startActivity(intent);
-												localBackupDialog.dismiss();
-											}
-										})
-								.setNegativeButton(R.string.exit,
-										new View.OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								Intent intent = new Intent(BROADCAST_ACTION_SHOWBANDRLIST);
+								intent.putExtra(FLAG_ACTIVITY_BANDR, ACTIVITY_BACKUP);
+								cxt.sendBroadcast(intent);
+								localBackupDialog.dismiss();
+							}
+						}).setNegativeButton(R.string.exit, new View.OnClickListener() {
 
-											@Override
-											public void onClick(View v) {
-												localBackupDialog.dismiss();
-											}
-										});
+							@Override
+							public void onClick(View v) {
+								localBackupDialog.dismiss();
+							}
+						});
 					}
 					if (localBackupDialog != null) {
 						localBackupDialog.show();
-						localBackupDialog
-								.setAttributes(R.string.cloud_backup_local_tip);
+						localBackupDialog.setAttributes(R.string.cloud_backup_local_tip);
 					}
 				}
 				LoginDialog.this.dismiss();
 			} else if (flag == Uninstall_list_Activity.FLAG_RESTORE) {
 				if (!((Activity) cxt).isFinishing()) {
 					if (localRestoreDialog == null) {
-						localRestoreDialog = new CustomDialog(cxt)
-								.setIcon(R.drawable.icon);
+						localRestoreDialog = new CustomDialog(cxt).setIcon(R.drawable.icon);
 						localRestoreDialog.setTitle(R.string.local_restore);
-						localRestoreDialog.setTextHeight(AndroidUtils.dip2px(
-								cxt,
-								getHeightFromText(R.string.local_restore_tip)));
-						localRestoreDialog
-								.setMessage(R.string.local_restore_tip)
-								.setPositiveButton(R.string.chooseapptorestore,
-										new View.OnClickListener() {
+						localRestoreDialog.setTextHeight(AndroidUtils.dip2px(cxt, getHeightFromText(R.string.local_restore_tip)));
+						localRestoreDialog.setMessage(R.string.local_restore_tip).setPositiveButton(R.string.chooseapptorestore, new View.OnClickListener() {
 
-											@Override
-											public void onClick(View v) {
-												Intent intent = new Intent(
-														BROADCAST_ACTION_SHOWBANDRLIST);
-												intent.putExtra(
-														FLAG_ACTIVITY_BANDR,
-														ACTIVITY_RESTORE);
-												cxt.sendBroadcast(intent);
-												// Intent intent=new Intent();
-												// intent.putExtra(FLAG_ACTIVITY_BANDR,
-												// ACTIVITY_RESTORE);
-												// intent.setClass(cxt,
-												// BackupOrRestoreActivity.class);
-												// cxt.startActivity(intent);
-												localRestoreDialog.dismiss();
-											}
-										})
-								.setNegativeButton(R.string.exit,
-										new View.OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								Intent intent = new Intent(BROADCAST_ACTION_SHOWBANDRLIST);
+								intent.putExtra(FLAG_ACTIVITY_BANDR, ACTIVITY_RESTORE);
+								cxt.sendBroadcast(intent);
+								localRestoreDialog.dismiss();
+							}
+						}).setNegativeButton(R.string.exit, new View.OnClickListener() {
 
-											@Override
-											public void onClick(View v) {
-												localRestoreDialog.dismiss();
-											}
-										});
+							@Override
+							public void onClick(View v) {
+								localRestoreDialog.dismiss();
+							}
+						});
 					}
 					if (localRestoreDialog != null) {
 						localRestoreDialog.show();
-						localRestoreDialog
-								.setAttributes(R.string.local_restore_tip);
+						localRestoreDialog.setAttributes(R.string.local_restore_tip);
 					}
 				}
 				LoginDialog.this.dismiss();
@@ -329,8 +280,7 @@ public class LoginDialog extends Dialog implements AConstDefine {
 		final float centerX = mContentView.getWidth() / 2.0f;
 		final float centerY = mContentView.getHeight() / 2.0f;
 
-		final Rotate3dAnimation rotation = new Rotate3dAnimation(start, end,
-				centerX, centerY, 310.0f, true);
+		final Rotate3dAnimation rotation = new Rotate3dAnimation(start, end, centerX, centerY, 310.0f, true);
 		rotation.setDuration(250);
 		rotation.setFillAfter(true);
 		rotation.setInterpolator(new AccelerateInterpolator());
@@ -374,15 +324,13 @@ public class LoginDialog extends Dialog implements AConstDefine {
 				mContentLayout2.setVisibility(View.VISIBLE);
 				mContentLayout2.requestFocus();
 
-				rotation = new Rotate3dAnimation(90, 180, centerX, centerY,
-						310.0f, false);//
+				rotation = new Rotate3dAnimation(90, 180, centerX, centerY, 310.0f, false);//
 			} else {
 				mContentLayout2.setVisibility(View.GONE);
 				mContentLayout.setVisibility(View.VISIBLE);
 				mContentLayout.requestFocus();
 
-				rotation = new Rotate3dAnimation(90, 0, centerX, centerY,
-						310.0f, false);
+				rotation = new Rotate3dAnimation(90, 0, centerX, centerY, 310.0f, false);
 			}
 
 			rotation.setDuration(250);

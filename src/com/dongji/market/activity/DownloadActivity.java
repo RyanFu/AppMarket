@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -36,8 +34,7 @@ public class DownloadActivity extends Activity implements DownloadConstDefine {
 	private MyHandler mHandler;
 
 	private AppMarket mApp;
-
-	private static final String PACKAGE_STR = "package:";
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +68,9 @@ public class DownloadActivity extends Activity implements DownloadConstDefine {
 		MobclickAgent.onPause(this);
 	}
 
+	/**
+	 * 请求数据（可更新，待安装，已忽略）
+	 */
 	private void initHandler() {
 		HandlerThread mHandlerThread = new HandlerThread("");
 		mHandlerThread.start();
@@ -82,6 +82,11 @@ public class DownloadActivity extends Activity implements DownloadConstDefine {
 		mLoadingView = findViewById(R.id.loadinglayout);
 	}
 
+	/**
+	 * 初始化expandablelistview
+	 * @param groupList
+	 * @param childList
+	 */
 	private void initViews(List<String> groupList, List<List<DownloadEntity>> childList) {
 		mExpandableListView = (ExpandableListView) findViewById(R.id.exlvDownload);
 		mExpandableListView.setChildDivider(getResources().getDrawable(R.drawable.list_divider));
@@ -98,6 +103,10 @@ public class DownloadActivity extends Activity implements DownloadConstDefine {
 		mHandler.sendEmptyMessageDelayed(EVENT_REFRESH_DATA, 1000L);
 	}
 
+	/**
+	 * 初始化组数据
+	 * @return
+	 */
 	private List<List<DownloadEntity>> initData() {
 		List<List<DownloadEntity>> adapterData = new ArrayList<List<DownloadEntity>>();
 		List<DownloadEntity> installList = new ArrayList<DownloadEntity>();
@@ -108,14 +117,14 @@ public class DownloadActivity extends Activity implements DownloadConstDefine {
 			List<DownloadEntity> downloadList = DownloadService.mDownloadService.getAllDownloadList();
 			for (int i = 0; i < downloadList.size(); i++) {
 				DownloadEntity entity = downloadList.get(i);
-				if (entity.downloadType == TYPE_OF_COMPLETE) {
+				if (entity.downloadType == TYPE_OF_COMPLETE) {//待安装应用
 					installList.add(entity);
-				} else if (entity.downloadType == TYPE_OF_DOWNLOAD) {
+				} else if (entity.downloadType == TYPE_OF_DOWNLOAD) {//正在下载应用
 					downloadingList.add(entity);
-				} else if (entity.downloadType == TYPE_OF_UPDATE) {
+				} else if (entity.downloadType == TYPE_OF_UPDATE) {//可更新应用
 					DownloadUtils.setInstallDownloadEntity(this, entity);
 					updatingList.add(entity);
-				} else if (entity.downloadType == TYPE_OF_IGNORE) {
+				} else if (entity.downloadType == TYPE_OF_IGNORE) {//已忽略应用
 					DownloadUtils.setInstallDownloadEntity(this, entity);
 					ignoreList.add(entity);
 				}
@@ -131,14 +140,19 @@ public class DownloadActivity extends Activity implements DownloadConstDefine {
 		return adapterData;
 	}
 
+	/**
+	 * 初始化父数据，3组或4组
+	 * @param hasDownloadData
+	 * @return
+	 */
 	private List<String> initGroupData(boolean hasDownloadData) {
 		List<String> list = new ArrayList<String>();
 		if (hasDownloadData) {
-			list.add(getString(R.string.transferapk));
+			list.add(getString(R.string.transferapk));//正在传输
 		}
-		list.add(getString(R.string.updateapk));
-		list.add(getString(R.string.waitinstallapk));
-		list.add(getString(R.string.ignoreapk));
+		list.add(getString(R.string.updateapk));//可更新
+		list.add(getString(R.string.waitinstallapk));//待安装
+		list.add(getString(R.string.ignoreapk));//忽略
 		return list;
 	}
 
@@ -151,10 +165,10 @@ public class DownloadActivity extends Activity implements DownloadConstDefine {
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
 			switch (msg.what) {
-			case EVENT_REQUEST_DATA:
-				final List<List<DownloadEntity>> childList = initData();
+			case EVENT_REQUEST_DATA://请求数据
+				final List<List<DownloadEntity>> childList = initData();//获取子数据
 				boolean hasDownloadData = childList != null ? childList.size() > 3 : false;
-				final List<String> groupList = initGroupData(hasDownloadData);
+				final List<String> groupList = initGroupData(hasDownloadData);//获取父数据
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
@@ -162,11 +176,11 @@ public class DownloadActivity extends Activity implements DownloadConstDefine {
 					}
 				});
 				break;
-			case EVENT_REFRESH_DATA:
+			case EVENT_REFRESH_DATA://刷新listview
 				runOnUiThread(new Runnable() {
 
 					@Override
-					public void run() {
+					public void run() {//每隔1秒刷新数据
 						mAdapter.refreshAdapter();
 						mHandler.sendEmptyMessageDelayed(EVENT_REFRESH_DATA, 1000L);
 					}
@@ -185,6 +199,9 @@ public class DownloadActivity extends Activity implements DownloadConstDefine {
 		}
 	}
 
+	/**
+	 * 按菜单键弹出设置popupwindow
+	 */
 	@Override
 	public boolean onMenuOpened(int featureId, Menu menu) {
 		if (getParent() == null) {
@@ -212,6 +229,9 @@ public class DownloadActivity extends Activity implements DownloadConstDefine {
 
 	private int locStep;
 
+	/**
+	 * 点击actionbar空白栏操作
+	 */
 	void onToolBarClick() {
 		if (mExpandableListView != null) {
 			locStep = (int) Math.ceil(mExpandableListView.getFirstVisiblePosition() / AConstDefine.AUTO_SCRLL_TIMES);

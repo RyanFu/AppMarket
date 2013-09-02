@@ -326,11 +326,12 @@ public interface AConstDefine {
 	public static final String HANDLER_CLEARPACKAGE = "handler_clearPackage";
 
 	/*************** apk状态值 **********************/
-	public static final int STATUS_APK_UNINSTALL = 0; // 未安装状态（未下载）
-	public static final int STATUS_APK_INSTALL = 1; // 安装状态 （安装中and下载完成）
-	public static final int STATUS_APK_INSTALL_DONE = 2; // 安装完成（更新完成）
-	public static final int STATUS_APK_UPDATE = 3; // 更新中（正在更新）
-	public static final int STATUS_APK_UNUPDATE = 4; // 未更新 （未下载）
+	public static final int STATUS_APK_UNINSTALL = 0; // 未安装
+	public static final int STATUS_APK_INSTALL = 1; //正在安装
+	public static final int STATUS_APK_INSTALL_DONE = 2; //已安装
+	public static final int STATUS_APK_UPDATE = 3; //更新
+	public static final int STATUS_APK_UNUPDATE = 4; //未更新
+	/*************** apk状态值 **********************/
 
 	public static final String DIALOG_LOGIN = "dialog_login";
 	public static final String BROADCAST_DIALOG_LOGIN = "broadcast_dialog_login";

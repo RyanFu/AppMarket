@@ -76,6 +76,9 @@ public abstract class PublicActivity extends Activity {
 	
 	/**
 	 * 每次数据请求完成后都要重新设置apk状态
+	 * infos：为本地应用安装信息
+	 * downloadlist：为后台应用下载信息
+	 * items：为从服务端获取的应用信息
 	 * @param items
 	 * @return
 	 */
@@ -85,39 +88,40 @@ public abstract class PublicActivity extends Activity {
 			List<PackageInfo> infos = AndroidUtils.getInstalledPackages(this);
 			for (int i = 0; i < items.size(); i++) {
 				ApkItem item = items.get(i);
+				//与后台下载应用信息作比较
 				if (DownloadService.mDownloadService != null) {//有下载服务在运行
 					List<DownloadEntity> downloadList = DownloadService.mDownloadService.getAllDownloadList();
 					for (int j = 0; j < downloadList.size(); j++) {//有下载列表
 						DownloadEntity entity = downloadList.get(j);
-						if (item.packageName.equals(entity.packageName) && item.versionCode == entity.versionCode) {//将正在下载的包与获取apk数据列表做比较
-							switch (entity.downloadType) {
-							case DownloadConstDefine.TYPE_OF_DOWNLOAD://下载
-								items.get(i).status = AConstDefine.STATUS_APK_INSTALL;
+						if (item.packageName.equals(entity.packageName) && item.versionCode == entity.versionCode) {
+							switch (entity.downloadType) {//重新设置apk的状态
+							case DownloadConstDefine.TYPE_OF_DOWNLOAD://为正在下载类型的应用
+								items.get(i).status = AConstDefine.STATUS_APK_INSTALL;//设置应用为安装状态
 								break;
-							case DownloadConstDefine.TYPE_OF_UPDATE://更新
-								if (entity.getStatus() != DownloadConstDefine.STATUS_OF_INITIAL && entity.getStatus() != DownloadConstDefine.STATUS_OF_IGNORE) {
-									items.get(i).status = AConstDefine.STATUS_APK_UPDATE;
+							case DownloadConstDefine.TYPE_OF_UPDATE://为可更新类型的应用
+								if (entity.getStatus() != DownloadConstDefine.STATUS_OF_INITIAL && entity.getStatus() != DownloadConstDefine.STATUS_OF_IGNORE) {//此类型应用是否处于下载初始化或忽略状态
+									items.get(i).status = AConstDefine.STATUS_APK_UPDATE;//设置应用为更新状态
 								} else {
-									items.get(i).status = AConstDefine.STATUS_APK_UNUPDATE;
+									items.get(i).status = AConstDefine.STATUS_APK_UNUPDATE;//设置应用为未更新状态
 								}
 								break;
-							case DownloadConstDefine.TYPE_OF_COMPLETE://完成
-								if (item.status == AConstDefine.STATUS_APK_INSTALL) {
-									items.get(i).status = AConstDefine.STATUS_APK_UNINSTALL;//未安装
-								} else if (item.status == AConstDefine.STATUS_APK_UPDATE) {
-									items.get(i).status = AConstDefine.STATUS_APK_UNUPDATE;
+							case DownloadConstDefine.TYPE_OF_COMPLETE://为可安装类型的应用
+								if (item.status == AConstDefine.STATUS_APK_INSTALL) {//判断应用状态是否是已安装，
+									items.get(i).status = AConstDefine.STATUS_APK_UNINSTALL;//设置应用为未安装
+								} else if (item.status == AConstDefine.STATUS_APK_UPDATE) {//判断应用状态是否是更新
+									items.get(i).status = AConstDefine.STATUS_APK_UNUPDATE;//设置应用为未更新
 								}
 								break;
 							}
 						}
 					}
 				}
-				// 查看手机已安装应用中有无此应用
+				// 与手机已安装应用信息作比较
 				if (infos != null && infos.size() > 0) {
 					for (int k = 0; k < infos.size(); k++) {
 						PackageInfo info = infos.get(k);
-						if (info.packageName.equals(items.get(i).packageName) && info.versionCode >= items.get(i).versionCode) {
-							items.get(i).status = AConstDefine.STATUS_APK_INSTALL_DONE;
+						if (info.packageName.equals(items.get(i).packageName) && info.versionCode >= items.get(i).versionCode) {//手机已安装此应用
+							items.get(i).status = AConstDefine.STATUS_APK_INSTALL_DONE;//设置应用为已安装
 							break;
 						}
 					}
@@ -128,6 +132,11 @@ public abstract class PublicActivity extends Activity {
 	}
 
 
+	/**
+	 * 设置应用详情页应用状态
+	 * @param item
+	 * @return
+	 */
 	protected ApkItem setApkStatus(ApkItem item) {
 		if (item != null) {
 			// 获取手机上已安装的应用
@@ -161,6 +170,7 @@ public abstract class PublicActivity extends Activity {
 						}
 					}
 				}
+				//设置历史版本应用状态
 				if (item.historys != null && item.historys.length > 0) {
 					for (int i = 0; i < item.historys.length; i++) {
 						HistoryApkItem historyItem = item.historys[i];
@@ -173,15 +183,15 @@ public abstract class PublicActivity extends Activity {
 									case DownloadConstDefine.TYPE_OF_DOWNLOAD:
 										if (historyItem.versionCode == entity.versionCode) {
 											if (info != null) {
-												if (info.versionCode < historyItem.versionCode) {
-													if (entity.getStatus() != DownloadConstDefine.STATUS_OF_INITIAL && entity.getStatus() != DownloadConstDefine.STATUS_OF_IGNORE) {
-														historyItem.status = AConstDefine.STATUS_APK_UPDATE;
+												if (info.versionCode < historyItem.versionCode) {//判断获取应用的版本是否小于历史版本
+													if (entity.getStatus() != DownloadConstDefine.STATUS_OF_INITIAL && entity.getStatus() != DownloadConstDefine.STATUS_OF_IGNORE) {//是否处于初始化或忽略状态
+														historyItem.status = AConstDefine.STATUS_APK_UPDATE;//设置应用为更新
 													} else {
-														historyItem.status = AConstDefine.STATUS_APK_UNUPDATE;
+														historyItem.status = AConstDefine.STATUS_APK_UNUPDATE;//设置应用为未更新
 													}
 												} else {
 													System.out.println("=============== TYPE_OF_DOWNLOAD");
-													historyItem.status = AConstDefine.STATUS_APK_INSTALL_DONE;
+													historyItem.status = AConstDefine.STATUS_APK_INSTALL_DONE;//设置应用为已安装
 												}
 											}
 										}

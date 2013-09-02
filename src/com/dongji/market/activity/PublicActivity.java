@@ -183,15 +183,16 @@ public abstract class PublicActivity extends Activity {
 									case DownloadConstDefine.TYPE_OF_DOWNLOAD:
 										if (historyItem.versionCode == entity.versionCode) {
 											if (info != null) {
+												//本地版本小于历史版本，所以此历史版本肯定可以更新，此时判断正在下载的更新版本出于何种下载状态，如果是处于初始状态、或者忽略状态，则设置此应用为未更新状态，否则设置成更新状态
 												if (info.versionCode < historyItem.versionCode) {//判断获取应用的版本是否小于历史版本
 													if (entity.getStatus() != DownloadConstDefine.STATUS_OF_INITIAL && entity.getStatus() != DownloadConstDefine.STATUS_OF_IGNORE) {//是否处于初始化或忽略状态
-														historyItem.status = AConstDefine.STATUS_APK_UPDATE;//设置应用为更新
+														historyItem.status = AConstDefine.STATUS_APK_UPDATE;//设置应用为更新状态
 													} else {
-														historyItem.status = AConstDefine.STATUS_APK_UNUPDATE;//设置应用为未更新
+														historyItem.status = AConstDefine.STATUS_APK_UNUPDATE;//设置应用为未更新状态
 													}
 												} else {
 													System.out.println("=============== TYPE_OF_DOWNLOAD");
-													historyItem.status = AConstDefine.STATUS_APK_INSTALL_DONE;//设置应用为已安装
+													historyItem.status = AConstDefine.STATUS_APK_INSTALL_DONE;//设置应用为已安装状态
 												}
 											}
 										}
@@ -214,9 +215,9 @@ public abstract class PublicActivity extends Activity {
 										if (info != null) {
 											if (info.versionCode == historyItem.versionCode) {
 												if (historyItem.status == AConstDefine.STATUS_APK_INSTALL) {
-													historyItem.status = AConstDefine.STATUS_APK_UNINSTALL;
+													historyItem.status = AConstDefine.STATUS_APK_UNINSTALL;//设置成未安装
 												} else if (historyItem.status == AConstDefine.STATUS_APK_UPDATE) {
-													historyItem.status = AConstDefine.STATUS_APK_UNUPDATE;
+													historyItem.status = AConstDefine.STATUS_APK_UNUPDATE;//设置成未更新
 												}
 											}
 										}

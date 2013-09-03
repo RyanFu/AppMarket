@@ -4,10 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.ActivityManager;
 import android.app.Service;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -53,8 +51,6 @@ public class DownloadService extends Service implements DownloadConstDefine, OnD
 
 	private static DownloadStatusListener mDownloadStatusListener;
 
-	private static Object obj = new Object();
-
 	private DownloadDBHelper db;
 
 	private MyHandler mHandler;
@@ -62,16 +58,13 @@ public class DownloadService extends Service implements DownloadConstDefine, OnD
 
 	private long currentGprsTraffic; // 当前已使用的流量
 	private long maxGprsTraffic; // 设置的最大流量（字节）
-	private boolean isOnlyWifi; // 是否只使用 Wifi 下载
 
-	private boolean isBackgroundDownload;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		mDownloadService = this;
 		mApp = (AppMarket) getApplication();
-		isBackgroundDownload = false;
 		registerAllReceiver();
 		initHandler();
 	}
@@ -114,7 +107,7 @@ public class DownloadService extends Service implements DownloadConstDefine, OnD
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String packageStr = intent.getDataString();
-			if (BROADCAST_ACTION_ADD_DOWNLOAD.equals(intent.getAction())) {
+			if (BROADCAST_ACTION_ADD_DOWNLOAD.equals(intent.getAction())) {//添加下载
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
 					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
@@ -126,11 +119,11 @@ public class DownloadService extends Service implements DownloadConstDefine, OnD
 						mHandler.sendMessage(msg);
 					}
 				}
-			} else if (BROADCAST_ACTION_APP_UPDATE_DATADONE.equals(intent.getAction())) {
+			} else if (BROADCAST_ACTION_APP_UPDATE_DATADONE.equals(intent.getAction())) {//更新数据完成
 				mHandler.sendEmptyMessage(EVENT_UPDATE_DATA_DONE);
-			} else if (BROADCAST_ACTION_PAUSE_DOWNLOAD.equals(intent.getAction())) {//好像没有谁发送此广播
-				mHandler.sendEmptyMessage(EVENT_DWONLOAD_NEXT);
-			} else if (BROADCAST_ACTION_CANCEL_DOWNLOAD.equals(intent.getAction())) {
+			} else if (BROADCAST_ACTION_PAUSE_DOWNLOAD.equals(intent.getAction())) {//暂停下载
+				mHandler.sendEmptyMessage(EVENT_DWONLOAD_NEXT);//下载下一个
+			} else if (BROADCAST_ACTION_CANCEL_DOWNLOAD.equals(intent.getAction())) {//取消下载
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
 					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
@@ -141,9 +134,9 @@ public class DownloadService extends Service implements DownloadConstDefine, OnD
 						mHandler.sendMessage(msg);
 					}
 				}
-			} else if (BROADCAST_ACTION_ONEKEY_UPDATE.equals(intent.getAction())) {
+			} else if (BROADCAST_ACTION_ONEKEY_UPDATE.equals(intent.getAction())) {//一键更新
 				mHandler.sendEmptyMessage(EVENT_ONEKEY_UPDATE);
-			} else if (BROADCAST_ACTION_REMOVE_DOWNLOAD.equals(intent.getAction())) {
+			} else if (BROADCAST_ACTION_REMOVE_DOWNLOAD.equals(intent.getAction())) {//移除下载
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
 					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
@@ -154,16 +147,15 @@ public class DownloadService extends Service implements DownloadConstDefine, OnD
 						mHandler.sendMessage(msg);
 					}
 				}
-			} else if (BROADCAST_ACTION_GPRS_SETTING_CHANGE.equals(intent.getAction())) {
+			} else if (BROADCAST_ACTION_GPRS_SETTING_CHANGE.equals(intent.getAction())) {//流量设置改变
 				Bundle bundle = intent.getExtras();
 				long limitTraffic = bundle.getLong("limitFlow", -1);
-				isOnlyWifi = bundle.getBoolean("isOnlyWifi", true);
 				if (limitTraffic != -1) {
 					currentGprsTraffic = 0;
 					maxGprsTraffic = limitTraffic * 1024 * 1024;
 				}
-				mHandler.sendEmptyMessage(EVENT_CONTINUE_DOWNLOAD);
-			} else if (BROADCAST_ACTION_IGNORE_UPDATE.equals(intent.getAction())) {//好像没有谁发送此广播
+				mHandler.sendEmptyMessage(EVENT_CONTINUE_DOWNLOAD);//继续下载
+			} else if (BROADCAST_ACTION_IGNORE_UPDATE.equals(intent.getAction())) {//忽略更新
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
 					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
@@ -174,7 +166,7 @@ public class DownloadService extends Service implements DownloadConstDefine, OnD
 						mHandler.sendMessage(msg);
 					}
 				}
-			} else if (BROADCAST_ACTION_CANCEL_IGNORE.equals(intent.getAction())) {
+			} else if (BROADCAST_ACTION_CANCEL_IGNORE.equals(intent.getAction())) {//取消忽略
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
 					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
@@ -185,7 +177,7 @@ public class DownloadService extends Service implements DownloadConstDefine, OnD
 						mHandler.sendMessage(msg);
 					}
 				}
-			} else if (BROADCAST_ACTION_SINGLE_UPDATE_DONE.equals(intent.getAction())) {
+			} else if (BROADCAST_ACTION_SINGLE_UPDATE_DONE.equals(intent.getAction())) {//单个更新完毕
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
 					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
@@ -196,7 +188,7 @@ public class DownloadService extends Service implements DownloadConstDefine, OnD
 						mHandler.sendMessage(msg);
 					}
 				}
-			} else if (Intent.ACTION_PACKAGE_ADDED.equals(intent.getAction())) {
+			} else if (Intent.ACTION_PACKAGE_ADDED.equals(intent.getAction())) {//应用安装
 				if (!TextUtils.isEmpty(packageStr)) {
 					packageStr = DownloadUtils.parsePackageName(packageStr);
 					PackageInfo info = AndroidUtils.getPackageInfo(mDownloadService, packageStr);
@@ -205,14 +197,14 @@ public class DownloadService extends Service implements DownloadConstDefine, OnD
 						installDownloadEntityDone(entity);
 					}
 				}
-			} else if (Intent.ACTION_PACKAGE_REMOVED.equals(intent.getAction())) {
+			} else if (Intent.ACTION_PACKAGE_REMOVED.equals(intent.getAction())) {//应用卸载
 				if (!TextUtils.isEmpty(packageStr)) {
 					packageStr = DownloadUtils.parsePackageName(packageStr);
 					onAppRemoved(packageStr);
 				}
-			} else if (BROADCAST_ACTION_START_ALL_DOWNLOAD.equals(intent.getAction())) {
+			} else if (BROADCAST_ACTION_START_ALL_DOWNLOAD.equals(intent.getAction())) {//开始所有下载
 				mHandler.sendEmptyMessage(EVENT_START_ALL_DOWNLOAD);
-			} else if (BROADCAST_ACTION_CLOUD_RESTORE.equals(intent.getAction())) {
+			} else if (BROADCAST_ACTION_CLOUD_RESTORE.equals(intent.getAction())) {//云恢复
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
 					ArrayList<ApkItem> items = bundle.getParcelableArrayList("cloudList");
@@ -311,7 +303,6 @@ public class DownloadService extends Service implements DownloadConstDefine, OnD
 	 */
 	private void initGprsTraffic() {
 		int tempTraffic = DJMarketUtils.getMaxFlow(this);//流量限制值
-		isOnlyWifi = DJMarketUtils.isOnlyWifi(this);//是否只在wifi下下载
 		if (tempTraffic > 0) {
 			maxGprsTraffic = tempTraffic * 1024 * 1024;
 		}
@@ -456,6 +447,10 @@ public class DownloadService extends Service implements DownloadConstDefine, OnD
 		DownloadUtils.fillUpdateNotifycation(this, downloadList); // 显示标题栏可更新数目
 	}
 	
+	/**
+	 * 自动更新
+	 * @param updateList
+	 */
 	private void autoUpdate(List<DownloadEntity> updateList) {
 		for (int i = 0; i < updateList.size(); i++) {
 			final DownloadEntity entity = updateList.get(i);
@@ -504,14 +499,12 @@ public class DownloadService extends Service implements DownloadConstDefine, OnD
 				if (d.downloadType == TYPE_OF_DOWNLOAD) {
 					d.setStatus(STATUS_OF_PAUSE);
 					downloadList.remove(i);
-					boolean flag = DownloadUtils.deleteDownloadFile(DOWNLOAD_ROOT_PATH + d.hashCode() + DOWNLOAD_FILE_PREPARE_SUFFIX);
 					db.deleteDownloadEntity(d);
 					if (mDownloadStatusListener != null) {
 						mDownloadStatusListener.onRemoveDownload(d);
 					}
 				} else if (d.downloadType == TYPE_OF_UPDATE) {
 					d.reset();
-					boolean flag = DownloadUtils.deleteDownloadFile(DOWNLOAD_ROOT_PATH + d.hashCode() + DOWNLOAD_FILE_PREPARE_SUFFIX);
 					db.deleteDownloadEntity(d);
 				}
 				break;
@@ -917,6 +910,10 @@ public class DownloadService extends Service implements DownloadConstDefine, OnD
 	}
 
 
+	/**
+	 * 开始下载一个应用
+	 * @param entity
+	 */
 	private synchronized void startDownloadByEntity(DownloadEntity entity) {
 		if (entity.canDownload()) {
 			entity.setOnDownloadListener(this);
@@ -978,16 +975,6 @@ public class DownloadService extends Service implements DownloadConstDefine, OnD
 	public long getAlreadyUseGprsTraffic() {
 		return currentGprsTraffic;
 	}
-
-	/**
-	 * 设置后台下载
-	 * 
-	 * @param isBack
-	 */
-	public void setBackgroundDownload(boolean isBack) {
-		this.isBackgroundDownload = isBack;
-	}
-
 	
 	/**
 	 * 添加下载监听

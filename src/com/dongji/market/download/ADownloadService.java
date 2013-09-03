@@ -35,7 +35,6 @@ public class ADownloadService extends Service implements AConstDefine {
 	private ExecutorService executorService;
 	public static ADownloadApkList downloadingAPKList = new ADownloadApkList();
 	public static ADownloadApkList updateAPKList = new ADownloadApkList();
-	// public static ADownloadApkList ignoreAPKList = new ADownloadApkList();
 	public static boolean isBackgroundRun = false;
 	private ADownloadApkDBHelper aDownloadApkDBHelper;
 	private ADownloadThread aDownloadThread = null;
@@ -50,7 +49,6 @@ public class ADownloadService extends Service implements AConstDefine {
 		showLog("------------------------------onCreate");
 		selfIsStart = true;
 		context = getApplicationContext();
-
 		executorService = Executors.newFixedThreadPool(3);
 		aDownloadApkDBHelper = new ADownloadApkDBHelper(context);
 
@@ -366,16 +364,6 @@ public class ADownloadService extends Service implements AConstDefine {
 					onReceiveCancelUpdate(apkSaveName, size);
 					return;
 				}
-				// apkSaveName = intent.getStringExtra(BROADCAST_IGNOREUPDATE);
-				// if (null != apkSaveName) {
-				// onReceiveIgnoreUpdate();
-				// return;
-				// }
-				// apkSaveName = intent.getStringExtra(BROADCAST_CANCELIGNORE);
-				// if (null != apkSaveName) {
-				// onReceiveCancelIgnoreUpdate();
-				// return;
-				// }
 			} else if (intent.getAction().equals(BROADCAST_SYS_ACTION_CONNECTCHANGE)) {
 				ADownloadApkItem aDownloadApkItem;
 				if (AndroidUtils.isWifiAvailable(context)) {
@@ -509,13 +497,6 @@ public class ADownloadService extends Service implements AConstDefine {
 				aDownloadApkItem.apkStatus = STATUS_OF_CANCEL;
 				sendBroadcast(new Intent(BROADCAST_ACTION_TITLERECEIVER));
 				showToast(aDownloadApkItem.apkName + "取消下载");
-				// if (size - 1 > 0) {
-				// NetTool.setNotification(ADownloadService.this,
-				// FLAG_NOTIFICATION_DOWNLOAD, size - 1);
-				// } else {
-				// NetTool.cancelNotification(ADownloadService.this,
-				// FLAG_NOTIFICATION_DOWNLOAD);
-				// }
 				downloadingAPKList.apkList.remove(i);
 				aDownloadApkDBHelper.deleteDownloadByPAndV(aDownloadApkItem.apkPackageName, aDownloadApkItem.apkVersionCode);
 				NetTool.deleteTempFileByApkSaveName(aDownloadApkItem.apkPackageName + "_" + aDownloadApkItem.apkVersionCode);
@@ -569,43 +550,17 @@ public class ADownloadService extends Service implements AConstDefine {
 
 	private void onDeleteAllErrorData() {
 		int size = 0;
-		// ADownloadApkItem aDownloadApkItem;
-		// for (int i = 0; i < downloadingAPKList.apkList.size(); i++) {
-		// aDownloadApkItem = downloadingAPKList.apkList.get(i);
-		// if (aDownloadApkItem.apkDownloadSize > 0) {
-		// showToast(aDownloadApkItem.apkName + "文件在它处被删除");
-		// downloadingAPKList.apkList.remove(aDownloadApkItem);
-		// i--;
-		// }
-		// }
 		size = downloadingAPKList.apkList.size();
 		if (size > 0) {
-			// NetTool.setNotification(ADownloadService.this,
-			// FLAG_NOTIFICATION_DOWNLOAD, size);
 		} else {
-			// NetTool.cancelNotification(ADownloadService.this,
-			// FLAG_NOTIFICATION_DOWNLOAD);
 			if (isBackgroundRun) {
 				stopSelf();
 			}
 		}
 
-		// for (int i = 0; i < updateAPKList.apkList.size(); i++) {
-		// aDownloadApkItem = updateAPKList.apkList.get(i);
-		// if (aDownloadApkItem.apkDownloadSize > 0) {
-		// System.out.println(aDownloadApkItem.apkName + "文件在它处被删除");
-		// showToast(aDownloadApkItem.apkName + "文件在它处被删除");
-		// updateAPKList.apkList.remove(aDownloadApkItem);
-		// i--;
-		// }
-		// }
 		int notificationCout = ADownloadService.getUpdateCountByStatus(STATUS_OF_PREPAREUPDATE, STATUS_OF_UPDATEING, STATUS_OF_PAUSEUPDATE_BYHAND);
 		if (notificationCout > 0) {
-			// NetTool.setNotification(ADownloadService.this,
-			// FLAG_NOTIFICATION_UPDATEING, notificationCout);
 		} else {
-			// NetTool.cancelNotification(ADownloadService.this,
-			// FLAG_NOTIFICATION_UPDATEING);
 			if (isBackgroundRun) {
 				stopSelf();
 			}
@@ -648,7 +603,6 @@ public class ADownloadService extends Service implements AConstDefine {
 		ADownloadApkItem aDownloadApkItem;
 		for (int i = 0; i < size; i++) {
 			aDownloadApkItem = updateAPKList.apkList.get(i);
-			// aDownloadApkItem.apkStatus = STATUS_OF_UPDATE;
 			if (apkSaveName.equals(aDownloadApkItem.apkPackageName + "_" + aDownloadApkItem.apkVersionCode)) {
 				aDownloadApkItem.apkStatus = STATUS_OF_UPDATE;
 				showToast(aDownloadApkItem.apkName + "取消更新");

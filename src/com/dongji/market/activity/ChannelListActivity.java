@@ -262,12 +262,6 @@ public class ChannelListActivity extends BaseActivity implements
 	}
 
 	@Override
-	public void onItemClick(ChannelListInfo info) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void onStartDownload(Map<String, Object> map) {
 		int iconX = (Integer) map.get("X");
 		int iconY = (Integer) map.get("Y") - mSoftwareBtn.getHeight()

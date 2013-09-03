@@ -1233,12 +1233,6 @@ public class Search_Activity2 extends BaseActivity implements OnDownloadChangeSt
 	}
 
 	@Override
-	public void onItemClick(ChannelListInfo info) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void onAppInstallOrUninstallDone(int status, PackageInfo info) {
 		// ListBaseAdapter mAdapter=(ListBaseAdapter)mShake_list.getAdapter();
 		// mAdapter.changeApkStatusByPackageInfo(status, info);

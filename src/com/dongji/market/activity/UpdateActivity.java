@@ -577,10 +577,6 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener{
 	};
 
 	@Override
-	public void onItemClick(ChannelListInfo info) {
-	}
-
-	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		Intent intent = new Intent(this, ApkDetailActivity.class);
 		Bundle bundle = new Bundle();

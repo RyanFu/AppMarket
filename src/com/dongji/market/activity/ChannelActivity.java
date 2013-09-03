@@ -252,12 +252,6 @@ public class ChannelActivity extends BaseActivity implements ScrollListView.OnSc
 	}
 
 	@Override
-	public void onItemClick(ChannelListInfo info) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void onAppInstallOrUninstallDone(int status, PackageInfo info) {
 		// TODO Auto-generated method stub
 		

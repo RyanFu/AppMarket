@@ -538,12 +538,6 @@ public class ThemeActivity extends BaseActivity implements ScrollListView.OnScro
 	}
 
 	@Override
-	public void onItemClick(ChannelListInfo info) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void onAppInstallOrUninstallDone(int status, PackageInfo info) {
 		// TODO Auto-generated method stub
 		

@@ -827,10 +827,6 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 	}
 
 	@Override
-	public void onItemClick(ChannelListInfo info) {
-	}
-
-	@Override
 	public void onAppStatusChange(boolean isCancel, String packageName, int versionCode) {
 		if(mAppListView!=null && mAppListView.getAdapter()!=null) {
 			if(isSingleRow) {
@@ -914,10 +910,6 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 		}
 	}
 	
-	@Override
-	public ListView[] getListViews() {
-		return new ListView[]{mAppListView, mGameListView};
-	}
 
 	@Override
 	protected void loadingImage() {

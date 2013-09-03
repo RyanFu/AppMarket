@@ -91,7 +91,7 @@ public interface DownloadConstDefine {
 	/*******************************************应用类型（下载、可更新、待安装、忽略）***************************************************/
 	
 	
-	/************   广播    ***********/
+	/*******************************************广播****************************************/
 	/**
 	 * 添加下载广播
 	 */
@@ -206,16 +206,9 @@ public interface DownloadConstDefine {
 	 */
 	public static final String BROADCAST_ACTION_ADD_DOWNLOAD_LIST = "com.dongji.market.ADD_DOWNLOAD_LIST";
 	
-	/**
-	 * 系统安装应用广播
-	 
-	public static final String BROADCAST_ACTION_SYSTEM_PACKAGE_ADDED = "android.intent.action.PACKAGE_ADDED";*/
+	/*******************************************广播****************************************/
 	
-	/**
-	 * 系统卸载应用广播
-	 
-	public static final String BROADCAST_ACTION_SYSTEM_PACKAGE_REMOVED = "android.intent.action.PACKAGE_REMOVED";*/
-	
+
 	/**
 	 * 下载存储根路径
 	 */

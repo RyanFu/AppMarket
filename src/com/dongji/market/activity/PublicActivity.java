@@ -35,50 +35,47 @@ public abstract class PublicActivity extends Activity {
 	private boolean isEconomizeTraffic; // 当前是否为浏览图片省流量模式
 	protected AppMarket mApp;
 	protected boolean isRemoteImage = true; // 是否允许请求网络图片
-	
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mApp = (AppMarket) getApplication();
-		//是否有手机网络
+		// 是否有手机网络
 		ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo mobileNetworkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-		if (mobileNetworkInfo != null && mobileNetworkInfo.isAvailable() && mobileNetworkInfo.isConnected()) {//是否下载图片
+		if (mobileNetworkInfo != null && mobileNetworkInfo.isAvailable() && mobileNetworkInfo.isConnected()) {// 是否下载图片
 			isRemoteImage = mApp.isRemoteImage();
 		}
 		registerAllReceiver();
 	}
-	
-	
+
 	/**
 	 * 注册广播接收器
 	 */
 	private void registerAllReceiver() {
-		mApkStatusReceiver = new ApkStatusReceiver();//apk状态接收者
+		mApkStatusReceiver = new ApkStatusReceiver();// apk状态接收者
 		IntentFilter intentFilter = new IntentFilter();
-		intentFilter.addAction(DownloadConstDefine.BROADCAST_ACTION_ADD_DOWNLOAD);//下载
-		intentFilter.addAction(DownloadConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD);//取消
-		intentFilter.addAction(DownloadConstDefine.BROADCAST_ACTION_COMPLETE_DOWNLOAD);//下载完成
-		intentFilter.addAction(DownloadConstDefine.BROADCAST_ACTION_UPDATE_DATA_MERGE_DONE);//更新数据合并
-		intentFilter.addAction(AConstDefine.SAVE_FLOW_BROADCAST);//节省流量
-		intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);//网络连接
-		
-		mPackageStatusReceiver =new PackageStatusReceiver();//包状态接收者
+		intentFilter.addAction(DownloadConstDefine.BROADCAST_ACTION_ADD_DOWNLOAD);// 下载
+		intentFilter.addAction(DownloadConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD);// 取消
+		intentFilter.addAction(DownloadConstDefine.BROADCAST_ACTION_COMPLETE_DOWNLOAD);// 下载完成
+		intentFilter.addAction(DownloadConstDefine.BROADCAST_ACTION_UPDATE_DATA_MERGE_DONE);// 更新数据合并
+		intentFilter.addAction(AConstDefine.SAVE_FLOW_BROADCAST);// 节省流量
+		intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);// 网络连接
+
+		mPackageStatusReceiver = new PackageStatusReceiver();// 包状态接收者
 		IntentFilter packageFilter = new IntentFilter();
-		packageFilter.addAction(AConstDefine.BROADCAST_SYS_ACTION_APPINSTALL);//APP安装成功
-		packageFilter.addAction(AConstDefine.BROADCAST_SYS_ACTION_APPREMOVE);//APP卸载成功
+		packageFilter.addAction(AConstDefine.BROADCAST_SYS_ACTION_APPINSTALL);// APP安装成功
+		packageFilter.addAction(AConstDefine.BROADCAST_SYS_ACTION_APPREMOVE);// APP卸载成功
 		packageFilter.addDataScheme("package");
-		
+
 		registerReceiver(mApkStatusReceiver, intentFilter);
 		registerReceiver(mPackageStatusReceiver, packageFilter);
 	}
-	
+
 	/**
-	 * 每次数据请求完成后都要重新设置apk状态
-	 * infos：为本地应用安装信息
-	 * downloadlist：为后台应用下载信息
+	 * 每次数据请求完成后都要重新设置apk状态 infos：为本地应用安装信息 downloadlist：为后台应用下载信息
 	 * items：为从服务端获取的应用信息
+	 * 
 	 * @param items
 	 * @return
 	 */
@@ -88,28 +85,28 @@ public abstract class PublicActivity extends Activity {
 			List<PackageInfo> infos = AndroidUtils.getInstalledPackages(this);
 			for (int i = 0; i < items.size(); i++) {
 				ApkItem item = items.get(i);
-				//与后台下载应用信息作比较
-				if (DownloadService.mDownloadService != null) {//有下载服务在运行
+				// 与后台下载应用信息作比较
+				if (DownloadService.mDownloadService != null) {// 有下载服务在运行
 					List<DownloadEntity> downloadList = DownloadService.mDownloadService.getAllDownloadList();
-					for (int j = 0; j < downloadList.size(); j++) {//有下载列表
+					for (int j = 0; j < downloadList.size(); j++) {// 有下载列表
 						DownloadEntity entity = downloadList.get(j);
 						if (item.packageName.equals(entity.packageName) && item.versionCode == entity.versionCode) {
-							switch (entity.downloadType) {//重新设置apk的状态
-							case DownloadConstDefine.TYPE_OF_DOWNLOAD://为正在下载类型的应用
-								items.get(i).status = AConstDefine.STATUS_APK_INSTALL;//设置应用为安装状态
+							switch (entity.downloadType) {// 重新设置apk的状态
+							case DownloadConstDefine.TYPE_OF_DOWNLOAD:// 为正在下载类型的应用
+								items.get(i).status = AConstDefine.STATUS_APK_INSTALL;// 设置应用为安装状态
 								break;
-							case DownloadConstDefine.TYPE_OF_UPDATE://为可更新类型的应用
-								if (entity.getStatus() != DownloadConstDefine.STATUS_OF_INITIAL && entity.getStatus() != DownloadConstDefine.STATUS_OF_IGNORE) {//此类型应用是否处于下载初始化或忽略状态
-									items.get(i).status = AConstDefine.STATUS_APK_UPDATE;//设置应用为更新状态
+							case DownloadConstDefine.TYPE_OF_UPDATE:// 为可更新类型的应用
+								if (entity.getStatus() != DownloadConstDefine.STATUS_OF_INITIAL && entity.getStatus() != DownloadConstDefine.STATUS_OF_IGNORE) {// 此类型应用是否处于下载初始化或忽略状态
+									items.get(i).status = AConstDefine.STATUS_APK_UPDATE;// 设置应用为更新状态
 								} else {
-									items.get(i).status = AConstDefine.STATUS_APK_UNUPDATE;//设置应用为未更新状态
+									items.get(i).status = AConstDefine.STATUS_APK_UNUPDATE;// 设置应用为未更新状态
 								}
 								break;
-							case DownloadConstDefine.TYPE_OF_COMPLETE://为可安装类型的应用
-								if (item.status == AConstDefine.STATUS_APK_INSTALL) {//判断应用状态是否是已安装，
-									items.get(i).status = AConstDefine.STATUS_APK_UNINSTALL;//设置应用为未安装
-								} else if (item.status == AConstDefine.STATUS_APK_UPDATE) {//判断应用状态是否是更新
-									items.get(i).status = AConstDefine.STATUS_APK_UNUPDATE;//设置应用为未更新
+							case DownloadConstDefine.TYPE_OF_COMPLETE:// 为可安装类型的应用
+								if (item.status == AConstDefine.STATUS_APK_INSTALL) {// 判断应用状态是否是已安装，
+									items.get(i).status = AConstDefine.STATUS_APK_UNINSTALL;// 设置应用为未安装
+								} else if (item.status == AConstDefine.STATUS_APK_UPDATE) {// 判断应用状态是否是更新
+									items.get(i).status = AConstDefine.STATUS_APK_UNUPDATE;// 设置应用为未更新
 								}
 								break;
 							}
@@ -120,8 +117,8 @@ public abstract class PublicActivity extends Activity {
 				if (infos != null && infos.size() > 0) {
 					for (int k = 0; k < infos.size(); k++) {
 						PackageInfo info = infos.get(k);
-						if (info.packageName.equals(items.get(i).packageName) && info.versionCode >= items.get(i).versionCode) {//手机已安装此应用
-							items.get(i).status = AConstDefine.STATUS_APK_INSTALL_DONE;//设置应用为已安装
+						if (info.packageName.equals(items.get(i).packageName) && info.versionCode >= items.get(i).versionCode) {// 手机已安装此应用
+							items.get(i).status = AConstDefine.STATUS_APK_INSTALL_DONE;// 设置应用为已安装
 							break;
 						}
 					}
@@ -131,9 +128,9 @@ public abstract class PublicActivity extends Activity {
 		return items;
 	}
 
-
 	/**
 	 * 设置应用详情页应用状态
+	 * 
 	 * @param item
 	 * @return
 	 */
@@ -170,7 +167,7 @@ public abstract class PublicActivity extends Activity {
 						}
 					}
 				}
-				//设置历史版本应用状态
+				// 设置历史版本应用状态
 				if (item.historys != null && item.historys.length > 0) {
 					for (int i = 0; i < item.historys.length; i++) {
 						HistoryApkItem historyItem = item.historys[i];
@@ -183,16 +180,16 @@ public abstract class PublicActivity extends Activity {
 									case DownloadConstDefine.TYPE_OF_DOWNLOAD:
 										if (historyItem.versionCode == entity.versionCode) {
 											if (info != null) {
-												//本地版本小于历史版本，所以此历史版本肯定可以更新，此时判断正在下载的更新版本出于何种下载状态，如果是处于初始状态、或者忽略状态，则设置此应用为未更新状态，否则设置成更新状态
-												if (info.versionCode < historyItem.versionCode) {//判断获取应用的版本是否小于历史版本
-													if (entity.getStatus() != DownloadConstDefine.STATUS_OF_INITIAL && entity.getStatus() != DownloadConstDefine.STATUS_OF_IGNORE) {//是否处于初始化或忽略状态
-														historyItem.status = AConstDefine.STATUS_APK_UPDATE;//设置应用为更新状态
+												// 本地版本小于历史版本，所以此历史版本肯定可以更新，此时判断正在下载的更新版本出于何种下载状态，如果是处于初始状态、或者忽略状态，则设置此应用为未更新状态，否则设置成更新状态
+												if (info.versionCode < historyItem.versionCode) {// 判断获取应用的版本是否小于历史版本
+													if (entity.getStatus() != DownloadConstDefine.STATUS_OF_INITIAL && entity.getStatus() != DownloadConstDefine.STATUS_OF_IGNORE) {// 是否处于初始化或忽略状态
+														historyItem.status = AConstDefine.STATUS_APK_UPDATE;// 设置应用为更新状态
 													} else {
-														historyItem.status = AConstDefine.STATUS_APK_UNUPDATE;//设置应用为未更新状态
+														historyItem.status = AConstDefine.STATUS_APK_UNUPDATE;// 设置应用为未更新状态
 													}
 												} else {
 													System.out.println("=============== TYPE_OF_DOWNLOAD");
-													historyItem.status = AConstDefine.STATUS_APK_INSTALL_DONE;//设置应用为已安装状态
+													historyItem.status = AConstDefine.STATUS_APK_INSTALL_DONE;// 设置应用为已安装状态
 												}
 											}
 										}
@@ -215,9 +212,9 @@ public abstract class PublicActivity extends Activity {
 										if (info != null) {
 											if (info.versionCode == historyItem.versionCode) {
 												if (historyItem.status == AConstDefine.STATUS_APK_INSTALL) {
-													historyItem.status = AConstDefine.STATUS_APK_UNINSTALL;//设置成未安装
+													historyItem.status = AConstDefine.STATUS_APK_UNINSTALL;// 设置成未安装
 												} else if (historyItem.status == AConstDefine.STATUS_APK_UPDATE) {
-													historyItem.status = AConstDefine.STATUS_APK_UNUPDATE;//设置成未更新
+													historyItem.status = AConstDefine.STATUS_APK_UNUPDATE;// 设置成未更新
 												}
 											}
 										}
@@ -245,27 +242,25 @@ public abstract class PublicActivity extends Activity {
 		return item;
 	}
 
+	/**
+	 * 应用下载状态广播接收器，节省流量、网络连接广播接收器，处理不同下载状态的转变
+	 * 
+	 * @author yvon
+	 * 
+	 */
 	private class ApkStatusReceiver extends BroadcastReceiver {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if (DownloadConstDefine.BROADCAST_ACTION_ADD_DOWNLOAD.equals(intent.getAction())) {//下载广播
+			if (DownloadConstDefine.BROADCAST_ACTION_ADD_DOWNLOAD.equals(intent.getAction())) {// 正在下载状态
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
 					DownloadEntity entity = bundle.getParcelable(DownloadConstDefine.DOWNLOAD_ENTITY);
 					if (entity != null) {
-						onAppStatusChange(false, entity.packageName, entity.versionCode);
+						onAppStatusChange(false, entity.packageName, entity.versionCode);// 回调改变状态
 					}
 				}
-			} else if (DownloadConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD.equals(intent.getAction())) {//取消广播
-				Bundle bundle = intent.getExtras();
-				if (bundle != null) {
-					DownloadEntity entity = bundle.getParcelable(DownloadConstDefine.DOWNLOAD_ENTITY);
-					if (entity != null) {
-						onAppStatusChange(true, entity.packageName, entity.versionCode);//取消当前下载
-					}
-				}
-			} else if (DownloadConstDefine.BROADCAST_ACTION_COMPLETE_DOWNLOAD.equals(intent.getAction())) {//下载完成广播
+			} else if (DownloadConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD.equals(intent.getAction())) {// 取消下载
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
 					DownloadEntity entity = bundle.getParcelable(DownloadConstDefine.DOWNLOAD_ENTITY);
@@ -273,24 +268,32 @@ public abstract class PublicActivity extends Activity {
 						onAppStatusChange(true, entity.packageName, entity.versionCode);
 					}
 				}
-			} else if (DownloadConstDefine.BROADCAST_ACTION_UPDATE_DATA_MERGE_DONE.equals(intent.getAction())) {//更新数据合并广播
-				onUpdateDataDone();//更新数据
-			} else if (AConstDefine.SAVE_FLOW_BROADCAST.equals(intent.getAction())) {//节省流量广播
-				isRemoteImage = !(intent.getBooleanExtra("save_flow_status", true));//是否开启流量
+			} else if (DownloadConstDefine.BROADCAST_ACTION_COMPLETE_DOWNLOAD.equals(intent.getAction())) {// 下载完成
+				Bundle bundle = intent.getExtras();
+				if (bundle != null) {
+					DownloadEntity entity = bundle.getParcelable(DownloadConstDefine.DOWNLOAD_ENTITY);
+					if (entity != null) {
+						onAppStatusChange(true, entity.packageName, entity.versionCode);
+					}
+				}
+			} else if (DownloadConstDefine.BROADCAST_ACTION_UPDATE_DATA_MERGE_DONE.equals(intent.getAction())) {// 更新数据合并广播
+				onUpdateDataDone();// 更新数据
+			} else if (AConstDefine.SAVE_FLOW_BROADCAST.equals(intent.getAction())) {// 节省流量广播
+				isRemoteImage = !(intent.getBooleanExtra("save_flow_status", true));//
 				System.out.println("isrempte:" + isRemoteImage);
-			} else if (ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction())) {//网络连接广播
+			} else if (ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction())) {// 网络连接广播
 				ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 				NetworkInfo wifiNetworkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 				NetworkInfo mobileNetworkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-				if (wifiNetworkInfo.isAvailable() && wifiNetworkInfo.isConnected()) {//WIFI网络可用
+				if (wifiNetworkInfo.isAvailable() && wifiNetworkInfo.isConnected()) {// WIFI网络可用
 					System.out.println("==========wifi isEconomizeTraffic:" + isEconomizeTraffic + ", isRemoteImage:" + isRemoteImage);
 					if (isEconomizeTraffic) {
 						isRemoteImage = true;
 						loadingImage();
 					}
-				} else if (mobileNetworkInfo.isAvailable() && mobileNetworkInfo.isConnected()) {//移动网络可用
+				} else if (mobileNetworkInfo.isAvailable() && mobileNetworkInfo.isConnected()) {// 移动网络可用
 					System.out.println("==========mobile isEconomizeTraffic:" + isEconomizeTraffic + ", isRemoteImage:" + isRemoteImage);
-					if (isEconomizeTraffic) {//开启蜂窝数据，禁止下载图片
+					if (isEconomizeTraffic) {// 开启蜂窝数据，禁止下载图片
 						isRemoteImage = false;
 						loadingImage();
 					} else {
@@ -302,10 +305,15 @@ public abstract class PublicActivity extends Activity {
 		}
 	}
 
-	private class PackageStatusReceiver  extends BroadcastReceiver{
+	/**
+	 * 接收安装卸载成功广播
+	 * @author yvon
+	 * 
+	 */
+	private class PackageStatusReceiver extends BroadcastReceiver {
 
 		@Override
-		public void onReceive(Context context, Intent intent) {//接收安装卸载成功广播
+		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
 			if (action.equals(AConstDefine.BROADCAST_SYS_ACTION_APPINSTALL) || action.equals(AConstDefine.BROADCAST_SYS_ACTION_APPREMOVE)) {
 				String packageName = intent.getDataString();
@@ -313,37 +321,36 @@ public abstract class PublicActivity extends Activity {
 					packageName = packageName.substring(packageName.indexOf(PACKAGE_STR) + PACKAGE_STR.length());
 				}
 				PackageInfo info = null;
-				if (action.equals(AConstDefine.BROADCAST_SYS_ACTION_APPINSTALL)) {//安装操作
+				if (action.equals(AConstDefine.BROADCAST_SYS_ACTION_APPINSTALL)) {//安装广播
 					try {
 						info = getPackageManager().getPackageInfo(packageName, 0);
 					} catch (NameNotFoundException e) {
 						System.out.println("name not found:" + e);
 					}
-					if (info != null) {//安装成功回调
-						onAppInstallOrUninstallDone(INSTALL_APP_DONE, info);
+					if (info != null) {
+						onAppInstallOrUninstallDone(INSTALL_APP_DONE, info);//安装成功回调
 					}
-				} else {//卸载操作
+				} else {// 卸载广播
 					info = new PackageInfo();
 					info.packageName = packageName;
-					List<ADownloadApkItem> updatingList = ADownloadService.updateAPKList.apkList;//更新的APK列表
+					List<ADownloadApkItem> updatingList = ADownloadService.updateAPKList.apkList;// 更新的APK列表
 					if (updatingList != null) {
 						for (int i = 0; i < updatingList.size(); i++) {
 							ADownloadApkItem updateItem = updatingList.get(i);
-							if (updateItem.apkPackageName.equals(packageName)) {//从更新列表中去掉此APK
+							if (updateItem.apkPackageName.equals(packageName)) {// 从更新列表中去掉此APK
 								info.versionCode = updateItem.apkVersionCode;
 								ADownloadService.updateAPKList.apkList.remove(updateItem);
 								break;
 							}
 						}
 					}
-					onAppInstallOrUninstallDone(UNINSTALL_APP_DONE, info);//卸载成功回调
+					onAppInstallOrUninstallDone(UNINSTALL_APP_DONE, info);// 卸载成功回调
 				}
 			}
 		}
 	};
 
-	
-	/***************************************抽象类定义，子类实现**********************************/
+	/*************************************** 抽象类定义，子类实现 **********************************/
 	/**
 	 * 软件安装或卸载完成
 	 * 
@@ -354,22 +361,21 @@ public abstract class PublicActivity extends Activity {
 	/**
 	 * 当软件取消下载或更新的时候
 	 * 
-	 * @param appId
 	 */
 	public abstract void onAppStatusChange(boolean isCancel, String packageName, int versionCode);
-	
+
 	/**
 	 * 数据更新
 	 */
 	protected abstract void onUpdateDataDone();
-	
+
 	/**
 	 * 加载图片
 	 */
 	protected abstract void loadingImage();
-	/***************************************抽象类定义**********************************/
 
-	
+	/*************************************** 抽象类定义 **********************************/
+
 	/**
 	 * 使用3G下载是否提示过用户
 	 * 
@@ -385,8 +391,6 @@ public abstract class PublicActivity extends Activity {
 	public void set3GDownloadPromptUser() {
 		mApp.setIs3GDownloadPrompt(true);
 	}
-	
-
 
 	@Override
 	protected void onResume() {
@@ -394,7 +398,7 @@ public abstract class PublicActivity extends Activity {
 		if (getParent() == null) {
 			MobclickAgent.onResume(this);
 		}
-		isEconomizeTraffic =!mApp.isRemoteImage();
+		isEconomizeTraffic = !mApp.isRemoteImage();
 	}
 
 	@Override
@@ -416,6 +420,4 @@ public abstract class PublicActivity extends Activity {
 		}
 	}
 
-
-	
 }

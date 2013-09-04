@@ -272,7 +272,6 @@ public class ChannelListActivity extends BaseActivity implements
 
 	@Override
 	public void onAppInstallOrUninstallDone(int status, PackageInfo info) {
-		// TODO Auto-generated method stub
 		if(mListView!=null && mListView.getAdapter()!=null) {
 			ListBaseAdapter mAdapter = (ListBaseAdapter) mListView.getAdapter();
 			mAdapter.changeApkStatusByPackageInfo(status, info);

@@ -539,8 +539,7 @@ public class ThemeActivity extends BaseActivity implements ScrollListView.OnScro
 
 	@Override
 	public void onAppInstallOrUninstallDone(int status, PackageInfo info) {
-		// TODO Auto-generated method stub
-		
+		System.out.println("yy");
 	}
 
 	@Override

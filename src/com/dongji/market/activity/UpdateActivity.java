@@ -27,7 +27,6 @@ import android.widget.AdapterView.OnItemClickListener;
 
 import com.dongji.market.R;
 import com.dongji.market.adapter.ListBaseAdapter;
-import com.dongji.market.adapter.ListMultiTemplateAdapter;
 import com.dongji.market.adapter.ListSingleTemplateAdapter;
 import com.dongji.market.download.AConstDefine;
 import com.dongji.market.helper.AndroidUtils;
@@ -44,7 +43,7 @@ import com.dongji.market.widget.ScrollListView;
  * @author zhangkai
  * 
  */
-public class UpdateActivity extends BaseActivity implements OnItemClickListener{
+public class UpdateActivity extends BaseActivity implements OnItemClickListener {
 	private static final int EVENT_REQUEST_APPLIST_DATA = 1;
 	private static final int EVENT_REQUEST_GAMELIST_DATA = 2;
 	private static final int EVENT_NO_NETWORK_ERROR = 3;
@@ -66,10 +65,8 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener{
 	private ScrollListView mAppListView;
 	private ScrollListView mGameListView;
 
-	private ListMultiTemplateAdapter mAppMultiAdapter;
 	private ListSingleTemplateAdapter mAppSingleAdapter;
 
-	private ListMultiTemplateAdapter mGameMultiAdapter;
 	private ListSingleTemplateAdapter mGameSingleAdapter;
 
 	private View mLoadingView;
@@ -78,7 +75,6 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener{
 
 	private DataManager dataManager;
 
-	private boolean isSingleRow = true;
 	private boolean isLoading;
 	private boolean isAppClicked = true;
 
@@ -86,7 +82,6 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener{
 	private int currentGamePage;
 
 	private boolean isFirstResume = true;
-
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -136,7 +131,8 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener{
 		HandlerThread mHandlerThread = new HandlerThread("handlerThread");
 		mHandlerThread.start();
 		mHandler = new MyHandler(mHandlerThread.getLooper());
-		mHandler.sendEmptyMessage(EVENT_REQUEST_APPLIST_DATA);;
+		mHandler.sendEmptyMessage(EVENT_REQUEST_APPLIST_DATA);
+		;
 	}
 
 	@Override
@@ -168,16 +164,9 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener{
 	 */
 	private void initAppListView() {
 		mAppListView = (ScrollListView) findViewById(R.id.applistview);
-		if (isSingleRow) {
-			mAppSingleAdapter = new ListSingleTemplateAdapter(this, apps, isRemoteImage);
-			mAppListView.setAdapter(mAppSingleAdapter);
-		} else {
-			mAppMultiAdapter = new ListMultiTemplateAdapter(this, apps);
-			mAppListView.setAdapter(mAppMultiAdapter);
-		}
-		if (isSingleRow) {
-			mAppListView.setOnItemClickListener(this);
-		}
+		mAppSingleAdapter = new ListSingleTemplateAdapter(this, apps, isRemoteImage);
+		mAppListView.setAdapter(mAppSingleAdapter);
+		mAppListView.setOnItemClickListener(this);
 		if (isAppClicked) {
 			mAppListView.setVisibility(View.VISIBLE);
 			if (mGameListView != null) {
@@ -191,16 +180,9 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener{
 	 */
 	private void initGameListView() {
 		mGameListView = (ScrollListView) findViewById(R.id.gamelistview);
-		if (isSingleRow) {
-			mGameSingleAdapter = new ListSingleTemplateAdapter(this, games, isRemoteImage);
-			mGameListView.setAdapter(mGameSingleAdapter);
-		} else {
-			mGameMultiAdapter = new ListMultiTemplateAdapter(this, games);
-			mGameListView.setAdapter(mGameMultiAdapter);
-		}
-		if (isSingleRow) {
-			mGameListView.setOnItemClickListener(this);
-		}
+		mGameSingleAdapter = new ListSingleTemplateAdapter(this, games, isRemoteImage);
+		mGameListView.setAdapter(mGameSingleAdapter);
+		mGameListView.setOnItemClickListener(this);
 		if (!isAppClicked) {
 			if (mAppListView != null) {
 				mAppListView.setVisibility(View.GONE);
@@ -426,25 +408,16 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener{
 		}
 	}
 
-
 	/**
 	 * 当app取消下载或更新的时候回调,更改应用状态
 	 */
 	@Override
 	public void onAppStatusChange(boolean isCancel, String packageName, int versionCode) {
 		if (mAppListView != null && mAppListView.getAdapter() != null) {
-			if (isSingleRow) {
-				mAppSingleAdapter.changeApkStatusByAppId(isCancel, packageName, versionCode);
-			} else {
-				mAppMultiAdapter.changeApkStatusByAppId(isCancel, packageName, versionCode);
-			}
+			mAppSingleAdapter.changeApkStatusByAppId(isCancel, packageName, versionCode);
 		}
 		if (mGameListView != null && mGameListView.getAdapter() != null) {
-			if (isSingleRow) {
-				mGameSingleAdapter.changeApkStatusByAppId(isCancel, packageName, versionCode);
-			} else {
-				mGameMultiAdapter.changeApkStatusByAppId(isCancel, packageName, versionCode);
-			}
+			mGameSingleAdapter.changeApkStatusByAppId(isCancel, packageName, versionCode);
 		}
 	}
 
@@ -454,43 +427,28 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener{
 	@Override
 	public void onAppInstallOrUninstallDone(int status, PackageInfo info) {
 		if (mAppListView != null && mAppListView.getAdapter() != null) {
-			if (isSingleRow) {
-				mAppSingleAdapter.changeApkStatusByPackageInfo(status, info);
-			} else {
-				mAppMultiAdapter.changeApkStatusByPackageInfo(status, info);
-			}
+			mAppSingleAdapter.changeApkStatusByPackageInfo(status, info);
 		}
 		if (mGameListView != null && mGameListView.getAdapter() != null) {
-			if (isSingleRow) {
-				mGameSingleAdapter.changeApkStatusByPackageInfo(status, info);
-			} else {
-				mGameMultiAdapter.changeApkStatusByPackageInfo(status, info);
-			}
+			mGameSingleAdapter.changeApkStatusByPackageInfo(status, info);
 		}
 	}
-	
+
 	/**
 	 * 刷新数据
 	 */
 	private void refreshData() {
 		if (mAppListView != null && mAppListView.getAdapter() != null) {
-			if (isSingleRow) {
-				notifyListData(mAppSingleAdapter);
-			} else {
-				notifyListData(mAppMultiAdapter);
-			}
+			notifyListData(mAppSingleAdapter);
 		}
 		if (mGameListView != null && mGameListView.getAdapter() != null) {
-			if (isSingleRow) {
-				notifyListData(mGameSingleAdapter);
-			} else {
-				notifyListData(mGameMultiAdapter);
-			}
+			notifyListData(mGameSingleAdapter);
 		}
 	}
-	
+
 	/**
 	 * 通知数据更新
+	 * 
 	 * @param mAdapter
 	 */
 	private void notifyListData(final ListBaseAdapter mAdapter) {
@@ -508,7 +466,6 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener{
 	protected void onUpdateDataDone() {
 		refreshData();
 	}
-
 
 	@Override
 	protected void loadingImage() {

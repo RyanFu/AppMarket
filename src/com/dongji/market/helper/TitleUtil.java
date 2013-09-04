@@ -49,7 +49,6 @@ import com.dongji.market.database.MarketDatabase.SearchHistory;
 import com.dongji.market.download.AConstDefine;
 import com.dongji.market.download.ADownloadApkDBHelper;
 import com.dongji.market.download.ADownloadApkItem;
-import com.dongji.market.download.ADownloadService;
 import com.dongji.market.download.DownloadConstDefine;
 import com.dongji.market.download.DownloadEntity;
 import com.dongji.market.download.DownloadService;
@@ -492,31 +491,6 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 	public void dismissSearchPop() {
 		if (mSearchEdit != null) {
 			mSearchEdit.dismissFocus();
-		}
-	}
-
-	/**
-	 * 设置下载数量
-	 */
-	public void setDownloadCount() {
-		int tempUpdateCount = ADownloadService.getUpdateCountByStatus(STATUS_OF_UPDATE);
-		if (tempUpdateCount > 0) {
-			tvCount.setText(tempUpdateCount + "");
-			tvCount.setVisibility(View.VISIBLE);
-		} else {
-			tvCount.setVisibility(View.GONE);
-		}
-		int tempDownloadCount = ADownloadService.downloadingAPKList.apkList.size() + ADownloadService.getUpdateCountByStatus(STATUS_OF_PREPAREUPDATE, STATUS_OF_UPDATEING, STATUS_OF_PAUSEUPDATE_BYHAND);
-		System.out.println("tempupdatecount................" + tempDownloadCount);
-		if (tempDownloadCount > 0) {
-			manager_progress.setVisibility(View.VISIBLE);
-			mSWeManageButton.setImageResource(R.drawable.manager_download_selector);
-		} else if (tempUpdateCount > 0) {
-			manager_progress.setVisibility(View.GONE);
-			mSWeManageButton.setImageResource(R.drawable.manager_update_selector);
-		} else {
-			manager_progress.setVisibility(View.GONE);
-			mSWeManageButton.setImageResource(R.drawable.manager_none_selector);
 		}
 	}
 

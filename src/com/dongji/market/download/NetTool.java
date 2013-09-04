@@ -145,108 +145,8 @@ public class NetTool implements AConstDefine {
 		return DOWNLOADPATH + name + "." + suffix;
 	}
 
-	public static void fillDownloadingList(Context context) {
-		int[] status = { STATUS_OF_PAUSE, STATUS_OF_PAUSE_BYHAND,
-				STATUS_OF_PREPAREDOWNLOAD, STATUS_OF_DOWNLOADING };
 
-		ADownloadApkDBHelper aDownloadApkDBHelper = new ADownloadApkDBHelper(
-				context);
-		ADownloadService.downloadingAPKList = aDownloadApkDBHelper
-				.selectApkByStatus(status);
-	}
 
-	public static void fillUpdateingList(Context context) {
-		int[] status = new int[] { STATUS_OF_PAUSEUPDATE,
-				STATUS_OF_PAUSEUPDATE_BYHAND, STATUS_OF_UPDATEING,
-				STATUS_OF_PREPAREUPDATE };
-		ADownloadApkDBHelper aDownloadApkDBHelper = new ADownloadApkDBHelper(
-				context);
-		ADownloadService.updateAPKList = aDownloadApkDBHelper
-				.selectApkByStatus(status);
-		// ADownloadApkItem aDownloadApkItem;
-		// int j;
-		// for (int i = 0; i < tempList.apkList.size(); i++) {
-		// for (j = 0; j < ADownloadService.updateAPKList.apkList.size(); j++) {
-		// aDownloadApkItem = ADownloadService.updateAPKList.apkList
-		// .get(j);
-		// if (tempList.apkList.get(i).apkId == aDownloadApkItem.apkId) {
-		// aDownloadApkItem.apkDownloadSize =
-		// tempList.apkList.get(i).apkDownloadSize;
-		// aDownloadApkItem.apkStatus = tempList.apkList.get(i).apkStatus;
-		// break;
-		// }
-		// }
-		// if (j == ADownloadService.updateAPKList.apkList.size()) {
-		// ADownloadService.updateAPKList.apkList.add(tempList.apkList
-		// .get(i));
-		// }
-		// }
-	}
-
-	public static void fillotherUpdate(Context context) {
-		List<ApkItem> apkItems = ((AppMarket) context.getApplicationContext())
-				.getUpdateList();
-
-		if (null == apkItems || apkItems.size() == 0) {
-			System.out.println("NetTool_____没有等待更新数据");
-			return;
-		}
-
-		ADownloadApkDBHelper aDownloadApkDBHelper = new ADownloadApkDBHelper(
-				context);
-		ADownloadApkItem aDownloadApkItem;
-		int i, j, updateingSize;
-		// TODO 看看这里写了之后，会不会根据updateapkList的长度变化而变化
-		updateingSize = ADownloadService.updateAPKList.apkList.size();
-		for (i = 0; i < apkItems.size(); i++) {
-			for (j = 0; j < updateingSize; j++) {
-				aDownloadApkItem = ADownloadService.updateAPKList.apkList
-						.get(j);
-				if (aDownloadApkItem.apkPackageName
-						.equals(apkItems.get(i).packageName)
-						&& aDownloadApkItem.apkVersionCode == apkItems.get(i).versionCode) {
-					break;
-				}
-			}
-
-			if (j == updateingSize) {
-				ADownloadApkList aDownloadApkList = aDownloadApkDBHelper
-						.selectApkByStatus(new int[] { STATUS_OF_UPDATECOMPLETE });
-				int temp = 0;
-				for (; temp < aDownloadApkList.apkList.size(); temp++) {
-					if (apkItems.get(i).packageName
-							.equals(aDownloadApkList.apkList.get(temp).apkPackageName)) {
-						break;
-					}
-				}
-				if (temp == aDownloadApkList.apkList.size()) {
-					ADownloadService.updateAPKList.apkList
-							.add(new ADownloadApkItem(apkItems.get(i),
-									STATUS_OF_UPDATE));
-				}
-			}
-		}
-
-		System.out.println("============fillotherUpdate:"
-				+ ADownloadService.updateAPKList.apkList.size());
-
-		ADownloadApkList tempIgnoreList = aDownloadApkDBHelper
-				.selectAllIgnoreApp();
-		for (i = 0; i < tempIgnoreList.ignoreAppList.size(); i++) {
-			for (j = 0; j < ADownloadService.updateAPKList.apkList.size(); j++) {
-				aDownloadApkItem = ADownloadService.updateAPKList.apkList
-						.get(j);
-				if (aDownloadApkItem.apkPackageName
-						.equals(tempIgnoreList.ignoreAppList.get(i).apkPackageName)) {
-					ADownloadService.updateAPKList.apkList
-							.remove(aDownloadApkItem);
-					ADownloadService.updateAPKList.ignoreAppList
-							.add(tempIgnoreList.ignoreAppList.get(i));
-				}
-			}
-		}
-		NetTool.fillUpdateNotification(context);
-	}
 
 	// private static void initUpdateNotification(Context context) {
 	// int updatecount = ADownloadService
@@ -668,38 +568,6 @@ public class NetTool implements AConstDefine {
 		}
 	}
 
-	public static void fillUpdateNotification(Context context) {
-		int notificationCount = ADownloadService
-				.getUpdateCountByStatus(STATUS_OF_UPDATE);
-		if (notificationCount > 0) {
-			NetTool.setNotification(context, FLAG_NOTIFICATION_UPDATE,
-					notificationCount);
-		} else {
-			NetTool.cancelNotification(context, FLAG_NOTIFICATION_UPDATE);
-		}
-	}
-
-	public static void fillDownloadingNotification(Context context) {
-		int size = ADownloadService.downloadingAPKList.apkList.size();
-		if (size > 0) {
-			NetTool.setNotification(context, FLAG_NOTIFICATION_DOWNLOAD, size);
-		} else {
-			NetTool.cancelNotification(context, FLAG_NOTIFICATION_DOWNLOAD);
-		}
-	}
-
-	public static void fillUpdateingNotifitcation(Context context) {
-		int notificationCount = ADownloadService.getUpdateCountByStatus(
-				STATUS_OF_PREPAREUPDATE, STATUS_OF_UPDATEING,
-				STATUS_OF_PAUSEUPDATE_BYHAND);
-		if (notificationCount > 0) {
-			NetTool.setNotification(context, FLAG_NOTIFICATION_UPDATEING,
-					notificationCount);
-		} else {
-			NetTool.cancelNotification(context, FLAG_NOTIFICATION_UPDATEING);
-		}
-	}
-
 	public static void fillWaitingInstallNotifitcation(Context context) {
 		int count = NetTool.getWaitInstallListCount(context);
 		if (count > 0) {
@@ -814,15 +682,15 @@ public class NetTool implements AConstDefine {
 		}
 	}
 
-	public static void startServiceToDownload(Context context,
-			ADownloadApkItem aDownloadApkItem) {
-		Intent serviceIntent = new Intent();
-		Bundle bundle = new Bundle();
-		bundle.putParcelable(APKDOWNLOADITEM, aDownloadApkItem);
-		serviceIntent.putExtra(APKDOWNLOADITEM, bundle);
-		serviceIntent.setClass(context, ADownloadService.class);
-		context.startService(serviceIntent);
-	}
+//	public static void startServiceToDownload(Context context,
+//			ADownloadApkItem aDownloadApkItem) {
+//		Intent serviceIntent = new Intent();
+//		Bundle bundle = new Bundle();
+//		bundle.putParcelable(APKDOWNLOADITEM, aDownloadApkItem);
+//		serviceIntent.putExtra(APKDOWNLOADITEM, bundle);
+//		serviceIntent.setClass(context, ADownloadService.class);
+//		context.startService(serviceIntent);
+//	}
 
 	// public static void startServiceToCloudRestore(Context context,
 	// ArrayList<ApkItem> apkItems) {

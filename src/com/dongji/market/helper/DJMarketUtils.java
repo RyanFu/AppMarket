@@ -42,7 +42,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dongji.market.R;
-import com.dongji.market.activity.ADownloadActivity;
 import com.dongji.market.activity.ApkDetailActivity;
 import com.dongji.market.activity.BaseActivity;
 import com.dongji.market.activity.MainActivity;
@@ -55,7 +54,6 @@ import com.dongji.market.database.MarketDatabase.Setting_Service;
 import com.dongji.market.download.AConstDefine;
 import com.dongji.market.download.ADownloadApkDBHelper;
 import com.dongji.market.download.ADownloadApkItem;
-import com.dongji.market.download.ADownloadService;
 import com.dongji.market.download.DownloadService;
 import com.dongji.market.download.NetTool;
 import com.dongji.market.listener.SinaOAuthDialogListener;
@@ -266,68 +264,6 @@ public class DJMarketUtils implements AConstDefine {
 	}
 
 	/**
-	 * 下载前的检查（点击界面上下载按钮开始下载）
-	 * 
-	 * @param context
-	 * @param apkItem
-	 * @param mTextView
-	 * @param listener
-	 */
-	public static void checkDownload(Context context, ApkItem apkItem, TextView mTextView, OnDownloadChangeStatusListener listener, Map<String, Object> map) {
-		if (NetTool.checkIsDownload(context, apkItem.packageName + "_" + apkItem.versionCode)) {
-			NetTool.installApp(context, apkItem.packageName + "_" + apkItem.versionCode);
-			return;
-		}
-		ADownloadApkDBHelper aDownloadApkDBHelper = new ADownloadApkDBHelper(context);
-		if (aDownloadApkDBHelper.selectApkIsExist(apkItem.packageName, apkItem.versionCode) && AndroidUtils.checkFileExists(NetTool.DOWNLOADPATH + apkItem.appId)) {
-			Toast.makeText(context, "此APK已存在", Toast.LENGTH_SHORT).show();
-			return;
-		}
-		int status = DJMarketUtils.isCanDownload(context);
-		switch (status) {
-		case DJMarketUtils.STATUS_NOT_NETWORK:
-			AndroidUtils.showToast(context, R.string.no_network_msg1);
-			break;
-		case DJMarketUtils.STATUS_NOT_SDCARD:
-			AndroidUtils.showToast(context, R.string.no_sdcard_msg);
-			break;
-		case DJMarketUtils.STATUS_SDCARD_INSUFFICIENT:
-			AndroidUtils.showToast(context, R.string.download_size_insufficient);
-			break;
-		case DJMarketUtils.STATUS_ONLY_MOBILE:
-			boolean isPromptUser = false;
-			int flag = 0;
-			try {
-				ApkDetailActivity.class.cast(context);
-			} catch (ClassCastException e) {
-				isPromptUser = ((PublicActivity) context).is3GDownloadPromptUser();
-				flag = 1;
-			}
-			if (flag == 0) {
-				isPromptUser = ((ApkDetailActivity) context).is3GDownloadPromptUser();
-			}
-			if (isPromptUser) {
-				if (ADownloadService.canUse3GDownload()) {
-					prepareDownload(context, apkItem, mTextView, listener, map);
-				} else {
-					// showFlowSettingDialog(context);
-					Intent intent = new Intent(BROADCAST_ACTION_NOFLOW);
-					context.sendBroadcast(intent);
-				}
-			} else {
-				showMobileDownloadDialog(context, apkItem, mTextView, listener, map);
-			}
-			break;
-		case DJMarketUtils.STATUS_CAN_DOWNLOAD:
-			prepareDownload(context, apkItem, mTextView, listener, map);
-			break;
-		case DJMarketUtils.STATUS_NOT_SETTING_MOBILE_DOWNLOAD:
-			AndroidUtils.showToast(context, R.string.setting_for_cellular_close);
-			break;
-		}
-	}
-
-	/**
 	 * 取消列表下载
 	 */
 	public static void cancelListDownload(Context context, ApkItem item) {
@@ -344,424 +280,6 @@ public class DJMarketUtils implements AConstDefine {
 		db.deleteDownloadByPAndV(item.packageName, item.versionCode);
 		NetTool.deleteFileByApkSaveName(item.packageName + "_" + item.versionCode);
 	}
-
-	private static void prepareDownload(Context context, ApkItem apkItem, TextView mTextView, OnDownloadChangeStatusListener listener, Map<String, Object> map) {
-		int apkType = getApkType(apkItem.packageName, apkItem.versionCode);
-		if (apkType == STATUS_APK_UNINSTALL) {
-			NetTool.startServiceToDownload(context, new ADownloadApkItem(apkItem, STATUS_OF_PREPAREDOWNLOAD));
-		} else if (apkType == STATUS_APK_UNUPDATE) {
-			NetTool.startServiceToDownload(context, new ADownloadApkItem(apkItem, STATUS_OF_PREPAREUPDATE));
-		}
-		if (listener != null) {
-			listener.onDownload(apkItem, mTextView, map);
-		}
-	}
-
-	private static int getApkType(String apkPackageName, int apkVersionCode) {
-		if (null != ADownloadService.updateAPKList) {
-			for (int i = 0; i < ADownloadService.updateAPKList.apkList.size(); i++) {
-				if (apkPackageName.equals(ADownloadService.updateAPKList.apkList.get(i).apkPackageName) && apkVersionCode == ADownloadService.updateAPKList.apkList.get(i).apkVersionCode) {
-					return STATUS_APK_UNUPDATE;
-				}
-			}
-
-		}
-		return STATUS_APK_UNINSTALL;
-
-	}
-
-	/**
-	 * 下载前的检查（列表下载）
-	 * 
-	 * @param context
-	 * @param downloadType
-	 * @param count
-	 */
-	public static void checkDownload(Context context, int downloadType) {
-		int status = DJMarketUtils.isCanDownload(context);
-		switch (status) {
-		case DJMarketUtils.STATUS_NOT_NETWORK:
-			AndroidUtils.showToast(context, R.string.no_network_msg1);
-			break;
-		case DJMarketUtils.STATUS_NOT_SDCARD:
-			AndroidUtils.showToast(context, R.string.no_sdcard_msg);
-			break;
-		case DJMarketUtils.STATUS_SDCARD_INSUFFICIENT:
-			AndroidUtils.showToast(context, R.string.download_size_insufficient);
-			break;
-		case DJMarketUtils.STATUS_ONLY_MOBILE:
-			boolean isPromptUser;
-			if (downloadType == FLAG_ONEKEYUPDATEING) {
-				isPromptUser = ((ADownloadActivity) context).is3GDownloadPromptUser();
-			} else {
-				isPromptUser = ((MainActivity) context).is3GDownloadPromptUser();
-			}
-			if (isPromptUser) {
-				if (ADownloadService.canUse3GDownload()) {
-					prepareDownload(context, downloadType);
-				} else {
-					// showFlowSettingDialog(context);
-					Intent intent = new Intent(BROADCAST_ACTION_NOFLOW);
-					context.sendBroadcast(intent);
-				}
-			} else {
-				// TODO 这个地方不太懂
-				showMobileDownloadDialog(context, downloadType);
-			}
-			break;
-		case DJMarketUtils.STATUS_CAN_DOWNLOAD:
-			prepareDownload(context, downloadType);
-			break;
-		case DJMarketUtils.STATUS_NOT_SETTING_MOBILE_DOWNLOAD:
-			AndroidUtils.showToast(context, R.string.setting_for_cellular_close);
-			break;
-		}
-	}
-
-	/**
-	 * 下载前的检查（列表下载）
-	 * 
-	 * @param context
-	 * @param downloadType
-	 * @param count
-	 */
-	public static void checkDownload(Context context, int downloadType, ArrayList<ApkItem> apkItems) {
-		int status = DJMarketUtils.isCanDownload(context);
-		switch (status) {
-		case DJMarketUtils.STATUS_NOT_NETWORK:
-			AndroidUtils.showToast(context, R.string.no_network_msg1);
-			break;
-		case DJMarketUtils.STATUS_NOT_SDCARD:
-			AndroidUtils.showToast(context, R.string.no_sdcard_msg);
-			break;
-		case DJMarketUtils.STATUS_SDCARD_INSUFFICIENT:
-			AndroidUtils.showToast(context, R.string.download_size_insufficient);
-			break;
-		case DJMarketUtils.STATUS_ONLY_MOBILE:
-			boolean isPromptUser = ((SoftwareManageActivity) context).is3GDownloadPromptUser();
-			if (isPromptUser) {
-				if (ADownloadService.canUse3GDownload()) {
-					prepareDownload(context, downloadType, apkItems);
-				} else {
-					// showFlowSettingDialog(context);
-					Intent intent = new Intent(BROADCAST_ACTION_NOFLOW);
-					context.sendBroadcast(intent);
-				}
-			} else {
-				// TODO 这个地方不太懂
-				showMobileDownloadDialog(context, downloadType, apkItems);
-			}
-			break;
-		case DJMarketUtils.STATUS_CAN_DOWNLOAD:
-			prepareDownload(context, downloadType, apkItems);
-			break;
-		case DJMarketUtils.STATUS_NOT_SETTING_MOBILE_DOWNLOAD:
-			AndroidUtils.showToast(context, R.string.setting_for_cellular_close);
-			break;
-		}
-	}
-
-	public static void prepareDownload(Context context, int downloadType) {
-		Intent serviceIntent = new Intent();
-
-		if (downloadType == FLAG_ONEKEYUPDATEING) {
-			serviceIntent.putExtra(FLAG_ONEKEYUPDATE, true);
-		} else if (downloadType == FLAG_LISTUNDOWNTASK) {
-			serviceIntent.putExtra(FLAG_ISUNDONETASK, true);
-		} else if (downloadType == INT_CONTINUEPAUSETASK) {
-			serviceIntent.putExtra(FLAG_CONTINUEPAUSETASK, true);
-		}
-
-		serviceIntent.setClass(context, ADownloadService.class);
-		context.startService(serviceIntent);
-	}
-
-	public static void prepareDownload(Context context, int downloadType, ArrayList<ApkItem> apkItems) {
-
-		Intent serviceIntent = new Intent();
-
-		if (downloadType == INT_CLOUDRESTORE) {
-			serviceIntent.putExtra(FLAG_CLOUDRESTORE, true);
-			Bundle bundle = new Bundle();
-			bundle.putParcelableArrayList(FLAG_RESTORELIST, apkItems);
-			serviceIntent.putExtras(bundle);
-		}
-		serviceIntent.setClass(context, ADownloadService.class);
-		context.startService(serviceIntent);
-	}
-
-	/**
-	 * 下载前的检查（下载管理界面上的下载，还有后台下载等……）
-	 * 
-	 * @param activityName
-	 * @param context
-	 * @param apkId
-	 * @param aDownloadApkItem
-	 */
-	public static void checkDownload(Context context, ADownloadApkItem aDownloadApkItem) {
-		if (NetTool.checkIsDownload(context, aDownloadApkItem.apkPackageName + "_" + aDownloadApkItem.apkVersionCode)) {
-			switch (aDownloadApkItem.apkStatus) {
-			case STATUS_OF_PAUSE:
-			case STATUS_OF_PAUSE_BYHAND:
-				aDownloadApkItem.apkStatus = STATUS_OF_DOWNLOADCOMPLETE;
-				break;
-			case STATUS_OF_PAUSEUPDATE:
-			case STATUS_OF_PAUSEUPDATE_BYHAND:
-				aDownloadApkItem.apkStatus = STATUS_OF_UPDATECOMPLETE;
-				break;
-			}
-
-			NetTool.installApp(context, aDownloadApkItem.apkPackageName + "_" + aDownloadApkItem.apkVersionCode);
-			return;
-		}
-		int status = DJMarketUtils.isCanDownload(context);
-		switch (status) {
-		case DJMarketUtils.STATUS_NOT_NETWORK:
-			AndroidUtils.showToast(context, R.string.no_network_msg1);
-			break;
-		case DJMarketUtils.STATUS_NOT_SDCARD:
-			AndroidUtils.showToast(context, R.string.no_sdcard_msg);
-			break;
-		case DJMarketUtils.STATUS_SDCARD_INSUFFICIENT:
-			AndroidUtils.showToast(context, R.string.download_size_insufficient);
-			break;
-		case DJMarketUtils.STATUS_ONLY_MOBILE:
-			if (((ADownloadActivity) context).is3GDownloadPromptUser()) {
-				if (ADownloadService.canUse3GDownload()) {
-					prepareDownload(context, aDownloadApkItem);
-				} else {
-					// showFlowSettingDialog(context);
-					Intent intent = new Intent(BROADCAST_ACTION_NOFLOW);
-					context.sendBroadcast(intent);
-				}
-			} else {
-				showMobileDownloadDialog(context, aDownloadApkItem);
-			}
-			break;
-		case DJMarketUtils.STATUS_CAN_DOWNLOAD:
-			prepareDownload(context, aDownloadApkItem);
-			break;
-		case DJMarketUtils.STATUS_NOT_SETTING_MOBILE_DOWNLOAD:
-			AndroidUtils.showToast(context, R.string.setting_for_cellular_close);
-			break;
-		}
-	}
-
-	private static void prepareDownload(Context context, ADownloadApkItem aDownloadApkItem) {
-		System.out.println("状态——————" + aDownloadApkItem.apkStatus);
-		if (aDownloadApkItem.apkStatus == STATUS_OF_PAUSE_BYHAND || aDownloadApkItem.apkStatus == STATUS_OF_PAUSE) {
-			Intent intent = new Intent(BROADCAST_ACTION_DOWNLOAD);
-			intent.putExtra(BROADCAST_CONTINUEDOWNLOAD, aDownloadApkItem.apkPackageName + "_" + aDownloadApkItem.apkVersionCode);
-			context.sendBroadcast(intent);
-		} else if (aDownloadApkItem.apkStatus == STATUS_OF_PAUSEUPDATE_BYHAND || aDownloadApkItem.apkStatus == STATUS_OF_PAUSEUPDATE) {
-			Intent intent = new Intent(BROADCAST_ACTION_UPDATE);
-			intent.putExtra(BROADCAST_CONTINUEUPDATE, aDownloadApkItem.apkPackageName + "_" + aDownloadApkItem.apkVersionCode);
-			context.sendBroadcast(intent);
-		} else if (aDownloadApkItem.apkStatus == STATUS_OF_UPDATE) {
-			aDownloadApkItem.apkStatus = STATUS_OF_PREPAREUPDATE;
-			NetTool.startServiceToDownload(context, aDownloadApkItem);
-		}
-	}
-
-	private static void showMobileDownloadDialog(final Context context, final ApkItem apkItem, final TextView mTextView, final OnDownloadChangeStatusListener listener, final Map<String, Object> map) {
-		if (!((Activity) context).isFinishing()) {
-			final CustomNoTitleDialog mDialog = new CustomNoTitleDialog(context);
-			mDialog.setMessage(R.string.cellular_download_prompt_msg);
-			mDialog.setNeutralButton(context.getString(R.string.prompt_download), new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					if (ADownloadService.canUse3GDownload()) { // 判断当前用户使用3G下载有否流量限制
-						prepareDownload(context, apkItem, mTextView, listener, map);
-						// NetTool.startDownload(context,
-						// new ADownloadApkItem(apkItem,
-						// STATUS_OF_DOWNLOADING));
-						// NetTool.onDownloadBtnClick(context, new
-						// ADownloadApkItem(item,
-						// STATUS_OF_DOWNLOADING));
-
-						int flag = 0;
-						try {
-							ApkDetailActivity.class.cast(context);
-						} catch (ClassCastException e) {
-							((BaseActivity) context).set3GDownloadPromptUser();
-							flag = 1;
-						}
-						if (flag == 0) {
-							((ApkDetailActivity) context).set3GDownloadPromptUser();
-						}
-					} else {
-						// showFlowSettingDialog(context);
-						Intent intent = new Intent(BROADCAST_ACTION_NOFLOW);
-						context.sendBroadcast(intent);
-					}
-					mDialog.dismiss();
-				}
-			});
-			mDialog.setNegativeButton(context.getString(R.string.cancel), null);
-			if (mDialog != null) {
-				mDialog.show();
-			}
-		}
-	}
-
-	private static void showMobileDownloadDialog(final Context context, final ADownloadApkItem aDownloadApkItem) {
-		if (!((Activity) context).isFinishing()) {
-			final CustomNoTitleDialog mDialog = new CustomNoTitleDialog(context);
-
-			mDialog.setMessage(R.string.cellular_download_prompt_msg);
-			mDialog.setNeutralButton(context.getString(R.string.prompt_download), new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					if (ADownloadService.canUse3GDownload()) { // 判断当前用户使用3G下载有否流量限制
-						prepareDownload(context, aDownloadApkItem);
-						// if (aDownloadApkItem == null) {
-						// Intent intent = new Intent(
-						// BROADCAST_ACTION_DOWNLOAD);
-						// intent.putExtra(BROADCAST_CONTINUEDOWNLOAD,
-						// apkId);
-						// context.sendBroadcast(intent);
-						// } else {
-						// NetTool.setNotification(
-						// context,
-						// FLAG_NOTIFICATION_UPDATEING,
-						// ADownloadService
-						// .getUpdateCountByStatus(STATUS_OF_UPDATEING)
-						// +
-						// 1);
-						// aDownloadApkItem.apkStatus =
-						// STATUS_OF_UPDATEING;
-						// NetTool.startDownload(context,
-						// aDownloadApkItem);
-						// Intent intent = new Intent(
-						// BROADCAST_ACTION_3GDOWNLOAD);
-						// context.sendBroadcast(intent);
-						//
-						// }
-						((ADownloadActivity) context).set3GDownloadPromptUser();
-					} else {
-						// showFlowSettingDialog(context);
-						Intent intent = new Intent(BROADCAST_ACTION_NOFLOW);
-						context.sendBroadcast(intent);
-					}
-					mDialog.dismiss();
-				}
-			});
-			mDialog.setNegativeButton(context.getString(R.string.cancel), null);
-
-			if (mDialog != null) {
-				mDialog.show();
-			}
-		}
-	}
-
-	private static void showMobileDownloadDialog(final Context context, final int downloadType) {
-		if (!((Activity) context).isFinishing()) {
-			final CustomNoTitleDialog mDialog = new CustomNoTitleDialog(context);
-
-			mDialog.setMessage(R.string.cellular_download_prompt_msg);
-			mDialog.setNeutralButton(context.getString(R.string.prompt_download), new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					if (ADownloadService.canUse3GDownload()) { // 判断当前用户使用3G下载有否流量限制
-						prepareDownload(context, downloadType);
-						if (downloadType == FLAG_ONEKEYUPDATEING) {
-							((ADownloadActivity) context).set3GDownloadPromptUser();
-						} else {
-							((MainActivity) context).set3GDownloadPromptUser();
-						}
-
-					} else {
-						// showFlowSettingDialog(context);
-						Intent intent = new Intent(BROADCAST_ACTION_NOFLOW);
-						context.sendBroadcast(intent);
-					}
-					mDialog.dismiss();
-				}
-			});
-			mDialog.setNegativeButton(context.getString(R.string.cancel), null);
-
-			if (mDialog != null) {
-				mDialog.show();
-			}
-		}
-	}
-
-	private static void showMobileDownloadDialog(final Context context, final int downloadType, final ArrayList<ApkItem> apkItems) {
-		if (!((Activity) context).isFinishing()) {
-			final CustomNoTitleDialog mDialog = new CustomNoTitleDialog(context);
-
-			mDialog.setMessage(R.string.cellular_download_prompt_msg);
-			mDialog.setNeutralButton(context.getString(R.string.prompt_download), new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					if (ADownloadService.canUse3GDownload()) { // 判断当前用户使用3G下载有否流量限制
-						prepareDownload(context, downloadType, apkItems);
-						((SoftwareManageActivity) context).set3GDownloadPromptUser();
-
-					} else {
-						// showFlowSettingDialog(context);
-						Intent intent = new Intent(BROADCAST_ACTION_NOFLOW);
-						context.sendBroadcast(intent);
-					}
-					mDialog.dismiss();
-				}
-			});
-			mDialog.setNegativeButton(context.getString(R.string.cancel), null);
-
-			if (mDialog != null) {
-				mDialog.show();
-			}
-		}
-	}
-
-	// private static void showFlowSettingDialog(Context cxt) {
-	// final Context context = cxt;
-	// final CustomNoTitleDialog mFlowSettingDialog = new CustomNoTitleDialog(
-	// context);
-	// mFlowSettingDialog.setMessage(R.string.continue_download_setting_msg);
-	// mFlowSettingDialog.setNeutralButton(
-	// context.getString(R.string.goto_setting),
-	// new View.OnClickListener() {
-	// @Override
-	// public void onClick(View v) {
-	// Intent intent = new Intent(context,
-	// Setting_Activity.class);
-	// context.startActivity(intent);
-	// mFlowSettingDialog.dismiss();
-	// }
-	// });
-	// mFlowSettingDialog.show();
-	// }
-
-	// public static void showNoFlowDialog(Activity activity) {
-	// final Activity context = activity;
-	//
-	// final CustomNoTitleDialog mFlowSettingDialog = new CustomNoTitleDialog(
-	// activity);
-	// mFlowSettingDialog.setMessage(R.string.dialog_tip_noflow);
-	// mFlowSettingDialog.setNeutralButton(
-	// activity.getString(R.string.dialog_setting),
-	// new View.OnClickListener() {
-	// @Override
-	// public void onClick(View v) {
-	// mFlowSettingDialog.dismiss();
-	// SettingFlowDialog settingFlowDialog = new SettingFlowDialog(
-	// context);
-	// settingFlowDialog.show();
-	// }
-	// });
-	// mFlowSettingDialog.setNegativeButton(
-	// activity.getString(R.string.dialog_pause),
-	// new View.OnClickListener() {
-	// @Override
-	// public void onClick(View v) {
-	// mFlowSettingDialog.dismiss();
-	// }
-	// });
-	// mFlowSettingDialog.show();
-	//
-	//
-	// }
 
 	/**
 	 * 是否超过7天
@@ -830,12 +348,6 @@ public class DJMarketUtils implements AConstDefine {
 		} else if (AndroidUtils.getSdcardAvalilaleSize() / 1024 / 1024 < 256) {
 			return STATUS_SDCARD_INSUFFICIENT;
 		} else if (!AndroidUtils.isWifiAvailable(context) && AndroidUtils.isMobileAvailable(context)) {
-			// Setting_Service db = new Setting_Service(context);
-			// if (db.select("only_wifi") != 1) {
-			// return STATUS_ONLY_MOBILE;
-			// } else {
-			// return STATUS_NOT_SETTING_MOBILE_DOWNLOAD;
-			// }
 			if (!isOnlyWifi(context)) {
 				return STATUS_ONLY_MOBILE;
 			} else {
@@ -852,13 +364,6 @@ public class DJMarketUtils implements AConstDefine {
 	 * @return
 	 */
 	public static long queryUse3GDownloadSize(Context context) {
-		/*
-		 * if (ADownloadService.isSelfStart()) { return
-		 * ADownloadService.get3GDownloadSize(); } else { SharedPreferences pref
-		 * = context.getSharedPreferences( AConstDefine.DONGJI_SHAREPREFERENCES,
-		 * Context.MODE_PRIVATE); long size =
-		 * pref.getLong(AConstDefine.SHARE_DOWNLOADSIZE, 0); return size; }
-		 */
 		if (DownloadService.mDownloadService != null) {
 			return DownloadService.mDownloadService.getAlreadyUseGprsTraffic();
 		} else {
@@ -901,9 +406,6 @@ public class DJMarketUtils implements AConstDefine {
 	 * @return
 	 */
 	public static boolean isSinaLogin(Context context) {
-		// SharedPreferences loginPref = context.getSharedPreferences(
-		// AConstDefine.DONGJI_SHAREPREFERENCES, Context.MODE_PRIVATE);
-		// String sina_name = loginPref.getString("sina_user_name", "");
 		LoginParams loginParams = ((AppMarket) context.getApplicationContext()).getLoginParams();
 		String sina_name = loginParams.getSinaUserName();
 		if (sina_name != null && sina_name.length() > 0) {
@@ -1016,10 +518,8 @@ public class DJMarketUtils implements AConstDefine {
 		List<InstalledAppInfo> backupItemInfos = new ArrayList<InstalledAppInfo>();
 		if (directory.exists()) {
 			int i;
-			// String apkName;
 			File[] files = directory.listFiles();
 			for (i = 0; i < files.length; i++) {
-				// String[] tempString = files[i].getName().split("_");
 				InstalledAppInfo tempBackupItemInfo = getApkFileInfo(context, NetTool.BACKUPPATH + files[i].getName());
 				if (null != tempBackupItemInfo) {
 					backupItemInfos.add(tempBackupItemInfo);
@@ -1038,11 +538,6 @@ public class DJMarketUtils implements AConstDefine {
 	 */
 	public static InstalledAppInfo getApkFileInfo(Context context, String apkPath) {
 		File apkFile = new File(apkPath);
-		// if (!apkFile.exists() || !apkPath.toLowerCase().endsWith(".apk")) {
-		// System.out.println("文件路径不正确");
-		// return null;
-		// }
-
 		InstalledAppInfo backupItemInfo = new InstalledAppInfo();
 		String PATH_PackageParser = "android.content.pm.PackageParser";
 		String PATH_AssetManager = "android.content.res.AssetManager";
@@ -1210,7 +705,6 @@ public class DJMarketUtils implements AConstDefine {
 		try {
 			str = URLDecoder.decode(urlCodeStr, "utf-8");
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return str;
@@ -1259,8 +753,6 @@ public class DJMarketUtils implements AConstDefine {
 			} catch (IOException e) {
 			}
 		}
-		// getInstalledAppInfoByPackageName(context, packageName);
-
 	}
 
 	public static void tencentLogin(Activity context, Handler handler) {
@@ -1303,10 +795,6 @@ public class DJMarketUtils implements AConstDefine {
 				jsonObject = new JSONObject(new JSONObject(response).getString("data"));
 				loginParams.setTencentUserName(jsonObject.getString("nick"));
 				loginParams.setTencent_oAuth(oAuth);
-				// Message msg = new Message();
-				// msg.what = OAuthV2ImplicitGrant.TENCENT_LOGIN_SUCCESS;
-				// msg.obj = oAuth;
-				// handler.sendMessage(msg);
 				handler.sendEmptyMessage(OAuthV2ImplicitGrant.TENCENT_LOGIN_SUCCESS);
 			} catch (Exception e) {
 				e.printStackTrace();

@@ -17,7 +17,6 @@ import android.text.TextUtils;
 import com.dongji.market.application.AppMarket;
 import com.dongji.market.download.AConstDefine;
 import com.dongji.market.download.ADownloadApkItem;
-import com.dongji.market.download.ADownloadService;
 import com.dongji.market.download.DownloadConstDefine;
 import com.dongji.market.download.DownloadEntity;
 import com.dongji.market.download.DownloadService;
@@ -332,18 +331,6 @@ public abstract class PublicActivity extends Activity {
 					}
 				} else {// 卸载广播
 					info = new PackageInfo();
-					info.packageName = packageName;
-					List<ADownloadApkItem> updatingList = ADownloadService.updateAPKList.apkList;// 更新的APK列表
-					if (updatingList != null) {
-						for (int i = 0; i < updatingList.size(); i++) {
-							ADownloadApkItem updateItem = updatingList.get(i);
-							if (updateItem.apkPackageName.equals(packageName)) {// 从更新列表中去掉此APK
-								info.versionCode = updateItem.apkVersionCode;
-								ADownloadService.updateAPKList.apkList.remove(updateItem);
-								break;
-							}
-						}
-					}
 					onAppInstallOrUninstallDone(UNINSTALL_APP_DONE, info);// 卸载成功回调
 				}
 			}

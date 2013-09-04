@@ -253,8 +253,7 @@ public class ChannelActivity extends BaseActivity implements ScrollListView.OnSc
 
 	@Override
 	public void onAppInstallOrUninstallDone(int status, PackageInfo info) {
-		// TODO Auto-generated method stub
-		
+		System.out.println("yy");
 	}
 
 	@Override

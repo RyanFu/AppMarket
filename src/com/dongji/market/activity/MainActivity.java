@@ -40,7 +40,6 @@ import com.dongji.market.R;
 import com.dongji.market.application.AppMarket;
 import com.dongji.market.database.MarketDatabase.Setting_Service;
 import com.dongji.market.download.AConstDefine;
-import com.dongji.market.download.ADownloadService;
 import com.dongji.market.download.DownloadConstDefine;
 import com.dongji.market.download.DownloadService;
 import com.dongji.market.download.DownloadUtils;
@@ -112,7 +111,6 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		ADownloadService.isBackgroundRun = false;// 设置下载服务是否后台运行
 		mApp = (AppMarket) getApplication();
 		boolean flag = DJMarketUtils.isSaveFlow(this);// 是否开启流量模式
 		mApp.setRemoteImage(!flag);// 是否下载图片
@@ -358,13 +356,11 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 						showExitAppDialog();// 是否退出下载
 						return true;
 					} else {
-						stopService(new Intent(this, ADownloadService.class));// 停止单个下载服务
 						stopService(new Intent(this, DataUpdateService.class));// 停止数据更新服务
 						stopService(new Intent(this, DownloadService.class));// 停止下载服务
 						NetTool.cancelNotification(this, 4);// 取消通知
 					}
 				} else {
-					stopService(new Intent(this, ADownloadService.class));
 					stopService(new Intent(this, DataUpdateService.class));
 					stopService(new Intent(this, DownloadService.class));
 					NetTool.cancelNotification(this, 4);
@@ -541,7 +537,6 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 					@Override
 					public void onClick(View v) {
 						mExitDialog.dismiss();
-						stopService(new Intent(MainActivity.this, ADownloadService.class));
 						stopService(new Intent(MainActivity.this, DataUpdateService.class));
 						stopService(new Intent(MainActivity.this, DownloadService.class));
 

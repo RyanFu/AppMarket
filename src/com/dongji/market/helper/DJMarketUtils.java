@@ -52,8 +52,6 @@ import com.dongji.market.adapter.OnDownloadChangeStatusListener;
 import com.dongji.market.application.AppMarket;
 import com.dongji.market.database.MarketDatabase.Setting_Service;
 import com.dongji.market.download.AConstDefine;
-import com.dongji.market.download.ADownloadApkDBHelper;
-import com.dongji.market.download.ADownloadApkItem;
 import com.dongji.market.download.DownloadService;
 import com.dongji.market.download.NetTool;
 import com.dongji.market.listener.SinaOAuthDialogListener;
@@ -261,24 +259,6 @@ public class DJMarketUtils implements AConstDefine {
 		}
 		System.out.println("moveType..............." + moveType);
 		return moveType;
-	}
-
-	/**
-	 * 取消列表下载
-	 */
-	public static void cancelListDownload(Context context, ApkItem item) {
-		Intent intent = null;
-		ADownloadApkDBHelper db = new ADownloadApkDBHelper(context);
-		if (item.status == STATUS_APK_INSTALL) {
-			intent = new Intent(BROADCAST_ACTION_DOWNLOAD);
-			intent.putExtra(BROADCAST_CANCELDOWNLOAD, item.packageName + "_" + item.versionCode);
-		} else if (item.status == STATUS_APK_UPDATE) {
-			intent = new Intent(BROADCAST_ACTION_UPDATE);
-			intent.putExtra(BROADCAST_CANCELUPDATE, item.packageName + "_" + item.versionCode);
-		}
-		context.sendBroadcast(intent);
-		db.deleteDownloadByPAndV(item.packageName, item.versionCode);
-		NetTool.deleteFileByApkSaveName(item.packageName + "_" + item.versionCode);
 	}
 
 	/**

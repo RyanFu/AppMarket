@@ -297,9 +297,9 @@ public class Search_Result_Activity extends PublicActivity implements
 					String dateString = "" + cal.get(Calendar.YEAR)
 							+ (cal.get(Calendar.MONTH) + 1)
 							+ cal.get(Calendar.DATE);
-					if (null == Search_Activity2.apkItems
+					if (null == Search_Activity.apkItems
 							|| !top50time.equals(dateString)) {
-						Search_Activity2.apkItems = DataManager.newInstance()
+						Search_Activity.apkItems = DataManager.newInstance()
 								.getTop50();
 						NetTool.setSharedPreferences(
 								Search_Result_Activity.this,
@@ -317,26 +317,26 @@ public class Search_Result_Activity extends PublicActivity implements
 					e.printStackTrace();
 					handler.sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
 				}
-				if (null != Search_Activity2.apkItems) {
+				if (null != Search_Activity.apkItems) {
 					guessList = new ArrayList<ApkItem>();
 					Random random = new Random();
 					int[] ranInt = new int[8];
 					ranInt[0] = random
-							.nextInt(Search_Activity2.apkItems.size());
-					guessList.add(Search_Activity2.apkItems.get(ranInt[0]));
+							.nextInt(Search_Activity.apkItems.size());
+					guessList.add(Search_Activity.apkItems.get(ranInt[0]));
 					System.out.println("guesslist........" + ranInt[0]);
 					for (int i = 1; i < 8; i++) {
 						int tempRandom = random
-								.nextInt(Search_Activity2.apkItems.size());
+								.nextInt(Search_Activity.apkItems.size());
 						for (int j = 0; j < i; j++) {
 							while (tempRandom == ranInt[j]) {
 								tempRandom = random
-										.nextInt(Search_Activity2.apkItems
+										.nextInt(Search_Activity.apkItems
 												.size());
 							}
 						}
 						ranInt[i] = tempRandom;
-						guessList.add(Search_Activity2.apkItems.get(ranInt[i]));
+						guessList.add(Search_Activity.apkItems.get(ranInt[i]));
 						System.out.println("guesslist........" + ranInt[i]);
 					}
 				}

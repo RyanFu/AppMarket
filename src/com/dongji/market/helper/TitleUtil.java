@@ -39,7 +39,7 @@ import com.dongji.market.activity.Change_Pwd_Activity;
 import com.dongji.market.activity.ChannelListActivity;
 import com.dongji.market.activity.Login_Activity;
 import com.dongji.market.activity.MainActivity;
-import com.dongji.market.activity.Search_Activity2;
+import com.dongji.market.activity.Search_Activity;
 import com.dongji.market.activity.Search_Result_Activity;
 import com.dongji.market.activity.Setting_Activity;
 import com.dongji.market.activity.SoftwareManageActivity;
@@ -47,8 +47,6 @@ import com.dongji.market.adapter.SearchHistoryAdapter;
 import com.dongji.market.application.AppMarket;
 import com.dongji.market.database.MarketDatabase.SearchHistory;
 import com.dongji.market.download.AConstDefine;
-import com.dongji.market.download.ADownloadApkDBHelper;
-import com.dongji.market.download.ADownloadApkItem;
 import com.dongji.market.download.DownloadConstDefine;
 import com.dongji.market.download.DownloadEntity;
 import com.dongji.market.download.DownloadService;
@@ -176,7 +174,7 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		} else {
 			mShareButton.setVisibility(View.GONE);
 		}
-		if (!cxt.getClass().equals(Search_Activity2.class)) {// 非搜索页有页面名称
+		if (!cxt.getClass().equals(Search_Activity.class)) {// 非搜索页有页面名称
 			mPageNameTextView = (TextView) titleView.findViewById(R.id.page_name);
 			mPageNameTextView.setText(pageName);
 			if (cxt.getClass().equals(ChannelListActivity.class)) {// 分类页有排序图标
@@ -325,14 +323,14 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 			if (cxt.getClass().equals(Setting_Activity.class)) {
 				saveListener.exitVerify(false, SEARCH_PAGE_FLAG);
 			} else if (cxt.getClass().equals(ApkDetailActivity.class)) {
-				intent.setClass(cxt, Search_Activity2.class);
+				intent.setClass(cxt, Search_Activity.class);
 				cxt.overridePendingTransition(R.anim.enter_in, R.anim.enter_out);
 				cxt.startActivity(intent);
 				cxt.finish();
 			} else if (cxt.getClass().equals(Search_Result_Activity.class)) {
 				cxt.finish();
-			} else if (!cxt.getClass().equals(Search_Activity2.class)) {// 当前不为搜索界面
-				intent.setClass(cxt, Search_Activity2.class);
+			} else if (!cxt.getClass().equals(Search_Activity.class)) {// 当前不为搜索界面
+				intent.setClass(cxt, Search_Activity.class);
 				cxt.overridePendingTransition(R.anim.enter_in, R.anim.enter_out);
 				cxt.startActivity(intent);
 			} else {
@@ -551,7 +549,7 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		Intent intent = new Intent();
 		switch (pageFlag) {
 		case SEARCH_PAGE_FLAG:
-			intent.setClass(cxt, Search_Activity2.class);
+			intent.setClass(cxt, Search_Activity.class);
 			cxt.overridePendingTransition(R.anim.enter_in, R.anim.enter_out);
 			cxt.startActivity(intent);
 			break;

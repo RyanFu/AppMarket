@@ -28,7 +28,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
-import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout.LayoutParams;
 import android.widget.ImageView;
@@ -98,13 +97,7 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 
 	private ListView mGameBottomListView;
 	private ListView mAppBottomListView;
-
-	private static final String APP_STRING = "应用";
-	private static final String GAME_STRING = "游戏";
-
-	private LinearLayout mTabLayout;
 	private LinearLayout mMainBottomLayout;
-	private boolean isScrollAnimRunning;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -146,8 +139,7 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		View mTopView = findViewById(R.id.main_top);// actionbar
 		titleUtil = new TitleUtil(this, mTopView, "", getIntent().getExtras(), this);// 初始化actionbar
 		mSoftView = (View) findViewById(R.id.softmanagerbutton);// 软件管理按钮
-//		mProgressBar = (ProgressBar) findViewById(R.id.progress_horizontal);// 进度条
-
+		
 		initTopButton();
 
 		initBottomButton();
@@ -183,7 +175,6 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 	 * 初始化标签按钮
 	 */
 	private void initTopButton() {
-		mTabLayout = (LinearLayout) findViewById(R.id.maintablayout);
 		mChoicenessButton = (RadioButton) findViewById(R.id.choicenessButton);
 		RadioButton mUpdateButton = (RadioButton) findViewById(R.id.updateButton);
 		RadioButton mInstallNecessaryButton = (RadioButton) findViewById(R.id.installNecessaryButton);
@@ -219,18 +210,6 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		LayoutParams mParams = (LayoutParams) mSlideImageView.getLayoutParams();
 		mParams.width = (int) singleWidth;
 		mSlideImageView.setLayoutParams(mParams);
-	}
-
-	/**
-	 * 隐藏View
-	 * 
-	 * @param v
-	 */
-	private void setVisibleForGone(View v) {
-		if (v != null && v.getVisibility() == View.VISIBLE) {
-			v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.down_fade_out));
-			v.setVisibility(View.GONE);
-		}
 	}
 
 	@Override
@@ -539,9 +518,7 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 						mExitDialog.dismiss();
 						stopService(new Intent(MainActivity.this, DataUpdateService.class));
 						stopService(new Intent(MainActivity.this, DownloadService.class));
-
 						NetTool.cancelNotification(MainActivity.this, 4);
-
 						finish();
 					}
 				}).setNeutralButton(getString(R.string.ok), new View.OnClickListener() {

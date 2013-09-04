@@ -75,7 +75,7 @@
             android:theme="@style/Theme.Translucent" >
         </activity>
         <activity
-            android:name=".activity.Search_Activity2"
+            android:name=".activity.Search_Activity"
             android:configChanges="keyboardHidden|navigation|orientation"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.kaizhang" >

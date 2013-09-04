@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 import com.dongji.market.R;
 import com.dongji.market.activity.ApkDetailActivity;
-import com.dongji.market.activity.Search_Activity2;
+import com.dongji.market.activity.Search_Activity;
 import com.dongji.market.activity.Search_Result_Activity;
 import com.dongji.market.cache.FileService;
 import com.dongji.market.pojo.ApkItem;

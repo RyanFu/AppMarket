@@ -77,7 +77,7 @@ import com.dongji.market.receiver.CommonReceiver;
 import com.dongji.market.widget.CustomIconAnimation;
 import com.umeng.analytics.MobclickAgent;
 
-public class Search_Activity2 extends BaseActivity implements OnDownloadChangeStatusListener {
+public class Search_Activity extends BaseActivity implements OnDownloadChangeStatusListener {
 	private static final int EVENT_REQUEST_HOTWORDS_LIST = 2;
 	private static final int EVENT_NO_NETWORK_ERROR = 3;
 	private static final int EVENT_REQUEST_DATA_ERROR = 4;
@@ -511,7 +511,7 @@ public class Search_Activity2 extends BaseActivity implements OnDownloadChangeSt
 				Bundle bundle = new Bundle();
 				bundle.putParcelable("apkItem", item);
 				intent.putExtras(bundle);
-				intent.setClass(Search_Activity2.this, ApkDetailActivity.class);
+				intent.setClass(Search_Activity.this, ApkDetailActivity.class);
 				startActivity(intent);
 			}
 		});
@@ -533,7 +533,7 @@ public class Search_Activity2 extends BaseActivity implements OnDownloadChangeSt
 					map.put("X", location[0]);
 					map.put("Y", location[1]);
 					map.put("icon", mAppIconImageView.getDrawable());
-					DownloadUtils.checkDownload(Search_Activity2.this, item, mInstallTextView, Search_Activity2.this, map);
+					DownloadUtils.checkDownload(Search_Activity.this, item, mInstallTextView, Search_Activity.this, map);
 				} else {
 					Intent intent = new Intent(DownloadConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD);
 					DownloadEntity entity = new DownloadEntity(item);
@@ -542,9 +542,9 @@ public class Search_Activity2 extends BaseActivity implements OnDownloadChangeSt
 					intent.putExtras(bundle);
 					sendBroadcast(intent);
 					if (entity.downloadType == DownloadConstDefine.TYPE_OF_DOWNLOAD) {
-						DownloadUtils.fillDownloadNotifycation(Search_Activity2.this, false);
+						DownloadUtils.fillDownloadNotifycation(Search_Activity.this, false);
 					} else if (entity.downloadType == DownloadConstDefine.TYPE_OF_UPDATE) {
-						DownloadUtils.fillUpdateAndUpdatingNotifycation(Search_Activity2.this, false);
+						DownloadUtils.fillUpdateAndUpdatingNotifycation(Search_Activity.this, false);
 					}
 				}
 			}
@@ -787,7 +787,7 @@ public class Search_Activity2 extends BaseActivity implements OnDownloadChangeSt
 					titleUtil.history.add(tempString);
 					Intent intent = new Intent();
 					intent.putExtra("search_keyword", tempString);
-					intent.setClass(Search_Activity2.this, Search_Result_Activity.class);
+					intent.setClass(Search_Activity.this, Search_Result_Activity.class);
 					startActivity(intent);
 				}
 			});
@@ -814,7 +814,7 @@ public class Search_Activity2 extends BaseActivity implements OnDownloadChangeSt
 							titleUtil.history.add(tempString2);
 							Intent intent = new Intent();
 							intent.putExtra("search_keyword", tempString2);
-							intent.setClass(Search_Activity2.this, Search_Result_Activity.class);
+							intent.setClass(Search_Activity.this, Search_Result_Activity.class);
 							startActivity(intent);
 						}
 					});
@@ -856,19 +856,19 @@ public class Search_Activity2 extends BaseActivity implements OnDownloadChangeSt
 					mLoadingProgressBar.setVisibility(View.GONE);
 					mLoadingTextView.setText(rId);
 				} else {
-					AndroidUtils.showToast(Search_Activity2.this, rId2);
+					AndroidUtils.showToast(Search_Activity.this, rId2);
 				}
 				if (mShakeLoadingLayout.getVisibility() == View.VISIBLE) {
 					mShakeLoadingProgressBar.setVisibility(View.GONE);
 					mShakeLoadingTextView.setText(R.string.request_data_error_msg2);
 				} else {
-					AndroidUtils.showToast(Search_Activity2.this, rId2);
+					AndroidUtils.showToast(Search_Activity.this, rId2);
 				}
 				if (mGuessLoadingLayout.getVisibility() == View.VISIBLE) {
 					mGuessLoadingProgressBar.setVisibility(View.GONE);
 					mGuessLoadingTextView.setText(R.string.request_data_error_msg2);
 				} else {
-					AndroidUtils.showToast(Search_Activity2.this, rId2);
+					AndroidUtils.showToast(Search_Activity.this, rId2);
 				}
 			}
 		});
@@ -958,7 +958,7 @@ public class Search_Activity2 extends BaseActivity implements OnDownloadChangeSt
 				titleUtil.history.add(keyword);
 				Intent intent = new Intent();
 				intent.putExtra("search_keyword", keyword);
-				intent.setClass(Search_Activity2.this, Search_Result_Activity.class);
+				intent.setClass(Search_Activity.this, Search_Result_Activity.class);
 				startActivity(intent);
 			}
 		});
@@ -997,12 +997,12 @@ public class Search_Activity2 extends BaseActivity implements OnDownloadChangeSt
 			switch (msg.what) {
 			case EVENT_REQUEST_DATA:
 				try {
-					String top50time = NetTool.getSharedPreferences(Search_Activity2.this, AConstDefine.SHARE_GETTOP50TIME, "");
+					String top50time = NetTool.getSharedPreferences(Search_Activity.this, AConstDefine.SHARE_GETTOP50TIME, "");
 					Calendar cal = Calendar.getInstance();
 					String dateString = "" + cal.get(Calendar.YEAR) + (cal.get(Calendar.MONTH) + 1) + cal.get(Calendar.DATE);
 					if (null == apkItems || !top50time.equals(dateString)) {
 						apkItems = DataManager.newInstance().getTop50();
-						NetTool.setSharedPreferences(Search_Activity2.this, AConstDefine.SHARE_GETTOP50TIME, dateString);
+						NetTool.setSharedPreferences(Search_Activity.this, AConstDefine.SHARE_GETTOP50TIME, dateString);
 					}
 					mHandler.sendEmptyMessage(EVENT_REQUEST_GUESS_LIST);
 				} catch (IOException e) {
@@ -1164,11 +1164,11 @@ public class Search_Activity2 extends BaseActivity implements OnDownloadChangeSt
 
 						if (defImage) {
 							mShake_image.setImageResource(R.drawable.wave_running);
-							mShake_image.setPadding(0, AndroidUtils.dip2px(Search_Activity2.this, 30), 0, AndroidUtils.dip2px(Search_Activity2.this, 30));
+							mShake_image.setPadding(0, AndroidUtils.dip2px(Search_Activity.this, 30), 0, AndroidUtils.dip2px(Search_Activity.this, 30));
 							defImage = false;
 						} else {
 							mShake_image.setImageResource(R.drawable.wave_default);
-							mShake_image.setPadding(0, AndroidUtils.dip2px(Search_Activity2.this, 30), 0, AndroidUtils.dip2px(Search_Activity2.this, 30));
+							mShake_image.setPadding(0, AndroidUtils.dip2px(Search_Activity.this, 30), 0, AndroidUtils.dip2px(Search_Activity.this, 30));
 							defImage = true;
 						}
 					}

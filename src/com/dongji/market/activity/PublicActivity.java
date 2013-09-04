@@ -16,7 +16,6 @@ import android.text.TextUtils;
 
 import com.dongji.market.application.AppMarket;
 import com.dongji.market.download.AConstDefine;
-import com.dongji.market.download.ADownloadApkItem;
 import com.dongji.market.download.DownloadConstDefine;
 import com.dongji.market.download.DownloadEntity;
 import com.dongji.market.download.DownloadService;
@@ -306,6 +305,7 @@ public abstract class PublicActivity extends Activity {
 
 	/**
 	 * 接收安装卸载成功广播
+	 * 
 	 * @author yvon
 	 * 
 	 */
@@ -320,14 +320,14 @@ public abstract class PublicActivity extends Activity {
 					packageName = packageName.substring(packageName.indexOf(PACKAGE_STR) + PACKAGE_STR.length());
 				}
 				PackageInfo info = null;
-				if (action.equals(AConstDefine.BROADCAST_SYS_ACTION_APPINSTALL)) {//安装广播
+				if (action.equals(AConstDefine.BROADCAST_SYS_ACTION_APPINSTALL)) {// 安装广播
 					try {
 						info = getPackageManager().getPackageInfo(packageName, 0);
 					} catch (NameNotFoundException e) {
 						System.out.println("name not found:" + e);
 					}
 					if (info != null) {
-						onAppInstallOrUninstallDone(INSTALL_APP_DONE, info);//安装成功回调
+						onAppInstallOrUninstallDone(INSTALL_APP_DONE, info);// 安装成功回调
 					}
 				} else {// 卸载广播
 					info = new PackageInfo();

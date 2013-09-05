@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.myjson.JSONException;
 
@@ -145,6 +144,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 	private HorizontalScrollView mScrollView;
 	private LinearLayout mContentLayout;
 	private CustomGalleryDialog mGalleryDialog;
+	private ImageView mIvApkIcon;
 
 
 	@Override
@@ -567,24 +567,196 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 
 	}
 	
+
+	private Handler mHandler = new Handler() {//主线程Handler
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			switch (msg.what) {
+			case EVENT_SCROLL_TOBOTTOM://滑动到底部
+				int y = svApkDetail.getChildAt(0).getHeight() - svApkDetail.getHeight();
+				svApkDetail.smoothScrollTo(0, y);
+				break;
+			}
+		};
+	};
 	
 
+	private class MyHandler extends Handler {//异步线程Handler
+		MyHandler(Looper looper) {
+			super(looper);
+		}
 
-	private void showGalleryDetailDialog(List<String> arr, int position) {
-		if (!isFinishing()) {
-			if (mGalleryDialog == null) {
-				mGalleryDialog = new CustomGalleryDialog(ApkDetailActivity.this);
-				mGalleryDialog.setImageSource(arr);
-			}
-			if (mGalleryDialog != null) {
-				mGalleryDialog.showPosition(position);
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			switch (msg.what) {
+			case EVENT_REQUEST_DETAIL_DATA://请求详情数据
+				requestDetailData(msg.arg1);
+				break;
+			case EVENT_NO_NETWORK_ERROR://无网络错误
+				setErrorMessage(R.string.no_network_refresh_msg);
+				break;
+			case EVENT_REQUEST_DATA_ERROR://请求数据错误
+				setErrorMessage(R.string.request_data_error_msg);
+				break;
+			case EVENT_GRADE://
+				final float score = commitCommentRatingBar.getRating();
+				int responseStatus;
+				try {
+					responseStatus = DataManager.newInstance().appGrade(apkItem.category + "", apkItem.appId + "", score + "");
+					if (responseStatus == 1) {
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								llgrade_click.setVisibility(View.GONE);
+								llgrade_noclick.setVisibility(View.VISIBLE);
+								displayCommentRatingBar.setRating(score);
+								displayCommentRatingBar.setClickable(false);
+								displayCommentRatingBar.setIsIndicator(true);
+								btnGrade.setEnabled(true);
+							}
+						});
+					} else {
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								btnGrade.setEnabled(true);
+								AndroidUtils.showToast(ApkDetailActivity.this, R.string.grade_failed);
+							}
+						});
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				break;
 			}
 		}
 	}
 
-	private ImageView mIvApkIcon;
+	private void setErrorMessage(final int rId) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if (mLoadingView.getVisibility() == View.VISIBLE) {
+					mLoadingProgressBar.setVisibility(View.GONE);
+					mLoadingTextView.setText(rId);
+				}
+			}
+		});
+	}
 
-	private View initHeaderViews() {
+	private void requestDetailData(int openflag) {
+		try {
+			if (openflag == FLAG_OPENFROMOWN) {
+				apkItem = DataManager.newInstance().getApkItemDetailByAppId(apkItem.category, apkItem.appId);
+			} else {
+				apkItem = DataManager.newInstance().getApkItemDetailByPackage(packageName, versionCode);
+				runOnUiThread(new Runnable() {
+
+					@Override
+					public void run() {
+						if (null != apkItem) {
+							Bundle bundle = new Bundle();
+							bundle.putParcelable("apkItem", apkItem);
+							titleUtil = new TitleUtil(ApkDetailActivity.this, mTopView, apkItem.appName, bundle, ApkDetailActivity.this);
+						}
+					}
+				});
+			}
+			if (apkItem != null) {
+				int status = apkItem.status;
+				Bundle bundle = new Bundle();
+				bundle.putParcelable("apkItem", apkItem);
+				if (titleUtil != null) {
+					titleUtil.setBundle(bundle);
+				}
+				System.out.println("============ before :" + status);
+				apkItem.status = status;
+				apkItem = setApkStatus(apkItem);
+				System.out.println("============ after :" + apkItem.status);
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						mLoadingView.setVisibility(View.GONE);
+						refreshViews();
+					}
+				});
+			}
+		} catch (IOException e) {
+			if (!AndroidUtils.isNetworkAvailable(this)) {
+				mDataHandler.sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
+			} else {
+				mDataHandler.sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
+			}
+		} catch (JSONException e) {
+			mDataHandler.sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
+		}
+		if (apkItem != null) {
+			db = new MarketDatabase(ApkDetailActivity.this);
+			int typeid = apkItem.category;
+			int appid = apkItem.appId;
+			rating = db.selectRatingById(typeid, appid);
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					if (rating == -1) {
+						llgrade_click.setVisibility(View.VISIBLE);
+						llgrade_noclick.setVisibility(View.GONE);
+						btnGrade.setOnClickListener(new OnClickListener() {
+
+							@Override
+							public void onClick(View v) {
+								int typeid = apkItem.category;
+								int appid = apkItem.appId;
+								rating = commitCommentRatingBar.getRating();
+								db.addRatingApp(typeid, appid, rating);
+								mDataHandler.sendEmptyMessage(EVENT_GRADE);
+								btnGrade.setEnabled(false);
+							}
+						});
+					} else {
+						llgrade_click.setVisibility(View.GONE);
+						llgrade_noclick.setVisibility(View.VISIBLE);
+						displayCommentRatingBar.setRating(rating);
+						displayCommentRatingBar.setClickable(false);
+						displayCommentRatingBar.setIsIndicator(true);
+					}
+				}
+			});
+		} else {
+			finish();
+		}
+	}
+	
+	private void refreshViews() {
+		svApkDetail.setVisibility(View.VISIBLE);
+		refreshHeaderViews();
+		llPrintScreen.addView(refreshPrintScreenView());
+		llLikeApp.addView(refreshLikeAppView());
+		if (null == apkItem.discription || apkItem.discription.trim().equals("")) {
+			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
+			tvDetailAbstruct.setLayoutParams(lp);
+			tvDetailAbstruct.setGravity(Gravity.CENTER);
+			tvDetailAbstruct.setTextColor(getResources().getColor(android.R.color.black));
+			tvDetailAbstruct.setPadding(15, 15, 15, 15);
+			tvDetailAbstruct.setTextSize(15);
+			tvDetailAbstruct.setText(R.string.none_abstruct);
+		} else {
+			tvDetailAbstruct.setText(apkItem.discription);
+		}
+		refreshPermissionView(llPermission);
+		refreshOldVersionView(llOldVersion);
+		llPermission.setVisibility(View.GONE);
+		llOldVersion.setVisibility(View.GONE);
+
+		llGroup_permission.setOnClickListener(new onIVClickListener());
+		llGroup_oldVersions.setOnClickListener(new onIVClickListener());
+		llGroup_grade.setOnClickListener(new onIVClickListener());
+		ivGalleryLeft.setOnClickListener(new onIVClickListener());
+		ivGalleryRight.setOnClickListener(new onIVClickListener());
+	}
+	
+	private View refreshHeaderViews() {
 		View headView = findViewById(R.id.detail_head_view);
 		mIvApkIcon = (ImageView) headView.findViewById(R.id.ivApkIcon);
 		ivdongji_head = (ImageView) headView.findViewById(R.id.ivdongji_head);
@@ -653,11 +825,6 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 
 		return headView;
 	}
-
-	private float getRating() {
-		return (float) apkItem.score;
-	}
-
 	
 	private void displayApkStatus(TextView mTextView, int status) {
 		switch (status) {
@@ -697,213 +864,23 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 			}
 		}
 	}
-
+	
 	private void setvisibleInstallTextView(TextView mTextView, boolean enable, int rId, int resid, int textColor) {
 		if (mTextView != null) {
 			mTextView.setEnabled(enable);
 			mTextView.setText(rId);
 			mTextView.setBackgroundResource(resid);
 			mTextView.setTextColor(textColor);
-
 		}
 	}
 
-	private Handler mHandler = new Handler() {
-		public void handleMessage(Message msg) {
-			super.handleMessage(msg);
-			switch (msg.what) {
-			case EVENT_SCROLL_TOBOTTOM:
-				int y = svApkDetail.getChildAt(0).getHeight() - svApkDetail.getHeight();
-				svApkDetail.smoothScrollTo(0, y);
-				break;
-			case REFERENSH_PROGRESS:
-				break;
-			}
-		};
-	};
+
+	private float getRating() {
+		return (float) apkItem.score;
+	}
 
 	
-
-	private class MyHandler extends Handler {
-		MyHandler(Looper looper) {
-			super(looper);
-		}
-
-		@Override
-		public void handleMessage(Message msg) {
-			super.handleMessage(msg);
-			switch (msg.what) {
-			case EVENT_REQUEST_DETAIL_DATA:
-				requestDetailData(msg.arg1);
-				break;
-			case EVENT_NO_NETWORK_ERROR:
-				setErrorMessage(R.string.no_network_refresh_msg);
-				break;
-			case EVENT_REQUEST_DATA_ERROR:
-				setErrorMessage(R.string.request_data_error_msg);
-				break;
-			case EVENT_GRADE:
-				final float score = commitCommentRatingBar.getRating();
-				int responseStatus;
-				try {
-					responseStatus = DataManager.newInstance().appGrade(apkItem.category + "", apkItem.appId + "", score + "");
-					if (responseStatus == 1) {
-						runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								llgrade_click.setVisibility(View.GONE);
-								llgrade_noclick.setVisibility(View.VISIBLE);
-								displayCommentRatingBar.setRating(score);
-								displayCommentRatingBar.setClickable(false);
-								displayCommentRatingBar.setIsIndicator(true);
-								btnGrade.setEnabled(true);
-							}
-						});
-					} else {
-						runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								btnGrade.setEnabled(true);
-								AndroidUtils.showToast(ApkDetailActivity.this, R.string.grade_failed);
-							}
-						});
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-
-				break;
-			}
-		}
-	}
-
-	private void setErrorMessage(final int rId) {
-		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				if (mLoadingView.getVisibility() == View.VISIBLE) {
-					mLoadingProgressBar.setVisibility(View.GONE);
-					mLoadingTextView.setText(rId);
-				}
-			}
-		});
-	}
-
-	private void requestDetailData(int openflag) {
-		try {
-			if (openflag == FLAG_OPENFROMOWN) {
-				apkItem = DataManager.newInstance().getApkItemDetailByAppId(apkItem.category, apkItem.appId);
-			} else {
-				apkItem = DataManager.newInstance().getApkItemDetailByPackage(packageName, versionCode);
-				runOnUiThread(new Runnable() {
-
-					@Override
-					public void run() {
-						if (null != apkItem) {
-							Bundle bundle = new Bundle();
-							bundle.putParcelable("apkItem", apkItem);
-							titleUtil = new TitleUtil(ApkDetailActivity.this, mTopView, apkItem.appName, bundle, ApkDetailActivity.this);
-						}
-					}
-				});
-			}
-			if (apkItem != null) {
-				int status = apkItem.status;
-				Bundle bundle = new Bundle();
-				bundle.putParcelable("apkItem", apkItem);
-				if (titleUtil != null) {
-					titleUtil.setBundle(bundle);
-				}
-				System.out.println("============ before :" + status);
-				apkItem.status = status;
-				apkItem = setApkStatus(apkItem);
-				System.out.println("============ after :" + apkItem.status);
-				runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						mLoadingView.setVisibility(View.GONE);
-						initViews();
-					}
-				});
-			}
-		} catch (IOException e) {
-			if (!AndroidUtils.isNetworkAvailable(this)) {
-				mDataHandler.sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
-			} else {
-				mDataHandler.sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
-			}
-		} catch (JSONException e) {
-			mDataHandler.sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
-		}
-		if (apkItem != null) {
-			db = new MarketDatabase(ApkDetailActivity.this);
-			int typeid = apkItem.category;
-			int appid = apkItem.appId;
-			rating = db.selectRatingById(typeid, appid);
-			runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					if (rating == -1) {
-						llgrade_click.setVisibility(View.VISIBLE);
-						llgrade_noclick.setVisibility(View.GONE);
-						btnGrade.setOnClickListener(new OnClickListener() {
-
-							@Override
-							public void onClick(View v) {
-								int typeid = apkItem.category;
-								int appid = apkItem.appId;
-								rating = commitCommentRatingBar.getRating();
-								db.addRatingApp(typeid, appid, rating);
-								mDataHandler.sendEmptyMessage(EVENT_GRADE);
-								btnGrade.setEnabled(false);
-							}
-						});
-					} else {
-						llgrade_click.setVisibility(View.GONE);
-						llgrade_noclick.setVisibility(View.VISIBLE);
-						displayCommentRatingBar.setRating(rating);
-						displayCommentRatingBar.setClickable(false);
-						displayCommentRatingBar.setIsIndicator(true);
-					}
-				}
-			});
-		} else {
-			finish();
-		}
-	}
-	
-	private void initViews() {
-		svApkDetail.setVisibility(View.VISIBLE);
-
-		initHeaderViews();
-		llPrintScreen.addView(initPrintScreenView());
-		llLikeApp.addView(initLikeAppView());
-		if (null == apkItem.discription || apkItem.discription.trim().equals("")) {
-			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
-			tvDetailAbstruct.setLayoutParams(lp);
-			tvDetailAbstruct.setGravity(Gravity.CENTER);
-			tvDetailAbstruct.setTextColor(getResources().getColor(android.R.color.black));
-			tvDetailAbstruct.setPadding(15, 15, 15, 15);
-			tvDetailAbstruct.setTextSize(15);
-			tvDetailAbstruct.setText(R.string.none_abstruct);
-		} else {
-			tvDetailAbstruct.setText(apkItem.discription);
-		}
-
-		initPermissionView(llPermission);
-		initOldVersionView(llOldVersion);
-		llPermission.setVisibility(View.GONE);
-		llOldVersion.setVisibility(View.GONE);
-
-		llGroup_permission.setOnClickListener(new onIVClickListener());
-		llGroup_oldVersions.setOnClickListener(new onIVClickListener());
-		llGroup_grade.setOnClickListener(new onIVClickListener());
-		ivGalleryLeft.setOnClickListener(new onIVClickListener());
-		ivGalleryRight.setOnClickListener(new onIVClickListener());
-
-	}
-	
-	private View initPrintScreenView() {
+	private View refreshPrintScreenView() {
 
 		final List<String> arr = apkItem.appScreenshotUrl;
 
@@ -945,13 +922,22 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 		ApkDetailImageAdapter adapter = new ApkDetailImageAdapter(this, arr, defaultBitmap_gallery);
 		mGuessLikeGrid.setAdapter(adapter);
 		mContentLayout.addView(mGuessLikeGrid);
-
-		mHandler.sendEmptyMessage(REFERENSH_PROGRESS);
 		return mScrollView;
 	}
-
 	
-	private void initPermissionView(LinearLayout llPermission) {
+	private void showGalleryDetailDialog(List<String> arr, int position) {
+		if (!isFinishing()) {
+			if (mGalleryDialog == null) {
+				mGalleryDialog = new CustomGalleryDialog(ApkDetailActivity.this);
+				mGalleryDialog.setImageSource(arr);
+			}
+			if (mGalleryDialog != null) {
+				mGalleryDialog.showPosition(position);
+			}
+		}
+	}
+
+	private void refreshPermissionView(LinearLayout llPermission) {
 		List<String> permissionList = apkItem.permisions;
 		if (null == permissionList || permissionList.size() == 0) {
 			TextView tvTips = new TextView(ApkDetailActivity.this);
@@ -1007,7 +993,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 		return mLinearLayout;
 	}
 	
-	private void initOldVersionView(LinearLayout llOldVersion) {
+	private void refreshOldVersionView(LinearLayout llOldVersion) {
 
 		HistoryApkItem[] historyApkItems = apkItem.historys;
 		if (null == historyApkItems || historyApkItems.length == 0) {
@@ -1095,7 +1081,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 	}
 
 	
-	private View initLikeAppView() {
+	private View refreshLikeAppView() {
 		for (int i = 0; i < apkItem.likeList.size(); i++) {
 			if (null != apkItem.likeList.get(i)) {
 				likeApkItems.add(apkItem.likeList.get(i));
@@ -1135,8 +1121,6 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 		return mScrollView2;
 
 	}
-
-	
 	
 
 	@Override
@@ -1194,7 +1178,6 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 
 	@Override
 	protected void onUpdateDataDone() {
-
 	}
 
 	@Override

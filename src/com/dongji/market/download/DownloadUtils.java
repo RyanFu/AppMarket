@@ -27,7 +27,6 @@ import com.dongji.market.activity.BaseActivity;
 import com.dongji.market.activity.DownloadActivity;
 import com.dongji.market.activity.PublicActivity;
 import com.dongji.market.activity.SoftwareManageActivity;
-import com.dongji.market.adapter.OnDownloadChangeStatusListener;
 import com.dongji.market.helper.AndroidUtils;
 import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.pojo.ApkItem;
@@ -61,10 +60,10 @@ public class DownloadUtils implements DownloadConstDefine {
 	}
 
 	public static void checkDownload(Context context, DownloadEntity entity) {
-		checkDownload(context, entity, null, null);
+		checkDownload(context, entity, null);
 	}
 
-	public static void checkDownload(Context context, ApkItem apkItem, TextView mTextView, OnDownloadChangeStatusListener listener, Map<String, Object> map) {
+	public static void checkDownload(Context context, ApkItem apkItem, TextView mTextView, Map<String, Object> map) {
 		DownloadEntity entity = new DownloadEntity(apkItem);
 		if (null != DownloadService.mDownloadService) {
 			List<DownloadEntity> downloadList = DownloadService.mDownloadService.getAllDownloadList();
@@ -84,23 +83,23 @@ public class DownloadUtils implements DownloadConstDefine {
 							removeIntent.putExtras(removeBundle);
 							context.sendBroadcast(removeIntent);
 
-							checkDownload(context, entity, mTextView, listener);
+							checkDownload(context, entity, mTextView);
 						}
 					} else {
-						checkDownload(context, entity, mTextView, listener);
+						checkDownload(context, entity, mTextView);
 					}
 					break;
 				}
 			}
 			if (i == downloadList.size()) {
-				checkDownload(context, entity, mTextView, listener);
+				checkDownload(context, entity, mTextView);
 			}
 		} else {
-			checkDownload(context, entity, mTextView, listener);
+			checkDownload(context, entity, mTextView);
 		}
 	}
 
-	private static void checkDownload(Context context, DownloadEntity entity, TextView mTextView, OnDownloadChangeStatusListener listener) {
+	private static void checkDownload(Context context, DownloadEntity entity, TextView mTextView) {
 		int status = DJMarketUtils.isCanDownload(context);
 		switch (status) {
 		case DJMarketUtils.STATUS_NOT_NETWORK:

@@ -48,7 +48,6 @@ import com.dongji.market.activity.MainActivity;
 import com.dongji.market.activity.PublicActivity;
 import com.dongji.market.activity.SoftwareManageActivity;
 import com.dongji.market.activity.SoftwareMove_list_Activity;
-import com.dongji.market.adapter.OnDownloadChangeStatusListener;
 import com.dongji.market.application.AppMarket;
 import com.dongji.market.database.MarketDatabase.Setting_Service;
 import com.dongji.market.download.AConstDefine;

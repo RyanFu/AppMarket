@@ -15,7 +15,7 @@ import com.dongji.market.R;
 import com.dongji.market.download.AConstDefine;
 import com.dongji.market.pojo.ApkItem;
 
-public abstract class ListBaseAdapter extends BaseAdapter implements AConstDefine, OnDownloadChangeStatusListener {
+public abstract class ListBaseAdapter extends BaseAdapter implements AConstDefine {
 	protected Context context;
 	protected boolean isDisplay=true;
 	

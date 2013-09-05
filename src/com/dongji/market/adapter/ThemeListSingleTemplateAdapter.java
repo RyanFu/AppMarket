@@ -122,7 +122,7 @@ public class ThemeListSingleTemplateAdapter extends ListBaseAdapter implements A
 					map.put("Y", location[1]);
 					map.put("icon", holder.mAppIconImageView.getDrawable());
 					
-					DownloadUtils.checkDownload(context, item, holder.mInstallTextView, ThemeListSingleTemplateAdapter.this, map);
+					DownloadUtils.checkDownload(context, item, holder.mInstallTextView, map);
 //					DJMarketUtils.checkDownload(context, item, holder.mInstallTextView, ListSingleTemplateAdapter.this, map);
 				}else {
 //					DJMarketUtils.cancelListDownload(context, item);
@@ -177,17 +177,6 @@ public class ThemeListSingleTemplateAdapter extends ListBaseAdapter implements A
 	public List<ApkItem> getItemList() {
 		// TODO Auto-generated method stub
 		return list;
-	}
-
-	@Override
-	public void onDownload(ApkItem item, TextView mTextView, Map<String, Object> map) {
-		if(item.status==STATUS_APK_UNINSTALL) {
-			item.status=STATUS_APK_INSTALL;
-		}else if(item.status==STATUS_APK_UNUPDATE) {
-			item.status=STATUS_APK_UPDATE;
-		}
-		displayApkStatus(mTextView, item.status);
-		((BaseActivity)context).onStartDownload(map);
 	}
 	
 }

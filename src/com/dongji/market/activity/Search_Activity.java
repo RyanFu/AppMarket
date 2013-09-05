@@ -55,7 +55,6 @@ import android.widget.LinearLayout.LayoutParams;
 
 import com.dongji.market.R;
 import com.dongji.market.adapter.GuessLikeAdapter;
-import com.dongji.market.adapter.OnDownloadChangeStatusListener;
 import com.dongji.market.cache.FileService;
 import com.dongji.market.database.MarketDatabase;
 import com.dongji.market.database.MarketDatabase.HotwordsService;
@@ -77,7 +76,7 @@ import com.dongji.market.receiver.CommonReceiver;
 import com.dongji.market.widget.CustomIconAnimation;
 import com.umeng.analytics.MobclickAgent;
 
-public class Search_Activity extends BaseActivity implements OnDownloadChangeStatusListener {
+public class Search_Activity extends BaseActivity {
 	private static final int EVENT_REQUEST_HOTWORDS_LIST = 2;
 	private static final int EVENT_NO_NETWORK_ERROR = 3;
 	private static final int EVENT_REQUEST_DATA_ERROR = 4;
@@ -533,7 +532,7 @@ public class Search_Activity extends BaseActivity implements OnDownloadChangeSta
 					map.put("X", location[0]);
 					map.put("Y", location[1]);
 					map.put("icon", mAppIconImageView.getDrawable());
-					DownloadUtils.checkDownload(Search_Activity.this, item, mInstallTextView, Search_Activity.this, map);
+					DownloadUtils.checkDownload(Search_Activity.this, item, mInstallTextView, map);
 				} else {
 					Intent intent = new Intent(DownloadConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD);
 					DownloadEntity entity = new DownloadEntity(item);
@@ -613,16 +612,6 @@ public class Search_Activity extends BaseActivity implements OnDownloadChangeSta
 		mTextView.setTextColor(textColor);
 	}
 
-	@Override
-	public void onDownload(ApkItem item, TextView mTextView, Map<String, Object> map) {
-		if (item.status == AConstDefine.STATUS_APK_UNINSTALL) {
-			item.status = AConstDefine.STATUS_APK_INSTALL;
-		} else if (item.status == AConstDefine.STATUS_APK_UNUPDATE) {
-			item.status = AConstDefine.STATUS_APK_UPDATE;
-		}
-		displayApkStatus(mTextView, item.status);
-		onStartDownload(map);
-	}
 
 	/**
 	 * 根据AppId找到对应的应用修改其状态

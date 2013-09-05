@@ -162,7 +162,7 @@ public class SearchResultAdapter extends ListBaseAdapter implements
 					// DJMarketUtils.checkDownload(context, apkItem,
 					// holder.mAppInstall, SearchResultAdapter.this, map);
 					DownloadUtils.checkDownload(context, apkItem,
-							holder.mAppInstall, SearchResultAdapter.this, map);
+							holder.mAppInstall, map);
 				} else {
 					// DJMarketUtils.cancelListDownload(context, apkItem);
 					Intent intent = new Intent(
@@ -226,18 +226,6 @@ public class SearchResultAdapter extends ListBaseAdapter implements
 	public List<ApkItem> getItemList() {
 		// TODO Auto-generated method stub
 		return data;
-	}
-
-	@Override
-	public void onDownload(ApkItem item, TextView mTextView,
-			Map<String, Object> map) {
-		if (item.status == STATUS_APK_UNINSTALL) {
-			item.status = STATUS_APK_INSTALL;
-		} else if (item.status == STATUS_APK_UNUPDATE) {
-			item.status = STATUS_APK_UPDATE;
-		}
-		displayApkStatus(mTextView, item.status);
-		// ((Search_Result_Activity)cxt).onStartDownload(map);
 	}
 
 }

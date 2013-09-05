@@ -116,7 +116,7 @@ public class ListSingleTemplateAdapter extends ListBaseAdapter implements AConst
 					map.put("X", location[0]);
 					map.put("Y", location[1]);
 					map.put("icon", holder.mAppIconImageView.getDrawable());
-					DownloadUtils.checkDownload(context, item, holder.mInstallTextView, ListSingleTemplateAdapter.this, map);
+					DownloadUtils.checkDownload(context, item, holder.mInstallTextView, map);
 				}else {
 					Intent intent=new Intent(DownloadConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD);
 					DownloadEntity entity=new DownloadEntity(item);
@@ -170,17 +170,6 @@ public class ListSingleTemplateAdapter extends ListBaseAdapter implements AConst
 	public List<ApkItem> getItemList() {
 		// TODO Auto-generated method stub
 		return list;
-	}
-
-	@Override
-	public void onDownload(ApkItem item, TextView mTextView, Map<String, Object> map) {
-		if(item.status==STATUS_APK_UNINSTALL) {
-			item.status=STATUS_APK_INSTALL;
-		}else if(item.status==STATUS_APK_UNUPDATE) {
-			item.status=STATUS_APK_UPDATE;
-		}
-		displayApkStatus(mTextView, item.status);
-		((BaseActivity)context).onStartDownload(map);
 	}
 	
 }

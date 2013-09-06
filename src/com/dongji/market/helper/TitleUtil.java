@@ -3,8 +3,6 @@ package com.dongji.market.helper;
 import java.util.List;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources.NotFoundException;
@@ -27,6 +25,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.PopupWindow;
 import android.widget.PopupWindow.OnDismissListener;
 import android.widget.ProgressBar;
@@ -51,9 +50,7 @@ import com.dongji.market.download.DownloadConstDefine;
 import com.dongji.market.download.DownloadEntity;
 import com.dongji.market.download.DownloadService;
 import com.dongji.market.download.FlowBroadcastReceiver;
-import com.dongji.market.download.NetTool;
 import com.dongji.market.pojo.ApkItem;
-import com.dongji.market.pojo.InstalledAppInfo;
 import com.dongji.market.pojo.LoginParams;
 import com.dongji.market.protocol.DataManager;
 import com.dongji.market.receiver.CommonReceiver;
@@ -122,6 +119,10 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 	private static final String BROADCAST_CLOSE_ACTIVITY = "com.dongji.market.CLOSE_ACTIVITY";
 
 	public boolean isSharing = false;
+	private LinearLayout mainTopLayout;
+	private ImageView topLogo;
+	private FrameLayout softManagerLay1;
+	private FrameLayout softManagerLay2;
 
 	/**
 	 * 
@@ -175,24 +176,24 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 			mShareButton.setVisibility(View.GONE);
 		}
 		if (!cxt.getClass().equals(Search_Activity.class)) {// 非搜索页有页面名称
-			mPageNameTextView = (TextView) titleView.findViewById(R.id.page_name);
+			initCommonLayout();
 			mPageNameTextView.setText(pageName);
 			if (cxt.getClass().equals(ChannelListActivity.class)) {// 分类页有排序图标
-				mSortPageShrinkIcon = (ImageView) titleView.findViewById(R.id.shrink_icon);
 				mSortPageShrinkIcon.setVisibility(View.VISIBLE);
 				mSortPageShrinkIcon.setOnClickListener(this);
 				mPageNameTextView.setOnClickListener(this);
 			}
 			View mLinearLayout = titleView.findViewById(R.id.outsidelayout);
 			mLinearLayout.setOnClickListener(new View.OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							if (mOnToolBarBlankClickListener != null) {
-								mOnToolBarBlankClickListener.onClick();
-							}
-						}
-					});
+				@Override
+				public void onClick(View v) {
+					if (mOnToolBarBlankClickListener != null) {
+						mOnToolBarBlankClickListener.onClick();
+					}
+				}
+			});
 		} else {// 搜索页
+			initSearchLayout();
 			if (!cxt.isFinishing()) {
 				View mClearLayout = titleView.findViewById(R.id.clearLayout);
 				mClearLayout.setOnClickListener(this);
@@ -243,22 +244,202 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 				mClearKeywordBtn.setOnClickListener(this);
 			}
 		}
-		mTopLogoLayout = (FrameLayout) titleView.findViewById(R.id.top_logo_layout);
-		mBackButton = (Button) titleView.findViewById(R.id.backButton);
 		if (cxt.getClass().equals(MainActivity.class)) {// 主页面会改变logo图标,并隐藏返回按钮
-			TextView mTitleTextView = (TextView) titleView.findViewById(R.id.page_name);
-			mTitleTextView.setText(R.string.app_name);
-			mTitleTextView.setVisibility(View.VISIBLE);
+			mPageNameTextView.setText(R.string.app_name);
+			mPageNameTextView.setVisibility(View.VISIBLE);
 		}
-
-		tvCount = (TextView) titleView.findViewById(R.id.tvCount);
-		manager_progress = (ProgressBar) titleView.findViewById(R.id.manager_progress);
 		manager_progress.setMax(100);
 		mBackButton.setOnClickListener(this);
 		mTopLogoLayout.setOnClickListener(this);
 		mSettingButton.setOnClickListener(this);
 		mSearchButton.setOnClickListener(this);
 		mSWeManageButton.setOnClickListener(this);
+	}
+
+	private void initSearchLayout() {
+		int screenHeight = AndroidUtils.getScreenSize(cxt).heightPixels;
+		int screenWidth = AndroidUtils.getScreenSize(cxt).widthPixels;
+		LinearLayout.LayoutParams linearParams;
+		FrameLayout.LayoutParams frameParams;
+		int actualHeight;
+		int actualWidth;
+		int leftMargin;
+		int rightMargin;
+		int textSize;
+
+		mTopLogoLayout = (FrameLayout) titleView.findViewById(R.id.top_logo_layout);
+		actualWidth = (int) (screenWidth * 0.114);
+		linearParams = (LayoutParams) mTopLogoLayout.getLayoutParams();
+		linearParams.width = actualWidth;
+		mTopLogoLayout.setLayoutParams(linearParams);
+
+		mBackButton = (Button) titleView.findViewById(R.id.backButton);
+		actualHeight = (int) (screenHeight * 0.023);
+		actualWidth = (int) (actualHeight * 0.4);
+		leftMargin = (int) (screenWidth * 0.008);
+		frameParams = (FrameLayout.LayoutParams) mBackButton.getLayoutParams();
+		frameParams.width = actualWidth;
+		frameParams.height = actualHeight;
+		frameParams.leftMargin = leftMargin;
+		mBackButton.setLayoutParams(frameParams);
+
+		softManagerLay1 = (FrameLayout) titleView.findViewById(R.id.softmanager_layout1);
+		actualHeight = (int) (screenHeight * 0.045);
+		actualWidth = (int) (actualHeight * 0.97);
+		leftMargin = (int) (screenWidth * 0.036);
+		rightMargin = (int) (screenWidth * 0.025);
+		linearParams = (LayoutParams) softManagerLay1.getLayoutParams();
+		linearParams.width = actualWidth;
+		linearParams.height = actualHeight;
+		linearParams.leftMargin = leftMargin;
+		linearParams.rightMargin = rightMargin;
+		softManagerLay1.setLayoutParams(linearParams);
+
+		softManagerLay2 = (FrameLayout) titleView.findViewById(R.id.softmanager_layout2);
+		actualHeight = (int) (screenHeight * 0.034);
+		actualWidth = actualHeight;
+		frameParams = (FrameLayout.LayoutParams) softManagerLay2.getLayoutParams();
+		frameParams.width = actualWidth;
+		frameParams.height = actualHeight;
+		softManagerLay2.setLayoutParams(frameParams);
+
+		manager_progress = (ProgressBar) titleView.findViewById(R.id.manager_progress);
+		actualHeight = (int) (screenHeight * 0.0023);
+		actualWidth = (int) (actualHeight * 11.3);
+		frameParams = (FrameLayout.LayoutParams) manager_progress.getLayoutParams();
+		frameParams.width = actualWidth;
+		frameParams.height = actualHeight;
+		manager_progress.setLayoutParams(frameParams);
+
+		tvCount = (TextView) titleView.findViewById(R.id.tvCount);
+		actualHeight = (int) (screenHeight * 0.018);
+		actualWidth = actualHeight;
+		textSize = (int) (screenWidth * 0.019);
+		frameParams = (FrameLayout.LayoutParams) tvCount.getLayoutParams();
+		frameParams.width = actualWidth;
+		frameParams.height = actualHeight;
+		tvCount.setLayoutParams(frameParams);
+		tvCount.setTextSize(textSize);
+	}
+
+	private void initCommonLayout() {
+		int screenHeight = AndroidUtils.getScreenSize(cxt).heightPixels;
+		int screenWidth = AndroidUtils.getScreenSize(cxt).widthPixels;
+		LinearLayout.LayoutParams linearParams;
+		FrameLayout.LayoutParams frameParams;
+		int actualHeight;
+		int actualWidth;
+		int leftMargin;
+		int rightMargin;
+		int textSize;
+
+		mainTopLayout = (LinearLayout) titleView;
+		actualHeight = (int) (screenHeight * 0.081);
+		linearParams = (LayoutParams) mainTopLayout.getLayoutParams();
+		linearParams.height = actualHeight;
+		mainTopLayout.setLayoutParams(linearParams);
+
+		mTopLogoLayout = (FrameLayout) titleView.findViewById(R.id.top_logo_layout);
+		actualWidth = (int) (screenWidth * 0.114);
+		linearParams = (LayoutParams) mTopLogoLayout.getLayoutParams();
+		linearParams.width = actualWidth;
+		mTopLogoLayout.setLayoutParams(linearParams);
+
+		mBackButton = (Button) titleView.findViewById(R.id.backButton);
+		actualHeight = (int) (screenHeight * 0.023);
+		actualWidth = (int) (actualHeight * 0.4);
+		leftMargin = (int) (screenWidth * 0.008);
+		frameParams = (FrameLayout.LayoutParams) mBackButton.getLayoutParams();
+		frameParams.width = actualWidth;
+		frameParams.height = actualHeight;
+		frameParams.leftMargin = leftMargin;
+		mBackButton.setLayoutParams(frameParams);
+
+		topLogo = (ImageView) titleView.findViewById(R.id.top_logo);
+		actualHeight = (int) (screenHeight * 0.052);
+		actualWidth = actualHeight;
+		leftMargin = (int) (screenWidth * 0.022);
+		frameParams = (FrameLayout.LayoutParams) topLogo.getLayoutParams();
+		frameParams.width = actualWidth;
+		frameParams.height = actualHeight;
+		frameParams.leftMargin = leftMargin;
+		topLogo.setLayoutParams(frameParams);
+
+		mPageNameTextView = (TextView) titleView.findViewById(R.id.page_name);
+//		textSize = (int) (screenWidth * 0.043);
+//		mPageNameTextView.setTextSize(textSize);
+
+		mSortPageShrinkIcon = (ImageView) titleView.findViewById(R.id.shrink_icon);
+		actualHeight = (int) (screenHeight * 0.0125);
+		actualWidth = actualHeight;
+		leftMargin = (int) (screenWidth * 0.008);
+		linearParams = (LayoutParams) mSortPageShrinkIcon.getLayoutParams();
+		linearParams.weight = actualWidth;
+		linearParams.height = actualHeight;
+		linearParams.leftMargin = leftMargin;
+		mSortPageShrinkIcon.setLayoutParams(linearParams);
+
+		actualHeight = (int) (screenHeight * 0.04);
+		actualWidth = actualHeight;
+		linearParams = (LayoutParams) mSearchButton.getLayoutParams();
+		linearParams.width = actualWidth;
+		linearParams.height = actualHeight;
+		mSearchButton.setLayoutParams(linearParams);
+
+		actualHeight = (int) (screenHeight * 0.04);
+		actualWidth = (int) (actualHeight * 0.692);
+		leftMargin = (int) (screenWidth * 0.036);
+		linearParams = (LayoutParams) mShareButton.getLayoutParams();
+		linearParams.width = actualWidth;
+		linearParams.height = actualHeight;
+		mShareButton.setLayoutParams(linearParams);
+
+		softManagerLay1 = (FrameLayout) titleView.findViewById(R.id.softmanager_layout1);
+		actualHeight = (int) (screenHeight * 0.045);
+		actualWidth = (int) (actualHeight * 0.97);
+		leftMargin = (int) (screenWidth * 0.036);
+		rightMargin = (int) (screenWidth * 0.025);
+		linearParams = (LayoutParams) softManagerLay1.getLayoutParams();
+		linearParams.width = actualWidth;
+		linearParams.height = actualHeight;
+		linearParams.leftMargin = leftMargin;
+		linearParams.rightMargin = rightMargin;
+		softManagerLay1.setLayoutParams(linearParams);
+
+		softManagerLay2 = (FrameLayout) titleView.findViewById(R.id.softmanager_layout2);
+		actualHeight = (int) (screenHeight * 0.034);
+		actualWidth = actualHeight;
+		frameParams = (FrameLayout.LayoutParams) softManagerLay2.getLayoutParams();
+		frameParams.width = actualWidth;
+		frameParams.height = actualHeight;
+		softManagerLay2.setLayoutParams(frameParams);
+
+		manager_progress = (ProgressBar) titleView.findViewById(R.id.manager_progress);
+		actualHeight = (int) (screenHeight * 0.0023);
+		actualWidth = (int) (actualHeight * 11.3);
+		frameParams = (FrameLayout.LayoutParams) manager_progress.getLayoutParams();
+		frameParams.width = actualWidth;
+		frameParams.height = actualHeight;
+		manager_progress.setLayoutParams(frameParams);
+
+		tvCount = (TextView) titleView.findViewById(R.id.tvCount);
+		actualHeight = (int) (screenHeight * 0.018);
+		actualWidth = actualHeight;
+//		textSize = (int) (screenWidth * 0.019);
+		frameParams = (FrameLayout.LayoutParams) tvCount.getLayoutParams();
+		frameParams.width = actualWidth;
+		frameParams.height = actualHeight;
+		tvCount.setLayoutParams(frameParams);
+//		tvCount.setTextSize(textSize);
+
+		actualHeight = (int) (screenHeight * 0.04);
+		actualWidth = actualHeight;
+		rightMargin = (int) (screenWidth * 0.014);
+		linearParams = (LayoutParams) mSettingButton.getLayoutParams();
+		linearParams.width = actualWidth;
+		linearParams.height = actualHeight;
+		linearParams.rightMargin = rightMargin;
+		mSettingButton.setLayoutParams(linearParams);
 	}
 
 	/**

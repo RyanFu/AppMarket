@@ -3,6 +3,7 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="fill_parent"
   android:layout_height="wrap_content"
+  android:id="@+id/main_top_layout"
   android:gravity="center_vertical"
   android:paddingRight="8dip"
   android:paddingTop="9dip"
@@ -92,16 +93,18 @@
 		android:src="@drawable/share_selector"
 		android:visibility="gone" />
 	<FrameLayout 
+	    android:id="@+id/softmanager_layout1"
 		android:layout_width="28dip"
 		android:layout_height="29dip"
 		android:padding="2dp"
 		android:layout_marginLeft="13dip"
 		android:layout_marginRight="9dip" >
 		<FrameLayout  
+		    android:id="@+id/softmanager_layout2"
 			android:layout_width="22dip"
 			android:layout_height="22dip"
 			android:layout_gravity="bottom"
-			android:layout_marginBottom="2dip"	>
+			android:layout_marginBottom="2dip">
 			<!-- <Button 
 				android:id="@id/softmanagerbutton"
 				android:layout_width="fill_parent"

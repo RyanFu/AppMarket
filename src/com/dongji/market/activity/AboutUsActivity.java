@@ -9,16 +9,20 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
 import com.dongji.market.R;
 import com.dongji.market.download.AConstDefine;
+import com.dongji.market.helper.AndroidUtils;
 import com.dongji.market.receiver.CommonReceiver;
 
 public class AboutUsActivity extends Activity {
 	private TextView mPublishDateTV, mVersionInfoTV;
 	private ImageView mTopLogo;
 	private CommonReceiver receiver;
+	private ImageView mShareUs;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -35,14 +39,27 @@ public class AboutUsActivity extends Activity {
 
 	private void initView() {
 		overridePendingTransition(R.anim.in_from_right, R.anim.out_to_left);
+		int screenHeight = AndroidUtils.getScreenSize(this).heightPixels;
+		int screenWidth = AndroidUtils.getScreenSize(this).widthPixels;
+		LinearLayout.LayoutParams linearParams;
+		int actualHeight;
+		int actualWidth;
+		int leftMargin;
+		int rightMargin;
 
 		mPublishDateTV = (TextView) findViewById(R.id.publish_date);
 		mVersionInfoTV = (TextView) findViewById(R.id.version_info);
-
 		mPublishDateTV.setText(R.string.publish_date_value);
 		mVersionInfoTV.setText(getVersionName());
 
 		mTopLogo = (ImageView) findViewById(R.id.topLogo);
+		actualHeight = (int) (screenHeight * 0.052);
+		actualWidth = actualHeight;
+		leftMargin = (int) (screenWidth * 0.022);
+		linearParams = (LayoutParams) mTopLogo.getLayoutParams();
+		linearParams.width = actualWidth;
+		linearParams.height = actualHeight;
+		linearParams.leftMargin = leftMargin;
 		mTopLogo.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -50,6 +67,16 @@ public class AboutUsActivity extends Activity {
 				sendBroadcast(new Intent(AConstDefine.GO_HOME_BROADCAST));
 			}
 		});
+
+		mShareUs = (ImageView) findViewById(R.id.share_us);
+		actualHeight = (int) (screenHeight * 0.058);
+		actualWidth = (int) (actualHeight * 0.736);
+		rightMargin = (int) (screenWidth * 0.028);
+		linearParams = (LayoutParams) mShareUs.getLayoutParams();
+		linearParams.width = actualWidth;
+		linearParams.height = actualHeight;
+		linearParams.rightMargin = rightMargin;
+		mShareUs.setLayoutParams(linearParams);
 	}
 
 	public String getVersionName() {

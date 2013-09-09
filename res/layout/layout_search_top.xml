@@ -26,14 +26,16 @@
             android:visibility="gone" />
 
         <ImageView
+            android:id="@+id/top_logo"
             android:layout_width="33dip"
             android:layout_height="33dip"
+            android:layout_gravity="left"
             android:layout_marginLeft="8dp"
-			android:layout_gravity="left"
             android:background="@drawable/icon" />
     </FrameLayout>
 
     <RelativeLayout
+        android:id="@+id/search_layout"
         android:layout_width="0dp"
         android:layout_height="32dp"
         android:layout_marginLeft="4dp"
@@ -54,47 +56,55 @@
             android:textColorHint="#999"
             android:textSize="17sp"
             searchview:completionThreshold="0"
+            searchview:divider="#d3d3d3"
+            searchview:dividerHeight="1.0dip"
             searchview:dropdownSelector="#00000000"
             searchview:popupBackground="@drawable/search_pop_et_style"
-            searchview:popupHeight="200dip"
-            searchview:divider="#d3d3d3"
-            searchview:dividerHeight="1.0dip" />
-        <LinearLayout 
-        	android:id="@+id/clearLayout"
-        	android:layout_width="20dip"
-        	android:layout_height="fill_parent" 
-        	android:layout_alignParentRight="true"
+            searchview:popupHeight="200dip" />
+
+        <LinearLayout
+            android:id="@+id/clearLayout"
+            android:layout_width="20dip"
+            android:layout_height="fill_parent"
+            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:gravity="center_vertical" >
-	        <Button
-	            android:id="@+id/clearKeyword"
-	            android:layout_width="10dp"
-	            android:layout_height="10dp"
-	            android:layout_marginRight="4dp"
-	            android:background="@drawable/clear_keyword_selector"/>
+
+            <Button
+                android:id="@+id/clearKeyword"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_marginRight="4dp"
+                android:background="@drawable/clear_keyword_selector" />
         </LinearLayout>
     </RelativeLayout>
 
-    <!-- <Button 
+    <!--
+         <Button 
         android:id="@id/searchButton"
         android:layout_width="26dip"
         android:layout_height="26dip"
-        android:background="@drawable/search_selector" /> -->
-        <ImageView 
+        android:background="@drawable/search_selector" />
+    -->
+
+    <ImageView
         android:id="@id/searchButton"
         android:layout_width="26dip"
         android:layout_height="26dip"
         android:padding="2dp"
         android:src="@drawable/search_selector" />
 
-    <!-- <Button
+    <!--
+         <Button
         android:id="@id/shareButton"
         android:layout_width="18dip"
         android:layout_height="26dip"
         android:layout_marginLeft="13dip"
         android:background="@drawable/share_selector"
-        android:visibility="gone" /> -->
-        <ImageView
+        android:visibility="gone" />
+    -->
+
+    <ImageView
         android:id="@id/shareButton"
         android:layout_width="18dip"
         android:layout_height="26dip"
@@ -104,39 +114,46 @@
         android:visibility="gone" />
 
     <FrameLayout
+        android:id="@+id/softmanager_layout1"
         android:layout_width="28dip"
         android:layout_height="29dip"
-        android:padding="2dp"
         android:layout_marginLeft="13dip"
-        android:layout_marginRight="9dip" >
+        android:layout_marginRight="9dip"
+        android:padding="2dp" >
 
-        <FrameLayout  
-			android:layout_width="22dip"
-			android:layout_height="22dip"
-			android:layout_gravity="bottom"
-			android:layout_marginBottom="2dip"	>
-			<!-- <Button 
-				android:id="@id/softmanagerbutton"
-				android:layout_width="fill_parent"
-				android:layout_height="fill_parent"
-				android:background="@drawable/manager_none_selector" /> -->
-				<ImageView 
+        <FrameLayout
+            android:id="@+id/softmanager_layout2"
+            android:layout_width="22dip"
+            android:layout_height="22dip"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="2dip" >
+
+            <!--
+                 <Button 
 				android:id="@id/softmanagerbutton"
 				android:layout_width="fill_parent"
 				android:layout_height="fill_parent"
 				android:background="@drawable/manager_none_selector" />
-			<ProgressBar 
-				android:id="@+id/manager_progress"
-	            style="?android:attr/progressBarStyleHorizontal"
-	            android:layout_width="17dip"
-	            android:layout_height="1.5dip"
-	            android:layout_marginBottom="1.5dip"
-	            android:layout_gravity="center_horizontal|bottom"
-	            android:max="100"
-	            android:progress="0"
-	            android:progressDrawable="@drawable/progressbar_xml"
-	            android:secondaryProgress="0"
-	            android:visibility="gone" />
+            -->
+
+            <ImageView
+                android:id="@id/softmanagerbutton"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:background="@drawable/manager_none_selector" />
+
+            <ProgressBar
+                android:id="@+id/manager_progress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="17dip"
+                android:layout_height="1.5dip"
+                android:layout_gravity="center_horizontal|bottom"
+                android:layout_marginBottom="1.5dip"
+                android:max="100"
+                android:progress="0"
+                android:progressDrawable="@drawable/progressbar_xml"
+                android:secondaryProgress="0"
+                android:visibility="gone" />
         </FrameLayout>
 
         <TextView

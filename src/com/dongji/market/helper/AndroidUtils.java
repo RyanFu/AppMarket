@@ -32,6 +32,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
@@ -58,14 +59,11 @@ public class AndroidUtils {
 	private static DisplayMetrics mDisplayMetrics;
 
 	static {
-		cachePath = Environment.getExternalStorageDirectory().getPath()
-				+ "/.dongji/dongjiMarket/cache/";
+		cachePath = Environment.getExternalStorageDirectory().getPath() + "/.dongji/dongjiMarket/cache/";
 	}
 
-	private static ZipInputStream getZipInputStream(Context context, int rawId)
-			throws IOException {
-		ZipInputStream zis = new ZipInputStream(context.getResources()
-				.openRawResource(rawId));
+	private static ZipInputStream getZipInputStream(Context context, int rawId) throws IOException {
+		ZipInputStream zis = new ZipInputStream(context.getResources().openRawResource(rawId));
 		ZipEntry zipEntry = zis.getNextEntry();
 		if (zipEntry != null) {
 			return zis;
@@ -73,8 +71,7 @@ public class AndroidUtils {
 		return null;
 	}
 
-	public static void copyFile(Context context, int rawId, String path)
-			throws IOException {
+	public static void copyFile(Context context, int rawId, String path) throws IOException {
 		FileOutputStream fos = new FileOutputStream(path);
 		ZipInputStream zis = getZipInputStream(context, rawId);
 		byte[] b = new byte[2048];
@@ -87,8 +84,7 @@ public class AndroidUtils {
 		fos.close();
 	}
 
-	public static void copyFile(Context context, String... str)
-			throws IOException {
+	public static void copyFile(Context context, String... str) throws IOException {
 		FileOutputStream fos = new FileOutputStream(str[0]);
 		ZipInputStream zis = getZipInputStream(context, str[1]);
 		byte[] b = new byte[2048];
@@ -101,10 +97,8 @@ public class AndroidUtils {
 		fos.close();
 	}
 
-	private static ZipInputStream getZipInputStream(Context context,
-			String filePath) throws IOException {
-		ZipInputStream zis = new ZipInputStream(context.getAssets().open(
-				filePath));
+	private static ZipInputStream getZipInputStream(Context context, String filePath) throws IOException {
+		ZipInputStream zis = new ZipInputStream(context.getAssets().open(filePath));
 		ZipEntry zipEntry = zis.getNextEntry();
 		if (zipEntry != null) {
 			return zis;
@@ -145,8 +139,7 @@ public class AndroidUtils {
 				FileOutputStream fos = null;
 				try {
 					fos = new FileOutputStream(savePath);
-					boolean flag = bitmap.compress(CompressFormat.JPEG, 100,
-							fos);
+					boolean flag = bitmap.compress(CompressFormat.JPEG, 100, fos);
 					fos.flush();
 					return flag;
 				} catch (FileNotFoundException e) {
@@ -207,8 +200,7 @@ public class AndroidUtils {
 	 * @return
 	 */
 	public static boolean isSdcardExists() {
-		return Environment.getExternalStorageState().equals(
-				Environment.MEDIA_MOUNTED);
+		return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
 	}
 
 	/**
@@ -258,9 +250,7 @@ public class AndroidUtils {
 	 */
 	public static boolean isNetworkAvailable(Context context) {
 		if (context != null) {
-			ConnectivityManager manager = (ConnectivityManager) context
-					.getApplicationContext().getSystemService(
-							Context.CONNECTIVITY_SERVICE);
+			ConnectivityManager manager = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 			if (manager == null) {
 				return false;
 			}
@@ -309,9 +299,7 @@ public class AndroidUtils {
 	 */
 	private static boolean isAvailableByType(Context context, int type) {
 		if (context != null) {
-			ConnectivityManager manager = (ConnectivityManager) context
-					.getApplicationContext().getSystemService(
-							Context.CONNECTIVITY_SERVICE);
+			ConnectivityManager manager = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 			if (manager != null) {
 				NetworkInfo[] networkInfos = manager.getAllNetworkInfo();
 				for (int i = 0; i < networkInfos.length; i++) {
@@ -357,6 +345,7 @@ public class AndroidUtils {
 		context.getWindowManager().getDefaultDisplay().getMetrics(dm);
 		return dm;
 	}
+	
 
 	/**
 	 * 验证邮箱格式是否正确
@@ -445,11 +434,9 @@ public class AndroidUtils {
 	 * @return
 	 */
 	public static boolean checkSIM(Context context) {
-		TelephonyManager tManager = (TelephonyManager) context
-				.getSystemService(Context.TELEPHONY_SERVICE);
+		TelephonyManager tManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
 		int simState = tManager.getSimState();
-		if (simState == TelephonyManager.SIM_STATE_ABSENT
-				|| simState == TelephonyManager.SIM_STATE_UNKNOWN) {
+		if (simState == TelephonyManager.SIM_STATE_ABSENT || simState == TelephonyManager.SIM_STATE_UNKNOWN) {
 			return false;
 		}
 		return true;
@@ -535,7 +522,7 @@ public class AndroidUtils {
 			out = process.getOutputStream();
 			out.write(("pm install -r " + apkPath + "\n").getBytes());
 			// 调用安装，将文件写入到process里面
-//			in = process.getInputStream();//拿到输出流，开始安装操作
+			// in = process.getInputStream();//拿到输出流，开始安装操作
 			in = process.getErrorStream();
 			int len = 0;
 			byte[] bs = new byte[256];
@@ -669,8 +656,7 @@ public class AndroidUtils {
 			queryUrl = "content://com.android.launcher2.settings/favorites?notify=true";
 		}
 		ContentResolver resolver = context.getContentResolver();
-		Cursor cursor = resolver.query(Uri.parse(queryUrl), null, "title=?",
-				new String[] { appName }, null);
+		Cursor cursor = resolver.query(Uri.parse(queryUrl), null, "title=?", new String[] { appName }, null);
 		if (cursor != null && cursor.moveToFirst()) {
 			flag = true;
 		}
@@ -730,8 +716,7 @@ public class AndroidUtils {
 	 * @param context
 	 * @param packageName
 	 */
-	public static void showInstalledAppDetails(Context context,
-			String packageName) {
+	public static void showInstalledAppDetails(Context context, String packageName) {
 		String scheme = "package";
 		String app_pkg_name_21 = "com.android.settings.ApplicationPkgName"; // 调用系统InstalledAppDetails界面所需的Extra名称(用于Android
 																			// 2.1及之前版本)
@@ -748,8 +733,7 @@ public class AndroidUtils {
 			Uri uri = Uri.fromParts(scheme, packageName, null);
 			intent.setData(uri);
 		} else { // 2.3以下，使用非公开的接口（查看InstalledAppDetails源码）,2.2和2.1中，InstalledAppDetails使用的APP_PKG_NAME不同。
-			String appPkgName = apiLevel == 8 ? app_pkg_name_22
-					: app_pkg_name_21;
+			String appPkgName = apiLevel == 8 ? app_pkg_name_22 : app_pkg_name_21;
 			intent.setAction(Intent.ACTION_VIEW);
 			intent.setClassName(app_detail_pkg_name, app_detail_class_name);
 			intent.putExtra(appPkgName, packageName);
@@ -767,8 +751,7 @@ public class AndroidUtils {
 	public static byte[] getSignInfo(Context cxt, String pkgName) {
 		PackageManager pm = cxt.getPackageManager();
 		try {
-			PackageInfo pi = pm.getPackageInfo(pkgName,
-					PackageManager.GET_SIGNATURES);
+			PackageInfo pi = pm.getPackageInfo(pkgName, PackageManager.GET_SIGNATURES);
 			Signature[] signs = pi.signatures;
 			return signs[0].toByteArray();
 		} catch (NameNotFoundException e) {
@@ -779,16 +762,36 @@ public class AndroidUtils {
 	}
 
 	/**
+	 * 判断是否是平板
+	 * 
+	 * @param context
+	 * @return
+	 */
+	public static boolean isTablet(Context context) {
+		return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+	}
+	
+	/**
+	 * 获取物理尺寸
+	 * @param context
+	 * @return
+	 */
+	public static double getPhysicalSize(Activity context){
+		DisplayMetrics dm=getScreenSize(context);
+		double diagonalPixels=Math.sqrt(Math.pow(dm.widthPixels, 2)+Math.pow(dm.heightPixels, 2));
+		return diagonalPixels/(160*dm.density);
+	}
+
+
+	/**
 	 * 解析密钥字节数组
 	 * 
 	 * @param signature
 	 */
 	public static void parseSignature(byte[] signature) {
 		try {
-			CertificateFactory certFactory = CertificateFactory
-					.getInstance("X.509");
-			X509Certificate cert = (X509Certificate) certFactory
-					.generateCertificate(new ByteArrayInputStream(signature));
+			CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+			X509Certificate cert = (X509Certificate) certFactory.generateCertificate(new ByteArrayInputStream(signature));
 			String pubKey = cert.getPublicKey().toString();
 			String signNumber = cert.getSerialNumber().toString();
 			System.out.println("signName:" + cert.getSigAlgName());
@@ -806,8 +809,7 @@ public class AndroidUtils {
 	 * @param cxt
 	 */
 	public static Map<String, String> getDeviceInfo(Context cxt) {
-		TelephonyManager tm = (TelephonyManager) cxt
-				.getSystemService(Context.TELEPHONY_SERVICE);
+		TelephonyManager tm = (TelephonyManager) cxt.getSystemService(Context.TELEPHONY_SERVICE);
 		String imei = tm.getDeviceId(); // GSM手机的 IMEI 和 CDMA手机的 MEID
 		String imeiSV = tm.getDeviceSoftwareVersion(); // IMEI版本
 		String manufacturer = getManufacturer(); // 手机制造商
@@ -816,8 +818,7 @@ public class AndroidUtils {
 		String sysVersion = Build.VERSION.RELEASE; // 系统版本
 		String simOperator = getSimOperator(tm); // 运营商名称
 		String networkType = getPhoneNetworkType(tm); // 移动网络制式
-		String phoneNum = tm.getLine1Number() == null ? "Unknown" : tm
-				.getLine1Number(); // 手机号码
+		String phoneNum = tm.getLine1Number() == null ? "Unknown" : tm.getLine1Number(); // 手机号码
 		String simNum = tm.getSimSerialNumber(); // SIM卡唯一编号ID
 		String usrId = tm.getSubscriberId(); // 获取客户id，在gsm中是imsi号
 		// CellLocation cellLoc = tm.getCellLocation();//电话方位
@@ -830,9 +831,7 @@ public class AndroidUtils {
 		String cellProduct = Build.PRODUCT; // 如：yakju
 		String cellDevice = Build.DEVICE; // 如：maguro
 
-		String signalType = tm.getPhoneType() == TelephonyManager.PHONE_TYPE_NONE ? "无信号"
-				: (tm.getPhoneType() == TelephonyManager.PHONE_TYPE_GSM ? "GSM信号"
-						: "CDMA信号"); // 信号类型
+		String signalType = tm.getPhoneType() == TelephonyManager.PHONE_TYPE_NONE ? "无信号" : (tm.getPhoneType() == TelephonyManager.PHONE_TYPE_GSM ? "GSM信号" : "CDMA信号"); // 信号类型
 		// String simOperatorName = tm.getSimState() ==
 		// TelephonyManager.SIM_STATE_READY ? tm.getSimOperatorName() :
 		// "SIM state error!"; //服务商名称
@@ -897,11 +896,9 @@ public class AndroidUtils {
 
 			Object invoker = cl.newInstance();
 
-			Method m = cl.getMethod("get", new Class[] { String.class,
-					String.class });
+			Method m = cl.getMethod("get", new Class[] { String.class, String.class });
 
-			Object result = m.invoke(invoker, new Object[] {
-					"gsm.version.baseband", "no message" });
+			Object result = m.invoke(invoker, new Object[] { "gsm.version.baseband", "no message" });
 
 			basehandVer = (String) result;
 
@@ -1007,12 +1004,10 @@ public class AndroidUtils {
 		// Returns the MCC+MNC (mobile country code + mobile network code) of
 		// the provider of the SIM. 5 or 6 decimal digits.
 		// 获取SIM卡提供的移动国家码和移动网络码.5或6位的十进制数字.
-		String operator = tm.getSimState() == TelephonyManager.SIM_STATE_READY ? tm
-				.getSimOperator() : null;
+		String operator = tm.getSimState() == TelephonyManager.SIM_STATE_READY ? tm.getSimOperator() : null;
 		if (operator != null) {
 			// 460是国家代码，后面两位是运营商代码
-			if (operator.equals("46000") || operator.equals("46002")
-					|| operator.equals("46007")) {
+			if (operator.equals("46000") || operator.equals("46002") || operator.equals("46007")) {
 				return "中国移动";
 			} else if (operator.equals("46001")) {
 				return "中国联通";
@@ -1041,8 +1036,7 @@ public class AndroidUtils {
 
 			Class<android.os.Build> build_class = android.os.Build.class;
 			// 取得牌子
-			java.lang.reflect.Field manu_field = build_class
-					.getField("MANUFACTURER");
+			java.lang.reflect.Field manu_field = build_class.getField("MANUFACTURER");
 			manufacturer = (String) manu_field.get(new android.os.Build());
 			// 取得型號
 			// java.lang.reflect.Field field2 = build_class.getField("MODEL");
@@ -1084,7 +1078,7 @@ public class AndroidUtils {
 		}
 		return null;
 	}
-	
+
 	public static int getLanguageType() {
 		String language = Locale.getDefault().getLanguage();
 		String country = Locale.getDefault().getCountry();

@@ -39,27 +39,12 @@ public class AboutUsActivity extends Activity {
 
 	private void initView() {
 		overridePendingTransition(R.anim.in_from_right, R.anim.out_to_left);
-		int screenHeight = AndroidUtils.getScreenSize(this).heightPixels;
-		int screenWidth = AndroidUtils.getScreenSize(this).widthPixels;
-		LinearLayout.LayoutParams linearParams;
-		int actualHeight;
-		int actualWidth;
-		int leftMargin;
-		int rightMargin;
-
 		mPublishDateTV = (TextView) findViewById(R.id.publish_date);
 		mVersionInfoTV = (TextView) findViewById(R.id.version_info);
 		mPublishDateTV.setText(R.string.publish_date_value);
 		mVersionInfoTV.setText(getVersionName());
-
 		mTopLogo = (ImageView) findViewById(R.id.topLogo);
-		actualHeight = (int) (screenHeight * 0.052);
-		actualWidth = actualHeight;
-		leftMargin = (int) (screenWidth * 0.022);
-		linearParams = (LayoutParams) mTopLogo.getLayoutParams();
-		linearParams.width = actualWidth;
-		linearParams.height = actualHeight;
-		linearParams.leftMargin = leftMargin;
+		mShareUs = (ImageView) findViewById(R.id.share_us);
 		mTopLogo.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -68,10 +53,30 @@ public class AboutUsActivity extends Activity {
 			}
 		});
 
-		mShareUs = (ImageView) findViewById(R.id.share_us);
-		actualHeight = (int) (screenHeight * 0.058);
-		actualWidth = (int) (actualHeight * 0.736);
-		rightMargin = (int) (screenWidth * 0.028);
+		if (!AndroidUtils.isTablet(this)||AndroidUtils.getPhysicalSize(this)<6) {
+			return;
+		}
+		
+		int screenHeight = AndroidUtils.getScreenSize(this).heightPixels;
+		int screenWidth = AndroidUtils.getScreenSize(this).widthPixels;
+		LinearLayout.LayoutParams linearParams;
+		int actualHeight;
+		int actualWidth;
+		int leftMargin;
+		int rightMargin;
+		
+		actualHeight = (int) (screenHeight * 0.042);
+		actualWidth = actualHeight;
+		leftMargin = (int) (screenWidth * 0.022);
+		linearParams = (LayoutParams) mTopLogo.getLayoutParams();
+		linearParams.width = actualWidth;
+		linearParams.height = actualHeight;
+		linearParams.leftMargin = leftMargin;
+		mTopLogo.setLayoutParams(linearParams);
+		
+		actualHeight = (int) (screenHeight * 0.03);
+		actualWidth = (int) (actualHeight * 0.692);
+		rightMargin = (int) (screenWidth * 0.03);
 		linearParams = (LayoutParams) mShareUs.getLayoutParams();
 		linearParams.width = actualWidth;
 		linearParams.height = actualHeight;

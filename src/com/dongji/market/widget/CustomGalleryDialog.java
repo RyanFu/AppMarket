@@ -24,7 +24,7 @@ public class CustomGalleryDialog extends Dialog {
 	private View mContentView;
 	private Context context;
 	private Gallery mGallery;
-	
+
 	public CustomGalleryDialog(Context context) {
 		super(context, R.style.dialog_progress_default);
 		this.context = context;
@@ -33,48 +33,47 @@ public class CustomGalleryDialog extends Dialog {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(mContentView);
 		setCanceledOnTouchOutside(true);
 	}
-	
+
 	private void initViews() {
-		mContentView = LayoutInflater.from(context).inflate(
-				R.layout.activity_detail_gallery, null);
+		mContentView = LayoutInflater.from(context).inflate(R.layout.activity_detail_gallery, null);
 		mGallery = (Gallery) mContentView.findViewById(R.id.gallery);
 		FrameLayout mFrameLayout = (FrameLayout) mContentView.findViewById(R.id.framelayout);
 		DisplayMetrics dm = new DisplayMetrics();
 		getWindow().getWindowManager().getDefaultDisplay().getMetrics(dm);
 		int num1 = AndroidUtils.dip2px(context, 30);
 		int num2 = AndroidUtils.dip2px(context, 60);
-		LinearLayout.LayoutParams mParams = (LinearLayout.LayoutParams) mFrameLayout
-				.getLayoutParams();
+		LinearLayout.LayoutParams mParams = (LinearLayout.LayoutParams) mFrameLayout.getLayoutParams();
 		mParams.width = dm.widthPixels - (num1 * 2);
 		mParams.height = dm.heightPixels - (num2 * 2);
 		mFrameLayout.setLayoutParams(mParams);
 	}
-	
+
 	public void setImageSource(List<String> arr) {
-		GalleryDetailAdapter mAdapter=new GalleryDetailAdapter(context, arr);
+		GalleryDetailAdapter mAdapter = new GalleryDetailAdapter(context, arr);
 		mGallery.setAdapter(mAdapter);
 		mGallery.setOnItemSelectedListener(new ItemSelectedListener(arr.size()));
 		initSwitchIdResources(arr.size());
 	}
-	
+
 	public void showPosition(int position) {
 		mGallery.setSelection(position);
-		if(!isShowing() && !((Activity) context).isFinishing()) {
+		if (!isShowing() && !((Activity) context).isFinishing()) {
 			show();
 		}
 	}
-	
+
 	/**
 	 * 指示按钮
 	 */
 	private LinearLayout mSwithBtnContainer;
+
 	/**
 	 * 初始化海报指示标
+	 * 
 	 * @param count
 	 */
 	private void initSwitchIdResources(int count) {
@@ -82,16 +81,14 @@ public class CustomGalleryDialog extends Dialog {
 
 		ImageView localImageView = null;
 		SwitchBtnClickListener localSwitchBtnClickListener = new SwitchBtnClickListener();
-		LinearLayout.LayoutParams localLayoutParams = new LinearLayout.LayoutParams(
-				20, 20);
+		LinearLayout.LayoutParams localLayoutParams = new LinearLayout.LayoutParams(20, 20);
 		localLayoutParams.leftMargin = 5;
 		localLayoutParams.rightMargin = 5;
 
 		for (int j = 0; j < count; j++) {
 			localImageView = new ImageView(context);
 			localImageView.setLayoutParams(localLayoutParams);
-			localImageView
-					.setBackgroundResource(R.drawable.selector_image_switcher);
+			localImageView.setBackgroundResource(R.drawable.selector_image_switcher);
 			localImageView.setOnClickListener(localSwitchBtnClickListener);
 			mSwithBtnContainer.addView(localImageView);
 		}
@@ -99,8 +96,9 @@ public class CustomGalleryDialog extends Dialog {
 
 	/**
 	 * 画廊点击联动指示按钮
-	 * @author 
-	 *
+	 * 
+	 * @author
+	 * 
 	 */
 	public class ItemSelectedListener implements OnItemSelectedListener {
 
@@ -112,8 +110,7 @@ public class CustomGalleryDialog extends Dialog {
 		}
 
 		@Override
-		public void onItemSelected(AdapterView<?> adapterView, View view,
-				int position, long id) {
+		public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
 			setSelectedSwitchBtn(position % mCount);
 		}
 
@@ -125,8 +122,9 @@ public class CustomGalleryDialog extends Dialog {
 
 	/**
 	 * 切换按钮的点击事件响应
+	 * 
 	 * @author Administrator
-	 *
+	 * 
 	 */
 	public class SwitchBtnClickListener implements View.OnClickListener {
 		@Override
@@ -141,17 +139,18 @@ public class CustomGalleryDialog extends Dialog {
 	 * 设置聚焦指示按钮
 	 */
 	private ImageView mSelectedSwitchButton;
+
 	private void setSelectedSwitchBtn(int paramInt) {
 		if (this.mSelectedSwitchButton != null)
 			this.mSelectedSwitchButton.setSelected(false);
-		ImageView localImageView = (ImageView) this.mSwithBtnContainer
-				.getChildAt(paramInt);
+		ImageView localImageView = (ImageView) this.mSwithBtnContainer.getChildAt(paramInt);
 		this.mSelectedSwitchButton = localImageView;
 		this.mSelectedSwitchButton.setSelected(true);
 	}
 
 	/**
 	 * 设置聚焦画廊海报图片
+	 * 
 	 * @param position
 	 */
 	private void setSelectedGalleryImg(int position) {

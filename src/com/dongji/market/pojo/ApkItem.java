@@ -64,7 +64,6 @@ public class ApkItem implements Parcelable {
 		dest.writeLong(downloadNum);
 		dest.writeInt(versionCode);
 		dest.writeInt(status);
-		// dest.writeArray(historys);
 		dest.writeInt(historys == null ? 0 : historys.length);
 		dest.writeTypedArray(historys, 1);
 		dest.writeList(permisions);
@@ -78,7 +77,6 @@ public class ApkItem implements Parcelable {
 
 		@Override
 		public ApkItem[] newArray(int size) {
-			// TODO Auto-generated method stub
 			return new ApkItem[size];
 		}
 
@@ -108,8 +106,6 @@ public class ApkItem implements Parcelable {
 				item.historys = new HistoryApkItem[length];
 				source.readTypedArray(item.historys, HistoryApkItem.CREATOR);
 			}
-			// item.historys=(HistoryApkItem[])source.readArray(item.getClass().getClassLoader());
-			// //HistoryApkItem.class.getClassLoader()
 			source.readList(item.permisions, String.class.getClassLoader());
 			item.minSdkVersion = source.readInt();
 			item.bannerUrl = source.readString();

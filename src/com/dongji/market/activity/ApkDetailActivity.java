@@ -69,7 +69,6 @@ import com.dongji.market.widget.CustomGalleryDialog;
 public class ApkDetailActivity extends PublicActivity implements AConstDefine, OnToolBarBlankClickListener {
 
 	private static final int EVENT_SCROLL_TOBOTTOM = 0;
-
 	private static final int EVENT_REQUEST_DETAIL_DATA = 1;
 	private static final int EVENT_NO_NETWORK_ERROR = 2;
 	private static final int EVENT_REQUEST_DATA_ERROR = 3;
@@ -238,13 +237,13 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 		Bundle bundle = getIntent().getExtras();
 		if (bundle != null) {
 			apkItem = bundle.getParcelable("apkItem");
-			return FLAG_OPENFROMOWN;
+			return FLAG_OPENFROMOWN;//从应用列表页跳转
 		} else {
 			String tempString = getIntent().getDataString();
 			if (tempString != null && tempString.length() > 20) {
 				packageName = tempString.substring(20);
 				versionCode = DJMarketUtils.getInstalledAppVersionCodeByPackageName(ApkDetailActivity.this, packageName);
-				return FLAG_OPENFROMOTHER;
+				return FLAG_OPENFROMOTHER;//从软件管理页跳转
 			}
 		}
 		return -1;
@@ -304,7 +303,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 	}
 	
 	@Override
-	protected void onDestroy() {
+	protected void onDestroy() {//释放资源
 		if (titleUtil != null) {
 			titleUtil.unregisterMyReceiver(this);
 		}
@@ -453,7 +452,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 		}
 
 		@Override
-		public void onClick(View v) {
+		public void onClick(View v) {//历史版本跳转到详情
 			Intent intent = new Intent();
 			Bundle bundle = new Bundle();
 			bundle.putParcelable("apkItem", apkItem);
@@ -468,10 +467,10 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 	private class onIVClickListener implements OnClickListener {
 
 		@Override
-		public void onClick(View v) {
+		public void onClick(View v) {//imageview、linearlayout点击事件（箭头）
 			switch (v.getId()) {
 			case R.id.ivGroupSelector_permission:
-			case R.id.llGroup_permission:
+			case R.id.llGroup_permission://权限
 				if (llPermission.getVisibility() == View.GONE) {
 					llPermission.setVisibility(View.VISIBLE);
 					llPermission.setFocusable(true);
@@ -485,7 +484,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 				}
 				break;
 			case R.id.ivGroupSelector_oldVersion:
-			case R.id.llGroup_oldVersions:
+			case R.id.llGroup_oldVersions://历史版本
 				if (llOldVersion.getVisibility() == View.GONE) {
 					llOldVersion.setVisibility(View.VISIBLE);
 					ivGroupSelector_oldVersion.setImageDrawable(getResources().getDrawable(R.drawable.pic_down));
@@ -495,7 +494,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 				}
 				break;
 			case R.id.ivGroupSelector_grade:
-			case R.id.llGroup_grade:
+			case R.id.llGroup_grade://评分
 				if (rating == -1) {
 					if (llgrade_click.getVisibility() == View.GONE) {
 						llgrade_click.setVisibility(View.VISIBLE);
@@ -514,7 +513,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 					}
 				}
 				break;
-			case R.id.ivGalleryLeft:
+			case R.id.ivGalleryLeft://gallery左移
 				int flagInt = AndroidUtils.dip2px(ApkDetailActivity.this, 170);
 				if (mScrollView.getScrollX() % flagInt == 0 || mScrollView.getScrollX() == 0) {
 					mScrollView.scrollBy(-flagInt, 0);
@@ -523,7 +522,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 				}
 
 				break;
-			case R.id.ivGalleryRight:
+			case R.id.ivGalleryRight://gallery右移
 				flagInt = AndroidUtils.dip2px(ApkDetailActivity.this, 170);
 				mScrollView.scrollBy(flagInt - mScrollView.getScrollX() % flagInt, 0);
 				break;
@@ -531,7 +530,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 		}
 	}
 	
-	private class OldOnClickListener implements OnClickListener {
+	private class OldOnClickListener implements OnClickListener {//历史版本安装点击
 		int position;
 
 		OldOnClickListener(int position) {
@@ -555,7 +554,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 			item.packageName = apkItem.packageName;
 			if (historyItem.status == STATUS_APK_UNINSTALL || historyItem.status == STATUS_APK_UNUPDATE) {
 				DownloadUtils.checkDownload(ApkDetailActivity.this, item, btnInstall,  null);
-			} else {
+			} else {//取消下载
 				Intent intent = new Intent(DownloadConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD);
 				DownloadEntity entity = new DownloadEntity(item);
 				Bundle bundle = new Bundle();
@@ -572,7 +571,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
 			switch (msg.what) {
-			case EVENT_SCROLL_TOBOTTOM://滑动到底部
+			case EVENT_SCROLL_TOBOTTOM://scrollview滑动到底部,svApkDetail.getChildAt(0).getHeight()为scrollview的linearlayout的高度,svApkDetail.getHeight()为控件所占当前屏幕高度
 				int y = svApkDetail.getChildAt(0).getHeight() - svApkDetail.getHeight();
 				svApkDetail.smoothScrollTo(0, y);
 				break;
@@ -599,7 +598,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 			case EVENT_REQUEST_DATA_ERROR://请求数据错误
 				setErrorMessage(R.string.request_data_error_msg);
 				break;
-			case EVENT_GRADE://
+			case EVENT_GRADE://评分
 				final float score = commitCommentRatingBar.getRating();
 				int responseStatus;
 				try {
@@ -658,7 +657,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 						if (null != apkItem) {
 							Bundle bundle = new Bundle();
 							bundle.putParcelable("apkItem", apkItem);
-							titleUtil = new TitleUtil(ApkDetailActivity.this, mTopView, apkItem.appName, bundle, ApkDetailActivity.this);
+							titleUtil = new TitleUtil(ApkDetailActivity.this, mTopView, apkItem.appName, bundle, ApkDetailActivity.this);//设置头
 						}
 					}
 				});
@@ -672,13 +671,13 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 				}
 				System.out.println("============ before :" + status);
 				apkItem.status = status;
-				apkItem = setApkStatus(apkItem);
+				apkItem = setApkStatus(apkItem);//设置状态
 				System.out.println("============ after :" + apkItem.status);
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
 						mLoadingView.setVisibility(View.GONE);
-						refreshViews();
+						refreshViews();//刷新控件
 					}
 				});
 			}
@@ -702,7 +701,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 					if (rating == -1) {
 						llgrade_click.setVisibility(View.VISIBLE);
 						llgrade_noclick.setVisibility(View.GONE);
-						btnGrade.setOnClickListener(new OnClickListener() {
+						btnGrade.setOnClickListener(new OnClickListener() {//评分按钮点击
 
 							@Override
 							public void onClick(View v) {
@@ -730,10 +729,10 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 	
 	private void refreshViews() {
 		svApkDetail.setVisibility(View.VISIBLE);
-		refreshHeaderViews();
-		llPrintScreen.addView(refreshPrintScreenView());
-		llLikeApp.addView(refreshLikeAppView());
-		if (null == apkItem.discription || apkItem.discription.trim().equals("")) {
+		refreshHeaderViews();//刷新头部
+		llPrintScreen.addView(refreshPrintScreenView());//屏幕截图
+		llLikeApp.addView(refreshLikeAppView());//类似应用
+		if (null == apkItem.discription || apkItem.discription.trim().equals("")) {//应用描述
 			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
 			tvDetailAbstruct.setLayoutParams(lp);
 			tvDetailAbstruct.setGravity(Gravity.CENTER);
@@ -744,8 +743,8 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 		} else {
 			tvDetailAbstruct.setText(apkItem.discription);
 		}
-		refreshPermissionView(llPermission);
-		refreshOldVersionView(llOldVersion);
+		refreshPermissionView(llPermission);//权限列表
+		refreshOldVersionView(llOldVersion);//历史版本
 		llPermission.setVisibility(View.GONE);
 		llOldVersion.setVisibility(View.GONE);
 
@@ -800,7 +799,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 		}
 		displayApkStatus(btnInstall, apkItem.status);
 
-		if (apkItem.heavy > 0) {
+		if (apkItem.heavy > 0) {//是否加精
 			ivdongji_head.setVisibility(View.VISIBLE);
 		} else {
 			ivdongji_head.setVisibility(View.GONE);
@@ -810,9 +809,9 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 
 			@Override
 			public void onClick(View v) {
-				if (apkItem.status == STATUS_APK_UNINSTALL || apkItem.status == STATUS_APK_UNUPDATE) {
+				if (apkItem.status == STATUS_APK_UNINSTALL || apkItem.status == STATUS_APK_UNUPDATE) {//下载
 					DownloadUtils.checkDownload(ApkDetailActivity.this, apkItem, btnInstall, null);
-				} else {
+				} else {//取消下载
 					Intent intent = new Intent(DownloadConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD);
 					DownloadEntity entity = new DownloadEntity(apkItem);
 					Bundle bundle = new Bundle();
@@ -822,23 +821,22 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 				}
 			}
 		});
-
 		return headView;
 	}
 	
 	private void displayApkStatus(TextView mTextView, int status) {
 		switch (status) {
-		case STATUS_APK_UNINSTALL:
+		case STATUS_APK_UNINSTALL://未安装
 			setvisibleInstallTextView(mTextView, true, R.string.install, R.drawable.button_has_border_selector, Color.BLACK);
 			break;
-		case STATUS_APK_INSTALL:
+		case STATUS_APK_INSTALL://正在下载或更新
 		case STATUS_APK_UPDATE:
 			setvisibleInstallTextView(mTextView, true, R.string.cancel, R.drawable.cancel_selector, Color.parseColor("#7f5100"));
 			break;
-		case STATUS_APK_INSTALL_DONE:
+		case STATUS_APK_INSTALL_DONE://已安装
 			setvisibleInstallTextView(mTextView, false, R.string.has_installed, R.drawable.button_has_border_selector, Color.parseColor("#999999"));
 			break;
-		case STATUS_APK_UNUPDATE:
+		case STATUS_APK_UNUPDATE://待更新
 			setvisibleInstallTextView(mTextView, true, R.string.update, R.drawable.update_selector, Color.parseColor("#0e567d"));
 			break;
 		}
@@ -846,7 +844,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 		if (apkItem.historys != null && apkItem.historys.length > 0 && mOldTextViews != null) {
 			for (int i = 0; i < apkItem.historys.length; i++) {
 				HistoryApkItem historyItem = apkItem.historys[i];
-				switch (historyItem.status) {
+				switch (historyItem.status) {//设置历史版本状态
 				case STATUS_APK_UNINSTALL:
 					setvisibleInstallTextView(mOldTextViews[i], true, R.string.install, R.drawable.button_has_border_selector, Color.BLACK);
 					break;
@@ -880,7 +878,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 	}
 
 	
-	private View refreshPrintScreenView() {
+	private View refreshPrintScreenView() {//刷新截图
 
 		final List<String> arr = apkItem.appScreenshotUrl;
 
@@ -925,6 +923,11 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 		return mScrollView;
 	}
 	
+	/**
+	 * 屏幕截图点击效果
+	 * @param arr
+	 * @param position
+	 */
 	private void showGalleryDetailDialog(List<String> arr, int position) {
 		if (!isFinishing()) {
 			if (mGalleryDialog == null) {

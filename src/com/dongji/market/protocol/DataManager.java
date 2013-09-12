@@ -565,12 +565,16 @@ public class DataManager {
 		 */
 	}
 
+	/**
+	 * 通过分类id,以及应用id获取应用详情信息
+	 * @param category
+	 * @param appId
+	 * @return
+	 * @throws IOException
+	 * @throws JSONException
+	 */
 	public ApkItem getApkItemDetailByAppId(int category, int appId) throws IOException, JSONException {
 		HttpClientApi httpClientApi = HttpClientApi.getInstance();
-		// String url = DOMAIN_NAME + "json2/app/" + category + "/" + appId
-		// + ".txt";
-		// String url = DOMAIN_NAME + SOFT_DETAIL_URL + appId + "&catid="
-		// + category;
 		String url = DOMAIN_NAME + SOFT_DETAIL_URL + appId + "&catid=" + category + getLanguageType();
 		System.out.println("detail url -------------> " + url);
 		String result = httpClientApi.getContentFromUrl(url);

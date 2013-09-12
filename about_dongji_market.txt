@@ -38,5 +38,5 @@
 (4) 获取本地应用数据，应用图片为什么要用异步？uninstallActivity->filetask->imageloadtask->uninstalladapter
 (5) 垂直排列，将内容隐藏，将加载progressbar,文字显示可达到提示的目的
 (6) 接口在哪定义都行，只要将接口的实现对象传给希望回调的对象即可 BackupOrRestoreActivity OnProgressChangeListener                                                   
-
+(7) 自定义对话框的宽度可以参考customgallerydialog实现
 

@@ -136,7 +136,7 @@ public class Search_Activity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_search2);
+		setContentView(R.layout.activity_search);
 		overridePendingTransition(R.anim.in_from_right, R.anim.out_to_left);
 		View mTopView = findViewById(R.id.search_top);
 		titleUtil = new TitleUtil(this, mTopView, "", null, null);
@@ -1244,13 +1244,6 @@ public class Search_Activity extends BaseActivity {
 		mHandler.sendEmptyMessage(UPDATE_SHAKE_STATUS);
 	}
 
-	@Override
-	public void onStartDownload(Map<String, Object> map) {
-		int iconX = (Integer) map.get("X");
-		int iconY = (Integer) map.get("Y") - mSoftwareBtn.getHeight() + AndroidUtils.getStatusBarInfo(this).top;
-		Drawable icon = (Drawable) map.get("icon");
-		iconAnim.startAnimation(iconX, iconY, icon, mTempIcon, mSoftwareBtn);
-	}
 
 	@Override
 	protected void loadingImage() {

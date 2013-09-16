@@ -60,13 +60,13 @@ public final class R {
 		public static final int twitter_content = 0x7f0b015e;
 	}
 	public static final class layout {
-		public static final int layout_sharing_progress = 0x7f03004b;
-		public static final int tencent_oauthv1 = 0x7f030051;
-		public static final int tencent_oauthv2 = 0x7f030052;
-		public static final int tencent_share_dialog = 0x7f030053;
-		public static final int tencent_weibo = 0x7f030054;
-		public static final int tencent_weibo_main = 0x7f030055;
-		public static final int test_tencent_main = 0x7f030056;
+		public static final int layout_sharing_progress = 0x7f030049;
+		public static final int tencent_oauthv1 = 0x7f03004f;
+		public static final int tencent_oauthv2 = 0x7f030050;
+		public static final int tencent_share_dialog = 0x7f030051;
+		public static final int tencent_weibo = 0x7f030052;
+		public static final int tencent_weibo_main = 0x7f030053;
+		public static final int test_tencent_main = 0x7f030054;
 	}
 	public static final class string {
 		public static final int app_name = 0x7f080000;

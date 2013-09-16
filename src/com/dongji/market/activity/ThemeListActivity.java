@@ -294,14 +294,6 @@ public class ThemeListActivity extends BaseActivity implements
 
 	}
 
-	@Override
-	public void onStartDownload(Map<String, Object> map) {
-		int iconX = (Integer) map.get("X");
-		int iconY = (Integer) map.get("Y") - mSoftwareBtn.getHeight()
-				+ AndroidUtils.getStatusBarInfo(this).top;
-		Drawable icon = (Drawable) map.get("icon");
-		iconAnim.startAnimation(iconX, iconY, icon, mTempIcon, mSoftwareBtn);
-	}
 
 	@Override
 	public void onAppInstallOrUninstallDone(int status, PackageInfo info) {

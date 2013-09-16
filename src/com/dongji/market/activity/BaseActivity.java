@@ -1,15 +1,11 @@
 package com.dongji.market.activity;
 
-import java.util.Map;
 import android.view.KeyEvent;
 import android.view.Menu;
 
 public abstract class BaseActivity extends PublicActivity {
 
 	public void OnToolBarClick() {
-	}
-
-	public void onStartDownload(Map<String, Object> map) {
 	}
 
 	protected MainActivity getParentActivity() {
@@ -66,5 +62,6 @@ public abstract class BaseActivity extends PublicActivity {
 	 * @return
 	 */
 	public abstract boolean isAppClicked();
+	/*************************************** 抽象类定义，子类实现 **********************************/
 
 }

@@ -59,7 +59,6 @@ public class Change_Pwd_Activity extends Activity implements OnClickListener{
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_change_pwd);
 		overridePendingTransition(R.anim.in_from_right, R.anim.out_to_left);

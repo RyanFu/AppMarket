@@ -1,14 +1,12 @@
 package com.dongji.market.activity;
 
 import java.util.List;
-import java.util.Map;
 
 import org.myjson.JSONException;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -20,7 +18,6 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -38,7 +35,6 @@ import com.dongji.market.helper.TitleUtil.OnToolBarBlankClickListener;
 import com.dongji.market.pojo.ApkItem;
 import com.dongji.market.pojo.ChannelListInfo;
 import com.dongji.market.protocol.DataManager;
-import com.dongji.market.widget.CustomIconAnimation;
 import com.umeng.analytics.MobclickAgent;
 
 /**
@@ -46,8 +42,7 @@ import com.umeng.analytics.MobclickAgent;
  * 
  * @author zhangkai
  */
-public class ChannelListActivity extends BaseActivity implements
-		OnItemClickListener, OnScrollListener, OnSortChangeListener, OnToolBarBlankClickListener {
+public class ChannelListActivity extends PublicActivity implements OnItemClickListener, OnScrollListener, OnSortChangeListener, OnToolBarBlankClickListener {
 	private ChannelListInfo info;
 	private MyHandler mHandler;
 	private final static int EVENT_REQUEST_DATA = 1;
@@ -78,15 +73,12 @@ public class ChannelListActivity extends BaseActivity implements
 
 	private List<ApkItem> apps;
 
-	private CustomIconAnimation iconAnim;
-	private ImageView mSoftwareBtn;
-	private ImageView mTempIcon;
-
 	private View mContentView;
+	private int currentSort = 1;
+	private int locStep;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_search_result);
 		overridePendingTransition(R.anim.in_from_right, R.anim.out_to_left);
@@ -94,17 +86,6 @@ public class ChannelListActivity extends BaseActivity implements
 		initData();
 		initLoadingView();
 		initHandler();
-	}
-
-	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position,
-			long id) {
-		Intent intent = new Intent(this, ApkDetailActivity.class);
-		Bundle bundle = new Bundle();
-		ApkItem apkItem = (ApkItem) mListView.getAdapter().getItem(position);
-		bundle.putParcelable("apkItem", apkItem);
-		intent.putExtras(bundle);
-		startActivity(intent);
 	}
 
 	private void initData() {
@@ -117,59 +98,12 @@ public class ChannelListActivity extends BaseActivity implements
 				findViewById(R.id.result_count).setVisibility(View.GONE);
 				findViewById(R.id.shawview).setVisibility(View.GONE);
 				mBottomProgressBar = (ProgressBar) findViewById(R.id.loading_progress);
-				iconAnim = new CustomIconAnimation(this);
-				mTempIcon = (ImageView) findViewById(R.id.tempIcon);
-				mSoftwareBtn = (ImageView) findViewById(R.id.softmanagerbutton);
 				info.currentPage = 1;
 			}
 		} else {
 			AndroidUtils.showToast(this, R.string.request_channel_data_error);
 			finish();
 		}
-	}
-
-	@Override
-	public void onBackPressed() {
-		super.onBackPressed();
-//		overridePendingTransition(R.anim.in_from_left, R.anim.out_to_right);
-	}
-
-	/*
-	 * private String adjustFontWidth(String str){ if (str.length() == 2) {
-	 * return str.substring(0, 1) + "    " + str.substring(1, 2); } else if
-	 * (str.length() == 1) { return "    " + str + "    "; } return str; }
-	 */
-
-	private void initHandler() {
-		HandlerThread mHandlerThread = new HandlerThread("HandlerThread");
-		mHandlerThread.start();
-		mHandler = new MyHandler(mHandlerThread.getLooper());
-		if (info != null && info.pageCount > 0) {
-			isLoading = true;
-			mHandler.sendEmptyMessage(EVENT_REQUEST_DATA);
-		} else {
-			mLoadingProgressBar.setVisibility(View.GONE);
-			mLoadingTextView.setText(R.string.current_channel_not_data);
-		}
-	}
-
-	private void initViews() {
-		mListView = (ListView) findViewById(R.id.result_list);
-		mListView.setAdapter(new ListSingleTemplateAdapter(context, apps,
-				isRemoteImage));
-		mListView.setOnItemClickListener(this);
-		mListView.setOnScrollListener(this);
-		mLoadingView.setVisibility(View.GONE);
-		mContentView = findViewById(R.id.show_search_result);
-		mContentView.setVisibility(View.VISIBLE);
-
-		// new SlideMenu(findViewById(R.id.ll_top), mListView);
-	}
-
-	private void setPreLoading() {
-		mLoadingView.setVisibility(View.VISIBLE);
-		mLoadingProgressBar.setVisibility(View.VISIBLE);
-		mLoadingTextView.setText(R.string.loading_txt);
 	}
 
 	private void initLoadingView() {
@@ -188,106 +122,24 @@ public class ChannelListActivity extends BaseActivity implements
 		});
 	}
 
-	@Override
-	protected void onResume() {
-		// TODO Auto-generated method stub
-		super.onResume();
-		MobclickAgent.onResume(this);
-		if (isFirstResume) {
-			if (mHandler != null) {
-				if (mHandler.hasMessages(EVENT_REFRENSH_DATA)) {
-					mHandler.removeMessages(EVENT_REFRENSH_DATA);
-				}
-				mHandler.sendEmptyMessage(EVENT_REFRENSH_DATA);
-			}
-		}
-		isFirstResume = true;
-		if(titleUtil!=null) {
-			titleUtil.sendRefreshHandler();
-		}
+	private void setPreLoading() {
+		mLoadingView.setVisibility(View.VISIBLE);
+		mLoadingProgressBar.setVisibility(View.VISIBLE);
+		mLoadingTextView.setText(R.string.loading_txt);
 	}
 
-	@Override
-	protected void onPause() {
-		// TODO Auto-generated method stub
-		super.onPause();
-		MobclickAgent.onPause(this);
-		if(titleUtil!=null) {
-			titleUtil.removeRefreshHandler();
-		}
-		if (isFinishing()) {
-			overridePendingTransition(R.anim.in_from_left, R.anim.out_to_right);
+	private void initHandler() {
+		HandlerThread mHandlerThread = new HandlerThread("HandlerThread");
+		mHandlerThread.start();
+		mHandler = new MyHandler(mHandlerThread.getLooper());
+		if (info != null && info.pageCount > 0) {
+			isLoading = true;
+			mHandler.sendEmptyMessage(EVENT_REQUEST_DATA);
+		} else {
+			mLoadingProgressBar.setVisibility(View.GONE);
+			mLoadingTextView.setText(R.string.current_channel_not_data);
 		}
 	}
-
-	@Override
-	protected void onDestroy() {
-		// TODO Auto-generated method stub
-		super.onDestroy();
-		if (titleUtil != null) {
-			titleUtil.unregisterMyReceiver(this);
-		}
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add("test");
-		return super.onCreateOptionsMenu(menu);
-	}
-
-	@Override
-	public boolean onMenuOpened(int featureId, Menu menu) {
-		if (titleUtil != null) {
-			titleUtil.showOrDismissSettingPopupWindow();
-		}
-		return false;
-	}
-
-	@Override
-	public boolean isAppClicked() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void onAppClick() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onGameClick() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onStartDownload(Map<String, Object> map) {
-		int iconX = (Integer) map.get("X");
-		int iconY = (Integer) map.get("Y") - mSoftwareBtn.getHeight()
-				+ AndroidUtils.getStatusBarInfo(this).top;
-		Drawable icon = (Drawable) map.get("icon");
-		iconAnim.startAnimation(iconX, iconY, icon, mTempIcon, mSoftwareBtn);
-	}
-
-	@Override
-	public void onAppInstallOrUninstallDone(int status, PackageInfo info) {
-		if(mListView!=null && mListView.getAdapter()!=null) {
-			ListBaseAdapter mAdapter = (ListBaseAdapter) mListView.getAdapter();
-			mAdapter.changeApkStatusByPackageInfo(status, info);
-		}
-	}
-
-	@Override
-	public void onAppStatusChange(boolean isCancel, String packageName,
-			int versionCode) {
-		if(mListView!=null && mListView.getAdapter()!=null) {
-			ListBaseAdapter mAdapter = (ListBaseAdapter) mListView.getAdapter();
-			mAdapter.changeApkStatusByAppId(isCancel, packageName, versionCode);
-		}
-	}
-
-	private int currentSort = 1;
 
 	private class MyHandler extends Handler {
 		MyHandler(Looper looper) {
@@ -296,7 +148,6 @@ public class ChannelListActivity extends BaseActivity implements
 
 		@Override
 		public void handleMessage(Message msg) {
-			// TODO Auto-generated method stub
 			super.handleMessage(msg);
 			switch (msg.what) {
 			case EVENT_REQUEST_DATA:
@@ -314,18 +165,14 @@ public class ChannelListActivity extends BaseActivity implements
 											initViews();
 										} else {
 											apps = setApkStatus(apps);
-											ListSingleTemplateAdapter mAdapter = (ListSingleTemplateAdapter) mListView
-													.getAdapter();
+											ListSingleTemplateAdapter mAdapter = (ListSingleTemplateAdapter) mListView.getAdapter();
 											mAdapter.addList(apps);
 											if (apps != null) {
 												apps.clear();
 											}
-											mListView
-													.setVisibility(View.VISIBLE);
-											mContentView
-													.setVisibility(View.VISIBLE);
-											mLoadingView
-													.setVisibility(View.GONE);
+											mListView.setVisibility(View.VISIBLE);
+											mContentView.setVisibility(View.VISIBLE);
+											mLoadingView.setVisibility(View.GONE);
 										}
 										info.currentPage++;
 										if (info.pageCount >= info.currentPage) {
@@ -339,12 +186,9 @@ public class ChannelListActivity extends BaseActivity implements
 									} else {
 										onProgressBarDone();
 										if (mListView.getVisibility() == View.GONE) {
-											mListView
-													.setVisibility(View.VISIBLE);
-											mContentView
-													.setVisibility(View.VISIBLE);
-											mLoadingView
-													.setVisibility(View.GONE);
+											mListView.setVisibility(View.VISIBLE);
+											mContentView.setVisibility(View.VISIBLE);
+											mLoadingView.setVisibility(View.GONE);
 										}
 										if (isRequestDelay) {
 											addAdapterData();
@@ -383,12 +227,10 @@ public class ChannelListActivity extends BaseActivity implements
 				}
 				break;
 			case EVENT_NO_NETWORK_ERROR:
-				setErrorMessage(R.string.no_network_refresh_msg,
-						R.string.no_network_refresh_msg2);
+				setErrorMessage(R.string.no_network_refresh_msg, R.string.no_network_refresh_msg2);
 				break;
 			case EVENT_REQUEST_DATA_ERROR:
-				setErrorMessage(R.string.request_data_error_msg,
-						R.string.request_data_error_msg2);
+				setErrorMessage(R.string.request_data_error_msg, R.string.request_data_error_msg2);
 				break;
 			case EVENT_LOADING_PROGRESS:
 				runOnUiThread(new Runnable() {
@@ -423,6 +265,16 @@ public class ChannelListActivity extends BaseActivity implements
 		}
 	}
 
+	private void initViews() {
+		mListView = (ListView) findViewById(R.id.result_list);
+		mListView.setAdapter(new ListSingleTemplateAdapter(context, apps, isRemoteImage));
+		mListView.setOnItemClickListener(this);
+		mListView.setOnScrollListener(this);
+		mLoadingView.setVisibility(View.GONE);
+		mContentView = findViewById(R.id.show_search_result);
+		mContentView.setVisibility(View.VISIBLE);
+	}
+
 	private void refreshData() {
 		if (mListView != null && mListView.getAdapter() != null) {
 			ListBaseAdapter mAdapter = (ListBaseAdapter) mListView.getAdapter();
@@ -431,7 +283,6 @@ public class ChannelListActivity extends BaseActivity implements
 	}
 
 	private void notifyListData(final ListBaseAdapter mAdapter) {
-		// initDownloadAndUpdateData();
 		setApkStatus(mAdapter.getItemList());
 		runOnUiThread(new Runnable() {
 			@Override
@@ -439,6 +290,173 @@ public class ChannelListActivity extends BaseActivity implements
 				mAdapter.setDisplayNotify(isRemoteImage);
 			}
 		});
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		Intent intent = new Intent(this, ApkDetailActivity.class);
+		Bundle bundle = new Bundle();
+		ApkItem apkItem = (ApkItem) mListView.getAdapter().getItem(position);
+		bundle.putParcelable("apkItem", apkItem);
+		intent.putExtras(bundle);
+		startActivity(intent);
+	}
+
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		MobclickAgent.onResume(this);
+		if (isFirstResume) {
+			if (mHandler != null) {
+				if (mHandler.hasMessages(EVENT_REFRENSH_DATA)) {
+					mHandler.removeMessages(EVENT_REFRENSH_DATA);
+				}
+				mHandler.sendEmptyMessage(EVENT_REFRENSH_DATA);// 刷新数据
+			}
+		}
+		isFirstResume = true;
+		if (titleUtil != null) {// 刷新头部
+			titleUtil.sendRefreshHandler();
+		}
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		MobclickAgent.onPause(this);
+		if (titleUtil != null) {
+			titleUtil.removeRefreshHandler();
+		}
+		if (isFinishing()) {
+			overridePendingTransition(R.anim.in_from_left, R.anim.out_to_right);
+		}
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		if (titleUtil != null) {
+			titleUtil.unregisterMyReceiver(this);
+		}
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onMenuOpened(int featureId, Menu menu) {
+		if (titleUtil != null) {
+			titleUtil.showOrDismissSettingPopupWindow();
+		}
+		return false;
+	}
+
+	@Override
+	public void onAppInstallOrUninstallDone(int status, PackageInfo info) {
+		if (mListView != null && mListView.getAdapter() != null) {
+			ListBaseAdapter mAdapter = (ListBaseAdapter) mListView.getAdapter();
+			mAdapter.changeApkStatusByPackageInfo(status, info);
+		}
+	}
+
+	@Override
+	public void onAppStatusChange(boolean isCancel, String packageName, int versionCode) {
+		if (mListView != null && mListView.getAdapter() != null) {
+			ListBaseAdapter mAdapter = (ListBaseAdapter) mListView.getAdapter();
+			mAdapter.changeApkStatusByAppId(isCancel, packageName, versionCode);
+		}
+	}
+
+	@Override
+	public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+		if (hasData && !isLoading && firstVisibleItem + visibleItemCount >= totalItemCount - SCROLL_DVALUE) {
+			isLoading = true;
+			showProgressBar();
+			addAdapterData();
+			stopProgressBar();
+		} else if (hasData && isLoading && !isRequestDelay && firstVisibleItem + visibleItemCount >= totalItemCount - SCROLL_DVALUE) {
+			isRequestDelay = true;
+			showProgressBar();
+		}
+	}
+
+	@Override
+	public void onScrollStateChanged(AbsListView view, int scrollState) {
+	}
+
+	@Override
+	protected void onUpdateDataDone() {
+		if (mListView != null && mListView.getAdapter() != null) {
+			ListBaseAdapter mAdapter = (ListBaseAdapter) mListView.getAdapter();
+			setApkStatus(mAdapter.getItemList());
+			mAdapter.setDisplayNotify(isRemoteImage);
+		}
+	}
+
+	@Override
+	public void onSortChanged(int sort) {
+		if (info != null) {
+			currentSort = sort;
+			info.currentPage = 1;
+			setPreLoading();
+			if (mListView != null) {
+				((ListSingleTemplateAdapter) mListView.getAdapter()).resetList();
+				mListView.setVisibility(View.GONE);
+				mContentView.setVisibility(View.GONE);
+				listViewFromTop(mListView);
+				hasData = info.currentPage <= info.pageCount;
+			}
+			mHandler.sendEmptyMessage(EVENT_REQUEST_DATA);
+		}
+	}
+
+	@Override
+	protected void loadingImage() {
+		if (mListView != null && mListView.getAdapter() != null) {
+			ListBaseAdapter mAdapter = (ListBaseAdapter) mListView.getAdapter();
+			mAdapter.setDisplayNotify(isRemoteImage);
+		}
+	}
+
+	@Override
+	public void onClick() {
+		listViewFromTop(mListView);
+	}
+
+	/**
+	 * 往适配器里添加数据
+	 */
+	private void addAdapterData() {
+		if (apps == null || apps.size() == 0) {
+			isLoading = false;
+			mHandler.sendEmptyMessage(EVENT_REQUEST_DATA);
+			return;
+		}
+		apps = setApkStatus(apps);
+		ListSingleTemplateAdapter mAdapter = (ListSingleTemplateAdapter) mListView.getAdapter();
+		addAdapterRunUiThread(mAdapter, apps);
+		if (apps != null) {
+			apps.clear();
+		}
+	}
+
+	private void addAdapterRunUiThread(final ListBaseAdapter mAdapter, final List<ApkItem> items) {
+		mAdapter.addList(items);
+		int what = 0;
+		what = EVENT_REQUEST_DATA;
+		if (info.pageCount < info.currentPage) {
+			hasData = false;
+			progressBarGone();
+			return;
+		}
+		mHandler.sendEmptyMessage(what);
 	}
 
 	/**
@@ -459,60 +477,6 @@ public class ChannelListActivity extends BaseActivity implements
 				}
 			}
 		});
-	}
-
-	private void addAdapterRunUiThread(final ListBaseAdapter mAdapter,
-			final List<ApkItem> items) {
-		mAdapter.addList(items);
-		int what = 0;
-		what = EVENT_REQUEST_DATA;
-		if (info.pageCount < info.currentPage) {
-			hasData = false;
-			progressBarGone();
-			return;
-		}
-		mHandler.sendEmptyMessage(what);
-	}
-
-	private void addAdapterData() {
-		if (apps == null || apps.size() == 0) {
-			isLoading = false;
-			mHandler.sendEmptyMessage(EVENT_REQUEST_DATA);
-			return;
-		}
-		apps = setApkStatus(apps);
-		ListSingleTemplateAdapter mAdapter = (ListSingleTemplateAdapter) mListView
-				.getAdapter();
-		addAdapterRunUiThread(mAdapter, apps);
-		if (apps != null) {
-			apps.clear();
-		}
-	}
-
-	@Override
-	public void onScroll(AbsListView view, int firstVisibleItem,
-			int visibleItemCount, int totalItemCount) {
-		if (hasData
-				&& !isLoading
-				&& firstVisibleItem + visibleItemCount >= totalItemCount
-						- SCROLL_DVALUE) {
-			isLoading = true;
-			showProgressBar();
-			addAdapterData();
-			stopProgressBar();
-		} else if (hasData
-				&& isLoading
-				&& !isRequestDelay
-				&& firstVisibleItem + visibleItemCount >= totalItemCount
-						- SCROLL_DVALUE) {
-			isRequestDelay = true;
-			showProgressBar();
-		}
-	}
-
-	@Override
-	public void onScrollStateChanged(AbsListView view, int scrollState) {
-
 	}
 
 	private void showProgressBar() {
@@ -542,79 +506,30 @@ public class ChannelListActivity extends BaseActivity implements
 		}
 	}
 
-	private int locStep;
+	private void onProgressBarDone() {
+		mHandler.sendEmptyMessage(EVENT_LOADDONE);
+	}
+
 	/**
 	 * ListView 滑动到顶部
 	 */
 	private void listViewFromTop(ListView mListView) {
 		if (mListView != null) {
-//			if (!mListView.isStackFromBottom()) {
-//				mListView.setStackFromBottom(true);
-//			}
-//			mListView.setStackFromBottom(false);
-			locStep = (int) Math.ceil(mListView.getFirstVisiblePosition()/AConstDefine.AUTO_SCRLL_TIMES);
+			locStep = (int) Math.ceil(mListView.getFirstVisiblePosition() / AConstDefine.AUTO_SCRLL_TIMES);
 			mListView.post(scrollToTop);
 		}
 	}
 
-	private void onProgressBarDone() {
-		mHandler.sendEmptyMessage(EVENT_LOADDONE);
-	}
-
-	@Override
-	protected void onUpdateDataDone() {
-		if (mListView != null && mListView.getAdapter() != null) {
-			ListBaseAdapter mAdapter = (ListBaseAdapter) mListView.getAdapter();
-			setApkStatus(mAdapter.getItemList());
-			mAdapter.setDisplayNotify(isRemoteImage);
-		}
-	}
-
-	@Override
-	public void onSortChanged(int sort) {
-		if (info != null) {
-			currentSort = sort;
-			info.currentPage = 1;
-			setPreLoading();
-			if (mListView != null) {
-				((ListSingleTemplateAdapter) mListView.getAdapter())
-						.resetList();
-				mListView.setVisibility(View.GONE);
-				mContentView.setVisibility(View.GONE);
-				listViewFromTop(mListView);
-				hasData = info.currentPage <= info.pageCount;
-			}
-			mHandler.sendEmptyMessage(EVENT_REQUEST_DATA);
-		}
-	}
-
-	@Override
-	protected void loadingImage() {
-		// TODO Auto-generated method stub
-		if (mListView != null && mListView.getAdapter() != null) {
-			ListBaseAdapter mAdapter = (ListBaseAdapter) mListView.getAdapter();
-			mAdapter.setDisplayNotify(isRemoteImage);
-		}
-	}
-
-	@Override
-	public void onClick() {
-		listViewFromTop(mListView);
-	}
-	
 	Runnable scrollToTop = new Runnable() {
 
 		@Override
 		public void run() {
-			// TODO Auto-generated method stub
 			if (mListView.getFirstVisiblePosition() > 0) {
 				if (mListView.getFirstVisiblePosition() < AConstDefine.AUTO_SCRLL_TIMES) {
-					mListView.setSelection(mListView
-							.getFirstVisiblePosition() - 1);
+					mListView.setSelection(mListView.getFirstVisiblePosition() - 1);
 				} else {
 					mListView.setSelection(Math.max(mListView.getFirstVisiblePosition() - locStep, 0));
 				}
-				// mAppListView.postDelayed(this, 1);
 				mListView.post(this);
 			}
 			return;

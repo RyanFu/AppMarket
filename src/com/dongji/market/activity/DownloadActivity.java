@@ -34,7 +34,8 @@ public class DownloadActivity extends Activity implements DownloadConstDefine {
 	private MyHandler mHandler;
 
 	private AppMarket mApp;
-	
+
+	private int locStep;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +44,131 @@ public class DownloadActivity extends Activity implements DownloadConstDefine {
 		mApp = (AppMarket) getApplication();
 		initLoadingView();
 		initHandler();
+	}
+
+	private void initLoadingView() {
+		mLoadingView = findViewById(R.id.loadinglayout);
+	}
+
+	/**
+	 * 请求数据（可更新，待安装，已忽略）
+	 */
+	private void initHandler() {
+		HandlerThread mHandlerThread = new HandlerThread("");
+		mHandlerThread.start();
+		mHandler = new MyHandler(mHandlerThread.getLooper());
+		mHandler.sendEmptyMessage(EVENT_REQUEST_DATA);
+	}
+
+	public class MyHandler extends Handler {
+		MyHandler(Looper looper) {
+			super(looper);
+		}
+
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			switch (msg.what) {
+			case EVENT_REQUEST_DATA:// 请求数据
+				final List<List<DownloadEntity>> childList = initData();// 获取子数据
+				boolean hasDownloadData = childList != null ? childList.size() > 3 : false;
+				final List<String> groupList = initGroupData(hasDownloadData);// 获取父数据
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						initViews(groupList, childList);
+					}
+				});
+				break;
+			case EVENT_REFRESH_DATA:// 刷新listview
+				runOnUiThread(new Runnable() {
+
+					@Override
+					public void run() {// 每隔1秒刷新数据
+						mAdapter.refreshAdapter();
+						mHandler.sendEmptyMessageDelayed(EVENT_REFRESH_DATA, 1000L);
+					}
+				});
+				break;
+			}
+		}
+	}
+
+	/**
+	 * 初始化组数据
+	 * 
+	 * @return
+	 */
+	private List<List<DownloadEntity>> initData() {
+		List<List<DownloadEntity>> adapterData = new ArrayList<List<DownloadEntity>>();
+		List<DownloadEntity> installList = new ArrayList<DownloadEntity>();
+		List<DownloadEntity> downloadingList = new ArrayList<DownloadEntity>();
+		List<DownloadEntity> updatingList = new ArrayList<DownloadEntity>();
+		List<DownloadEntity> ignoreList = new ArrayList<DownloadEntity>();
+		if (DownloadService.mDownloadService != null) {
+			List<DownloadEntity> downloadList = DownloadService.mDownloadService.getAllDownloadList();
+			for (int i = 0; i < downloadList.size(); i++) {
+				DownloadEntity entity = downloadList.get(i);
+				if (entity.downloadType == TYPE_OF_COMPLETE) {// 待安装应用
+					installList.add(entity);
+				} else if (entity.downloadType == TYPE_OF_DOWNLOAD) {// 正在下载应用
+					downloadingList.add(entity);
+				} else if (entity.downloadType == TYPE_OF_UPDATE) {// 可更新应用
+					DownloadUtils.setInstallDownloadEntity(this, entity);
+					updatingList.add(entity);
+				} else if (entity.downloadType == TYPE_OF_IGNORE) {// 已忽略应用
+					DownloadUtils.setInstallDownloadEntity(this, entity);
+					ignoreList.add(entity);
+				}
+			}
+			if (downloadingList.size() > 0) {
+				adapterData.add(downloadingList);
+			}
+			System.out.println("download size:" + downloadingList.size() + ", " + updatingList.size() + ", " + installList.size());
+		}
+		adapterData.add(updatingList);
+		adapterData.add(installList);
+		adapterData.add(ignoreList);
+		return adapterData;
+	}
+
+	/**
+	 * 初始化父数据，3组或4组
+	 * 
+	 * @param hasDownloadData
+	 * @return
+	 */
+	private List<String> initGroupData(boolean hasDownloadData) {
+		List<String> list = new ArrayList<String>();
+		if (hasDownloadData) {
+			list.add(getString(R.string.transferapk));// 正在传输
+		}
+		list.add(getString(R.string.updateapk));// 可更新
+		list.add(getString(R.string.waitinstallapk));// 待安装
+		list.add(getString(R.string.ignoreapk));// 忽略
+		return list;
+	}
+
+	/**
+	 * 初始化expandablelistview
+	 * 
+	 * @param groupList
+	 * @param childList
+	 */
+	private void initViews(List<String> groupList, List<List<DownloadEntity>> childList) {
+		mExpandableListView = (ExpandableListView) findViewById(R.id.exlvDownload);
+		mExpandableListView.setChildDivider(getResources().getDrawable(R.drawable.list_divider));
+		mExpandableListView.setGroupIndicator(null);
+		mAdapter = new DownloadAdapter(this, childList, groupList, mHandler);
+		mExpandableListView.setAdapter(mAdapter);
+		int count = groupList.size() - 1;
+		for (int i = 0; i < count; i++) {
+			mExpandableListView.expandGroup(i);
+		}
+		mExpandableListView.collapseGroup(count);
+		mLoadingView.setVisibility(View.GONE);
+		mExpandableListView.setVisibility(View.VISIBLE);
+		mHandler.sendEmptyMessageDelayed(EVENT_REFRESH_DATA, 1000L);
 	}
 
 	@Override
@@ -66,128 +192,6 @@ public class DownloadActivity extends Activity implements DownloadConstDefine {
 	protected void onPause() {
 		super.onPause();
 		MobclickAgent.onPause(this);
-	}
-
-	/**
-	 * 请求数据（可更新，待安装，已忽略）
-	 */
-	private void initHandler() {
-		HandlerThread mHandlerThread = new HandlerThread("");
-		mHandlerThread.start();
-		mHandler = new MyHandler(mHandlerThread.getLooper());
-		mHandler.sendEmptyMessage(EVENT_REQUEST_DATA);
-	}
-
-	private void initLoadingView() {
-		mLoadingView = findViewById(R.id.loadinglayout);
-	}
-
-	/**
-	 * 初始化expandablelistview
-	 * @param groupList
-	 * @param childList
-	 */
-	private void initViews(List<String> groupList, List<List<DownloadEntity>> childList) {
-		mExpandableListView = (ExpandableListView) findViewById(R.id.exlvDownload);
-		mExpandableListView.setChildDivider(getResources().getDrawable(R.drawable.list_divider));
-		mExpandableListView.setGroupIndicator(null);
-		mAdapter = new DownloadAdapter(this, childList, groupList, mHandler);
-		mExpandableListView.setAdapter(mAdapter);
-		int count = groupList.size() - 1;
-		for (int i = 0; i < count; i++) {
-			mExpandableListView.expandGroup(i);
-		}
-		mExpandableListView.collapseGroup(count);
-		mLoadingView.setVisibility(View.GONE);
-		mExpandableListView.setVisibility(View.VISIBLE);
-		mHandler.sendEmptyMessageDelayed(EVENT_REFRESH_DATA, 1000L);
-	}
-
-	/**
-	 * 初始化组数据
-	 * @return
-	 */
-	private List<List<DownloadEntity>> initData() {
-		List<List<DownloadEntity>> adapterData = new ArrayList<List<DownloadEntity>>();
-		List<DownloadEntity> installList = new ArrayList<DownloadEntity>();
-		List<DownloadEntity> downloadingList = new ArrayList<DownloadEntity>();
-		List<DownloadEntity> updatingList = new ArrayList<DownloadEntity>();
-		List<DownloadEntity> ignoreList = new ArrayList<DownloadEntity>();
-		if (DownloadService.mDownloadService != null) {
-			List<DownloadEntity> downloadList = DownloadService.mDownloadService.getAllDownloadList();
-			for (int i = 0; i < downloadList.size(); i++) {
-				DownloadEntity entity = downloadList.get(i);
-				if (entity.downloadType == TYPE_OF_COMPLETE) {//待安装应用
-					installList.add(entity);
-				} else if (entity.downloadType == TYPE_OF_DOWNLOAD) {//正在下载应用
-					downloadingList.add(entity);
-				} else if (entity.downloadType == TYPE_OF_UPDATE) {//可更新应用
-					DownloadUtils.setInstallDownloadEntity(this, entity);
-					updatingList.add(entity);
-				} else if (entity.downloadType == TYPE_OF_IGNORE) {//已忽略应用
-					DownloadUtils.setInstallDownloadEntity(this, entity);
-					ignoreList.add(entity);
-				}
-			}
-			if (downloadingList.size() > 0) {
-				adapterData.add(downloadingList);
-			}
-			System.out.println("download size:" + downloadingList.size() + ", " + updatingList.size() + ", " + installList.size());
-		}
-		adapterData.add(updatingList);
-		adapterData.add(installList);
-		adapterData.add(ignoreList);
-		return adapterData;
-	}
-
-	/**
-	 * 初始化父数据，3组或4组
-	 * @param hasDownloadData
-	 * @return
-	 */
-	private List<String> initGroupData(boolean hasDownloadData) {
-		List<String> list = new ArrayList<String>();
-		if (hasDownloadData) {
-			list.add(getString(R.string.transferapk));//正在传输
-		}
-		list.add(getString(R.string.updateapk));//可更新
-		list.add(getString(R.string.waitinstallapk));//待安装
-		list.add(getString(R.string.ignoreapk));//忽略
-		return list;
-	}
-
-	public class MyHandler extends Handler {
-		MyHandler(Looper looper) {
-			super(looper);
-		}
-
-		@Override
-		public void handleMessage(Message msg) {
-			super.handleMessage(msg);
-			switch (msg.what) {
-			case EVENT_REQUEST_DATA://请求数据
-				final List<List<DownloadEntity>> childList = initData();//获取子数据
-				boolean hasDownloadData = childList != null ? childList.size() > 3 : false;
-				final List<String> groupList = initGroupData(hasDownloadData);//获取父数据
-				runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						initViews(groupList, childList);
-					}
-				});
-				break;
-			case EVENT_REFRESH_DATA://刷新listview
-				runOnUiThread(new Runnable() {
-
-					@Override
-					public void run() {//每隔1秒刷新数据
-						mAdapter.refreshAdapter();
-						mHandler.sendEmptyMessageDelayed(EVENT_REFRESH_DATA, 1000L);
-					}
-				});
-				break;
-			}
-		}
 	}
 
 	@Override
@@ -226,8 +230,6 @@ public class DownloadActivity extends Activity implements DownloadConstDefine {
 	public void set3GDownloadPromptUser() {
 		mApp.setIs3GDownloadPrompt(true);
 	}
-
-	private int locStep;
 
 	/**
 	 * 点击actionbar空白栏操作

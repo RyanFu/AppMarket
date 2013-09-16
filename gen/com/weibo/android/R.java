@@ -68,10 +68,10 @@ public final class R {
 		public static final int twitter_content = 0x7f0b015e;
 	}
 	public static final class layout {
-		public static final int custom_toast = 0x7f03001a;
-		public static final int layout_sharing = 0x7f03004a;
-		public static final int share_mblog_view = 0x7f030050;
-		public static final int widget_share_dialog = 0x7f03005e;
+		public static final int custom_toast = 0x7f030018;
+		public static final int layout_sharing = 0x7f030048;
+		public static final int share_mblog_view = 0x7f03004e;
+		public static final int widget_share_dialog = 0x7f03005c;
 	}
 	public static final class string {
 		public static final int app_name = 0x7f080000;

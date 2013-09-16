@@ -460,7 +460,6 @@ public class DJMarketUtils implements AConstDefine {
 				installedAppInfo.setVersion(pInfo.versionName);
 				installedAppInfo.setVersionCode(pInfo.versionCode);
 				installedAppInfo.setPkgName(info.packageName);
-				// map.put("uninstall", R.drawable.uninstall);
 				// 获取软件大小：通过PackageInfo的applicationInfo的publicSourceDir获得路径，
 				// 再通过该路径创建一个文件new File(String dir)，得到该文件长度除以1024则取得该应用的大小
 				String dir = info.publicSourceDir;

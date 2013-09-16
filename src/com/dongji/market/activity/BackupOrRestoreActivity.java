@@ -55,6 +55,11 @@ import com.dongji.market.pojo.InstalledAppInfo;
 import com.dongji.market.pojo.LoginParams;
 import com.dongji.market.protocol.DataManager;
 
+/**
+ * 应用备份和恢复
+ * @author yvon
+ *
+ */
 public class BackupOrRestoreActivity extends Activity implements AConstDefine, OnCheckedChangeListener {
 	private static final int EVENT_REQUEST_SOFTWARE_LIST = 0;
 	private static final int EVENT_LOADED = 1;
@@ -64,11 +69,9 @@ public class BackupOrRestoreActivity extends Activity implements AConstDefine, O
 	private static final int EVENT_LOCAL_BACKUPRESULT = 5;
 	private static final int EVENT_LOCAL_RESTORE = 6;
 	public static final int EVENT_CHECKCHANGE = 7;
-	
 
 	private NotificationManager mNotificationManager;
 	private Notification mNotification;
-
 
 	private ChooseToBackupAdapter chooseToBackupAdapter;
 	private ChooseToCloudRestoreAdapter chooseToCloudRestoreAdapter;
@@ -102,6 +105,7 @@ public class BackupOrRestoreActivity extends Activity implements AConstDefine, O
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_backuplist);
 		mApp = (AppMarket) getApplication();
+		
 		initHandler();
 		initBroadcastReceiver();
 		initDataAndView();

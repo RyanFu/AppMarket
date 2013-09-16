@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import org.myjson.JSONException;
@@ -14,7 +13,6 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -24,16 +22,12 @@ import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
-import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
-import android.view.animation.AnimationUtils;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.FrameLayout;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
@@ -49,11 +43,9 @@ import com.dongji.market.helper.TitleUtil;
 import com.dongji.market.helper.TitleUtil.OnToolBarBlankClickListener;
 import com.dongji.market.pojo.ApkItem;
 import com.dongji.market.protocol.DataManager;
-import com.dongji.market.widget.CustomIconAnimation;
 import com.dongji.market.widget.ScrollListView;
 
-public class Search_Result_Activity extends PublicActivity implements
-		OnScrollListener, ScrollListView.OnScrollTouchListener, OnToolBarBlankClickListener {
+public class Search_Result_Activity extends PublicActivity implements OnScrollListener, OnToolBarBlankClickListener {
 
 	private static final int EVENT_REQUEST_SEARCH_LIST = 2;
 	private static final int EVENT_NO_NETWORK_ERROR = 3;
@@ -67,8 +59,6 @@ public class Search_Result_Activity extends PublicActivity implements
 	private static final int SCROLL_DVALUE = 1;
 
 	private int currentPage;
-	private int sumCount;
-
 	private boolean isLoading, continueLoad;
 
 	private List<ApkItem> data;
@@ -76,60 +66,49 @@ public class Search_Result_Activity extends PublicActivity implements
 	private TitleUtil titleUtil;
 	private SearchResultAdapter adapter;
 	private MyHandler handler;
-	private CustomIconAnimation iconAnim;
-
 	private View mLoadingProgressBar, mLoadingView;
 	private ProgressBar mProgressBar;
 	private TextView mLoadingTextView;
 	private TextView mResultCount;
 	private ScrollListView mResultList;
 	private FrameLayout mShowResult;
-
-	private ImageView mTempIcon;
-
-	private ImageView mSoftwareBtn;
-
 	private boolean isFirstResume = true;
 	private boolean hasData = true;
-
-	private LinearLayout ll_top;
 
 	private LinearLayout llhasdata, llnodata;
 
 	private Bitmap defaultBitmap_icon;
 
-	// private static List<ApkItem> apkItems;
+	private static List<ApkItem> guessList;
+
+	private GridView mGuessLikeGrid;
+	private LinearLayout mGuessLikeLayout;
+
+	private View mGuessLoadingLayout;
+	private ProgressBar mGuessLoadingProgressBar;
+	private TextView mGuessLoadingTextView;
+	private int locStep;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_search_result);
 		overridePendingTransition(R.anim.in_from_right, R.anim.out_to_left);
 
 		initTitle();
 
-		iconAnim = new CustomIconAnimation(this);
-		ll_top = (LinearLayout) findViewById(R.id.ll_top);
-		mTempIcon = (ImageView) findViewById(R.id.tempIcon);
-		mSoftwareBtn = (ImageView) findViewById(R.id.softmanagerbutton);
 		mResultCount = (TextView) findViewById(R.id.result_count);
 		mProgressBar = (ProgressBar) findViewById(R.id.loading_progress);
 
 		mShowResult = (FrameLayout) findViewById(R.id.show_search_result);
 		mResultList = (ScrollListView) findViewById(R.id.result_list);
-		mResultList.setOnScrollTouchListener(this);
 
 		llhasdata = (LinearLayout) findViewById(R.id.llhasdata);
 		llnodata = (LinearLayout) findViewById(R.id.llnodata);
 
 		try {
-			InputStream is = getResources().openRawResource(
-					R.drawable.app_default_icon);
+			InputStream is = getResources().openRawResource(R.drawable.app_default_icon);
 			defaultBitmap_icon = BitmapFactory.decodeStream(is);
-			// mDefaultBitmap = BitmapFactory.decodeResource(getResources(),
-			// R.drawable.app_default_icon);
-
 		} catch (OutOfMemoryError e) {
 			if (defaultBitmap_icon != null && !defaultBitmap_icon.isRecycled()) {
 				defaultBitmap_icon.recycle();
@@ -138,50 +117,6 @@ public class Search_Result_Activity extends PublicActivity implements
 
 		initHandler();
 		initLoadingView();
-
-		// handler.sendEmptyMessage(EVENT_REQUEST_SEARCH_LIST);
-
-//		new SlideMenu(ll_top, mResultList);
-	}
-
-	@Override
-	public void onBackPressed() {
-		try {
-			super.onBackPressed();
-		} catch (IllegalStateException e) {
-			// TODO: handle exception
-			e.printStackTrace();
-		}
-//		overridePendingTransition(R.anim.in_from_left, R.anim.out_to_right);
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		if (!isFirstResume) {
-			if (handler != null && adapter != null) {
-				if (handler.hasMessages(EVENT_REFRENSH_DATA)) {
-					handler.removeMessages(EVENT_REFRENSH_DATA);
-				}
-				handler.sendEmptyMessage(EVENT_REFRENSH_DATA);
-			}
-		}
-		isFirstResume = false;
-		if(titleUtil!=null) {
-			titleUtil.sendRefreshHandler();
-		}
-	}
-
-	@Override
-	protected void onPause() {
-		// TODO Auto-generated method stub
-		super.onPause();
-		if(titleUtil!=null) {
-			titleUtil.removeRefreshHandler();
-		}
-		if (isFinishing()) {
-			overridePendingTransition(R.anim.in_from_left, R.anim.out_to_right);
-		}
 	}
 
 	/**
@@ -201,19 +136,10 @@ public class Search_Result_Activity extends PublicActivity implements
 		handler.sendEmptyMessage(EVENT_REQUEST_SEARCH_LIST);
 	}
 
-	private void initGuessLoading() {
-		mGuessLoadingLayout.setVisibility(View.VISIBLE);
-		mGuessLoadingProgressBar.setVisibility(View.VISIBLE);
-		mGuessLoadingTextView.setText(R.string.loading_txt);
-	}
-
-	private static List<ApkItem> guessList;
-
 	private class MyHandler extends Handler {
 
 		public MyHandler(Looper looper) {
 			super(looper);
-			// TODO Auto-generated constructor stub
 		}
 
 		@Override
@@ -221,14 +147,11 @@ public class Search_Result_Activity extends PublicActivity implements
 			switch (msg.what) {
 			case EVENT_REQUEST_SEARCH_LIST:
 				try {
-					data = DataManager.newInstance().getSearchResult(
-							getIntent().getStringExtra("search_keyword"));
+					data = DataManager.newInstance().getSearchResult(getIntent().getStringExtra("search_keyword"));
 					data = setApkStatus(data);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
-					if (!AndroidUtils
-							.isNetworkAvailable(Search_Result_Activity.this)) {
+					if (!AndroidUtils.isNetworkAvailable(Search_Result_Activity.this)) {
 						handler.sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
 					} else {
 						handler.sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
@@ -240,27 +163,21 @@ public class Search_Result_Activity extends PublicActivity implements
 					break;
 				}
 				if (data != null && data.size() > 0) {
-					// sumCount += data.size();
 					runOnUiThread(new Runnable() {
 
 						@Override
 						public void run() {
 							llhasdata.setVisibility(View.VISIBLE);
 							llnodata.setVisibility(View.GONE);
-							mResultCount.setText(getResources().getString(
-									R.string.text1)
-									+ data.size()
-									+ getResources().getString(R.string.text2));
+							mResultCount.setText(getResources().getString(R.string.text1) + data.size() + getResources().getString(R.string.text2));
 							if (currentPage == 0) {
 								currentPage = 1;
 								initListData();
 								mLoadingView.setVisibility(View.GONE);
-								sendEmptyMessage(EVENT_REQUEST_SEARCH_LIST);
 								isLoading = true;
 							} else {
 								sendEmptyMessage(EVENT_LOADED);
-								if (continueLoad && data != null
-										&& data.size() > 0) {
+								if (continueLoad && data != null && data.size() > 0) {
 									adapter.addList(data);
 									continueLoad = false;
 								}
@@ -271,9 +188,6 @@ public class Search_Result_Activity extends PublicActivity implements
 					});
 				} else {
 					hasData = false;
-					// if (sumCount == 0) {
-					//
-					// }
 					runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
@@ -286,29 +200,17 @@ public class Search_Result_Activity extends PublicActivity implements
 				}
 				break;
 			case EVENT_REQUEST_GUESS_LIST:
-				// try {
-				// guessList =
-				// DataManager.newInstance().getSearchResult("围棋");
 				try {
-					String top50time = NetTool.getSharedPreferences(
-							Search_Result_Activity.this,
-							AConstDefine.SHARE_GETTOP50TIME, "");
+					String top50time = NetTool.getSharedPreferences(Search_Result_Activity.this, AConstDefine.SHARE_GETTOP50TIME, "");
 					Calendar cal = Calendar.getInstance();
-					String dateString = "" + cal.get(Calendar.YEAR)
-							+ (cal.get(Calendar.MONTH) + 1)
-							+ cal.get(Calendar.DATE);
-					if (null == Search_Activity.apkItems
-							|| !top50time.equals(dateString)) {
-						Search_Activity.apkItems = DataManager.newInstance()
-								.getTop50();
-						NetTool.setSharedPreferences(
-								Search_Result_Activity.this,
-								AConstDefine.SHARE_GETTOP50TIME, dateString);
+					String dateString = "" + cal.get(Calendar.YEAR) + (cal.get(Calendar.MONTH) + 1) + cal.get(Calendar.DATE);
+					if (null == Search_Activity.apkItems || !top50time.equals(dateString)) {
+						Search_Activity.apkItems = DataManager.newInstance().getTop50();
+						NetTool.setSharedPreferences(Search_Result_Activity.this, AConstDefine.SHARE_GETTOP50TIME, dateString);
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
-					if (!AndroidUtils
-							.isNetworkAvailable(getApplicationContext())) {
+					if (!AndroidUtils.isNetworkAvailable(getApplicationContext())) {
 						handler.sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
 					} else {
 						handler.sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
@@ -321,18 +223,14 @@ public class Search_Result_Activity extends PublicActivity implements
 					guessList = new ArrayList<ApkItem>();
 					Random random = new Random();
 					int[] ranInt = new int[8];
-					ranInt[0] = random
-							.nextInt(Search_Activity.apkItems.size());
+					ranInt[0] = random.nextInt(Search_Activity.apkItems.size());
 					guessList.add(Search_Activity.apkItems.get(ranInt[0]));
 					System.out.println("guesslist........" + ranInt[0]);
 					for (int i = 1; i < 8; i++) {
-						int tempRandom = random
-								.nextInt(Search_Activity.apkItems.size());
+						int tempRandom = random.nextInt(Search_Activity.apkItems.size());
 						for (int j = 0; j < i; j++) {
 							while (tempRandom == ranInt[j]) {
-								tempRandom = random
-										.nextInt(Search_Activity.apkItems
-												.size());
+								tempRandom = random.nextInt(Search_Activity.apkItems.size());
 							}
 						}
 						ranInt[i] = tempRandom;
@@ -340,20 +238,6 @@ public class Search_Result_Activity extends PublicActivity implements
 						System.out.println("guesslist........" + ranInt[i]);
 					}
 				}
-				// } catch (IOException e) {
-				// e.printStackTrace();
-				// if (!AndroidUtils
-				// .isNetworkAvailable(getApplicationContext())) {
-				// sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
-				// } else {
-				// sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
-				// }
-				// break;
-				// } catch (JSONException e) {
-				// e.printStackTrace();
-				// sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
-				// break;
-				// }
 				runOnUiThread(new Runnable() {
 
 					@Override
@@ -364,12 +248,10 @@ public class Search_Result_Activity extends PublicActivity implements
 				});
 				break;
 			case EVENT_NO_NETWORK_ERROR:
-				setErrorMessage(R.string.no_network_refresh_msg,
-						R.string.no_network_refresh_msg2);
+				setErrorMessage(R.string.no_network_refresh_msg, R.string.no_network_refresh_msg2);
 				break;
 			case EVENT_REQUEST_DATA_ERROR:
-				setErrorMessage(R.string.request_data_error_msg,
-						R.string.request_data_error_msg2);
+				setErrorMessage(R.string.request_data_error_msg, R.string.request_data_error_msg2);
 				break;
 			case EVENT_LOADING:
 				runOnUiThread(new Runnable() {
@@ -402,7 +284,83 @@ public class Search_Result_Activity extends PublicActivity implements
 				break;
 			}
 		}
-	};
+	}
+
+	private void setErrorMessage(final int rId, final int rId2) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				isLoading = false;
+				if (mLoadingView.getVisibility() == View.VISIBLE) {
+					mLoadingProgressBar.setVisibility(View.GONE);
+					mLoadingTextView.setText(rId);
+				} else {
+					AndroidUtils.showToast(Search_Result_Activity.this, rId2);
+				}
+			}
+		});
+	}
+
+	/**
+	 * 初始化数据列表
+	 */
+	private void initListData() {
+		adapter = new SearchResultAdapter(Search_Result_Activity.this, data, isRemoteImage);
+		mResultList.setAdapter(adapter);
+		mResultList.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				Intent intent = new Intent();
+				Bundle bundle = new Bundle();
+				bundle.putParcelable("apkItem", (ApkItem) adapter.getItem(position));
+				intent.putExtras(bundle);
+				intent.setClass(Search_Result_Activity.this, ApkDetailActivity.class);
+				startActivity(intent);
+			}
+		});
+		mShowResult.setVisibility(View.VISIBLE);
+	}
+
+	private void showGuessLike() {
+		final List<ApkItem> list = getGuessLikeList(guessList);
+		mGuessLikeGrid = new GridView(this);
+		mGuessLikeLayout = (LinearLayout) findViewById(R.id.show_gridview);
+		if (list.size() == 0) {
+			mGuessLikeGrid.setVisibility(View.GONE);
+			mGuessLoadingLayout.setVisibility(View.VISIBLE);
+			mGuessLoadingProgressBar.setVisibility(View.GONE);
+			mGuessLoadingTextView.setText(R.string.no_data);
+			return;
+		} else {
+			mGuessLoadingLayout.setVisibility(View.GONE);
+			mGuessLikeGrid.setVisibility(View.VISIBLE);
+		}
+		int columnWidth = AndroidUtils.dip2px(this, 48);
+		int horizontalSpacing = AndroidUtils.dip2px(this, 10);
+		LayoutParams params = new LayoutParams(list.size() * columnWidth + list.size() * horizontalSpacing, columnWidth + horizontalSpacing * 4);
+		mGuessLikeGrid.setLayoutParams(params);
+		mGuessLikeGrid.setColumnWidth(columnWidth);
+		mGuessLikeGrid.setHorizontalSpacing(horizontalSpacing);
+		mGuessLikeGrid.setNumColumns(list.size());
+		mGuessLikeGrid.setStretchMode(GridView.NO_STRETCH);
+		mGuessLikeGrid.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				String keyword = list.get(position).appName;
+				titleUtil.history.add(keyword);
+				Intent intent = new Intent();
+				intent.putExtra("search_keyword", keyword);
+				intent.setClass(Search_Result_Activity.this, Search_Result_Activity.class);
+				startActivity(intent);
+			}
+		});
+		GuessLikeAdapter adapter = new GuessLikeAdapter(this, list, defaultBitmap_icon);
+		mGuessLikeGrid.setAdapter(adapter);
+		mGuessLikeLayout.addView(mGuessLikeGrid);
+
+	}
 
 	private List<ApkItem> getGuessLikeList(List<ApkItem> data) {
 		List<ApkItem> list = new ArrayList<ApkItem>();
@@ -418,80 +376,6 @@ public class Search_Result_Activity extends PublicActivity implements
 		return list;
 	}
 
-	private GridView mGuessLikeGrid;
-	private LinearLayout mGuessLikeLayout;
-
-	private void showGuessLike() {
-		// guessList = getGuessLikeList();
-		final List<ApkItem> list = getGuessLikeList(guessList);
-		mGuessLikeGrid = new GridView(this);
-		mGuessLikeLayout = (LinearLayout) findViewById(R.id.show_gridview);
-		// mGuessLoadingLayout = findViewById(R.id.guess_loading_layout);
-		// mGuessLoadingProgressBar = (ProgressBar)
-		// mGuessLoadingLayout.findViewById(R.id.loading_progressbar);
-		// mGuessLoadingTextView = (TextView)
-		// mGuessLoadingLayout.findViewById(R.id.loading_textview);
-		if (list.size() == 0) {
-			mGuessLikeGrid.setVisibility(View.GONE);
-			mGuessLoadingLayout.setVisibility(View.VISIBLE);
-			mGuessLoadingProgressBar.setVisibility(View.GONE);
-			mGuessLoadingTextView.setText(R.string.no_data);
-			return;
-		} else {
-			mGuessLoadingLayout.setVisibility(View.GONE);
-			mGuessLikeGrid.setVisibility(View.VISIBLE);
-		}
-		int columnWidth = AndroidUtils.dip2px(this, 48);
-		int horizontalSpacing = AndroidUtils.dip2px(this, 10);
-		// int padding = AndroidUtils.dip2px(this, 5);
-		// mGuessLikeGrid = (GridView) findViewById(R.id.guess_gridview);
-		// LayoutParams params = new LayoutParams(list.size()
-		// * (columnWidth + horizontalSpacing + padding),
-		// LayoutParams.FILL_PARENT);
-		LayoutParams params = new LayoutParams(list.size() * columnWidth
-				+ list.size() * horizontalSpacing, columnWidth
-				+ horizontalSpacing * 4);
-		mGuessLikeGrid.setLayoutParams(params);
-		mGuessLikeGrid.setColumnWidth(columnWidth);
-		mGuessLikeGrid.setHorizontalSpacing(horizontalSpacing);
-		mGuessLikeGrid.setNumColumns(list.size());
-		// mGuessLikeGrid.setPadding(padding, padding, padding, padding);
-		mGuessLikeGrid.setStretchMode(GridView.NO_STRETCH);
-		mGuessLikeGrid.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				String keyword = list.get(position).appName;
-				titleUtil.history.add(keyword);
-				Intent intent = new Intent();
-				intent.putExtra("search_keyword", keyword);
-				intent.setClass(Search_Result_Activity.this,
-						Search_Result_Activity.class);
-				startActivity(intent);
-			}
-		});
-		GuessLikeAdapter adapter = new GuessLikeAdapter(this, list,
-				defaultBitmap_icon);
-		mGuessLikeGrid.setAdapter(adapter);
-		mGuessLikeLayout.addView(mGuessLikeGrid);
-
-	}
-
-	/**
-	 * 下载时动画设置
-	 * 
-	 * @param map
-	 */
-	public void onStartDownload(Map<String, Object> map) {
-		int iconX = (Integer) map.get("X");
-		int iconY = (Integer) map.get("Y")
-				- mSoftwareBtn.getHeight()
-				+ AndroidUtils.getStatusBarInfo(Search_Result_Activity.this).top;
-		Drawable icon = (Drawable) map.get("icon");
-		iconAnim.startAnimation(iconX, iconY, icon, mTempIcon, mSoftwareBtn);
-	}
-
 	/**
 	 * 刷新数据
 	 */
@@ -504,10 +388,6 @@ public class Search_Result_Activity extends PublicActivity implements
 			}
 		});
 	}
-
-	private View mGuessLoadingLayout;
-	private ProgressBar mGuessLoadingProgressBar;
-	private TextView mGuessLoadingTextView;
 
 	/**
 	 * 初始化加载环形进度条
@@ -527,10 +407,8 @@ public class Search_Result_Activity extends PublicActivity implements
 			}
 		});
 		mGuessLoadingLayout = findViewById(R.id.guessLodinglayout);
-		mGuessLoadingProgressBar = (ProgressBar) mGuessLoadingLayout
-				.findViewById(R.id.guessloading_progressbar);
-		mGuessLoadingTextView = (TextView) mGuessLoadingLayout
-				.findViewById(R.id.guessloading_textview);
+		mGuessLoadingProgressBar = (ProgressBar) mGuessLoadingLayout.findViewById(R.id.guessloading_progressbar);
+		mGuessLoadingTextView = (TextView) mGuessLoadingLayout.findViewById(R.id.guessloading_textview);
 		mGuessLoadingLayout.setOnTouchListener(new OnTouchListener() {
 
 			@Override
@@ -553,40 +431,51 @@ public class Search_Result_Activity extends PublicActivity implements
 		mLoadingTextView.setText(R.string.loading_txt);
 	}
 
-	/**
-	 * 初始化数据列表
-	 */
-	private void initListData() {
-		// FrameLayout mShowResult = (FrameLayout)
-		// findViewById(R.id.show_search_result);
-		// mResultList = (ScrollListView) findViewById(R.id.result_list);
-		// mResultList.setOnScrollTouchListener(this);
-		adapter = new SearchResultAdapter(Search_Result_Activity.this, data,
-				isRemoteImage);
-		mResultList.setAdapter(adapter);
-		mResultList.setOnItemClickListener(new OnItemClickListener() {
+	private void initGuessLoading() {
+		mGuessLoadingLayout.setVisibility(View.VISIBLE);
+		mGuessLoadingProgressBar.setVisibility(View.VISIBLE);
+		mGuessLoadingTextView.setText(R.string.loading_txt);
+	}
 
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				// TODO Auto-generated method stub
-				Intent intent = new Intent();
-				Bundle bundle = new Bundle();
-				bundle.putParcelable("apkItem",
-						(ApkItem) adapter.getItem(position));
-				intent.putExtras(bundle);
-				intent.setClass(Search_Result_Activity.this,
-						ApkDetailActivity.class);
-				startActivity(intent);
+	@Override
+	public void onBackPressed() {
+		try {
+			super.onBackPressed();
+		} catch (IllegalStateException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if (!isFirstResume) {
+			if (handler != null && adapter != null) {
+				if (handler.hasMessages(EVENT_REFRENSH_DATA)) {
+					handler.removeMessages(EVENT_REFRENSH_DATA);
+				}
+				handler.sendEmptyMessage(EVENT_REFRENSH_DATA);
 			}
-		});
-		// mResultList.setOnScrollListener(this);
-		mShowResult.setVisibility(View.VISIBLE);
+		}
+		isFirstResume = false;
+		if (titleUtil != null) {
+			titleUtil.sendRefreshHandler();
+		}
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		if (titleUtil != null) {
+			titleUtil.removeRefreshHandler();
+		}
+		if (isFinishing()) {
+			overridePendingTransition(R.anim.in_from_left, R.anim.out_to_right);
+		}
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add("test");
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -596,25 +485,27 @@ public class Search_Result_Activity extends PublicActivity implements
 		return false;
 	}
 
-	private void setErrorMessage(final int rId, final int rId2) {
-		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				isLoading = false;
-				if (mLoadingView.getVisibility() == View.VISIBLE) {
-					mLoadingProgressBar.setVisibility(View.GONE);
-					mLoadingTextView.setText(rId);
-				} else {
-					AndroidUtils.showToast(Search_Result_Activity.this, rId2);
-				}
-			}
-		});
-	}
-
 	@Override
 	protected void onDestroy() {
 		titleUtil.unregisterMyReceiver(this);
 		super.onDestroy();
+	}
+
+	@Override
+	public void onScrollStateChanged(AbsListView view, int scrollState) {
+	}
+
+	@Override
+	public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+		if (!isLoading && firstVisibleItem + visibleItemCount > totalItemCount - SCROLL_DVALUE) {
+			adapter.addList(data);
+			isLoading = true;
+			showProgressBar();
+			handler.sendEmptyMessage(EVENT_REQUEST_SEARCH_LIST);
+		} else if (isLoading && firstVisibleItem + visibleItemCount > totalItemCount - SCROLL_DVALUE) {
+			handler.sendEmptyMessageDelayed(EVENT_LOADING, 300);
+			continueLoad = true;
+		}
 	}
 
 	/**
@@ -627,53 +518,6 @@ public class Search_Result_Activity extends PublicActivity implements
 	}
 
 	@Override
-	public void onScrollStateChanged(AbsListView view, int scrollState) {
-		if (scrollState == OnScrollListener.SCROLL_STATE_IDLE) {
-			// isLoading = false;
-			// AndroidUtils.showToast(this, R.string.last_item);
-		}
-	}
-
-	@Override
-	public void onScroll(AbsListView view, int firstVisibleItem,
-			int visibleItemCount, int totalItemCount) {
-		// System.out.println("firstVisibleItem-------------->" +
-		// firstVisibleItem);
-		// System.out.println("visibleItemCount==============>" +
-		// visibleItemCount);
-		// System.out.println("totalItemCount==============>" + totalItemCount);
-		// System.out.println("当前请求数据量-------------->" + data.size());
-		// System.out.println("请求总数据量sumCount-------------->" + sumCount);
-		// System.out.println("是否正在加载＝＝＝＝＝＝＝＝＝＝＝＝＝>" + isLoading);
-		if (!isLoading
-				&& firstVisibleItem + visibleItemCount > totalItemCount
-						- SCROLL_DVALUE) {
-			// System.out.println("adapter count+++++++++++++>" +
-			// adapter.getCount());
-			// adapter.notifyDataSetChanged();
-			adapter.addList(data);
-			isLoading = true;
-			showProgressBar();
-			handler.sendEmptyMessage(EVENT_REQUEST_SEARCH_LIST);
-		} else if (isLoading
-				&& firstVisibleItem + visibleItemCount > totalItemCount
-						- SCROLL_DVALUE) {
-			handler.sendEmptyMessageDelayed(EVENT_LOADING, 300);
-			continueLoad = true;
-		}
-		// if (sumCount == maxCount) {
-		// adapter.setCount(maxCount);
-		// }
-		// if (!isLoading
-		// && firstVisibleItem + visibleItemCount > totalItemCount
-		// - SCROLL_DVALUE) {
-		// isLoading = true;
-		// showProgressBar();
-		// handler.sendEmptyMessage(EVENT_REQUEST_SEARCH_LIST);
-		// }
-	}
-
-	@Override
 	public void onAppInstallOrUninstallDone(int status, PackageInfo info) {
 		if (mResultList != null && adapter != null) {
 			adapter.changeApkStatusByPackageInfo(status, info);
@@ -681,8 +525,7 @@ public class Search_Result_Activity extends PublicActivity implements
 	}
 
 	@Override
-	public void onAppStatusChange(boolean isCancel, String packageName,
-			int versionCode) {
+	public void onAppStatusChange(boolean isCancel, String packageName, int versionCode) {
 		if (mResultList != null && adapter != null) {
 			adapter.changeApkStatusByAppId(isCancel, packageName, versionCode);
 		}
@@ -697,111 +540,30 @@ public class Search_Result_Activity extends PublicActivity implements
 	}
 
 	@Override
-	public void onScrollTouch(int scrollState) {
-		switch (scrollState) {
-		case ScrollListView.OnScrollTouchListener.SCROLL_BOTTOM:
-			// scrollOperation(true);
-			break;
-		case ScrollListView.OnScrollTouchListener.SCROLL_TOP:
-			// scrollOperation(false);
-			break;
-		}
-	}
-
-	private boolean isScrollAnimRunning;
-
-	void scrollOperation(boolean flag) {
-		if (flag) {
-			if (!isScrollAnimRunning && ll_top.getVisibility() == View.VISIBLE) {
-				Animation mTopCollapseAnimation = AnimationUtils.loadAnimation(
-						this, R.anim.anim_tab_collapse);
-				Animation mBottomCollapseAnimation = AnimationUtils
-						.loadAnimation(this, R.anim.anim_bottom_collapse);
-				mTopCollapseAnimation
-						.setAnimationListener(new AnimationListener() {
-							@Override
-							public void onAnimationStart(Animation animation) {
-							}
-
-							@Override
-							public void onAnimationRepeat(Animation animation) {
-							}
-
-							@Override
-							public void onAnimationEnd(Animation animation) {
-								// TODO Auto-generated method stub
-								isScrollAnimRunning = false;
-								ll_top.setVisibility(View.GONE);
-							}
-						});
-				mBottomCollapseAnimation
-						.setAnimationListener(new AnimationListener() {
-							@Override
-							public void onAnimationStart(Animation animation) {
-							}
-
-							@Override
-							public void onAnimationRepeat(Animation animation) {
-							}
-
-							@Override
-							public void onAnimationEnd(Animation animation) {
-								// mMainBottomLayout.setVisibility(View.GONE);
-							}
-						});
-				isScrollAnimRunning = true;
-				ll_top.startAnimation(mTopCollapseAnimation);
-				// mMainBottomLayout.startAnimation(mBottomCollapseAnimation);
-			}
-		} else {
-			if (ll_top.getVisibility() == View.GONE) {
-				Animation mTopExpandAnimation = AnimationUtils.loadAnimation(
-						this, R.anim.anim_tab_expand);
-				Animation mBottomExpandAnimation = AnimationUtils
-						.loadAnimation(this, R.anim.anim_bottom_expand);
-				ll_top.setVisibility(View.VISIBLE);
-				// mMainBottomLayout.setVisibility(View.VISIBLE);
-				System.out.println("onanimationstart.......................");
-				ll_top.startAnimation(mTopExpandAnimation);
-				// mMainBottomLayout.startAnimation(mBottomExpandAnimation);
-			}
-		}
-	}
-
-	@Override
 	protected void loadingImage() {
-		// TODO Auto-generated method stub
-		if(adapter!=null) {
+		if (adapter != null) {
 			adapter.setDisplayNotify(isRemoteImage);
 		}
 	}
 
-	private int locStep;
 	@Override
 	public void onClick() {
-		if(mResultList!=null) {
-//			if (!mResultList.isStackFromBottom()) {
-//				mResultList.setStackFromBottom(true);
-//			}
-//			mResultList.setStackFromBottom(false);
-			locStep = (int) Math.ceil(mResultList.getFirstVisiblePosition()/AConstDefine.AUTO_SCRLL_TIMES);
+		if (mResultList != null) {
+			locStep = (int) Math.ceil(mResultList.getFirstVisiblePosition() / AConstDefine.AUTO_SCRLL_TIMES);
 			mResultList.post(scrollToTop);
 		}
 	}
-	
+
 	Runnable scrollToTop = new Runnable() {
 
 		@Override
 		public void run() {
-			// TODO Auto-generated method stub
 			if (mResultList.getFirstVisiblePosition() > 0) {
 				if (mResultList.getFirstVisiblePosition() < AConstDefine.AUTO_SCRLL_TIMES) {
-					mResultList.setSelection(mResultList
-							.getFirstVisiblePosition() - 1);
+					mResultList.setSelection(mResultList.getFirstVisiblePosition() - 1);
 				} else {
 					mResultList.setSelection(Math.max(mResultList.getFirstVisiblePosition() - locStep, 0));
 				}
-				// mAppListView.postDelayed(this, 1);
 				mResultList.post(this);
 			}
 			return;

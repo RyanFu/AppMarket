@@ -28,10 +28,8 @@ public class LauncherActivity extends Activity implements AnimationListener {
 	private static final int EVENT_REQUEST_UPDATE = 2;
 	private static final int EVENT_REQUEST_DATA_ERROR = 3;
 	private static final int EVENT_START_ANIM = 4;
-
 	private ImageView mTopImageView;
 	private ImageView mBottomImageView;
-
 	private int[] arr;
 	private boolean isAnimEnd;
 	private boolean isDataLoaded;

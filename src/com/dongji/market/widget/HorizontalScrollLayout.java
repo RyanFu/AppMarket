@@ -14,29 +14,23 @@ import android.widget.Scroller;
  * @author zhangkai
  */
 public class HorizontalScrollLayout extends ViewGroup {
-
 	private static final String TAG = "HorizontalScrollLayout";
 	private static final boolean DEBUG = false;
-
 	private Scroller mScroller;
 	private VelocityTracker mVelocityTracker;
-
 	private int mCurScreen;
 	private int mDefaultScreen = 0;
-
 	private static final int TOUCH_STATE_REST = 0;
 	private static final int TOUCH_STATE_SCROLLING = 1;
-
 	private static final int SNAP_VELOCITY = 600;
-
 	private int mTouchState = TOUCH_STATE_REST;
 	private int mTouchSlop;
 	private float mLastMotionX;
 	private float mLastMotionY;
-
 	private OnPageChangedListener mListener;
-
 	private boolean isNotifyChanged; // 是否通知监听回调
+	private View mInterceptView;
+	private int interceptPosition;
 
 	public HorizontalScrollLayout(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
@@ -87,54 +81,7 @@ public class HorizontalScrollLayout extends ViewGroup {
 		}
 	}
 
-	/**
-	 * According to the position of current layout scroll to the destination
-	 * page.
-	 */
-	public void snapToDestination() {
-		final int screenWidth = getWidth();
-		final int destScreen = (getScrollX() + screenWidth / 2) / screenWidth;
-		snapToScreen(destScreen);
-	}
-
-	public void snapToScreen(int whichScreen) {
-		whichScreen = Math.max(0, Math.min(whichScreen, getChildCount() - 1));
-		if (getScrollX() != (whichScreen * getWidth())) {
-
-			final int delta = whichScreen * getWidth() - getScrollX();
-			int duration = Math.abs(delta) * 2;
-			int num = getWidth() * 2;
-			mScroller.startScroll(getScrollX(), 0, delta, 0, duration > num ? num : duration);
-			if (mCurScreen != whichScreen) {
-				mCurScreen = whichScreen;
-				isNotifyChanged = true;
-			}
-			if (mListener != null) {
-				mListener.onPageChanged(mCurScreen);
-			}
-			invalidate(); // Redraw the layout
-		} else {
-			if (mListener != null) {
-				mListener.onPageChanged(mCurScreen);
-			}
-		}
-	}
-
-	public void setToScreen(int whichScreen) {
-		whichScreen = Math.max(0, Math.min(whichScreen, getChildCount() - 1));
-		mCurScreen = whichScreen;
-		scrollTo(whichScreen * getWidth(), 0);
-	}
-
-	/**
-	 * 返回当前显示布局的下标
-	 * 
-	 * @return
-	 */
-	public int getCurScreen() {
-		return mCurScreen;
-	}
-
+	
 	@Override
 	public void computeScroll() {
 		if (!mScroller.isFinished() && mScroller.computeScrollOffset()) {
@@ -260,9 +207,6 @@ public class HorizontalScrollLayout extends ViewGroup {
 		return mTouchState != TOUCH_STATE_REST;
 	}
 
-	private View mInterceptView;
-	private int interceptPosition;
-
 	public void setInterceptTouchView(View v, int position) {
 		mInterceptView = v;
 		interceptPosition = position;
@@ -271,9 +215,56 @@ public class HorizontalScrollLayout extends ViewGroup {
 	public void setOnPageChangedListener(OnPageChangedListener mListener) {
 		this.mListener = mListener;
 	}
+	
+	public void setToScreen(int whichScreen) {
+		whichScreen = Math.max(0, Math.min(whichScreen, getChildCount() - 1));
+		mCurScreen = whichScreen;
+		scrollTo(whichScreen * getWidth(), 0);
+	}
+	
+	/**
+	 * According to the position of current layout scroll to the destination
+	 * page.
+	 */
+	public void snapToDestination() {
+		final int screenWidth = getWidth();
+		final int destScreen = (getScrollX() + screenWidth / 2) / screenWidth;
+		snapToScreen(destScreen);
+	}
+
+	public void snapToScreen(int whichScreen) {
+		whichScreen = Math.max(0, Math.min(whichScreen, getChildCount() - 1));
+		if (getScrollX() != (whichScreen * getWidth())) {
+
+			final int delta = whichScreen * getWidth() - getScrollX();
+			int duration = Math.abs(delta) * 2;
+			int num = getWidth() * 2;
+			mScroller.startScroll(getScrollX(), 0, delta, 0, duration > num ? num : duration);
+			if (mCurScreen != whichScreen) {
+				mCurScreen = whichScreen;
+				isNotifyChanged = true;
+			}
+			if (mListener != null) {
+				mListener.onPageChanged(mCurScreen);
+			}
+			invalidate(); // Redraw the layout
+		} else {
+			if (mListener != null) {
+				mListener.onPageChanged(mCurScreen);
+			}
+		}
+	}
+
+	/**
+	 * 返回当前显示布局的下标
+	 * 
+	 * @return
+	 */
+	public int getCurScreen() {
+		return mCurScreen;
+	}
 
 	public interface OnPageChangedListener {
 		void onPageChanged(int position);
-
 	}
 }

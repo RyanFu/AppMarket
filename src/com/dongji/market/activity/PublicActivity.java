@@ -337,32 +337,6 @@ public abstract class PublicActivity extends Activity {
 		}
 	};
 
-	/*************************************** 抽象类定义，子类实现 **********************************/
-	/**
-	 * 软件安装或卸载完成
-	 * 
-	 * @param info
-	 */
-	public abstract void onAppInstallOrUninstallDone(int status, PackageInfo info);
-
-	/**
-	 * 当软件取消下载或更新的时候
-	 * 
-	 */
-	public abstract void onAppStatusChange(boolean isCancel, String packageName, int versionCode);
-
-	/**
-	 * 数据更新
-	 */
-	protected abstract void onUpdateDataDone();
-
-	/**
-	 * 加载图片
-	 */
-	protected abstract void loadingImage();
-
-	/*************************************** 抽象类定义 **********************************/
-
 	/**
 	 * 使用3G下载是否提示过用户
 	 * 
@@ -406,5 +380,31 @@ public abstract class PublicActivity extends Activity {
 			unregisterReceiver(mPackageStatusReceiver);
 		}
 	}
+
+	/*************************************** 抽象类定义，子类实现 **********************************/
+	/**
+	 * 软件安装或卸载完成
+	 * 
+	 * @param info
+	 */
+	public abstract void onAppInstallOrUninstallDone(int status, PackageInfo info);
+
+	/**
+	 * 当软件取消下载或更新的时候
+	 * 
+	 */
+	public abstract void onAppStatusChange(boolean isCancel, String packageName, int versionCode);
+
+	/**
+	 * 数据更新
+	 */
+	protected abstract void onUpdateDataDone();
+
+	/**
+	 * 加载图片
+	 */
+	protected abstract void loadingImage();
+
+	/*************************************** 抽象类定义 **********************************/
 
 }

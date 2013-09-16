@@ -1,8 +1,6 @@
 package com.dongji.market.activity;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.myjson.JSONException;
@@ -20,15 +18,12 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 
@@ -39,8 +34,6 @@ import com.dongji.market.adapter.ListSingleTemplateAdapter;
 import com.dongji.market.download.AConstDefine;
 import com.dongji.market.helper.AndroidUtils;
 import com.dongji.market.pojo.ApkItem;
-import com.dongji.market.pojo.ChannelListInfo;
-import com.dongji.market.pojo.NavigationInfo;
 import com.dongji.market.protocol.DataManager;
 import com.dongji.market.widget.ScrollListView;
 
@@ -50,7 +43,7 @@ import com.dongji.market.widget.ScrollListView;
  * @author zhangkai
  * 
  */
-public class ChoicenessActivity extends BaseActivity implements OnItemClickListener, OnScrollListener, ScrollListView.OnScrollTouchListener {
+public class ChoicenessActivity extends BaseActivity implements OnItemClickListener {
 	private ImageGalleryAdapter mGalleryAdapter;
 	private static final int EVENT_ROTATE = 1;
 	private static final int EVENT_REQUEST_BANNER_DATA = 2;
@@ -59,12 +52,7 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 	private static final int EVENT_NO_NETWORK_ERROR = 5;
 	private static final int EVENT_REQUEST_DATA_ERROR = 6;
 	private static final int EVENT_REFRENSH_DATA = 8;
-	private static final int EVENT_ADD_ADAPTER_DATA = 9;
-	private static final int EVENT_REQUEST_NAVIGATION = 10;
-	private static final int EVENT_DEFOULT_IMAGE = 11;
 	private static final int EVENT_COLLECT_DEVICE_INFO = 12;
-
-	private static final int SCROLL_DVALUE = 1;
 
 	private static final long ROTATE_TIME = 2000L;
 	private Gallery mImageGallery;
@@ -83,9 +71,7 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 	private List<ApkItem> apps;
 	private List<ApkItem> games;
 
-	private boolean isLoading;
 	private boolean isAppClicked = true;
-	private boolean isRequestDelay;
 
 	private ListSingleTemplateAdapter mAppSingleAdapter;
 
@@ -98,18 +84,27 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 
 	private Context context;
 
-	private boolean isFirstResume;
-
-	private NavigationInfo navigationInfo;
+	private boolean isFirstResume = true;
 
 	private boolean hasAppData = true;
 	private boolean hasGameData = true;
 
 	private int responseResult;
 
+	private int locStep;
+
+	/**
+	 * 设置聚焦指示按钮
+	 */
+	private ImageView mSelectedSwitchButton;
+
+	/**
+	 * 指示按钮
+	 */
+	private LinearLayout mSwithBtnContainer;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_list_template);
 		context = this;
@@ -118,65 +113,7 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 		initData();
 	}
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-		sendMessage();
-		if (isFirstResume) {
-			if (mHandler != null) {
-				if (mHandler.hasMessages(EVENT_REFRENSH_DATA)) {
-					mHandler.removeMessages(EVENT_REFRENSH_DATA);
-				}
-				mHandler.sendEmptyMessage(EVENT_REFRENSH_DATA);
-			}
-		}
-		isFirstResume = true;
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		removeMessage();
-		// mHandler.sendEmptyMessageDelayed(EVENT_DEFOULT_IMAGE, 1500L);
-	}
-
-	private void initView() {
-		if (mHeaderView == null) {
-			initHeaderView();
-		}
-		initAppListView();
-	}
-
-	/**
-	 * 初始化应用列表
-	 */
-	private void initAppListView() {
-		mAppListView = (ScrollListView) findViewById(R.id.applistview);
-		mAppListView.addHeaderView(mHeaderView, null, false);
-		mAppSingleAdapter = new ListSingleTemplateAdapter(this, apps, isRemoteImage);
-		mAppListView.setAdapter(mAppSingleAdapter);
-		mAppListView.setOnItemClickListener(this);
-		// mAppListView.setOnScrollListener(this);
-		mAppListView.setOnScrollTouchListener(this);
-		mAppListView.setVisibility(View.VISIBLE);
-		// getParentActivity().setListViewSlide(mAppListView);
-	}
-
-	private void initData() {
-		dataManager = DataManager.newInstance();
-		// Bundle bundle=getIntent().getExtras();
-		// if(bundle!=null) {
-		// navigationInfo=bundle.getParcelable("navigation");
-		// if(navigationInfo!=null) {
-		mHandler.sendEmptyMessage(EVENT_REQUEST_BANNER_DATA);
-		// }else {
-		// mHandler.sendEmptyMessage(EVENT_REQUEST_NAVIGATION);
-		// }
-		// }
-	}
-
 	private void initLoadingView() {
-
 		mLoadingView = findViewById(R.id.loadinglayout);
 		mLoadingProgressBar = findViewById(R.id.loading_progressbar);
 		mLoadingTextView = (TextView) findViewById(R.id.loading_textview);
@@ -185,163 +122,33 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 			public boolean onTouch(View v, MotionEvent event) {
 				if (mLoadingProgressBar.getVisibility() == View.GONE) {
 					setPreLoading();
-					// if(navigationInfo==null) {
-					// mHandler.sendEmptyMessage(EVENT_REQUEST_NAVIGATION);
-					// }else {
 					if (isAppClicked && hasAppData) {
 						mHandler.sendEmptyMessage(EVENT_REQUEST_BANNER_DATA);
 					} else if (!isAppClicked && hasGameData) {
 						mHandler.sendEmptyMessage(EVENT_REQUEST_BANNER_DATA);
 					}
-					// }
 				}
 				return false;
 			}
 		});
 	}
 
-	private void initGameListView() {
-		mGameListView = (ScrollListView) findViewById(R.id.gamelistview);
-		if (mHeaderView == null) {
-			initHeaderView();
-		}
-		mGameListView.addHeaderView(mHeaderView, null, false);
-		mGameSingleAdapter = new ListSingleTemplateAdapter(this, games, isRemoteImage);
-		mGameListView.setAdapter(mGameSingleAdapter);
-		mGameListView.setOnItemClickListener(this);
-		// mGameListView.setOnScrollListener(this);
-		if (mAppListView != null) {
-			mAppListView.setVisibility(View.GONE);
-		}
-		mGameListView.setOnScrollTouchListener(this);
-		mGameListView.setVisibility(View.VISIBLE);
-		// getParentActivity().setListViewSlide(mGameListView);
-	}
-
-	private void initHeaderView() {
-		mHeaderView = (FrameLayout) LayoutInflater.from(this).inflate(R.layout.layout_choiceness_header, null);
-		// mHeaderView=(FrameLayout)findViewById(R.id.choiceness_header);
-		// int margin=initHeaderIndicateMargin();
-		// mHeaderView.addView(getIndicateImageView(true, margin));
-		// mHeaderView.addView(getIndicateImageView(false, margin));
-		mImageGallery = (Gallery) mHeaderView.findViewById(R.id.choicenessgallery);
-		mGalleryAdapter = new ImageGalleryAdapter(this, bannerList);
-		mImageGallery.setAdapter(mGalleryAdapter);
-		int count = bannerList.size();
-		if (count > 0) {
-			int i = (Integer.MAX_VALUE / 2);
-			int num = i % count;
-			if (num != 0) {
-				i -= num;
-			}
-			mImageGallery.setSelection(i);
-		}
-		initSwitchIdResources(count, mHeaderView);
-		mImageGallery.setOnItemSelectedListener(new ItemSelectedListener(count));
-		mImageGallery.setOnItemClickListener(this);
-		mImageGallery.setOnTouchListener(new OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				switch (event.getAction()) {
-				case MotionEvent.ACTION_UP:
-				case MotionEvent.ACTION_CANCEL:
-					mHandler.sendEmptyMessageDelayed(EVENT_ROTATE, ROTATE_TIME);
-					break;
-				default:
-					mHandler.removeMessages(EVENT_ROTATE);
-					break;
-
-				}
-				return false;
-			}
-		});
-		getParentActivity().setInterceptRange(mImageGallery);
+	private void setPreLoading() {
+		mLoadingView.setVisibility(View.VISIBLE);
+		mLoadingProgressBar.setVisibility(View.VISIBLE);
+		mLoadingTextView.setText(R.string.loading_txt);
 	}
 
 	private void initHandler() {
 		HandlerThread mHandlerThread = new HandlerThread("handler");
 		mHandlerThread.start();
 		mHandler = new MyHandler(mHandlerThread.getLooper());
-		mHandler.sendEmptyMessage(EVENT_COLLECT_DEVICE_INFO);
+		mHandler.sendEmptyMessage(EVENT_COLLECT_DEVICE_INFO);// 获取设备信息
 	}
 
-	private boolean requestBannerData() {
-		try {
-			bannerList = dataManager.getBanners();
-			if (bannerList != null && bannerList.size() > 0)
-				return true;
-			/*
-			 * } catch (IOException e) { System.out.println(e);
-			 * if(!AndroidUtils.isNetworkAvailable(context)) {
-			 * mHandler.sendEmptyMessage(EVENT_NO_NETWORK_ERROR); }else {
-			 * mHandler.sendEmptyMessage(EVENT_REQUEST_DATA_ERROR); }
-			 */
-		} catch (JSONException e) {
-			System.out.println(e);
-			mHandler.sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
-		}
-		return false;
-	}
-
-	private void setDisplayVisible() {
-		mLoadingView.setVisibility(View.GONE);
-		if (isAppClicked) {
-			if (mAppListView != null) {
-				mAppListView.setVisibility(View.VISIBLE);
-			}
-			if (mGameListView != null) {
-				mGameListView.setVisibility(View.GONE);
-			}
-		} else {
-			if (mGameListView != null) {
-				mGameListView.setVisibility(View.VISIBLE);
-			}
-			if (mAppListView != null) {
-				mAppListView.setVisibility(View.GONE);
-			}
-		}
-	}
-
-	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-		Intent intent = new Intent(context, ApkDetailActivity.class);
-		Bundle bundle = new Bundle();
-		switch (parent.getId()) {
-		case R.id.applistview:
-			ApkItem item = mAppSingleAdapter.getApkItemByPosition(position - 1);
-			System.out.println(item.appName + ", " + item.status);
-			bundle.putParcelable("apkItem", item);
-			intent.putExtras(bundle);
-			startActivity(intent);
-			overridePendingTransition(R.anim.enter_in, R.anim.enter_out);
-			break;
-		case R.id.gamelistview:
-			bundle.putParcelable("apkItem", mGameSingleAdapter.getApkItemByPosition(position - 1));
-			;
-			intent.putExtras(bundle);
-			startActivity(intent);
-			overridePendingTransition(R.anim.enter_in, R.anim.enter_out);
-			break;
-		case R.id.choicenessgallery:
-			intent = new Intent(this, ApkDetailActivity.class);
-			position = position % bannerList.size();
-			bundle.putParcelable("apkItem", bannerList.get(position));
-			intent.putExtras(bundle);
-			startActivity(intent);
-			break;
-		}
-	}
-
-	public boolean moveN(Gallery g) {
-		try {
-			Method method = g.getClass().getDeclaredMethod("moveNext", new Class[] {});
-			method.setAccessible(true);
-			return (Boolean) method.invoke(g, null);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+	private void initData() {
+		dataManager = DataManager.newInstance();
+		mHandler.sendEmptyMessage(EVENT_REQUEST_BANNER_DATA);// 获取banner信息
 	}
 
 	private class MyHandler extends Handler {
@@ -352,18 +159,16 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-			case EVENT_ROTATE:
+			case EVENT_ROTATE:// gallery转动
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						mImageGallery.onKeyDown(KeyEvent.KEYCODE_DPAD_RIGHT, null);
-						// moveN(mImageGallery);
-
+						mImageGallery.onKeyDown(KeyEvent.KEYCODE_DPAD_RIGHT, null);// 右滑
 						sendEmptyMessageDelayed(EVENT_ROTATE, ROTATE_TIME);
 					}
 				});
 				break;
-			case EVENT_REQUEST_BANNER_DATA:
+			case EVENT_REQUEST_BANNER_DATA:// 获取banner信息
 				if (requestBannerData()) {
 					if (isAppClicked) {
 						sendEmptyMessage(EVENT_REQUEST_APPLIST_DATA);
@@ -378,9 +183,8 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 					}
 				}
 				break;
-			case EVENT_REQUEST_APPLIST_DATA:
+			case EVENT_REQUEST_APPLIST_DATA:// 获取应用列表信息
 				try {
-					// apps=dataManager.getApps(context, navigationInfo, true);
 					apps = dataManager.getApps(context, DataManager.EDITOR_RECOMMEND_ID, true);
 					System.out.println("apps ===> " + apps);
 					apps = setApkStatus(apps);
@@ -400,21 +204,12 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 								if (!mHandler.hasMessages(EVENT_ROTATE)) {
 									ChoicenessActivity.this.sendMessage();
 								}
-								// sendEmptyMessage(EVENT_REQUEST_APPLIST_DATA);
-								// isLoading=true;
 							} else {
-								if (isRequestDelay) {
-									addAdapterData();
-									sendEmptyMessage(EVENT_REQUEST_APPLIST_DATA);
-									isRequestDelay = false;
-								}
 								currentAppPage++;
-								isLoading = false;
 							}
 						}
 					});
 				} else {
-					isLoading = false;
 					if (!AndroidUtils.isNetworkAvailable(context)) {
 						sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
 					} else {
@@ -422,18 +217,10 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 					}
 				}
 				break;
-			case EVENT_REQUEST_GAMELIST_DATA:
+			case EVENT_REQUEST_GAMELIST_DATA:// 获取游戏应用列表
 				try {
-					// games=dataManager.getApps(context, navigationInfo,
-					// false);
 					games = dataManager.getApps(context, DataManager.EDITOR_RECOMMEND_ID, false);
 					games = setApkStatus(games);
-					/*
-					 * } catch (IOException e) { System.out.println(e);
-					 * if(!AndroidUtils.isNetworkAvailable(context)) {
-					 * sendEmptyMessage(EVENT_NO_NETWORK_ERROR); }else {
-					 * sendEmptyMessage(EVENT_REQUEST_DATA_ERROR); } break;
-					 */
 				} catch (JSONException e) {
 					System.out.println(e);
 					sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
@@ -450,21 +237,12 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 								if (!mHandler.hasMessages(EVENT_ROTATE)) {
 									ChoicenessActivity.this.sendMessage();
 								}
-								// sendEmptyMessage(EVENT_REQUEST_GAMELIST_DATA);
-								// isLoading=true;
 							} else {
-								if (isRequestDelay) {
-									addAdapterData();
-									sendEmptyMessage(EVENT_REQUEST_GAMELIST_DATA);
-									isRequestDelay = false;
-								}
 								currentGamePage++;
-								isLoading = false;
 							}
 						}
 					});
 				} else {
-					isLoading = false;
 					if (!AndroidUtils.isNetworkAvailable(context)) {
 						sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
 					} else {
@@ -472,46 +250,11 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 					}
 				}
 				break;
-			case EVENT_NO_NETWORK_ERROR:
-				setErrorMessage(R.string.no_network_refresh_msg, R.string.no_network_refresh_msg2);
-				break;
-			case EVENT_REQUEST_DATA_ERROR:
-				setErrorMessage(R.string.request_data_error_msg, R.string.request_data_error_msg2);
-				break;
-			case EVENT_REFRENSH_DATA:
-				/*
-				 * System.out.println("setdefault iamge:"+mHandler.hasMessages(
-				 * EVENT_DEFOULT_IMAGE)); if(hasMessages(EVENT_DEFOULT_IMAGE)) {
-				 * removeMessages(EVENT_DEFOULT_IMAGE); }
-				 */
+			case EVENT_REFRENSH_DATA:// 刷新数据
 				refreshData();
 				if (responseResult != 1) {
 					mHandler.sendEmptyMessage(EVENT_COLLECT_DEVICE_INFO);
 				}
-				break;
-			case EVENT_ADD_ADAPTER_DATA:
-				addAdapterData();
-				break;
-			case EVENT_REQUEST_NAVIGATION:
-				// requestNavigationData();
-				if (navigationInfo != null) {
-					sendEmptyMessage(EVENT_REQUEST_BANNER_DATA);
-				} else {
-					if (!AndroidUtils.isNetworkAvailable(context)) {
-						sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
-					} else {
-						sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
-					}
-				}
-				break;
-			case EVENT_DEFOULT_IMAGE:
-				runOnUiThread(new Runnable() {
-
-					@Override
-					public void run() {
-						setDefaultImage();
-					}
-				});
 				break;
 			case EVENT_COLLECT_DEVICE_INFO:
 				try {
@@ -521,80 +264,72 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 						sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
 					}
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				break;
+			case EVENT_NO_NETWORK_ERROR:
+				setErrorMessage(R.string.no_network_refresh_msg, R.string.no_network_refresh_msg2);
+				break;
+			case EVENT_REQUEST_DATA_ERROR:
+				setErrorMessage(R.string.request_data_error_msg, R.string.request_data_error_msg2);
 				break;
 			}
 		}
 	}
 
-	/*
-	 * private void requestNavigationData() { DataManager
-	 * dataManager=DataManager.newInstance(); try { ArrayList<NavigationInfo>
-	 * navigationList=dataManager.getNavigationList(); if(navigationList!=null
-	 * && navigationList.size()>0) {
-	 * getParentActivity().setNavigationList(navigationList);
-	 * navigationInfo=navigationList.get(0); } }catch(JSONException e) {
-	 * System.out.println("choiceness request navigation error!"); } }
-	 */
+	private boolean requestBannerData() {
+		try {
+			bannerList = dataManager.getBanners();
+			if (bannerList != null && bannerList.size() > 0)
+				return true;
+		} catch (JSONException e) {
+			System.out.println(e);
+			mHandler.sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
+		}
+		return false;
+	}
 
-	/**
-	 * 数据请求错误处理
-	 * 
-	 * @param rId
-	 * @param rId2
-	 */
-	private void setErrorMessage(final int rId, final int rId2) {
-		runOnUiThread(new Runnable() {
+	private void initView() {
+		if (mHeaderView == null) {
+			initHeaderView();
+		}
+		initAppListView();
+	}
+
+	private void initHeaderView() {
+		mHeaderView = (FrameLayout) LayoutInflater.from(this).inflate(R.layout.layout_choiceness_header, null);
+		mImageGallery = (Gallery) mHeaderView.findViewById(R.id.choicenessgallery);
+		mGalleryAdapter = new ImageGalleryAdapter(this, bannerList);
+		mImageGallery.setAdapter(mGalleryAdapter);
+		int count = bannerList.size();
+		if (count > 0) {
+			int i = (Integer.MAX_VALUE / 2);
+			int num = i % count;
+			if (num != 0) {
+				i -= num;
+			}
+			mImageGallery.setSelection(i);
+		}
+		initSwitchIdResources(count, mHeaderView);// 初始化海报指示标切换器
+		mImageGallery.setOnItemSelectedListener(new ItemSelectedListener(count));
+		mImageGallery.setOnItemClickListener(this);
+		mImageGallery.setOnTouchListener(new OnTouchListener() {
 			@Override
-			public void run() {
-				isLoading = false;
-				if (mLoadingView.getVisibility() == View.VISIBLE) {
-					mLoadingProgressBar.setVisibility(View.GONE);
-					mLoadingTextView.setText(rId);
-				} else {
-					AndroidUtils.showToast(context, rId2);
+			public boolean onTouch(View v, MotionEvent event) {
+				switch (event.getAction()) {
+				case MotionEvent.ACTION_UP:
+				case MotionEvent.ACTION_CANCEL:
+					mHandler.sendEmptyMessageDelayed(EVENT_ROTATE, ROTATE_TIME);
+					break;
+				default:
+					mHandler.removeMessages(EVENT_ROTATE);
+					break;
 				}
+				return false;
 			}
 		});
+		getParentActivity().setInterceptRange(mImageGallery);
 	}
-
-	private void setPreLoading() {
-		mLoadingView.setVisibility(View.VISIBLE);
-		mLoadingProgressBar.setVisibility(View.VISIBLE);
-		mLoadingTextView.setText(R.string.loading_txt);
-	}
-
-	private void sendMessage() {
-		removeMessage();
-		if (mHandler != null && mGalleryAdapter != null) {
-			mHandler.sendEmptyMessageDelayed(EVENT_ROTATE, ROTATE_TIME);
-		}
-	}
-
-	private void removeMessage() {
-		if (mHandler != null && mHandler.hasMessages(EVENT_ROTATE)) {
-			mHandler.removeMessages(EVENT_ROTATE);
-		}
-	}
-
-	private void setDefaultImage() {
-		if (mImageGallery != null) {
-			mGalleryAdapter.setDisplayNotify(false);
-		}
-		if (mAppSingleAdapter != null) {
-			mAppSingleAdapter.setDisplayNotify(false);
-		}
-		if (mGameSingleAdapter != null) {
-			mGameSingleAdapter.setDisplayNotify(false);
-		}
-	}
-
-	/**
-	 * 指示按钮
-	 */
-	private LinearLayout mSwithBtnContainer;
 
 	/**
 	 * 初始化海报指示标
@@ -606,7 +341,9 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 
 		ImageView localImageView = null;
 		int num = AndroidUtils.dip2px(this, 10.0f);
+
 		SwitchBtnClickListener localSwitchBtnClickListener = new SwitchBtnClickListener();
+
 		LinearLayout.LayoutParams localLayoutParams = new LinearLayout.LayoutParams(num, num);
 		localLayoutParams.leftMargin = 5;
 		localLayoutParams.rightMargin = 5;
@@ -617,32 +354,6 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 			localImageView.setBackgroundResource(R.drawable.selector_image_switcher);
 			localImageView.setOnClickListener(localSwitchBtnClickListener);
 			mSwithBtnContainer.addView(localImageView);
-		}
-	}
-
-	/**
-	 * 画廊点击联动指示按钮
-	 * 
-	 * @author
-	 * 
-	 */
-	public class ItemSelectedListener implements OnItemSelectedListener {
-
-		int mCount;
-
-		public ItemSelectedListener(int count) {
-			super();
-			mCount = count;
-		}
-
-		@Override
-		public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-			setSelectedSwitchBtn(position % mCount);
-		}
-
-		@Override
-		public void onNothingSelected(AdapterView<?> adapterView) {
-
 		}
 	}
 
@@ -660,11 +371,6 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 			setSelectedGalleryImg(position);
 		}
 	}
-
-	/**
-	 * 设置聚焦指示按钮
-	 */
-	private ImageView mSelectedSwitchButton;
 
 	private void setSelectedSwitchBtn(int paramInt) {
 		if (this.mSelectedSwitchButton != null)
@@ -697,47 +403,208 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 		}
 	}
 
-	private void addAdapterRunUiThread(final ListBaseAdapter mAdapter, final List<ApkItem> items) {
-		mAdapter.addList(items);
-		int what = 0;
-		if (isAppClicked) {
-			what = EVENT_REQUEST_APPLIST_DATA;
-		} else {
-			what = EVENT_REQUEST_GAMELIST_DATA;
+	/**
+	 * 画廊点击联动指示按钮
+	 * 
+	 * @author
+	 * 
+	 */
+	public class ItemSelectedListener implements OnItemSelectedListener {
+
+		int mCount;
+
+		public ItemSelectedListener(int count) {
+			super();
+			mCount = count;
 		}
-		mHandler.sendEmptyMessage(what);
+
+		@Override
+		public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+			setSelectedSwitchBtn(position % mCount);
+		}
+
+		@Override
+		public void onNothingSelected(AdapterView<?> adapterView) {
+		}
 	}
 
-	private void addAdapterData() {
-		if (isAppClicked) {
-			apps = setApkStatus(apps);
-			addAdapterRunUiThread(mAppSingleAdapter, apps);
-			apps.clear();
-		} else {
-			games = setApkStatus(games);
-			addAdapterRunUiThread(mGameSingleAdapter, games);
-			games.clear();
+	/**
+	 * 初始化应用列表
+	 */
+	private void initAppListView() {
+		mAppListView = (ScrollListView) findViewById(R.id.applistview);
+		mAppListView.addHeaderView(mHeaderView, null, false);
+		mAppSingleAdapter = new ListSingleTemplateAdapter(this, apps, isRemoteImage);
+		mAppListView.setAdapter(mAppSingleAdapter);
+		mAppListView.setOnItemClickListener(this);
+		mAppListView.setVisibility(View.VISIBLE);
+	}
+
+	private void initGameListView() {
+		mGameListView = (ScrollListView) findViewById(R.id.gamelistview);
+		if (mHeaderView == null) {
+			initHeaderView();
+		}
+		mGameListView.addHeaderView(mHeaderView, null, false);
+		mGameSingleAdapter = new ListSingleTemplateAdapter(this, games, isRemoteImage);
+		mGameListView.setAdapter(mGameSingleAdapter);
+		mGameListView.setOnItemClickListener(this);
+		if (mAppListView != null) {
+			mAppListView.setVisibility(View.GONE);
+		}
+		mGameListView.setVisibility(View.VISIBLE);
+	}
+
+	/**
+	 * 数据请求错误处理
+	 * 
+	 * @param rId
+	 * @param rId2
+	 */
+	private void setErrorMessage(final int rId, final int rId2) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if (mLoadingView.getVisibility() == View.VISIBLE) {
+					mLoadingProgressBar.setVisibility(View.GONE);
+					mLoadingTextView.setText(rId);
+				} else {
+					AndroidUtils.showToast(context, rId2);
+				}
+			}
+		});
+	}
+
+	private void refreshData() {
+		if (mAppListView != null && mAppListView.getAdapter() != null) {
+			notifyListData(mAppSingleAdapter);
+		}
+		if (mGameListView != null && mGameListView.getAdapter() != null) {
+			notifyListData(mGameSingleAdapter);
+		}
+	}
+
+	private void notifyListData(final ListBaseAdapter mAdapter) {
+		setApkStatus(mAdapter.getItemList());
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if (mGalleryAdapter != null) {
+					mGalleryAdapter.setDisplayNotify(isRemoteImage);
+				}
+				mAdapter.setDisplayNotify(isRemoteImage);
+			}
+		});
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		sendMessage();
+		if (!isFirstResume) {
+			if (mHandler != null) {
+				if (mHandler.hasMessages(EVENT_REFRENSH_DATA)) {
+					mHandler.removeMessages(EVENT_REFRENSH_DATA);
+				}
+				mHandler.sendEmptyMessage(EVENT_REFRENSH_DATA);
+			}
+		}
+		isFirstResume = false;
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		removeMessage();
+	}
+
+	private void sendMessage() {
+		removeMessage();
+		if (mHandler != null && mGalleryAdapter != null) {
+			mHandler.sendEmptyMessageDelayed(EVENT_ROTATE, ROTATE_TIME);
+		}
+	}
+
+	private void removeMessage() {
+		if (mHandler != null && mHandler.hasMessages(EVENT_ROTATE)) {
+			mHandler.removeMessages(EVENT_ROTATE);
 		}
 	}
 
 	@Override
-	public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-		System.out.println("firstVisibleItem:" + firstVisibleItem + ", visibleItemCount:" + visibleItemCount + ", totalItemCount:" + totalItemCount);
-		/*
-		 * if (!isLoading && firstVisibleItem + visibleItemCount >=
-		 * totalItemCount - SCROLL_DVALUE) { isLoading=true;
-		 * getParentActivity().showProgressBar(); addAdapterData();
-		 * getParentActivity().stopProgressBar(); } else if (isLoading &&
-		 * !isRequestDelay && firstVisibleItem + visibleItemCount >=
-		 * totalItemCount - SCROLL_DVALUE) { isRequestDelay = true;
-		 * getParentActivity().showProgressBar();
-		 * System.out.println("request data delay!"); }
-		 */
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		Intent intent = new Intent(context, ApkDetailActivity.class);
+		Bundle bundle = new Bundle();
+		switch (parent.getId()) {
+		case R.id.applistview:
+			ApkItem item = mAppSingleAdapter.getApkItemByPosition(position - 1);
+			System.out.println(item.appName + ", " + item.status);
+			bundle.putParcelable("apkItem", item);
+			intent.putExtras(bundle);
+			startActivity(intent);
+			overridePendingTransition(R.anim.enter_in, R.anim.enter_out);
+			break;
+		case R.id.gamelistview:
+			bundle.putParcelable("apkItem", mGameSingleAdapter.getApkItemByPosition(position - 1));
+			intent.putExtras(bundle);
+			startActivity(intent);
+			overridePendingTransition(R.anim.enter_in, R.anim.enter_out);
+			break;
+		case R.id.choicenessgallery:
+			intent = new Intent(this, ApkDetailActivity.class);
+			position = position % bannerList.size();
+			bundle.putParcelable("apkItem", bannerList.get(position));
+			intent.putExtras(bundle);
+			startActivity(intent);
+			break;
+		}
 	}
 
 	@Override
-	public void onScrollStateChanged(AbsListView view, int scrollState) {
+	public void onAppClick() {
+		if (!isAppClicked) {
+			isAppClicked = true;
+			if (currentAppPage == 0) {
+				displayLoading();
+				mHandler.sendEmptyMessage(EVENT_REQUEST_BANNER_DATA);
+			} else {
+				setDisplayVisible();
+				mHandler.sendEmptyMessage(EVENT_REFRENSH_DATA);
+			}
+		}
+	}
 
+	@Override
+	public void onGameClick() {
+		if (isAppClicked) {
+			isAppClicked = false;
+			if (currentGamePage == 0) {
+				displayLoading();
+				mHandler.sendEmptyMessage(EVENT_REQUEST_BANNER_DATA);
+			} else {
+				setDisplayVisible();
+				mHandler.sendEmptyMessage(EVENT_REFRENSH_DATA);
+			}
+		}
+	}
+
+	private void setDisplayVisible() {
+		mLoadingView.setVisibility(View.GONE);
+		if (isAppClicked) {
+			if (mAppListView != null) {
+				mAppListView.setVisibility(View.VISIBLE);
+			}
+			if (mGameListView != null) {
+				mGameListView.setVisibility(View.GONE);
+			}
+		} else {
+			if (mGameListView != null) {
+				mGameListView.setVisibility(View.VISIBLE);
+			}
+			if (mAppListView != null) {
+				mAppListView.setVisibility(View.GONE);
+			}
+		}
 	}
 
 	private void displayLoading() {
@@ -748,43 +615,6 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 		}
 		if (mGameListView != null) {
 			mGameListView.setVisibility(View.GONE);
-		}
-	}
-
-	@Override
-	public void onAppClick() {
-		if (!isAppClicked) {
-			isAppClicked = true;
-			// getParentActivity().progressBarGone();
-			// if(navigationInfo!=null) {
-			if (currentAppPage == 0) {
-				displayLoading();
-				mHandler.sendEmptyMessage(EVENT_REQUEST_BANNER_DATA);
-			} else {
-				setDisplayVisible();
-				mHandler.sendEmptyMessage(EVENT_REFRENSH_DATA);
-			}
-			// }else {
-			// mHandler.sendEmptyMessage(EVENT_REQUEST_NAVIGATION);
-			// }
-		}
-	}
-
-	@Override
-	public void onGameClick() {
-		if (isAppClicked) {
-			isAppClicked = false;
-			// if(navigationInfo!=null) {
-			if (currentGamePage == 0) {
-				displayLoading();
-				mHandler.sendEmptyMessage(EVENT_REQUEST_BANNER_DATA);
-			} else {
-				setDisplayVisible();
-				mHandler.sendEmptyMessage(EVENT_REFRENSH_DATA);
-			}
-			// }else {
-			// mHandler.sendEmptyMessage(EVENT_REQUEST_NAVIGATION);
-			// }
 		}
 	}
 
@@ -813,42 +643,9 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 		}
 	}
 
-	private void notifyListData(final ListBaseAdapter mAdapter) {
-		// initDownloadAndUpdateData();
-		setApkStatus(mAdapter.getItemList());
-		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				if (mGalleryAdapter != null) {
-					mGalleryAdapter.setDisplayNotify(isRemoteImage);
-				}
-				mAdapter.setDisplayNotify(isRemoteImage);
-			}
-		});
-	}
-
-	private void refreshData() {
-		if (mAppListView != null && mAppListView.getAdapter() != null) {
-			notifyListData(mAppSingleAdapter);
-		}
-		if (mGameListView != null && mGameListView.getAdapter() != null) {
-			notifyListData(mGameSingleAdapter);
-		}
-	}
-
 	@Override
 	protected void onUpdateDataDone() {
 		refreshData();
-	}
-
-	@Override
-	public void onScrollTouch(int scrollState) {
-		switch (scrollState) {
-		case ScrollListView.OnScrollTouchListener.SCROLL_BOTTOM:
-			break;
-		case ScrollListView.OnScrollTouchListener.SCROLL_TOP:
-			break;
-		}
 	}
 
 	@Override
@@ -864,40 +661,29 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 		}
 	}
 
-	private int locStep;
+	@Override
+	public void OnToolBarClick() {
+		listViewFromTop();
+	}
 
 	private void listViewFromTop() {
 		if (isAppClicked()) {
 			if (mAppListView != null) {
-				// if (!mAppListView.isStackFromBottom()) {
-				// mAppListView.setStackFromBottom(true);
-				// }
-				// mAppListView.setStackFromBottom(false);
 				locStep = (int) Math.ceil(mAppListView.getFirstVisiblePosition() / AConstDefine.AUTO_SCRLL_TIMES);
 				mAppListView.post(appAutoScroll);
 			}
 		} else {
 			if (mGameListView != null) {
-				// if (!mGameListView.isStackFromBottom()) {
-				// mGameListView.setStackFromBottom(true);
-				// }
-				// mGameListView.setStackFromBottom(false);
 				locStep = (int) Math.ceil(mGameListView.getFirstVisiblePosition() / AConstDefine.AUTO_SCRLL_TIMES);
 				mGameListView.post(gameAutoScroll);
 			}
 		}
 	}
 
-	@Override
-	public void OnToolBarClick() {
-		listViewFromTop();
-	}
-
 	Runnable appAutoScroll = new Runnable() {
 
 		@Override
 		public void run() {
-			// TODO Auto-generated method stub
 			if (mAppListView.getFirstVisiblePosition() > 0) {
 				if (mAppListView.getFirstVisiblePosition() < AConstDefine.AUTO_SCRLL_TIMES) {
 					mAppListView.setSelection(mAppListView.getFirstVisiblePosition() - 1);
@@ -914,14 +700,12 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 
 		@Override
 		public void run() {
-			// TODO Auto-generated method stub
 			if (mGameListView.getFirstVisiblePosition() > 0) {
 				if (mGameListView.getFirstVisiblePosition() < AConstDefine.AUTO_SCRLL_TIMES) {
 					mGameListView.setSelection(mGameListView.getFirstVisiblePosition() - 1);
 				} else {
 					mGameListView.setSelection(Math.max(mGameListView.getFirstVisiblePosition() - locStep, 0));
 				}
-				// mAppListView.postDelayed(this, 1);
 				mGameListView.post(this);
 			}
 			return;

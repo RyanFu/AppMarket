@@ -1,7 +1,5 @@
 package com.dongji.market.activity;
 
-import java.util.Map;
-
 import android.app.ActivityGroup;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -12,7 +10,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,7 +29,6 @@ import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RadioButton;
 
 import com.dongji.market.R;
@@ -51,7 +47,6 @@ import com.dongji.market.helper.TitleUtil.OnToolBarBlankClickListener;
 import com.dongji.market.pojo.LoginParams;
 import com.dongji.market.pojo.SettingConf;
 import com.dongji.market.protocol.DataUpdateService;
-import com.dongji.market.widget.CustomIconAnimation;
 import com.dongji.market.widget.CustomNoTitleDialog;
 import com.dongji.market.widget.HorizontalScrollLayout;
 import com.dongji.market.widget.HorizontalScrollLayout.OnPageChangedListener;
@@ -90,13 +85,6 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 
 	private String[] activityIds;
 	private RadioButton[] mTopButtons;
-
-	private View mSoftView;
-	private ImageView mTempIcon;
-	private CustomIconAnimation iconAnim;
-
-	private ListView mGameBottomListView;
-	private ListView mAppBottomListView;
 	private LinearLayout mMainBottomLayout;
 
 	/** Called when the activity is first created. */
@@ -107,6 +95,7 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		mApp = (AppMarket) getApplication();
 		boolean flag = DJMarketUtils.isSaveFlow(this);// 是否开启流量模式
 		mApp.setRemoteImage(!flag);// 是否下载图片
+
 		checkFirstLaunch();
 		if (DEBUG)
 			MobclickAgent.onError(this); // 友盟creash反馈
@@ -114,6 +103,99 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		initViews();
 		initHandler();
 		registerPackageReceiver();
+	}
+
+	/**
+	 * 检查是否是第一次使用该程序
+	 * 
+	 * @return
+	 */
+	private void checkFirstLaunch() {
+		SharedPreferences mSharedPreferences = getSharedPreferences(this.getPackageName() + "_temp", Context.MODE_PRIVATE);
+		boolean firstLaunch = mSharedPreferences.getBoolean(ShareParams.FIRST_LAUNCHER, true);
+		if (firstLaunch) {
+			boolean hasShortcut = checkExistsShortcut();
+			if (!hasShortcut) {
+				createShortcut();
+			}
+			changeFirstLaunch(mSharedPreferences);
+			initSettingConfig();
+		}
+	}
+
+	/***
+	 * 检查桌面是否存在此快捷方式
+	 */
+	private boolean checkExistsShortcut() {
+		boolean result = false;
+		// 获取当前应用名称
+		String title = null;
+		try {
+			final PackageManager pm = getPackageManager();
+			title = pm.getApplicationLabel(pm.getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA)).toString();
+		} catch (Exception e) {
+		}
+
+		final String uriStr;
+		if (android.os.Build.VERSION.SDK_INT < 8) {
+			uriStr = "content://com.android.launcher.settings/favorites?notify=true";
+		} else {
+			uriStr = "content://com.android.launcher2.settings/favorites?notify=true";
+		}
+		final Uri CONTENT_URI = Uri.parse(uriStr);
+		final Cursor c = getContentResolver().query(CONTENT_URI, null, "title=?", new String[] { title }, null);
+		if (c != null && c.getCount() > 0) {
+			result = true;
+		}
+		return result;
+	}
+
+	/**
+	 * 创建桌面快捷方式
+	 */
+	private void createShortcut() {
+		Intent shortcut = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
+		// 快捷方式的名称
+		shortcut.putExtra(Intent.EXTRA_SHORTCUT_NAME, getString(R.string.app_name));
+		shortcut.putExtra("duplicate", false); // 不允许重复创建
+		// 指定当前的Activity为快捷方式启动的对象: com.everest.video.VideoPlayer
+		// 注意: ComponentName的第二个参数必须加上点号(.)，否则快捷方式无法启动相应程
+		ComponentName comp = new ComponentName(this.getPackageName(), ShareParams.LAUNCHER_STR);
+		shortcut.putExtra(Intent.EXTRA_SHORTCUT_INTENT, new Intent(Intent.ACTION_MAIN).setComponent(comp));
+		// 快捷方式的图
+		ShortcutIconResource iconRes = Intent.ShortcutIconResource.fromContext(this, R.drawable.icon);
+		shortcut.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, iconRes);
+		sendBroadcast(shortcut);
+	}
+
+	/**
+	 * 修改配置信息，首次运行
+	 * 
+	 * @param mSharedPreferences
+	 */
+	private void changeFirstLaunch(SharedPreferences mSharedPreferences) {
+		SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+		mEditor.putBoolean(ShareParams.FIRST_LAUNCHER, false);
+		mEditor.commit();
+	}
+
+	/**
+	 * 初始化设置信息，向数据库中写入
+	 */
+	private void initSettingConfig() {
+		Setting_Service settingDB = new Setting_Service(this);
+		settingDB.add(new SettingConf("update_msg", 1));
+		settingDB.add(new SettingConf("auto_del_pkg", 0));
+		settingDB.add(new SettingConf("save_flow", 0));
+		settingDB.add(new SettingConf("set_root", 0));
+		settingDB.add(new SettingConf("auto_install", 0));
+		settingDB.add(new SettingConf("only_wifi", 1));
+		settingDB.add(new SettingConf("limit_flow", 50));
+		settingDB.add(new SettingConf("download_bg", 1));
+		settingDB.add(new SettingConf("auto_update", 0));
+		settingDB.add(new SettingConf("sina_login", 0));
+		settingDB.add(new SettingConf("tencent_login", 0));
+		settingDB.add(new SettingConf("renren_login", 0));
 	}
 
 	/**
@@ -129,28 +211,6 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 	}
 
 	/**
-	 * 初始化首页框架视图
-	 */
-	private void initViews() {
-		mInflater = LayoutInflater.from(this);
-		mMainLayout = (HorizontalScrollLayout) findViewById(R.id.mainlayout);// 水平滑动框架
-		mMainLayout.setOnPageChangedListener(this);
-		initHorizontalScrollLayout();
-		View mTopView = findViewById(R.id.main_top);// actionbar
-		titleUtil = new TitleUtil(this, mTopView, "", getIntent().getExtras(), this);// 初始化actionbar
-		mSoftView = (View) findViewById(R.id.softmanagerbutton);// 软件管理按钮
-		
-		initTopButton();
-
-		initBottomButton();
-
-		initSlideImageView();
-
-		mChoicenessButton.performClick();
-
-	}
-
-	/**
 	 * 初始化handler，并发送数据加载、检查app更新消息
 	 */
 	private void initHandler() {
@@ -161,14 +221,65 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		mHandler.sendEmptyMessage(EVENT_CHECK_APP_UPDATE);
 	}
 
-	/**
-	 * 注册检查所有下载广播接收器
-	 */
-	private void registerPackageReceiver() {
-		IntentFilter intentFilter = new IntentFilter();
-		intentFilter.addAction(DownloadConstDefine.BROADCAST_ACTION_CHECK_DOWNLOAD);
-		registerReceiver(mUpdateLoadedReceiver, intentFilter);
+	private class MyHandler extends Handler {
 
+		public MyHandler(Looper looper) {
+			super(looper);
+		}
+
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case EVENT_CHANGE_EXIT_STATUS:// 改变退出状态
+				isExit = false;
+				break;
+			case EVENT_LOADING_DATA:
+				Intent intent = new Intent(MainActivity.this, DataUpdateService.class);// 开启数据更新服务
+				startService(intent);
+
+				Intent downloadIntent = new Intent(MainActivity.this, DownloadService.class);// 开启下载服务
+				startService(downloadIntent);
+				break;
+			case EVENT_CHECK_APP_UPDATE:// 检查更新服务
+				// String downloadUrl =
+				// DataManager.newInstance().checkAppUpdate(MainActivity.this);
+				// if (!TextUtils.isEmpty(downloadUrl)) {
+				// DJMarketUtils.appUpdate(MainActivity.this, downloadUrl);
+				// }
+				break;
+			}
+		}
+	}
+
+	/**
+	 * 初始化首页框架视图
+	 */
+	private void initViews() {
+		mInflater = LayoutInflater.from(this);
+		mMainLayout = (HorizontalScrollLayout) findViewById(R.id.mainlayout);// 水平滑动框架
+		mMainLayout.setOnPageChangedListener(this);
+		initHorizontalScrollLayout();
+		View mTopView = findViewById(R.id.main_top);// actionbar
+		titleUtil = new TitleUtil(this, mTopView, "", getIntent().getExtras(), this);// 初始化actionbar
+
+		initTopButton();
+
+		initBottomButton();
+
+		initSlideImageView();
+
+		mChoicenessButton.performClick();
+	}
+
+	/**
+	 * 初始化水平滑动布局
+	 */
+	private void initHorizontalScrollLayout() {
+		mMainLayout.addView(mInflater.inflate(R.layout.layout_loading, null));
+		mMainLayout.addView(mInflater.inflate(R.layout.layout_loading, null));
+		mMainLayout.addView(mInflater.inflate(R.layout.layout_loading, null));
+		mMainLayout.addView(mInflater.inflate(R.layout.layout_loading, null));
+		mMainLayout.addView(mInflater.inflate(R.layout.layout_loading, null));
 	}
 
 	/**
@@ -212,6 +323,25 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		mSlideImageView.setLayoutParams(mParams);
 	}
 
+	/**
+	 * 注册检查所有下载广播接收器
+	 */
+	private void registerPackageReceiver() {
+		IntentFilter intentFilter = new IntentFilter();
+		intentFilter.addAction(DownloadConstDefine.BROADCAST_ACTION_CHECK_DOWNLOAD);
+		registerReceiver(mUpdateLoadedReceiver, intentFilter);
+	}
+
+	private BroadcastReceiver mUpdateLoadedReceiver = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (DownloadConstDefine.BROADCAST_ACTION_CHECK_DOWNLOAD.equals(intent.getAction())) {
+				DownloadUtils.startAllDownload(context, mApp.isIs3GDownloadPrompt());
+			}
+		}
+	};
+
 	@Override
 	public void onClick(View v) {
 		BaseActivity mCurrentActivity = null;
@@ -244,6 +374,37 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 			mCurrentActivity = (BaseActivity) getLocalActivityManager().getCurrentActivity();
 			mCurrentActivity.onGameClick();
 			break;
+		}
+	}
+
+	/**
+	 * 初始化滑动线动画
+	 * 
+	 * @param v
+	 */
+	private void initAnimation(final View v) {
+		if (!isAnimRunning && slideLeft != v.getLeft()) {
+			isAnimRunning = true;
+			TranslateAnimation mAnimation = new TranslateAnimation(slideLeft, v.getLeft(), 0, 0);
+			mAnimation.setDuration(300L);
+			mAnimation.setFillEnabled(true);
+			mAnimation.setFillAfter(true);
+			mAnimation.setAnimationListener(new AnimationListener() {
+				@Override
+				public void onAnimationStart(Animation animation) {
+				}
+
+				@Override
+				public void onAnimationRepeat(Animation animation) {
+				}
+
+				@Override
+				public void onAnimationEnd(Animation animation) {
+					slideLeft = v.getLeft();
+					isAnimRunning = false;
+				}
+			});
+			mSlideImageView.startAnimation(mAnimation);
 		}
 	}
 
@@ -355,156 +516,6 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 	}
 
 	/**
-	 * 使用3G下载是否提示过用户
-	 * 
-	 * @return
-	 */
-	public boolean is3GDownloadPromptUser() {
-		return mApp.isIs3GDownloadPrompt();
-	}
-
-	/**
-	 * 使用3G下载已提示用户
-	 */
-	public void set3GDownloadPromptUser() {
-		mApp.setIs3GDownloadPrompt(true);
-	}
-
-	/**
-	 * 初始化滑动线动画
-	 * 
-	 * @param v
-	 */
-	private void initAnimation(final View v) {
-		if (!isAnimRunning && slideLeft != v.getLeft()) {
-			isAnimRunning = true;
-			TranslateAnimation mAnimation = new TranslateAnimation(slideLeft, v.getLeft(), 0, 0);
-			mAnimation.setDuration(300L);
-			mAnimation.setFillEnabled(true);
-			mAnimation.setFillAfter(true);
-			mAnimation.setAnimationListener(new AnimationListener() {
-				@Override
-				public void onAnimationStart(Animation animation) {
-				}
-
-				@Override
-				public void onAnimationRepeat(Animation animation) {
-				}
-
-				@Override
-				public void onAnimationEnd(Animation animation) {
-					slideLeft = v.getLeft();
-					isAnimRunning = false;
-				}
-			});
-			mSlideImageView.startAnimation(mAnimation);
-		}
-	}
-
-	/**
-	 * 初始化水平滑动布局
-	 */
-	private void initHorizontalScrollLayout() {
-		mMainLayout.addView(mInflater.inflate(R.layout.layout_loading, null));
-		mMainLayout.addView(mInflater.inflate(R.layout.layout_loading, null));
-		mMainLayout.addView(mInflater.inflate(R.layout.layout_loading, null));
-		mMainLayout.addView(mInflater.inflate(R.layout.layout_loading, null));
-		mMainLayout.addView(mInflater.inflate(R.layout.layout_loading, null));
-	}
-
-	/**
-	 * 检查是否是第一次使用该程序
-	 * 
-	 * @return
-	 */
-	private void checkFirstLaunch() {
-		SharedPreferences mSharedPreferences = getSharedPreferences(this.getPackageName() + "_temp", Context.MODE_PRIVATE);
-		boolean firstLaunch = mSharedPreferences.getBoolean(ShareParams.FIRST_LAUNCHER, true);
-		if (firstLaunch) {
-			boolean hasShortcut = checkExistsShortcut();
-			if (!hasShortcut) {
-				createShortcut();
-			}
-			changeFirstLaunch(mSharedPreferences);
-			initSettingConfig();
-		}
-	}
-
-	/**
-	 * 初始化设置信息，向数据库中写入
-	 */
-	private void initSettingConfig() {
-		Setting_Service settingDB = new Setting_Service(this);
-		settingDB.add(new SettingConf("update_msg", 1));
-		settingDB.add(new SettingConf("auto_del_pkg", 0));
-		settingDB.add(new SettingConf("save_flow", 0));
-		settingDB.add(new SettingConf("set_root", 0));
-		settingDB.add(new SettingConf("auto_install", 0));
-		settingDB.add(new SettingConf("only_wifi", 1));
-		settingDB.add(new SettingConf("limit_flow", 50));
-		settingDB.add(new SettingConf("download_bg", 1));
-		settingDB.add(new SettingConf("auto_update", 0));
-		settingDB.add(new SettingConf("sina_login", 0));
-		settingDB.add(new SettingConf("tencent_login", 0));
-		settingDB.add(new SettingConf("renren_login", 0));
-	}
-
-	/**
-	 * 修改配置信息，首次运行
-	 * @param mSharedPreferences
-	 */
-	private void changeFirstLaunch(SharedPreferences mSharedPreferences) {
-		SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-		mEditor.putBoolean(ShareParams.FIRST_LAUNCHER, false);
-		mEditor.commit();
-	}
-
-	/**
-	 * 创建桌面快捷方式
-	 */
-	private void createShortcut() {
-		Intent shortcut = new Intent("com.android.launcher.action.INSTALL_SHORTCUT");
-		// 快捷方式的名称
-		shortcut.putExtra(Intent.EXTRA_SHORTCUT_NAME, getString(R.string.app_name));
-		shortcut.putExtra("duplicate", false); // 不允许重复创建
-		// 指定当前的Activity为快捷方式启动的对象: com.everest.video.VideoPlayer
-		// 注意: ComponentName的第二个参数必须加上点号(.)，否则快捷方式无法启动相应程
-		ComponentName comp = new ComponentName(this.getPackageName(), ShareParams.LAUNCHER_STR);
-		shortcut.putExtra(Intent.EXTRA_SHORTCUT_INTENT, new Intent(Intent.ACTION_MAIN).setComponent(comp));
-		// 快捷方式的图
-		ShortcutIconResource iconRes = Intent.ShortcutIconResource.fromContext(this, R.drawable.icon);
-		shortcut.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, iconRes);
-		sendBroadcast(shortcut);
-	}
-
-	/***
-	 * 检查桌面是否存在此快捷方式
-	 */
-	private boolean checkExistsShortcut() {
-		boolean result = false;
-		// 获取当前应用名称
-		String title = null;
-		try {
-			final PackageManager pm = getPackageManager();
-			title = pm.getApplicationLabel(pm.getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA)).toString();
-		} catch (Exception e) {
-		}
-
-		final String uriStr;
-		if (android.os.Build.VERSION.SDK_INT < 8) {
-			uriStr = "content://com.android.launcher.settings/favorites?notify=true";
-		} else {
-			uriStr = "content://com.android.launcher2.settings/favorites?notify=true";
-		}
-		final Uri CONTENT_URI = Uri.parse(uriStr);
-		final Cursor c = getContentResolver().query(CONTENT_URI, null, "title=?", new String[] { title }, null);
-		if (c != null && c.getCount() > 0) {
-			result = true;
-		}
-		return result;
-	}
-
-	/**
 	 * 如果后台有应用正在下载，展示退出应用下载dialog
 	 */
 	private void showExitAppDialog() {
@@ -530,11 +541,10 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 				});
 			}
 			if (mExitDialog != null) {
-				mExitDialog.show();	
+				mExitDialog.show();
 			}
 		}
 	}
-
 
 	/**
 	 * 退出前清除所有消息
@@ -556,6 +566,22 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		loginParams.setUserName(null);
 		loginParams.setSinaUserName(null);
 		loginParams.setTencentUserName(null);
+	}
+
+	/**
+	 * 使用3G下载是否提示过用户
+	 * 
+	 * @return
+	 */
+	public boolean is3GDownloadPromptUser() {
+		return mApp.isIs3GDownloadPrompt();
+	}
+
+	/**
+	 * 使用3G下载已提示用户
+	 */
+	public void set3GDownloadPromptUser() {
+		mApp.setIs3GDownloadPrompt(true);
 	}
 
 	/**
@@ -626,78 +652,13 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 	}
 
 	/**
-	 * 这个不清楚干嘛
+	 * 内部控件水平滑动
+	 * 
 	 * @param v
 	 */
 	public void setInterceptRange(View v) {
 		mMainLayout.setInterceptTouchView(v, CHOICENESS_POSITION);
 	}
-
-
-	private class MyHandler extends Handler {
-
-		public MyHandler(Looper looper) {
-			super(looper);
-		}
-
-		@Override
-		public void handleMessage(Message msg) {
-			switch (msg.what) {
-			case EVENT_CHANGE_EXIT_STATUS://改变退出状态
-				isExit = false;
-				break;
-			case EVENT_LOADING_DATA:
-				Intent intent = new Intent(MainActivity.this, DataUpdateService.class);//开启数据更新服务
-				startService(intent);
-				
-				Intent downloadIntent = new Intent(MainActivity.this, DownloadService.class);//开启下载服务
-				startService(downloadIntent);
-				break;
-			case EVENT_CHECK_APP_UPDATE://检查更新服务
-//				String downloadUrl = DataManager.newInstance().checkAppUpdate(MainActivity.this);
-//				if (!TextUtils.isEmpty(downloadUrl)) {
-//					DJMarketUtils.appUpdate(MainActivity.this, downloadUrl);
-//				}
-				break;
-			}
-		}
-	}
-
-	public boolean performClickOnBottomButton(boolean isApp) {
-		if (isApp) {
-			if (mAppBottomListView != null) {
-				mAppBottomListView.performItemClick(mAppBottomListView, 0, 0);
-				return true;
-			}
-		} else {
-			if (mGameBottomListView != null) {
-				mGameBottomListView.performItemClick(mGameBottomListView, 0, 0);
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public void onStartDownload(Map<String, Object> map) {
-		int iconX = (Integer) map.get("X");
-		int iconY = (Integer) map.get("Y") - mSoftView.getHeight() + AndroidUtils.getStatusBarInfo(this).top;
-		Drawable icon = (Drawable) map.get("icon");
-		if (mTempIcon == null) {
-			mTempIcon = (ImageView) findViewById(R.id.tempIcon);
-			iconAnim = new CustomIconAnimation(this);
-		}
-		iconAnim.startAnimation(iconX, iconY, icon, mTempIcon, mSoftView);
-	}
-
-	private BroadcastReceiver mUpdateLoadedReceiver = new BroadcastReceiver() {
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			if (DownloadConstDefine.BROADCAST_ACTION_CHECK_DOWNLOAD.equals(intent.getAction())) {
-				DownloadUtils.startAllDownload(context, mApp.isIs3GDownloadPrompt());
-			}
-		}
-	};
 
 	@Override
 	public void onClick() {
@@ -707,15 +668,4 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		}
 	}
 
-	public void setBottomGone() {
-		if (mMainBottomLayout.getVisibility() == View.VISIBLE) {
-			mMainBottomLayout.setVisibility(View.GONE);
-		}
-	}
-
-	public void setBottomVisible() {
-		if (mMainBottomLayout.getVisibility() == View.GONE) {
-			mMainBottomLayout.setVisibility(View.VISIBLE);
-		}
-	}
 }

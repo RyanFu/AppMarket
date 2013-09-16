@@ -73,15 +73,7 @@ public class SoftwareManageActivity extends ActivityGroup implements OnClickList
 		registerReceiver();
 		checkFirstLauncherSoftMove();
 	}
-
-	private void registerReceiver() {
-		myBroadcastReceiver = new MyBroadcastReceiver();
-		IntentFilter intentFilter = new IntentFilter();
-		intentFilter.addAction(AConstDefine.BROADCAST_ACTION_SHOWBANDRLIST);
-		intentFilter.addAction(AConstDefine.BROADCAST_ACTION_SHOWUNINSTALLLIST);
-		registerReceiver(myBroadcastReceiver, intentFilter);
-	}
-
+	
 	private void initData() {
 		activityIds = new String[3];
 		activityIds[0] = "updateandinstall";
@@ -101,6 +93,45 @@ public class SoftwareManageActivity extends ActivityGroup implements OnClickList
 		initSlideImageView();
 		mUpdateInstallRB.performClick();
 	}
+	
+	private void initHorizontalScrollLayout() {
+		horizontalScrollLayout.addView(mInflater.inflate(R.layout.layout_loading, null));
+		horizontalScrollLayout.addView(mInflater.inflate(R.layout.layout_loading, null));
+		horizontalScrollLayout.addView(mInflater.inflate(R.layout.layout_loading, null));
+	}
+	
+	private void initTopButton() {
+		mUpdateInstallRB = (RadioButton) findViewById(R.id.update_install);
+		mInstalledRB = (RadioButton) findViewById(R.id.installed_software);
+		mSoftwareMoveRB = (RadioButton) findViewById(R.id.softwaremove);
+		mUpdateInstallRB.setOnClickListener(this);
+		mInstalledRB.setOnClickListener(this);
+		mSoftwareMoveRB.setOnClickListener(this);
+		mTopButtons = new RadioButton[] { mUpdateInstallRB, mInstalledRB, mSoftwareMoveRB };
+	}
+	
+	private void initSlideImageView() {
+		mSlideImageView = (ImageView) findViewById(R.id.slide_image);
+		DisplayMetrics dm = AndroidUtils.getScreenSize(this);
+		int num = AndroidUtils.dip2px(this, 2);
+		float singleWidth = (dm.widthPixels - num * 2) / 3.0f;
+		LayoutParams mParams = (LayoutParams) mSlideImageView.getLayoutParams();
+		mParams.width = (int) singleWidth;
+		mSlideImageView.setLayoutParams(mParams);
+	}
+	
+	private void registerReceiver() {
+		myBroadcastReceiver = new MyBroadcastReceiver();
+		IntentFilter intentFilter = new IntentFilter();
+		intentFilter.addAction(AConstDefine.BROADCAST_ACTION_SHOWBANDRLIST);
+		intentFilter.addAction(AConstDefine.BROADCAST_ACTION_SHOWUNINSTALLLIST);
+		registerReceiver(myBroadcastReceiver, intentFilter);
+	}
+	
+	private void checkFirstLauncherSoftMove() {
+		SharedPreferences mSharedPreferences = getSharedPreferences(this.getPackageName() + "_temp", Context.MODE_PRIVATE);
+		firstLauncherSoftMove = mSharedPreferences.getBoolean(ShareParams.FIRST_LAUNCHER_SOFT_MOVE, true);
+	}
 
 	public boolean is3GDownloadPromptUser() {
 		return mApp.isIs3GDownloadPrompt();
@@ -111,27 +142,6 @@ public class SoftwareManageActivity extends ActivityGroup implements OnClickList
 	 */
 	public void set3GDownloadPromptUser() {
 		mApp.setIs3GDownloadPrompt(true);
-	}
-
-	private void initTopButton() {
-		mUpdateInstallRB = (RadioButton) findViewById(R.id.update_install);
-		mInstalledRB = (RadioButton) findViewById(R.id.installed_software);
-		mSoftwareMoveRB = (RadioButton) findViewById(R.id.softwaremove);
-		mUpdateInstallRB.setOnClickListener(this);
-		mInstalledRB.setOnClickListener(this);
-		mSoftwareMoveRB.setOnClickListener(this);
-		mTopButtons = new RadioButton[] { mUpdateInstallRB, mInstalledRB, mSoftwareMoveRB };
-	}
-
-	private void initHorizontalScrollLayout() {
-		horizontalScrollLayout.addView(mInflater.inflate(R.layout.layout_loading, null));
-		horizontalScrollLayout.addView(mInflater.inflate(R.layout.layout_loading, null));
-		horizontalScrollLayout.addView(mInflater.inflate(R.layout.layout_loading, null));
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		return super.onCreateOptionsMenu(menu);
 	}
 
 	@Override
@@ -167,48 +177,35 @@ public class SoftwareManageActivity extends ActivityGroup implements OnClickList
 		titleUtil.showOrDismissSettingPopupWindow();
 		return false;
 	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		return super.onCreateOptionsMenu(menu);
+	}
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		return super.onKeyDown(keyCode, event);
 	}
-
-	private void checkFirstLauncherSoftMove() {
-		SharedPreferences mSharedPreferences = getSharedPreferences(this.getPackageName() + "_temp", Context.MODE_PRIVATE);
-		firstLauncherSoftMove = mSharedPreferences.getBoolean(ShareParams.FIRST_LAUNCHER_SOFT_MOVE, true);
-	}
-
-	private void setMaskForSoftMove() {
-		SharedPreferences mSharedPreferences = getSharedPreferences(this.getPackageName() + "_temp", Context.MODE_PRIVATE);
-		SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-		mEditor.putBoolean(ShareParams.FIRST_LAUNCHER_SOFT_MOVE, false);
-		boolean flag = mEditor.commit();
-		if (flag)
-			firstLauncherSoftMove = false;
-		if (SoftwareMove_list_Activity.isCanMove(SoftwareManageActivity.this)) {
-			mMaskView = findViewById(R.id.softmovemasklayout);
-			mMaskView.setVisibility(View.VISIBLE);
-			mMaskView.setOnTouchListener(new OnTouchListener() {
-
-				@Override
-				public boolean onTouch(View v, MotionEvent event) {
-					mMaskView.setVisibility(View.GONE);
-					return false;
-				}
-			});
+	
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.update_install:
+			initAnimation(v);
+			horizontalScrollLayout.snapToScreen(UPDATEINSTALL_POSITION);
+			break;
+		case R.id.installed_software:
+			initAnimation(v);
+			horizontalScrollLayout.snapToScreen(INSTALLED_POSITION);
+			break;
+		case R.id.softwaremove:
+			initAnimation(v);
+			horizontalScrollLayout.snapToScreen(SOFTWAREMOVE_POSITION);
+			break;
 		}
 	}
-
-	private void initSlideImageView() {
-		mSlideImageView = (ImageView) findViewById(R.id.slide_image);
-		DisplayMetrics dm = AndroidUtils.getScreenSize(this);
-		int num = AndroidUtils.dip2px(this, 2);
-		float singleWidth = (dm.widthPixels - num * 2) / 3.0f;
-		LayoutParams mParams = (LayoutParams) mSlideImageView.getLayoutParams();
-		mParams.width = (int) singleWidth;
-		mSlideImageView.setLayoutParams(mParams);
-	}
-
+	
 	private void initAnimation(final View v) {
 		if (!isRunning && slideLeft != v.getLeft()) {
 			TranslateAnimation mAnimation = new TranslateAnimation(slideLeft, v.getLeft(), 0, 0);
@@ -232,24 +229,6 @@ public class SoftwareManageActivity extends ActivityGroup implements OnClickList
 				}
 			});
 			mSlideImageView.startAnimation(mAnimation);
-		}
-	}
-
-	@Override
-	public void onClick(View v) {
-		switch (v.getId()) {
-		case R.id.update_install:
-			initAnimation(v);
-			horizontalScrollLayout.snapToScreen(UPDATEINSTALL_POSITION);
-			break;
-		case R.id.installed_software:
-			initAnimation(v);
-			horizontalScrollLayout.snapToScreen(INSTALLED_POSITION);
-			break;
-		case R.id.softwaremove:
-			initAnimation(v);
-			horizontalScrollLayout.snapToScreen(SOFTWAREMOVE_POSITION);
-			break;
 		}
 	}
 
@@ -285,6 +264,27 @@ public class SoftwareManageActivity extends ActivityGroup implements OnClickList
 		} else {
 			horizontalScrollLayout.removeViewAt(position);
 			horizontalScrollLayout.addView(getLocalActivityManager().startActivity(activityIds[position], intent).getDecorView(), position);
+		}
+	}
+	
+	private void setMaskForSoftMove() {
+		SharedPreferences mSharedPreferences = getSharedPreferences(this.getPackageName() + "_temp", Context.MODE_PRIVATE);
+		SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+		mEditor.putBoolean(ShareParams.FIRST_LAUNCHER_SOFT_MOVE, false);
+		boolean flag = mEditor.commit();
+		if (flag)
+			firstLauncherSoftMove = false;
+		if (SoftwareMove_list_Activity.isCanMove(SoftwareManageActivity.this)) {
+			mMaskView = findViewById(R.id.softmovemasklayout);
+			mMaskView.setVisibility(View.VISIBLE);
+			mMaskView.setOnTouchListener(new OnTouchListener() {
+
+				@Override
+				public boolean onTouch(View v, MotionEvent event) {
+					mMaskView.setVisibility(View.GONE);
+					return false;
+				}
+			});
 		}
 	}
 

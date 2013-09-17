@@ -18,7 +18,6 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
-import android.widget.ListView;
 
 import com.dongji.market.R;
 import com.dongji.market.adapter.UninstallAdapter;
@@ -27,12 +26,11 @@ import com.dongji.market.helper.AndroidUtils;
 import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.helper.FileLoadTask;
 import com.dongji.market.pojo.InstalledAppInfo;
-import com.dongji.market.receiver.CommonReceiver;
 import com.dongji.market.widget.CustomDialog;
 import com.dongji.market.widget.LoginDialog;
 import com.dongji.market.widget.ScrollListView;
 
-public class Uninstall_list_Activity extends Activity{
+public class Uninstall_list_Activity extends Activity {
 
 	public static final int FLAG_RESTORE = 1;
 	public static final int FLAG_BACKUP = 2;
@@ -49,6 +47,7 @@ public class Uninstall_list_Activity extends Activity{
 
 	private FileLoadTask task;
 	private View mLoadingView;
+	private int locStep;
 
 	public static boolean cloudBackupOngoing = false;
 	public static boolean cloudRestoreOngoing = false;
@@ -57,7 +56,7 @@ public class Uninstall_list_Activity extends Activity{
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_list);
-		
+
 		initView();
 		initHandler();
 		registerAllReceiver();
@@ -160,23 +159,6 @@ public class Uninstall_list_Activity extends Activity{
 		});
 	}
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// TODO Auto-generated method stub
-		super.onActivityResult(requestCode, resultCode, data);
-		if (resultCode == Activity.RESULT_OK) {
-			if (requestCode == FLAG_BACKUP) {
-				Intent intent = new Intent(LoginDialog.BROADCAST_ACTION_SHOWBANDRLIST);
-				intent.putExtra(LoginDialog.FLAG_ACTIVITY_BANDR, LoginDialog.ACTIVITY_CLOUD_BACKUP);
-				sendBroadcast(intent);
-			} else if (requestCode == FLAG_RESTORE) {
-				Intent intent = new Intent(LoginDialog.BROADCAST_ACTION_SHOWBANDRLIST);
-				intent.putExtra(LoginDialog.FLAG_ACTIVITY_BANDR, LoginDialog.ACTIVITY_CLOUD_RESTORE);
-				sendBroadcast(intent);
-			}
-		}
-	}
-
 	private void showLoginDialog(int flag) {
 		if (dialog == null) {
 			dialog = new LoginDialog(this, flag);
@@ -189,38 +171,10 @@ public class Uninstall_list_Activity extends Activity{
 		}
 	}
 
-	@Override
-	public void onBackPressed() {
-		finish();
-	}
-
-	private void registerAllReceiver() {
-		IntentFilter intentFilter = new IntentFilter();
-		intentFilter.addAction(AConstDefine.BROADCAST_SYS_ACTION_APPINSTALL);
-		intentFilter.addAction(AConstDefine.BROADCAST_SYS_ACTION_APPREMOVE);
-		intentFilter.addDataScheme("package");
-		registerReceiver(mReceiver, intentFilter);
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		return getParent().onCreateOptionsMenu(menu);
-	}
-
-	@Override
-	public boolean onMenuOpened(int featureId, Menu menu) {
-		return getParent().onMenuOpened(featureId, menu);
-	}
-
-	private void startLoad() {
-		mLoadingView = findViewById(R.id.loadinglayout);
-		mHandler.sendEmptyMessage(EVENT_REQUEST_SOFTWARE_LIST);
-	}
-
-	@Override
-	protected void onDestroy() {
-		unregisterReceiver(mReceiver);
-		super.onDestroy();
+	private void initHandler() {
+		HandlerThread handlerThread = new HandlerThread("handler");
+		handlerThread.start();
+		mHandler = new MyHandler(handlerThread.getLooper());
 	}
 
 	class MyHandler extends Handler {
@@ -259,7 +213,7 @@ public class Uninstall_list_Activity extends Activity{
 					@Override
 					public void run() {
 						mLoadingView.setVisibility(View.GONE);
-						mListView.setVisibility(View.VISIBLE);//显示列表
+						mListView.setVisibility(View.VISIBLE);// 显示列表
 					}
 
 				});
@@ -268,15 +222,57 @@ public class Uninstall_list_Activity extends Activity{
 				break;
 			}
 		}
-
 	}
 
-	private void initHandler() {
-		HandlerThread handlerThread = new HandlerThread("handler");
-		handlerThread.start();
-		mHandler = new MyHandler(handlerThread.getLooper());
+	private void registerAllReceiver() {
+		IntentFilter intentFilter = new IntentFilter();
+		intentFilter.addAction(AConstDefine.BROADCAST_SYS_ACTION_APPINSTALL);
+		intentFilter.addAction(AConstDefine.BROADCAST_SYS_ACTION_APPREMOVE);
+		intentFilter.addDataScheme("package");
+		registerReceiver(mReceiver, intentFilter);
 	}
 
+	private void startLoad() {
+		mLoadingView = findViewById(R.id.loadinglayout);
+		mHandler.sendEmptyMessage(EVENT_REQUEST_SOFTWARE_LIST);
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (resultCode == Activity.RESULT_OK) {
+			if (requestCode == FLAG_BACKUP) {
+				Intent intent = new Intent(LoginDialog.BROADCAST_ACTION_SHOWBANDRLIST);
+				intent.putExtra(LoginDialog.FLAG_ACTIVITY_BANDR, LoginDialog.ACTIVITY_CLOUD_BACKUP);
+				sendBroadcast(intent);
+			} else if (requestCode == FLAG_RESTORE) {
+				Intent intent = new Intent(LoginDialog.BROADCAST_ACTION_SHOWBANDRLIST);
+				intent.putExtra(LoginDialog.FLAG_ACTIVITY_BANDR, LoginDialog.ACTIVITY_CLOUD_RESTORE);
+				sendBroadcast(intent);
+			}
+		}
+	}
+
+	@Override
+	public void onBackPressed() {
+		finish();
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		return getParent().onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onMenuOpened(int featureId, Menu menu) {
+		return getParent().onMenuOpened(featureId, menu);
+	}
+
+	@Override
+	protected void onDestroy() {
+		unregisterReceiver(mReceiver);
+		super.onDestroy();
+	}
 
 	/**
 	 * 接收应用安装卸载广播
@@ -300,8 +296,6 @@ public class Uninstall_list_Activity extends Activity{
 			}
 		}
 	};
-
-	private int locStep;
 
 	void onToolBarClick() {
 		if (mListView != null) {

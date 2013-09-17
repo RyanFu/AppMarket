@@ -1,7 +1,6 @@
 package com.dongji.market.activity;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.myjson.JSONException;
@@ -18,11 +17,8 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.dongji.market.R;
@@ -30,10 +26,7 @@ import com.dongji.market.adapter.ListBaseAdapter;
 import com.dongji.market.adapter.ListSingleTemplateAdapter;
 import com.dongji.market.download.AConstDefine;
 import com.dongji.market.helper.AndroidUtils;
-import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.pojo.ApkItem;
-import com.dongji.market.pojo.ChannelListInfo;
-import com.dongji.market.pojo.NavigationInfo;
 import com.dongji.market.protocol.DataManager;
 import com.dongji.market.widget.ScrollListView;
 
@@ -50,9 +43,7 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener 
 	private static final int EVENT_REQUEST_DATA_ERROR = 4;
 	private static final int EVENT_REFRENSH_DATA = 6;
 
-	private static final int SCROLL_DVALUE = 1;
-
-	private static final int TYPE_UPDATE = 1, TYPE_INSTALL = 3;
+	private static final int TYPE_UPDATE = 1;
 
 	private int currentType;
 
@@ -75,19 +66,20 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener 
 
 	private DataManager dataManager;
 
-	private boolean isLoading;
 	private boolean isAppClicked = true;
 
 	private int currentAppPage;
 	private int currentGamePage;
 
 	private boolean isFirstResume = true;
+	private int locStep;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_list_template);
 		context = this;
+
 		initData();
 		initLoadingView();
 		initHandler();
@@ -125,93 +117,6 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener 
 	}
 
 	/**
-	 * 初始化handler
-	 */
-	private void initHandler() {
-		HandlerThread mHandlerThread = new HandlerThread("handlerThread");
-		mHandlerThread.start();
-		mHandler = new MyHandler(mHandlerThread.getLooper());
-		mHandler.sendEmptyMessage(EVENT_REQUEST_APPLIST_DATA);
-		;
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		if (!isFirstResume) {
-			if (mHandler != null) {
-				if (mHandler.hasMessages(EVENT_REFRENSH_DATA)) {
-					mHandler.removeMessages(EVENT_REFRENSH_DATA);
-				}
-				mHandler.sendEmptyMessage(EVENT_REFRENSH_DATA);
-			}
-		}
-		isFirstResume = false;
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-	}
-
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		return getParent().onKeyDown(keyCode, event);
-	}
-
-	/**
-	 * 初始化应用列表视图,单行还是双行显示
-	 */
-	private void initAppListView() {
-		mAppListView = (ScrollListView) findViewById(R.id.applistview);
-		mAppSingleAdapter = new ListSingleTemplateAdapter(this, apps, isRemoteImage);
-		mAppListView.setAdapter(mAppSingleAdapter);
-		mAppListView.setOnItemClickListener(this);
-		if (isAppClicked) {
-			mAppListView.setVisibility(View.VISIBLE);
-			if (mGameListView != null) {
-				mGameListView.setVisibility(View.GONE);
-			}
-		}
-	}
-
-	/**
-	 * 初始化游戏列表视图，单行还是双行显示
-	 */
-	private void initGameListView() {
-		mGameListView = (ScrollListView) findViewById(R.id.gamelistview);
-		mGameSingleAdapter = new ListSingleTemplateAdapter(this, games, isRemoteImage);
-		mGameListView.setAdapter(mGameSingleAdapter);
-		mGameListView.setOnItemClickListener(this);
-		if (!isAppClicked) {
-			if (mAppListView != null) {
-				mAppListView.setVisibility(View.GONE);
-			}
-			mGameListView.setVisibility(View.VISIBLE);
-		}
-	}
-
-	/**
-	 * 数据获取异常处理
-	 * 
-	 * @param rId
-	 */
-	private void setErrorMessage(final int rId, final int rId2) {
-		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				isLoading = false;
-				if (mLoadingView.getVisibility() == View.VISIBLE) {
-					mLoadingProgressBar.setVisibility(View.GONE);
-					mLoadingTextView.setText(rId);
-				} else {
-					AndroidUtils.showToast(context, rId2);
-				}
-			}
-		});
-	}
-
-	/**
 	 * 设置预加载
 	 */
 	private void setPreLoading() {
@@ -221,50 +126,13 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener 
 	}
 
 	/**
-	 * 显示加载
+	 * 初始化handler
 	 */
-	private void displayLoading() {
-		mLoadingView.setVisibility(View.VISIBLE);
-		setPreLoading();
-		if (mAppListView != null) {
-			mAppListView.setVisibility(View.GONE);
-		}
-		if (mGameListView != null) {
-			mGameListView.setVisibility(View.GONE);
-		}
-	}
-
-	/**
-	 * 设置listView显示
-	 */
-	private void setDisplayVisible() {
-		mLoadingView.setVisibility(View.GONE);
-		if (isAppClicked) {
-			if (mAppListView != null) {
-				mAppListView.setVisibility(View.VISIBLE);
-			}
-			if (mGameListView != null) {
-				mGameListView.setVisibility(View.GONE);
-			}
-		} else {
-			if (mGameListView != null) {
-				mGameListView.setVisibility(View.VISIBLE);
-			}
-			if (mAppListView != null) {
-				mAppListView.setVisibility(View.GONE);
-			}
-		}
-	}
-
-	/**
-	 * 获取应用数据（应用、游戏）
-	 * 
-	 * @return
-	 * @throws IOException
-	 * @throws JSONException
-	 */
-	private List<ApkItem> getApps() throws IOException, JSONException {
-		return dataManager.getApps(this, currentType == TYPE_UPDATE ? DataManager.RECENT_UPDATA_ID : DataManager.ESSENTIAL_ID, isAppClicked);
+	private void initHandler() {
+		HandlerThread mHandlerThread = new HandlerThread("handlerThread");
+		mHandlerThread.start();
+		mHandler = new MyHandler(mHandlerThread.getLooper());
+		mHandler.sendEmptyMessage(EVENT_REQUEST_APPLIST_DATA);
 	}
 
 	private class MyHandler extends Handler {
@@ -302,12 +170,10 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener 
 									}
 								}
 								currentAppPage++;
-								isLoading = false;
 							}
 						}
 					});
 				} else {
-					isLoading = false;
 					if (!AndroidUtils.isNetworkAvailable(context)) {
 						sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
 					} else {
@@ -344,12 +210,10 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener 
 									}
 								}
 								currentGamePage++;
-								isLoading = false;
 							}
 						}
 					});
 				} else {
-					isLoading = false;
 					if (!AndroidUtils.isNetworkAvailable(context)) {
 						sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
 					} else {
@@ -368,6 +232,120 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener 
 				break;
 			}
 		}
+	}
+
+	/**
+	 * 数据获取异常处理
+	 * 
+	 * @param rId
+	 */
+	private void setErrorMessage(final int rId, final int rId2) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if (mLoadingView.getVisibility() == View.VISIBLE) {
+					mLoadingProgressBar.setVisibility(View.GONE);
+					mLoadingTextView.setText(rId);
+				} else {
+					AndroidUtils.showToast(context, rId2);
+				}
+			}
+		});
+	}
+
+	/**
+	 * 获取应用数据（应用、游戏）
+	 * 
+	 * @return
+	 * @throws IOException
+	 * @throws JSONException
+	 */
+	private List<ApkItem> getApps() throws IOException, JSONException {
+		return dataManager.getApps(this, currentType == TYPE_UPDATE ? DataManager.RECENT_UPDATA_ID : DataManager.ESSENTIAL_ID, isAppClicked);
+	}
+
+	/**
+	 * 初始化应用列表视图,单行还是双行显示
+	 */
+	private void initAppListView() {
+		mAppListView = (ScrollListView) findViewById(R.id.applistview);
+		mAppSingleAdapter = new ListSingleTemplateAdapter(this, apps, isRemoteImage);
+		mAppListView.setAdapter(mAppSingleAdapter);
+		mAppListView.setOnItemClickListener(this);
+		if (isAppClicked) {
+			mAppListView.setVisibility(View.VISIBLE);
+			if (mGameListView != null) {
+				mGameListView.setVisibility(View.GONE);
+			}
+		}
+	}
+
+	/**
+	 * 初始化游戏列表视图，单行还是双行显示
+	 */
+	private void initGameListView() {
+		mGameListView = (ScrollListView) findViewById(R.id.gamelistview);
+		mGameSingleAdapter = new ListSingleTemplateAdapter(this, games, isRemoteImage);
+		mGameListView.setAdapter(mGameSingleAdapter);
+		mGameListView.setOnItemClickListener(this);
+		if (!isAppClicked) {
+			if (mAppListView != null) {
+				mAppListView.setVisibility(View.GONE);
+			}
+			mGameListView.setVisibility(View.VISIBLE);
+		}
+	}
+
+	/**
+	 * 刷新数据
+	 */
+	private void refreshData() {
+		if (mAppListView != null && mAppListView.getAdapter() != null) {
+			notifyListData(mAppSingleAdapter);
+		}
+		if (mGameListView != null && mGameListView.getAdapter() != null) {
+			notifyListData(mGameSingleAdapter);
+		}
+	}
+
+	/**
+	 * 通知数据更新
+	 * 
+	 * @param mAdapter
+	 */
+	private void notifyListData(final ListBaseAdapter mAdapter) {
+		setApkStatus(mAdapter.getItemList());
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				System.out.println("update isRemoteImage:" + isRemoteImage);
+				mAdapter.setDisplayNotify(isRemoteImage);
+			}
+		});
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if (!isFirstResume) {
+			if (mHandler != null) {
+				if (mHandler.hasMessages(EVENT_REFRENSH_DATA)) {
+					mHandler.removeMessages(EVENT_REFRENSH_DATA);
+				}
+				mHandler.sendEmptyMessage(EVENT_REFRENSH_DATA);
+			}
+		}
+		isFirstResume = false;
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		return getParent().onKeyDown(keyCode, event);
 	}
 
 	@Override
@@ -409,6 +387,42 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener 
 	}
 
 	/**
+	 * 显示加载
+	 */
+	private void displayLoading() {
+		mLoadingView.setVisibility(View.VISIBLE);
+		setPreLoading();
+		if (mAppListView != null) {
+			mAppListView.setVisibility(View.GONE);
+		}
+		if (mGameListView != null) {
+			mGameListView.setVisibility(View.GONE);
+		}
+	}
+
+	/**
+	 * 设置listView显示
+	 */
+	private void setDisplayVisible() {
+		mLoadingView.setVisibility(View.GONE);
+		if (isAppClicked) {
+			if (mAppListView != null) {
+				mAppListView.setVisibility(View.VISIBLE);
+			}
+			if (mGameListView != null) {
+				mGameListView.setVisibility(View.GONE);
+			}
+		} else {
+			if (mGameListView != null) {
+				mGameListView.setVisibility(View.VISIBLE);
+			}
+			if (mAppListView != null) {
+				mAppListView.setVisibility(View.GONE);
+			}
+		}
+	}
+
+	/**
 	 * 当app取消下载或更新的时候回调,更改应用状态
 	 */
 	@Override
@@ -434,34 +448,6 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener 
 		}
 	}
 
-	/**
-	 * 刷新数据
-	 */
-	private void refreshData() {
-		if (mAppListView != null && mAppListView.getAdapter() != null) {
-			notifyListData(mAppSingleAdapter);
-		}
-		if (mGameListView != null && mGameListView.getAdapter() != null) {
-			notifyListData(mGameSingleAdapter);
-		}
-	}
-
-	/**
-	 * 通知数据更新
-	 * 
-	 * @param mAdapter
-	 */
-	private void notifyListData(final ListBaseAdapter mAdapter) {
-		setApkStatus(mAdapter.getItemList());
-		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				System.out.println("update isRemoteImage:" + isRemoteImage);
-				mAdapter.setDisplayNotify(isRemoteImage);
-			}
-		});
-	}
-
 	@Override
 	protected void onUpdateDataDone() {
 		refreshData();
@@ -476,8 +462,6 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener 
 			mGameSingleAdapter.setDisplayNotify(isRemoteImage);
 		}
 	}
-
-	private int locStep;
 
 	/**
 	 * 重载baseactivity方法
@@ -501,14 +485,12 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener 
 
 		@Override
 		public void run() {
-			// TODO Auto-generated method stub
 			if (mAppListView.getFirstVisiblePosition() > 0) {
 				if (mAppListView.getFirstVisiblePosition() < AConstDefine.AUTO_SCRLL_TIMES) {
 					mAppListView.setSelection(mAppListView.getFirstVisiblePosition() - 1);
 				} else {
 					mAppListView.setSelection(Math.max(mAppListView.getFirstVisiblePosition() - locStep, 0));
 				}
-				// mAppListView.postDelayed(this, 1);
 				mAppListView.post(this);
 			}
 			return;
@@ -519,14 +501,12 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener 
 
 		@Override
 		public void run() {
-			// TODO Auto-generated method stub
 			if (mGameListView.getFirstVisiblePosition() > 0) {
 				if (mGameListView.getFirstVisiblePosition() < AConstDefine.AUTO_SCRLL_TIMES) {
 					mGameListView.setSelection(mGameListView.getFirstVisiblePosition() - 1);
 				} else {
 					mGameListView.setSelection(Math.max(mGameListView.getFirstVisiblePosition() - locStep, 0));
 				}
-				// mAppListView.postDelayed(this, 1);
 				mGameListView.post(this);
 			}
 			return;

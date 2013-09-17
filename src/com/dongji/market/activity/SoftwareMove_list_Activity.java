@@ -50,6 +50,7 @@ public class SoftwareMove_list_Activity extends Activity implements OnClickListe
 	private int flag = FLAG_PHONECARD;
 
 	private MyMoveBroadcastReceiver myMoveBroadcastReceiver;
+	private int locStep;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -59,32 +60,32 @@ public class SoftwareMove_list_Activity extends Activity implements OnClickListe
 		mListView = (ScrollListView) findViewById(R.id.list);
 		tvNoAppTips = (TextView) findViewById(R.id.tvNoAppTips);
 		mLoadingView = findViewById(R.id.loadinglayout);
+		
 		initBottomButton();
 		if (isCanMove(SoftwareMove_list_Activity.this)) {
 			initHandler();
 
 			startLoad();
 
-			IntentFilter filter = new IntentFilter();
-			filter.addAction(AConstDefine.BROADCAST_SYS_ACTION_APPREMOVE);
-			filter.addAction(AConstDefine.BROADCAST_SYS_ACTION_APPINSTALL);
-			filter.addDataScheme("package");
-			registerReceiver(new MyBroadcastReceiver(), filter);
-
-			filter = new IntentFilter();
-			filter.addAction("android.intent.action.EXTERNAL_APPLICATIONS_AVAILABLE");
-			filter.addAction("android.intent.action.EXTERNAL_APPLICATIONS_UNAVAILABLE");
-			myMoveBroadcastReceiver = new MyMoveBroadcastReceiver();
-			registerReceiver(myMoveBroadcastReceiver, filter);
+			registerAllReceiver();
 		} else {
 			mLoadingView.setVisibility(View.GONE);
 			llBottomBtn.setVisibility(View.GONE);
 			tvNoAppTips.setText(R.string.phonenotsupportmove);
 			tvNoAppTips.setVisibility(View.VISIBLE);
 		}
-
 	}
-
+	
+	
+	private void initBottomButton() {
+		llBottomBtn = (LinearLayout) findViewById(R.id.llBottomBtn);
+		rbPhonecard = (RadioButton) findViewById(R.id.rbPhonecard);
+		rbSdcard = (RadioButton) findViewById(R.id.rbSdcard);
+		rbPhonecard.setOnClickListener(this);
+		rbSdcard.setOnClickListener(this);
+		rbPhonecard.setChecked(true);
+	}
+	
 	public static boolean isCanMove(Context context) {
 		if ((Build.VERSION.SDK_INT > 7) && (Build.VERSION.SDK_INT < 11)) {
 			return true;
@@ -96,16 +97,78 @@ public class SoftwareMove_list_Activity extends Activity implements OnClickListe
 			e.printStackTrace();
 		}
 		return false;
-
 	}
+	
+	private void initHandler() {
+		HandlerThread handlerThread = new HandlerThread("handler");
+		handlerThread.start();
+		mHandler = new MyHandler(handlerThread.getLooper());
+	}
+	
+	class MyHandler extends Handler {
 
-	private void initBottomButton() {
-		llBottomBtn = (LinearLayout) findViewById(R.id.llBottomBtn);
-		rbPhonecard = (RadioButton) findViewById(R.id.rbPhonecard);
-		rbSdcard = (RadioButton) findViewById(R.id.rbSdcard);
-		rbPhonecard.setOnClickListener(this);
-		rbSdcard.setOnClickListener(this);
-		rbPhonecard.setChecked(true);
+		public MyHandler(Looper looper) {
+			super(looper);
+		}
+
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case EVENT_REQUEST_SOFTWARE_LIST:
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						mLoadingView.setVisibility(View.VISIBLE);
+						tvNoAppTips.setVisibility(View.GONE);
+						mListView.setVisibility(View.GONE);
+						softwareMoveAdapter = new SoftwareMoveAdapter(SoftwareMove_list_Activity.this, new ArrayList<InstalledAppInfo>());
+						mListView.setAdapter(softwareMoveAdapter);
+						task = new FileLoadTask(SoftwareMove_list_Activity.this, softwareMoveAdapter, mHandler, flag);// 本地图片异步加载
+						task.execute();
+					}
+				});
+				break;
+			case FileLoadTask.EVENT_LOADED:
+				runOnUiThread(new Runnable() {
+
+					@Override
+					public void run() {
+						mLoadingView.setVisibility(View.GONE);
+						if (softwareMoveAdapter.getCount() == 0) {
+							mListView.setVisibility(View.GONE);
+							if (flag == FLAG_PHONECARD) {
+								tvNoAppTips.setText(R.string.noMoveToSDCardApp);
+							} else {
+								tvNoAppTips.setText(R.string.noMoveToPhoneCardApp);
+							}
+							tvNoAppTips.setVisibility(View.VISIBLE);
+						} else {
+							mListView.setVisibility(View.VISIBLE);
+							tvNoAppTips.setVisibility(View.GONE);
+						}
+					}
+				});
+				break;
+			}
+		}
+	}
+	
+	private void startLoad() {
+		mHandler.sendEmptyMessage(EVENT_REQUEST_SOFTWARE_LIST);
+	}
+	
+	private void registerAllReceiver() {
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(AConstDefine.BROADCAST_SYS_ACTION_APPREMOVE);
+		filter.addAction(AConstDefine.BROADCAST_SYS_ACTION_APPINSTALL);
+		filter.addDataScheme("package");
+		registerReceiver(new MyBroadcastReceiver(), filter);
+
+		filter = new IntentFilter();
+		filter.addAction("android.intent.action.EXTERNAL_APPLICATIONS_AVAILABLE");
+		filter.addAction("android.intent.action.EXTERNAL_APPLICATIONS_UNAVAILABLE");
+		myMoveBroadcastReceiver = new MyMoveBroadcastReceiver();
+		registerReceiver(myMoveBroadcastReceiver, filter);
 	}
 
 	@Override
@@ -157,65 +220,7 @@ public class SoftwareMove_list_Activity extends Activity implements OnClickListe
 		}
 		super.onDestroy();
 	}
-
-	private void startLoad() {
-		mHandler.sendEmptyMessage(EVENT_REQUEST_SOFTWARE_LIST);
-	}
-
-	class MyHandler extends Handler {
-
-		public MyHandler(Looper looper) {
-			super(looper);
-		}
-
-		@Override
-		public void handleMessage(Message msg) {
-			switch (msg.what) {
-			case EVENT_REQUEST_SOFTWARE_LIST:
-				runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						mLoadingView.setVisibility(View.VISIBLE);
-						tvNoAppTips.setVisibility(View.GONE);
-						mListView.setVisibility(View.GONE);
-						softwareMoveAdapter = new SoftwareMoveAdapter(SoftwareMove_list_Activity.this, new ArrayList<InstalledAppInfo>());
-						mListView.setAdapter(softwareMoveAdapter);
-						task = new FileLoadTask(SoftwareMove_list_Activity.this, softwareMoveAdapter, mHandler, flag);// 本地图片异步加载
-						task.execute();
-					}
-				});
-				break;
-			case FileLoadTask.EVENT_LOADED:
-				runOnUiThread(new Runnable() {
-
-					@Override
-					public void run() {
-						mLoadingView.setVisibility(View.GONE);
-						if (softwareMoveAdapter.getCount() == 0) {
-							mListView.setVisibility(View.GONE);
-							if (flag == FLAG_PHONECARD) {
-								tvNoAppTips.setText(R.string.noMoveToSDCardApp);
-							} else {
-								tvNoAppTips.setText(R.string.noMoveToPhoneCardApp);
-							}
-							tvNoAppTips.setVisibility(View.VISIBLE);
-						} else {
-							mListView.setVisibility(View.VISIBLE);
-							tvNoAppTips.setVisibility(View.GONE);
-						}
-					}
-				});
-				break;
-			}
-		}
-	}
-
-	private void initHandler() {
-		HandlerThread handlerThread = new HandlerThread("handler");
-		handlerThread.start();
-		mHandler = new MyHandler(handlerThread.getLooper());
-	}
-
+	
 	class MyBroadcastReceiver extends BroadcastReceiver {
 
 		@Override
@@ -239,9 +244,6 @@ public class SoftwareMove_list_Activity extends Activity implements OnClickListe
 			}
 		}
 	}
-
-
-	private int locStep;
 
 	void onToolBarClick() {
 		if (mListView != null) {

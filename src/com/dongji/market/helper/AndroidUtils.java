@@ -345,7 +345,6 @@ public class AndroidUtils {
 		context.getWindowManager().getDefaultDisplay().getMetrics(dm);
 		return dm;
 	}
-	
 
 	/**
 	 * 验证邮箱格式是否正确
@@ -412,7 +411,6 @@ public class AndroidUtils {
 		} catch (IOException e) {
 
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			if (dos != null) {
@@ -421,9 +419,6 @@ public class AndroidUtils {
 				} catch (IOException e) {
 				}
 			}
-			/*
-			 * if (process != null) { process.destroy(); }
-			 */
 		}
 		return false;
 	}
@@ -770,18 +765,18 @@ public class AndroidUtils {
 	public static boolean isTablet(Context context) {
 		return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE;
 	}
-	
+
 	/**
 	 * 获取物理尺寸
+	 * 
 	 * @param context
 	 * @return
 	 */
-	public static double getPhysicalSize(Activity context){
-		DisplayMetrics dm=getScreenSize(context);
-		double diagonalPixels=Math.sqrt(Math.pow(dm.widthPixels, 2)+Math.pow(dm.heightPixels, 2));
-		return diagonalPixels/(160*dm.density);
+	public static double getPhysicalSize(Activity context) {
+		DisplayMetrics dm = getScreenSize(context);
+		double diagonalPixels = Math.sqrt(Math.pow(dm.widthPixels, 2) + Math.pow(dm.heightPixels, 2));
+		return diagonalPixels / (160 * dm.density);
 	}
-
 
 	/**
 	 * 解析密钥字节数组

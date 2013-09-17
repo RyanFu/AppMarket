@@ -12,6 +12,7 @@ import org.myjson.JSONException;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -37,7 +38,7 @@ import com.dongji.market.protocol.DataManager;
 import com.dongji.market.widget.LazyScrollView;
 import com.dongji.market.widget.LazyScrollView.ScrollListener;
 
-public class ThemeActivity extends Activity implements OnClickListener {
+public class ThemeActivity extends BaseActivity implements OnClickListener {
 
 	private static final int COLUMN_COUNT = 2;// 列数
 	private static final int MARGIN = 1;
@@ -483,6 +484,40 @@ public class ThemeActivity extends Activity implements OnClickListener {
 		bundle.putSerializable("subjectInfo", info);
 		intent.putExtras(bundle);
 		startActivity(intent);
+	}
+
+	@Override
+	public void onAppClick() {
+
+	}
+
+	@Override
+	public void onGameClick() {
+
+	}
+
+	@Override
+	public boolean isAppClicked() {
+		return false;
+	}
+
+	@Override
+	public void onAppInstallOrUninstallDone(int status, PackageInfo info) {
+
+	}
+
+	@Override
+	public void onAppStatusChange(boolean isCancel, String packageName, int versionCode) {
+
+	}
+
+	@Override
+	protected void onUpdateDataDone() {
+
+	}
+
+	@Override
+	protected void loadingImage() {
 	}
 
 }

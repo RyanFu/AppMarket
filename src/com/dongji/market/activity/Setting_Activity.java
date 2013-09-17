@@ -7,7 +7,6 @@ import java.text.DecimalFormat;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
@@ -42,8 +41,6 @@ import com.dongji.market.helper.ShareParams;
 import com.dongji.market.helper.TitleUtil;
 import com.dongji.market.helper.TitleUtil.OnToolBarBlankClickListener;
 import com.dongji.market.helper.TitleUtil.SaveSettingListener;
-import com.dongji.market.pojo.LoginParams;
-import com.dongji.market.receiver.CommonReceiver;
 import com.dongji.market.widget.CustomDialog;
 import com.dongji.market.widget.CustomNoTitleDialog;
 import com.dongji.market.widget.SlipSwitch;
@@ -53,7 +50,7 @@ import com.umeng.analytics.MobclickAgent;
 public class Setting_Activity extends Activity implements OnToolBarBlankClickListener {
 
 	// Body
-	private SlipSwitch mUpdate_msg, mAuto_del_pkg, mSave_flow, mSet_root, mAuto_install, mOnly_wifi, mAuto_download_bg, mAuto_update, mSina_login, mTencent_login, mRenren_login;
+	private SlipSwitch mUpdate_msg, mAuto_del_pkg, mSave_flow, mSet_root, mAuto_install, mOnly_wifi, mAuto_download_bg, mAuto_update;
 	private TextView mAuto_install_text1;
 	private TextView mAuto_install_text2;
 	private EditText mLimit_flow;
@@ -64,8 +61,7 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 	private TextView mFeedback;
 	private TextView mLimit_text;
 	private TextView mM_text;
-	private TextView mSina_name;
-	private RelativeLayout mUpdate_msg_layout, mAuto_del_pkg_layout, mSave_flow_layout, mSet_root_layout, mAuto_install_layout, mOnly_wifi_layout, mAuto_download_bg_layout, mAuto_update_layout, mSina_login_layout;
+	private RelativeLayout mUpdate_msg_layout, mAuto_del_pkg_layout, mSave_flow_layout, mSet_root_layout, mAuto_install_layout, mOnly_wifi_layout, mAuto_download_bg_layout, mAuto_update_layout;
 
 	private Setting_Service service;
 	private SearchHistory searchHistory;
@@ -99,9 +95,42 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_setting);
 		overridePendingTransition(R.anim.in_from_right, R.anim.out_to_left);
+
 		startTime = System.currentTimeMillis();
+
 		checkFirstLauncherSetting();
-		queryUse3GSize(); // 查询3G所消耗流量
+
+		initView();
+
+		initDBService();
+
+		initRootHandler();
+
+		initSetting();
+
+	}
+
+	private void checkFirstLauncherSetting() {
+		SharedPreferences mSharedPreferences = getSharedPreferences(this.getPackageName() + "_temp", Context.MODE_PRIVATE);
+		boolean firstLaunch = mSharedPreferences.getBoolean(ShareParams.FIRST_LAUNCHER_SETTING2, true);
+		if (firstLaunch) {
+			SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+			mEditor.putBoolean(ShareParams.FIRST_LAUNCHER_SETTING2, false);
+			mEditor.commit();
+			mMaskView = findViewById(R.id.settingmasklayout);
+			mMaskView.setVisibility(View.VISIBLE);
+			mMaskView.setOnTouchListener(new OnTouchListener() {
+
+				@Override
+				public boolean onTouch(View v, MotionEvent event) {
+					mMaskView.setVisibility(View.GONE);
+					return false;
+				}
+			});
+		}
+	}
+
+	private void initView() {
 		View mTopView = findViewById(R.id.setting_top);
 		titleUtil = new TitleUtil(this, mTopView, R.string.setting, new SaveListener(), null, this);
 
@@ -113,7 +142,6 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 		mOnly_wifi_layout = (RelativeLayout) findViewById(R.id.only_wifi_layout);
 		mAuto_download_bg_layout = (RelativeLayout) findViewById(R.id.download_background_layout);
 		mAuto_update_layout = (RelativeLayout) findViewById(R.id.auto_update_layout);
-		mSina_login_layout = (RelativeLayout) findViewById(R.id.sina_login_layout);
 
 		mUpdate_msg = (SlipSwitch) findViewById(R.id.update_msg);
 		mAuto_del_pkg = (SlipSwitch) findViewById(R.id.auto_del_pkg);
@@ -129,17 +157,11 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 		mAuto_update = (SlipSwitch) findViewById(R.id.auto_update);
 		mClear_search_history = (TextView) findViewById(R.id.clear_search_history);
 		mDel_pkg = (TextView) findViewById(R.id.del_pkg);
-		mSina_login = (SlipSwitch) findViewById(R.id.use_sina_login);
-		mSina_name = (TextView) findViewById(R.id.sina_user_name);
 		mAbout = (TextView) findViewById(R.id.about);
 		mFeedback = (TextView) findViewById(R.id.feedback);
 
 		mLimit_text = (TextView) findViewById(R.id.limit_text);
 		mM_text = (TextView) findViewById(R.id.M_text);
-
-		initDBService();
-		checkRootHandler();
-		initSetting();
 
 		mUpdate_msg_layout.setOnClickListener(listener);
 		mAuto_del_pkg_layout.setOnClickListener(listener);
@@ -149,7 +171,6 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 		mOnly_wifi_layout.setOnClickListener(listener);
 		mAuto_download_bg_layout.setOnClickListener(listener);
 		mAuto_update_layout.setOnClickListener(listener);
-		mSina_login_layout.setOnClickListener(listener);
 		mClear_search_history.setOnClickListener(listener);
 		mDel_pkg.setOnClickListener(listener);
 		mAbout.setOnClickListener(listener);
@@ -174,23 +195,6 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 			}
 		});
 
-		mSina_login.setOnSwitchListener(new OnSwitchListener() {
-
-			@Override
-			public void onSwitched(boolean switchState) {
-				if (switchState) {
-					if (!isSinaLogin()) {
-						DJMarketUtils.sinaLogin(Setting_Activity.this, handler);
-					}
-				} else {// 退出新浪登录
-					mSina_name.setVisibility(View.GONE);
-					LoginParams loginParams = ((AppMarket) getApplication()).getLoginParams();
-					loginParams.setSinaUserName(null);
-					mSina_name.setText("");
-				}
-			}
-		});
-
 		mOnly_wifi.setOnSwitchListener(new OnSwitchListener() {
 
 			public void onSwitched(boolean switchState) {
@@ -205,7 +209,228 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 				}
 			}
 		});
+	}
 
+	private void initDBService() {
+		if (service == null) {
+			service = new Setting_Service(this);
+		}
+		if (searchHistory == null) {
+			searchHistory = new SearchHistory(this);
+		}
+	}
+
+	private void initRootHandler() {
+		HandlerThread handlerThread = new HandlerThread("handler");
+		handlerThread.start();
+		mHandler = new MyHandler(handlerThread.getLooper());
+	}
+
+	class MyHandler extends Handler {
+
+		public MyHandler(Looper looper) {
+			super(looper);
+		}
+
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case CHECK_ROOT:
+				if (AndroidUtils.isRoot()) {
+					runOnUiThread(new Runnable() {
+
+						@Override
+						public void run() {
+							mSet_root.updateSwitchState(true);
+							mAuto_install_layout.setEnabled(true);
+							mAuto_install.setEnabled(true);
+							mAuto_install_text1.setTextColor(Color.rgb(59, 59, 59));
+							mAuto_install_text2.setTextColor(Color.rgb(59, 59, 59));
+						}
+					});
+
+				} else {
+					runOnUiThread(new Runnable() {
+
+						@Override
+						public void run() {
+							mSet_root.updateSwitchState(false);
+							mAuto_install.updateSwitchState(false);
+							mAuto_install_layout.setEnabled(false);
+							mAuto_install.setEnabled(false);
+							mAuto_install_text1.setTextColor(Color.rgb(136, 136, 136));
+							mAuto_install_text2.setTextColor(Color.rgb(136, 136, 136));
+							AndroidUtils.showToast(getApplicationContext(), R.string.get_root_failed);
+						}
+					});
+				}
+				break;
+			}
+			super.handleMessage(msg);
+		}
+
+	}
+
+	Handler handler = new Handler() {
+
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case CLEAR_SEARCH_HISTORY: // 清除搜索历史
+				AndroidUtils.showToast(Setting_Activity.this, R.string.has_clear_record);
+				mClear_search_history.setEnabled(false);
+				mClear_search_history.setTextColor(Color.rgb(136, 136, 136));
+				break;
+			case DEL_DOWNLOADED_APK: // 删除已下载安装包
+				AndroidUtils.showToast(Setting_Activity.this, R.string.has_clear_pkgs);
+				mDel_pkg.setEnabled(false);
+				mDel_pkg.setTextColor(Color.rgb(136, 136, 136));
+				break;
+			}
+		}
+
+	};
+
+	/**
+	 * 打开设置界面初始化为历史设置
+	 */
+	private void initSetting() {
+		if (service.select("update_msg") == 1) {
+			mUpdate_msg.setSwitchState(true);// 开启应用更新通知
+		} else {
+			mUpdate_msg.setSwitchState(false);
+		}
+		if (service.select("auto_del_pkg") == 1) {
+			mAuto_del_pkg.setSwitchState(true);// 开启安装后自动删除安装包
+		} else {
+			mAuto_del_pkg.setSwitchState(false);
+		}
+		if (service.select("save_flow") == 1) {
+			mSave_flow.setSwitchState(true);// 开启节省流量模式（应用列表不加载图片)
+		} else {
+			mSave_flow.setSwitchState(false);
+		}
+		if (service.select("set_root") == 1) {
+			mSet_root.setSwitchState(true);// 开启root权限
+
+			mAuto_install_layout.setEnabled(true);
+			mAuto_install.setEnabled(true);
+			mAuto_install_text1.setTextColor(Color.rgb(59, 59, 59));
+			mAuto_install_text2.setTextColor(Color.rgb(59, 59, 59));
+			if (service.select("auto_install") == 1) {
+				mAuto_install.setSwitchState(true);// 开启自动安装
+			} else {
+				mAuto_install.setSwitchState(false);
+			}
+		} else {
+			mSet_root.setSwitchState(false);
+
+			mAuto_install.setSwitchState(false);
+			mAuto_install_layout.setEnabled(false);
+			mAuto_install.setEnabled(false);
+			mAuto_install_text1.setTextColor(Color.rgb(136, 136, 136));
+			mAuto_install_text2.setTextColor(Color.rgb(136, 136, 136));
+		}
+		limitFlow = service.select("limit_flow");// 限制可用于下载应用的流量数
+		if (service.select("only_wifi") == 1) {// 仅使用wifi下载
+			mOnly_wifi.setSwitchState(true);
+			mLimit_flow.setText(String.valueOf(limitFlow));
+			mLimit_flow.setEnabled(false);
+			mLimit_text.setTextColor(Color.rgb(136, 136, 136));
+			mM_text.setTextColor(Color.rgb(136, 136, 136));
+		} else {
+			mOnly_wifi.setSwitchState(false);
+			mLimit_flow.setEnabled(true);
+			mLimit_text.setTextColor(Color.rgb(59, 59, 59));// 0x3b3b3b
+			mM_text.setTextColor(Color.rgb(59, 59, 59));// 0x3b3b3b
+			mLimit_flow.setText(String.valueOf(limitFlow));
+		}
+		mLast_flow.setText(getLastFlow());// 设置剩余流量数
+
+		if (service.select("download_bg") == 1) {// 开启退出程序后，自动下载未完成的应用
+			mAuto_download_bg.setSwitchState(true);
+		} else {
+			mAuto_download_bg.setSwitchState(false);
+		}
+		if (service.select("auto_update") == 1) {// 开启自动更新应用
+			mAuto_update.setSwitchState(true);
+		} else {
+			mAuto_update.setSwitchState(false);
+		}
+		// initDBService();
+		if (searchHistory.getCount() > 0) {
+			mClear_search_history.setEnabled(true);// 查询搜索记录，如果大于0条，则可点击
+			mClear_search_history.setTextColor(Color.rgb(59, 59, 59));
+		} else {
+			mClear_search_history.setEnabled(false);
+			mClear_search_history.setTextColor(Color.rgb(136, 136, 136));
+		}
+		if (isEmptyDir()) {
+			mDel_pkg.setEnabled(false);// 如果有可删除的安装包，则可点击
+			mDel_pkg.setTextColor(Color.rgb(136, 136, 136));
+		} else {
+			mDel_pkg.setEnabled(true);
+			mDel_pkg.setTextColor(Color.rgb(59, 59, 59));
+		}
+	}
+
+	/**
+	 * 判断文件夹中是否存在安装包
+	 * 
+	 * @return
+	 */
+	private boolean isEmptyDir() {
+		File[] list = new File(APKPath).listFiles(new FilenameFilter() {
+			public boolean accept(File dir, String filename) {
+				return filename.endsWith(".apk");
+			}
+		});
+		if (list != null && list.length > 0) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * 每次打开设置界面更新一次剩余蜂窝下载流量
+	 * 
+	 * @return
+	 */
+	private String getLastFlow() {
+		float temp = limitFlow - getUsedFlow();
+		DecimalFormat decimal = new DecimalFormat("#.##");
+		return decimal.format(temp < 0 ? 0 : temp);
+	}
+
+	/**
+	 * 获取已使用流量
+	 * 
+	 * @return
+	 */
+	private float getUsedFlow() {
+		long num = queryUse3GSize();
+		float used_flow = b2mb(num < 0 ? 0 : num);
+		return used_flow;
+	}
+
+	/**
+	 * 查询当前使用3G下载所消耗的流量大小
+	 * 
+	 * @return
+	 */
+	private long queryUse3GSize() {
+		return DJMarketUtils.queryUse3GDownloadSize(this);
+	}
+
+	/**
+	 * 将byte转换成Mb
+	 * 
+	 * @param size
+	 * @return
+	 */
+	private float b2mb(long size) {
+		float size_mb = (float) size / 1024 / 1024;
+		return size_mb;
 	}
 
 	@Override
@@ -264,51 +489,6 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 		return super.onKeyDown(keyCode, event);
 	};
 
-	private void checkFirstLauncherSetting() {
-		SharedPreferences mSharedPreferences = getSharedPreferences(this.getPackageName() + "_temp", Context.MODE_PRIVATE);
-		boolean firstLaunch = mSharedPreferences.getBoolean(ShareParams.FIRST_LAUNCHER_SETTING2, true);
-		if (firstLaunch) {
-			SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-			mEditor.putBoolean(ShareParams.FIRST_LAUNCHER_SETTING2, false);
-			mEditor.commit();
-			mMaskView = findViewById(R.id.settingmasklayout);
-			mMaskView.setVisibility(View.VISIBLE);
-			mMaskView.setOnTouchListener(new OnTouchListener() {
-
-				@Override
-				public boolean onTouch(View v, MotionEvent event) {
-					mMaskView.setVisibility(View.GONE);
-					return false;
-				}
-			});
-		}
-	}
-
-	@Override
-	protected void onRestart() {
-		initSetting();
-		isLimitFlowChange = false;
-		super.onRestart();
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
-	}
-
-	/**
-	 * 检测节省流量模式状态是否改变
-	 * 
-	 * @return
-	 */
-	private boolean checkSaveFlowTypeChanged() {
-		int currentType = mSave_flow.getSwitchState() ? 1 : 0;
-		if (service.select("save_flow") != currentType) {
-			return true;
-		}
-		return false;
-	}
-
 	/**
 	 * 当流量限制发生改变时，跳转页面弹出提示
 	 * 
@@ -360,31 +540,129 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 		}
 	}
 
-	Handler handler = new Handler() {
-
-		@Override
-		public void handleMessage(Message msg) {
-			switch (msg.what) {
-			case CLEAR_SEARCH_HISTORY: // 清除搜索历史
-				AndroidUtils.showToast(Setting_Activity.this, R.string.has_clear_record);
-				mClear_search_history.setEnabled(false);
-				mClear_search_history.setTextColor(Color.rgb(136, 136, 136));
-				break;
-			case DEL_DOWNLOADED_APK: // 删除已下载安装包
-				AndroidUtils.showToast(Setting_Activity.this, R.string.has_clear_pkgs);
-				mDel_pkg.setEnabled(false);
-				mDel_pkg.setTextColor(Color.rgb(136, 136, 136));
-				break;
-			case Login_Activity.SINA_LOGIN_SUCCESS: // 新浪登录
-				isSinaLogin();
-				mSina_login.updateSwitchState(true);
-				break;
-			default:
-				break;
-			}
+	/**
+	 * 退出页面时保存到数据库
+	 */
+	private void save2db() {
+		if (checkSaveFlowTypeChanged()) {// 流量模式是否发生改变，是则发送广播，通知是否可下载图片
+			Intent intent = new Intent(AConstDefine.SAVE_FLOW_BROADCAST);
+			intent.putExtra(SAVE_FLOW_STATUS, mSave_flow.getSwitchState());
+			sendBroadcast(intent);
 		}
+		if (mUpdate_msg.getSwitchState()) {
+			service.update("update_msg", 1);
+		} else {
+			service.update("update_msg", 0);
+		}
+		if (mAuto_del_pkg.getSwitchState()) {
+			service.update("auto_del_pkg", 1);
+		} else {
+			service.update("auto_del_pkg", 0);
+		}
+		if (mSave_flow.getSwitchState()) {
+			((AppMarket) getApplication()).setRemoteImage(false);
+			service.update("save_flow", 1);
+		} else {
+			((AppMarket) getApplication()).setRemoteImage(true);
+			service.update("save_flow", 0);
+		}
+		if (mSet_root.getSwitchState()) {
+			service.update("set_root", 1);
+		} else {
+			service.update("set_root", 0);
+		}
+		if (mAuto_install.getSwitchState()) {
+			service.update("auto_install", 1);
+		} else {
+			service.update("auto_install", 0);
+		}
+		if (mOnly_wifi.getSwitchState()) {
+			service.update("only_wifi", 1);
+			System.out.println("662:" + wifiSettingChange + ", " + isLimitFlowChange);
+			int value = -1;
+			Intent intent = new Intent(DownloadConstDefine.BROADCAST_ACTION_GPRS_SETTING_CHANGE);
+			Bundle bundle = new Bundle();
+			if (isLimitFlowChange) {
+				if (TextUtils.isEmpty(mLimit_flow.getText())) {
+					value = 50;
+				} else {
+					value = Integer.parseInt(mLimit_flow.getText().toString());
+				}
+			}
+			bundle.putLong("limitFlow", value);
+			bundle.putBoolean("isOnlyWifi", true);
+			intent.putExtras(bundle);
+			sendBroadcast(intent);
+		} else {
+			service.update("only_wifi", 0);
+			int value = 0;
+			if (TextUtils.isEmpty(mLimit_flow.getText())) {
+				value = 50;
+			} else {
+				value = Integer.parseInt(mLimit_flow.getText().toString());
+			}
+			System.out.println("686:" + wifiSettingChange + ", " + isLimitFlowChange);
+			Intent intent = new Intent(DownloadConstDefine.BROADCAST_ACTION_GPRS_SETTING_CHANGE);
+			Bundle bundle = new Bundle();
+			if (isLimitFlowChange) {
+				service.update("limit_flow", value);
+				// 每次修改限制流量必须清零已使用流量
+				clearUsedFlow();
 
-	};
+				bundle.putLong("limitFlow", value);
+			} else {
+				bundle.putLong("limitFlow", -1);
+			}
+			bundle.putBoolean("isOnlyWifi", false);
+			intent.putExtras(bundle);
+			sendBroadcast(intent);
+		}
+		if (mAuto_download_bg.getSwitchState()) {
+			service.update("download_bg", 1);
+		} else {
+			service.update("download_bg", 0);
+		}
+		if (mAuto_update.getSwitchState()) {
+			service.update("auto_update", 1);
+		} else {
+			service.update("auto_update", 0);
+		}
+	}
+
+	/**
+	 * 检测节省流量模式状态是否改变
+	 * 
+	 * @return
+	 */
+	private boolean checkSaveFlowTypeChanged() {
+		int currentType = mSave_flow.getSwitchState() ? 1 : 0;
+		if (service.select("save_flow") != currentType) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 每次修改限制流量值后都需要对已用流量清零
+	 */
+	private void clearUsedFlow() {
+		SharedPreferences pref = getSharedPreferences(AConstDefine.DONGJI_SHAREPREFERENCES, MODE_PRIVATE);
+		Editor editor = pref.edit();
+		editor.putLong(AConstDefine.SHARE_DOWNLOADSIZE, 0);
+		editor.commit();
+	}
+
+	@Override
+	protected void onRestart() {
+		initSetting();
+		isLimitFlowChange = false;
+		super.onRestart();
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+	}
 
 	OnClickListener listener = new OnClickListener() {
 
@@ -456,21 +734,11 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 					mAuto_update.updateSwitchState(true);
 				}
 				break;
-			case R.id.sina_login_layout:
-				if (mSina_login.getSwitchState()) {
-					mSina_login.updateSwitchState(false);
-					mSina_name.setVisibility(View.GONE);
-				} else {
-					if (!isSinaLogin()) {
-						DJMarketUtils.sinaLogin(Setting_Activity.this, handler);
-					}
-				}
-				break;
 			case R.id.clear_search_history:
 				if (!isFinishing()) {
 					final CustomDialog clearSearchDialog = new CustomDialog(Setting_Activity.this).setIcon(R.drawable.icon);
 					clearSearchDialog.setTitle(R.string.clear_record);
-					
+
 					clearSearchDialog.setMessage(R.string.confirm_clear_record).setPositiveButton(R.string.confirm, new OnClickListener() {
 
 						@Override
@@ -539,217 +807,20 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 	};
 
 	/**
-	 * 查询当前使用3G下载所消耗的流量大小
-	 * 
-	 * @return
+	 * 删除已下载的安装包
 	 */
-	private long queryUse3GSize() {
-		return DJMarketUtils.queryUse3GDownloadSize(this);
-	}
+	private void del_packages() {
+		File[] list = new File(APKPath).listFiles(new FilenameFilter() {
 
-	/**
-	 * 退出页面时保存到数据库
-	 */
-	private void save2db() {
-		if (checkSaveFlowTypeChanged()) {
-			Intent intent = new Intent(AConstDefine.SAVE_FLOW_BROADCAST);
-			intent.putExtra(SAVE_FLOW_STATUS, mSave_flow.getSwitchState());
-			sendBroadcast(intent);
-		}
-		if (mUpdate_msg.getSwitchState()) {
-			service.update("update_msg", 1);
-		} else {
-			service.update("update_msg", 0);
-		}
-		if (mAuto_del_pkg.getSwitchState()) {
-			service.update("auto_del_pkg", 1);
-		} else {
-			service.update("auto_del_pkg", 0);
-		}
-		if (mSave_flow.getSwitchState()) {
-			((AppMarket) getApplication()).setRemoteImage(true);
-			service.update("save_flow", 1);
-		} else {
-			((AppMarket) getApplication()).setRemoteImage(false);
-			service.update("save_flow", 0);
-		}
-		if (mSet_root.getSwitchState()) {
-			service.update("set_root", 1);
-		} else {
-			service.update("set_root", 0);
-		}
-		if (mAuto_install.getSwitchState()) {
-			service.update("auto_install", 1);
-		} else {
-			service.update("auto_install", 0);
-		}
-		if (mOnly_wifi.getSwitchState()) {
-			service.update("only_wifi", 1);
-			System.out.println("662:" + wifiSettingChange + ", " + isLimitFlowChange);
-			int value = -1;
-			Intent intent = new Intent(DownloadConstDefine.BROADCAST_ACTION_GPRS_SETTING_CHANGE);
-			Bundle bundle = new Bundle();
-			if (isLimitFlowChange) {
-				if (TextUtils.isEmpty(mLimit_flow.getText())) {
-					value = 50;
-				} else {
-					value = Integer.parseInt(mLimit_flow.getText().toString());
-				}
+			public boolean accept(File dir, String filename) {
+				return filename.endsWith(".apk");
 			}
-			bundle.putLong("limitFlow", value);
-			bundle.putBoolean("isOnlyWifi", true);
-			intent.putExtras(bundle);
-			sendBroadcast(intent);
-		} else {
-			service.update("only_wifi", 0);
-			int value = 0;
-			if (TextUtils.isEmpty(mLimit_flow.getText())) {
-				value = 50;
-			} else {
-				value = Integer.parseInt(mLimit_flow.getText().toString());
+		});
+		if (list != null) {
+			for (File file : list) {
+				file.delete();
 			}
-			System.out.println("686:" + wifiSettingChange + ", " + isLimitFlowChange);
-			Intent intent = new Intent(DownloadConstDefine.BROADCAST_ACTION_GPRS_SETTING_CHANGE);
-			Bundle bundle = new Bundle();
-			if (isLimitFlowChange) {
-				service.update("limit_flow", value);
-				// 每次修改限制流量必须清零已使用流量
-				clearUsedFlow();
-
-				bundle.putLong("limitFlow", value);
-			} else {
-				bundle.putLong("limitFlow", -1);
-			}
-			bundle.putBoolean("isOnlyWifi", false);
-			intent.putExtras(bundle);
-			sendBroadcast(intent);
 		}
-		if (mAuto_download_bg.getSwitchState()) {
-			service.update("download_bg", 1);
-		} else {
-			service.update("download_bg", 0);
-		}
-		if (mAuto_update.getSwitchState()) {
-			service.update("auto_update", 1);
-		} else {
-			service.update("auto_update", 0);
-		}
-		if (mSina_login.getSwitchState()) {
-			service.update("sina_login", 1);
-		} else {
-			service.update("sina_login", 0);
-		}
-	}
-
-	/**
-	 * 打开设置界面初始化为历史设置
-	 */
-	private void initSetting() {
-		if (service.select("update_msg") == 1) {
-			mUpdate_msg.setSwitchState(true);
-		} else {
-			mUpdate_msg.setSwitchState(false);
-		}
-		if (service.select("auto_del_pkg") == 1) {
-			mAuto_del_pkg.setSwitchState(true);
-		} else {
-			mAuto_del_pkg.setSwitchState(false);
-		}
-		if (service.select("save_flow") == 1) {
-			mSave_flow.setSwitchState(true);
-		} else {
-			mSave_flow.setSwitchState(false);
-		}
-		if (service.select("set_root") == 1) {
-			mSet_root.setSwitchState(true);
-
-			mAuto_install_layout.setEnabled(true);
-			mAuto_install.setEnabled(true);
-			mAuto_install_text1.setTextColor(Color.rgb(59, 59, 59));
-			mAuto_install_text2.setTextColor(Color.rgb(59, 59, 59));
-			if (service.select("auto_install") == 1) {
-				mAuto_install.setSwitchState(true);
-			} else {
-				mAuto_install.setSwitchState(false);
-			}
-		} else {
-			mSet_root.setSwitchState(false);
-
-			mAuto_install.setSwitchState(false);
-			mAuto_install_layout.setEnabled(false);
-			mAuto_install.setEnabled(false);
-			mAuto_install_text1.setTextColor(Color.rgb(136, 136, 136));
-			mAuto_install_text2.setTextColor(Color.rgb(136, 136, 136));
-		}
-		limitFlow = service.select("limit_flow");
-		if (service.select("only_wifi") == 1) {
-			mOnly_wifi.setSwitchState(true);
-			mLimit_flow.setText(String.valueOf(limitFlow));
-			mLimit_flow.setEnabled(false);
-			mLimit_text.setTextColor(Color.rgb(136, 136, 136));
-			mM_text.setTextColor(Color.rgb(136, 136, 136));
-		} else {
-			mOnly_wifi.setSwitchState(false);
-			mLimit_flow.setEnabled(true);
-			mLimit_text.setTextColor(Color.rgb(59, 59, 59));// 0x3b3b3b
-			mM_text.setTextColor(Color.rgb(59, 59, 59));// 0x3b3b3b
-			mLimit_flow.setText(String.valueOf(limitFlow));
-		}
-		mLast_flow.setText(getLastFlow());
-
-		if (service.select("download_bg") == 1) {
-			mAuto_download_bg.setSwitchState(true);
-		} else {
-			mAuto_download_bg.setSwitchState(false);
-		}
-		if (service.select("auto_update") == 1) {
-			mAuto_update.setSwitchState(true);
-		} else {
-			mAuto_update.setSwitchState(false);
-		}
-		initDBService();
-		if (searchHistory.getCount() > 0) {
-			mClear_search_history.setEnabled(true);
-			mClear_search_history.setTextColor(Color.rgb(59, 59, 59));
-		} else {
-			mClear_search_history.setEnabled(false);
-			mClear_search_history.setTextColor(Color.rgb(136, 136, 136));
-		}
-		if (isEmptyDir()) {
-			mDel_pkg.setEnabled(false);
-			mDel_pkg.setTextColor(Color.rgb(136, 136, 136));
-		} else {
-			mDel_pkg.setEnabled(true);
-			mDel_pkg.setTextColor(Color.rgb(59, 59, 59));
-		}
-		if (isSinaLogin()) {
-			mSina_login.setSwitchState(true);
-			service.update("sina_login", 1);
-		} else {
-			mSina_login.setSwitchState(false);
-			service.update("sina_login", 0);
-			mSina_name.setVisibility(View.GONE);
-		}
-	}
-
-	private void initDBService() {
-		if (service == null) {
-			service = new Setting_Service(this);
-		}
-		if (searchHistory == null) {
-			searchHistory = new SearchHistory(this);
-		}
-	}
-
-	private boolean isSinaLogin() {
-		LoginParams loginParams = ((AppMarket) getApplication()).getLoginParams();
-		String sina_name = loginParams.getSinaUserName();
-		if (sina_name != null && sina_name.length() > 0) {
-			mSina_name.setVisibility(View.VISIBLE);
-			mSina_name.append(sina_name);
-			return true;
-		}
-		return false;
 	}
 
 	@Override
@@ -768,152 +839,17 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 		return false;
 	}
 
-	/**
-	 * 删除已下载的安装包
-	 */
-	private void del_packages() {
-		File[] list = new File(APKPath).listFiles(new FilenameFilter() {
-
-			public boolean accept(File dir, String filename) {
-				// TODO Auto-generated method stub
-				return filename.endsWith(".apk");
-			}
-		});
-		if (list != null) {
-			for (File file : list) {
-				file.delete();
-			}
-		}
-		// 此方法在删除安装包时发出的广播接收中已执行
-		// ADownloadApkDBHelper aDownloadApkDBHelper = new ADownloadApkDBHelper(
-		// this);
-		// //TODO 此代码是否有必要，如有必要在此删除，可以优化一下，把删除方法写成一个。
-		// aDownloadApkDBHelper
-		// .deleteDownloadByApkStatus(AConstDefine.STATUS_OF_DOWNLOADCOMPLETE);
-		// aDownloadApkDBHelper
-		// .deleteDownloadByApkStatus(AConstDefine.STATUS_OF_UPDATECOMPLETE);
-
-	}
-
-	/**
-	 * 判断文件夹中是否存在安装包
-	 * 
-	 * @return
-	 */
-	private boolean isEmptyDir() {
-		File[] list = new File(APKPath).listFiles(new FilenameFilter() {
-
-			public boolean accept(File dir, String filename) {
-				return filename.endsWith(".apk");
-			}
-		});
-		if (list != null && list.length > 0) {
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * 每次打开设置界面更新一次剩余蜂窝下载流量
-	 * 
-	 * @return
-	 */
-	private String getLastFlow() {
-		float temp = limitFlow - getUsedFlow();
-		DecimalFormat decimal = new DecimalFormat("#.##");
-		return decimal.format(temp < 0 ? 0 : temp);
-	}
-
-	/**
-	 * 获取已使用流量
-	 * 
-	 * @return
-	 */
-	private float getUsedFlow() {
-		long num = queryUse3GSize();
-		float used_flow = b2mb(num < 0 ? 0 : num);
-		return used_flow;
-	}
-
-	/**
-	 * 将byte转换成Mb
-	 * 
-	 * @param size
-	 * @return
-	 */
-	private float b2mb(long size) {
-		float size_mb = (float) size / 1024 / 1024;
-		return size_mb;
-	}
-
-	/**
-	 * 每次修改限制流量值后都需要对已用流量清零
-	 */
-	private void clearUsedFlow() {
-		SharedPreferences pref = getSharedPreferences(AConstDefine.DONGJI_SHAREPREFERENCES, MODE_PRIVATE);
-		Editor editor = pref.edit();
-		editor.putLong(AConstDefine.SHARE_DOWNLOADSIZE, 0);
-		editor.commit();
-	}
-
 	@Override
 	protected void onDestroy() {
 		titleUtil.unregisterMyReceiver(this);
 		super.onDestroy();
 	}
 
-	private void checkRootHandler() {
-		HandlerThread handlerThread = new HandlerThread("handler");
-		handlerThread.start();
-		mHandler = new MyHandler(handlerThread.getLooper());
-	}
-
-	class MyHandler extends Handler {
-
-		public MyHandler(Looper looper) {
-			super(looper);
+	@Override
+	public void onClick() {
+		if (mScrollView != null) {
+			mScrollView.smoothScrollTo(0, 0);
 		}
-
-		@Override
-		public void handleMessage(Message msg) {
-			switch (msg.what) {
-			case CHECK_ROOT:
-				if (AndroidUtils.isRoot()) {
-					runOnUiThread(new Runnable() {
-
-						@Override
-						public void run() {
-							mSet_root.updateSwitchState(true);
-							mAuto_install_layout.setEnabled(true);
-							mAuto_install.setEnabled(true);
-							mAuto_install_text1.setTextColor(Color.rgb(59, 59, 59));
-							mAuto_install_text2.setTextColor(Color.rgb(59, 59, 59));
-						}
-					});
-
-				} else {
-					runOnUiThread(new Runnable() {
-
-						@Override
-						public void run() {
-							mSet_root.updateSwitchState(false);
-							mAuto_install.updateSwitchState(false);
-							mAuto_install_layout.setEnabled(false);
-							mAuto_install.setEnabled(false);
-							mAuto_install_text1.setTextColor(Color.rgb(136, 136, 136));
-							mAuto_install_text2.setTextColor(Color.rgb(136, 136, 136));
-							AndroidUtils.showToast(getApplicationContext(), R.string.get_root_failed);
-						}
-					});
-				}
-				break;
-
-			default:
-				break;
-			}
-			super.handleMessage(msg);
-		}
-
 	}
 
 	class SaveListener implements SaveSettingListener {
@@ -942,13 +878,6 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 					titleUtil.toOtherPage(pageFlag);
 				}
 			}
-		}
-	}
-
-	@Override
-	public void onClick() {
-		if (mScrollView != null) {
-			mScrollView.smoothScrollTo(0, 0);
 		}
 	}
 

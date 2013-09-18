@@ -3,7 +3,6 @@ package com.dongji.market.application;
 import java.util.ArrayList;
 
 import com.dongji.market.cache.FileService;
-import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.pojo.ApkItem;
 import com.dongji.market.pojo.LoginParams;
 
@@ -11,6 +10,7 @@ import android.app.Application;
 
 /**
  * 全局配置文件
+ * 
  * @author yvon
  * 
  */

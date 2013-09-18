@@ -19,14 +19,20 @@ import android.widget.TextView;
 import com.dongji.market.R;
 import com.dongji.market.pojo.InstalledAppInfo;
 
+/**
+ * 应用安装列表页listview适配器
+ * 
+ * @author yvon
+ * 
+ */
 public class UninstallAdapter extends BaseAdapter {
 
-	Context context;
-	List<InstalledAppInfo> data;
-	LayoutInflater inflater;
-	int curItem;
+	private Context context;
+	private List<InstalledAppInfo> data;
+	private LayoutInflater inflater;
+	private int curItem;
 
-	Drawable appIcon;
+	private Drawable appIcon;
 
 	public UninstallAdapter(Context context, List<InstalledAppInfo> data) {
 		super();
@@ -35,69 +41,22 @@ public class UninstallAdapter extends BaseAdapter {
 		inflater = LayoutInflater.from(context);
 	}
 
-	public void addData(InstalledAppInfo info) {
-		data.add(info);
-		notifyDataSetChanged();
-	}
-
-	public void clear() {
-		data.clear();
-	}
-
-	public void setData(List<InstalledAppInfo> data) {
-		this.data = data;
-		notifyDataSetChanged();
-	}
-
+	@Override
 	public int getCount() {
 		return data == null ? 0 : data.size();
 	}
 
+	@Override
 	public Object getItem(int position) {
 		return data.get(position);
 	}
 
+	@Override
 	public long getItemId(int position) {
 		return position;
 	}
 
-	public void reflash() {
-		data.remove(curItem);
-		notifyDataSetChanged();
-	}
-
-	/**
-	 * 根据包名删除卸载列表对应的数据，并刷新列表
-	 * 
-	 * @param packageName
-	 */
-	public void removeAppDataByPackageName(String packageName) {
-		if (data != null && data.size() > 0) {
-			for (int i = 0; i < data.size(); i++) {
-				InstalledAppInfo info = data.get(i);
-				if (null != info && info.getPkgName() != null) {
-					if (packageName.equals(info.getPkgName())) {
-						data.remove(i);
-						notifyDataSetChanged();
-						break;
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * 将新安装的应用信息添加进列表
-	 * 
-	 * @param info
-	 */
-	public void addAppData(InstalledAppInfo info) {
-		if (data != null) {
-			data.add(info);
-			notifyDataSetChanged();
-		}
-	}
-
+	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		ViewHolder holder;
 		if (convertView == null) {
@@ -161,4 +120,56 @@ public class UninstallAdapter extends BaseAdapter {
 		TextView mSizeTextView;
 		Button mUninstallView;
 	}
+
+	public void addData(InstalledAppInfo info) {
+		data.add(info);
+		notifyDataSetChanged();
+	}
+
+	public void clear() {
+		data.clear();
+	}
+
+	public void setData(List<InstalledAppInfo> data) {
+		this.data = data;
+		notifyDataSetChanged();
+	}
+
+	/**
+	 * 将新安装的应用信息添加进列表
+	 * 
+	 * @param info
+	 */
+	public void addAppData(InstalledAppInfo info) {
+		if (data != null) {
+			data.add(info);
+			notifyDataSetChanged();
+		}
+	}
+
+	public void reflash() {
+		data.remove(curItem);
+		notifyDataSetChanged();
+	}
+
+	/**
+	 * 根据包名删除卸载列表对应的数据，并刷新列表
+	 * 
+	 * @param packageName
+	 */
+	public void removeAppDataByPackageName(String packageName) {
+		if (data != null && data.size() > 0) {
+			for (int i = 0; i < data.size(); i++) {
+				InstalledAppInfo info = data.get(i);
+				if (null != info && info.getPkgName() != null) {
+					if (packageName.equals(info.getPkgName())) {
+						data.remove(i);
+						notifyDataSetChanged();
+						break;
+					}
+				}
+			}
+		}
+	}
+
 }

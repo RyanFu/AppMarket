@@ -13,7 +13,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.dongji.market.R;
-
+/**
+ * 分享Dialog适配器
+ * @author yvon
+ *
+ */
 public class ShareAdapter extends BaseAdapter {
 	private LayoutInflater mInflater;
 	private ArrayList<HashMap<String, Object>> shareItems;

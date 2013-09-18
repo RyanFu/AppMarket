@@ -18,12 +18,17 @@ import com.dongji.market.helper.AndroidUtils;
 import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.pojo.InstalledAppInfo;
 
+/**
+ * 软件搬家listView适配器
+ * @author yvon
+ *
+ */
 public class SoftwareMoveAdapter extends BaseAdapter {
 
-	Context context;
-	List<InstalledAppInfo> data;
-	LayoutInflater inflater;
-	int flag;
+	private Context context;
+	private List<InstalledAppInfo> data;
+	private LayoutInflater inflater;
+	private int flag;
 
 	public SoftwareMoveAdapter(Context context, List<InstalledAppInfo> data) {
 		super();
@@ -32,59 +37,35 @@ public class SoftwareMoveAdapter extends BaseAdapter {
 		inflater = LayoutInflater.from(context);
 	}
 
-	public void addData(InstalledAppInfo info) {
-		data.add(info);
-		notifyDataSetChanged();
-	}
-
-	public void setFlag(int flag) {
-		this.flag = flag;
-	}
-
-	public void clear() {
-		data.clear();
-	}
-
-	public void setData(List<InstalledAppInfo> data) {
-		this.data = data;
-		notifyDataSetChanged();
-	}
-
+	@Override
 	public int getCount() {
 		return data == null ? 0 : data.size();
 	}
 
+	@Override
 	public Object getItem(int position) {
 		return data.get(position);
 	}
 
+	@Override
 	public long getItemId(int position) {
 		return position;
 	}
 
-	public void reflash() {
-		notifyDataSetChanged();
-	}
-
+	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		if (getCount() == 0) {
 			return convertView;
 		}
 		ViewHolder holder;
 		if (convertView == null) {
-			convertView = inflater.inflate(R.layout.item_list_softwaremove,
-					null);
+			convertView = inflater.inflate(R.layout.item_list_softwaremove, null);
 			holder = new ViewHolder();
-			holder.mIconImageView = (ImageView) convertView
-					.findViewById(R.id.app_icon);
-			holder.mNameTextView = (TextView) convertView
-					.findViewById(R.id.app_name);
-			holder.mVersionTextView = (TextView) convertView
-					.findViewById(R.id.app_version);
-			holder.mSizeTextView = (TextView) convertView
-					.findViewById(R.id.app_size);
-			holder.mUninstallView = (Button) convertView
-					.findViewById(R.id.uninstallButton);
+			holder.mIconImageView = (ImageView) convertView.findViewById(R.id.app_icon);
+			holder.mNameTextView = (TextView) convertView.findViewById(R.id.app_name);
+			holder.mVersionTextView = (TextView) convertView.findViewById(R.id.app_version);
+			holder.mSizeTextView = (TextView) convertView.findViewById(R.id.app_size);
+			holder.mUninstallView = (Button) convertView.findViewById(R.id.uninstallButton);
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
@@ -108,8 +89,7 @@ public class SoftwareMoveAdapter extends BaseAdapter {
 		holder.mUninstallView.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
-				AndroidUtils.showInstalledAppDetails(context,
-						((InstalledAppInfo) getItem(position)).getPkgName());
+				AndroidUtils.showInstalledAppDetails(context, ((InstalledAppInfo) getItem(position)).getPkgName());
 			}
 
 		});
@@ -117,8 +97,7 @@ public class SoftwareMoveAdapter extends BaseAdapter {
 
 			@Override
 			public void onClick(View v) {
-				AndroidUtils.showInstalledAppDetails(context,
-						((InstalledAppInfo) getItem(position)).getPkgName());
+				AndroidUtils.showInstalledAppDetails(context, ((InstalledAppInfo) getItem(position)).getPkgName());
 			}
 		});
 		return convertView;
@@ -131,4 +110,27 @@ public class SoftwareMoveAdapter extends BaseAdapter {
 		TextView mSizeTextView;
 		Button mUninstallView;
 	}
+
+	public void addData(InstalledAppInfo info) {
+		data.add(info);
+		notifyDataSetChanged();
+	}
+
+	public void setFlag(int flag) {
+		this.flag = flag;
+	}
+
+	public void clear() {
+		data.clear();
+	}
+
+	public void setData(List<InstalledAppInfo> data) {
+		this.data = data;
+		notifyDataSetChanged();
+	}
+
+	public void reflash() {
+		notifyDataSetChanged();
+	}
+
 }

@@ -3,11 +3,6 @@ package com.dongji.market.adapter;
 import java.util.List;
 
 import android.app.Activity;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.Message;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,14 +15,17 @@ import com.dongji.market.R;
 import com.dongji.market.database.MarketDatabase.SearchHistory;
 import com.dongji.market.widget.CustomSearchView.RequestDataListener;
 
+/**
+ * 搜索历史popwindow适配器
+ * 
+ * @author yvon
+ * 
+ */
 public class SearchHistoryAdapter extends BaseAdapter implements RequestDataListener {
-
-	private static final int REQUEST_ASSOCIATE_DATA = 0;
 
 	private Activity activity;
 	private LayoutInflater inflater;
-	private List<String> data, list;
-	private MyHandler mHandler;
+	private List<String> data;
 	private SearchHistory history;
 
 	private boolean isVisibleBtn = true;
@@ -38,43 +36,24 @@ public class SearchHistoryAdapter extends BaseAdapter implements RequestDataList
 		this.history = history;
 		inflater = LayoutInflater.from(activity);
 		data = list;
-		initHandler();
 	}
 
-	private void initHandler() {
-		HandlerThread mHandlerThread = new HandlerThread("handler");
-		mHandlerThread.start();
-		mHandler = new MyHandler(mHandlerThread.getLooper());
-	}
-
+	@Override
 	public int getCount() {
 		return data.size();
 	}
 
-	public void addData(String keyword) {
-		data.add(keyword);
-		if (activity != null && !activity.isFinishing()) {
-			notifyDataSetChanged();
-		}
-	}
-
-	public void updateData(List<String> list) {
-		data.clear();
-		data.addAll(list);
-
-		if (activity != null && !activity.isFinishing()) {
-			notifyDataSetChanged();
-		}
-	}
-
+	@Override
 	public Object getItem(int position) {
 		return data.get(position);
 	}
 
+	@Override
 	public long getItemId(int position) {
 		return position;
 	}
 
+	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		ViewHolder holder;
 		if (convertView == null) {
@@ -106,35 +85,32 @@ public class SearchHistoryAdapter extends BaseAdapter implements RequestDataList
 		return convertView;
 	}
 
-	public void request(String keyword) {
-		if (!TextUtils.isEmpty(keyword)) {
-			isVisibleBtn = false;
-			Message msg = mHandler.obtainMessage(REQUEST_ASSOCIATE_DATA, keyword);
-			mHandler.sendMessage(msg);
-		} else {
-			isVisibleBtn = true;
-		}
-
-	}
-
-	public void cancelPreRequest() {
-	}
-
 	private static class ViewHolder {
 		TextView mTextView;
 		ImageView mDelBtn;
 	}
 
-	class MyHandler extends Handler {
-
-		public MyHandler(Looper looper) {
-			super(looper);
+	public void addData(String keyword) {
+		data.add(keyword);
+		if (activity != null && !activity.isFinishing()) {
+			notifyDataSetChanged();
 		}
-
-		@Override
-		public void handleMessage(Message msg) {
-		}
-
 	}
 
+	public void updateData(List<String> list) {
+		data.clear();
+		data.addAll(list);
+
+		if (activity != null && !activity.isFinishing()) {
+			notifyDataSetChanged();
+		}
+	}
+
+	@Override
+	public void request(String keyword) {
+	}
+
+	@Override
+	public void cancelPreRequest() {
+	}
 }

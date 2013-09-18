@@ -553,7 +553,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 			item.version = historyItem.versionName;
 			item.packageName = apkItem.packageName;
 			if (historyItem.status == STATUS_APK_UNINSTALL || historyItem.status == STATUS_APK_UNUPDATE) {
-				DownloadUtils.checkDownload(ApkDetailActivity.this, item, btnInstall,  null);
+				DownloadUtils.checkDownload(ApkDetailActivity.this, item, btnInstall);
 			} else {//取消下载
 				Intent intent = new Intent(DownloadConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD);
 				DownloadEntity entity = new DownloadEntity(item);
@@ -810,7 +810,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 			@Override
 			public void onClick(View v) {
 				if (apkItem.status == STATUS_APK_UNINSTALL || apkItem.status == STATUS_APK_UNUPDATE) {//下载
-					DownloadUtils.checkDownload(ApkDetailActivity.this, apkItem, btnInstall, null);
+					DownloadUtils.checkDownload(ApkDetailActivity.this, apkItem, btnInstall);
 				} else {//取消下载
 					Intent intent = new Intent(DownloadConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD);
 					DownloadEntity entity = new DownloadEntity(apkItem);

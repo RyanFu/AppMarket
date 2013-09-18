@@ -63,7 +63,7 @@ public class DownloadUtils implements DownloadConstDefine {
 		checkDownload(context, entity, null);
 	}
 
-	public static void checkDownload(Context context, ApkItem apkItem, TextView mTextView, Map<String, Object> map) {
+	public static void checkDownload(Context context, ApkItem apkItem, TextView mTextView) {
 		DownloadEntity entity = new DownloadEntity(apkItem);
 		if (null != DownloadService.mDownloadService) {
 			List<DownloadEntity> downloadList = DownloadService.mDownloadService.getAllDownloadList();

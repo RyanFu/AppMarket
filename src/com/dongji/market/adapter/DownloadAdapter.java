@@ -40,6 +40,12 @@ import com.dongji.market.helper.AndroidUtils;
 import com.dongji.market.pojo.ApkItem;
 import com.umeng.common.net.r;
 
+/**
+ * 更新、安装页expandable适配器
+ * 
+ * @author yvon
+ * 
+ */
 public class DownloadAdapter extends BaseExpandableListAdapter implements DownloadConstDefine, DownloadService.DownloadStatusListener {
 	private Context context;
 	private List<List<DownloadEntity>> childList;

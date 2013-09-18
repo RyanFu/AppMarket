@@ -329,7 +329,7 @@ public interface AConstDefine {
 	public static final int STATUS_APK_UNINSTALL = 0; // 未安装
 	public static final int STATUS_APK_INSTALL = 1; //正在安装
 	public static final int STATUS_APK_INSTALL_DONE = 2; //已安装
-	public static final int STATUS_APK_UPDATE = 3; //更新
+	public static final int STATUS_APK_UPDATE = 3; //正在更新
 	public static final int STATUS_APK_UNUPDATE = 4; //未更新
 	/*************** apk状态值 **********************/
 

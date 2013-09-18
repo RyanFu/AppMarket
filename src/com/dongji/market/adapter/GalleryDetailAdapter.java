@@ -14,18 +14,24 @@ import android.widget.ImageView;
 import com.dongji.market.R;
 import com.dongji.market.cache.FileService;
 
+/**
+ * GalleryDailog适配器
+ * 
+ * @author yvon
+ * 
+ */
 public class GalleryDetailAdapter extends BaseAdapter {
 	private Context context;
 	private List<String> urlArr;
 	private Bitmap defaultBitmap;
-	
+
 	public GalleryDetailAdapter(Context context, List<String> urlArr) {
-		this.context=context;
-		this.urlArr=urlArr;
-		try{
-			defaultBitmap=BitmapFactory.decodeResource(context.getResources(), R.drawable.gallery_default);
-		}catch(OutOfMemoryError e) {
-			if(defaultBitmap!=null && !defaultBitmap.isRecycled()) {
+		this.context = context;
+		this.urlArr = urlArr;
+		try {
+			defaultBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.gallery_default);
+		} catch (OutOfMemoryError e) {
+			if (defaultBitmap != null && !defaultBitmap.isRecycled()) {
 				defaultBitmap.recycle();
 			}
 		}
@@ -33,39 +39,36 @@ public class GalleryDetailAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		// TODO Auto-generated method stub
 		return urlArr == null ? 0 : urlArr.size();
 	}
 
 	@Override
 	public Object getItem(int position) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public long getItemId(int position) {
-		// TODO Auto-generated method stub
 		return position;
 	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		ImageView mImageView=null;
-		if(convertView==null) {
-			mImageView=new ImageView(context);
-			mImageView.setLayoutParams(new Gallery.LayoutParams(Gallery.LayoutParams.FILL_PARENT, 
-					Gallery.LayoutParams.FILL_PARENT));
+		ImageView mImageView = null;
+		if (convertView == null) {
+			mImageView = new ImageView(context);
+			mImageView.setLayoutParams(new Gallery.LayoutParams(Gallery.LayoutParams.FILL_PARENT, Gallery.LayoutParams.FILL_PARENT));
 			mImageView.setScaleType(ImageView.ScaleType.FIT_XY);
-		}else mImageView=(ImageView)convertView;
-		try{
+		} else
+			mImageView = (ImageView) convertView;
+		try {
 			FileService.getBitmap(urlArr.get(position), mImageView, defaultBitmap, 0);
-		}catch(OutOfMemoryError e) {
-			if(defaultBitmap!=null && !defaultBitmap.isRecycled()) {
+		} catch (OutOfMemoryError e) {
+			if (defaultBitmap != null && !defaultBitmap.isRecycled()) {
 				defaultBitmap.recycle();
 			}
 		}
 		return mImageView;
 	}
-	
+
 }

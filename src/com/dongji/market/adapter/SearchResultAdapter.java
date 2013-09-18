@@ -155,14 +155,10 @@ public class SearchResultAdapter extends ListBaseAdapter implements
 						|| apkItem.status == STATUS_APK_UNUPDATE) {
 					int[] location = new int[2];
 					holder.mAppIcon.getLocationOnScreen(location);
-					Map<String, Object> map = new HashMap<String, Object>();
-					map.put("X", location[0]);
-					map.put("Y", location[1]);
-					map.put("icon", holder.mAppIcon.getDrawable());
 					// DJMarketUtils.checkDownload(context, apkItem,
 					// holder.mAppInstall, SearchResultAdapter.this, map);
 					DownloadUtils.checkDownload(context, apkItem,
-							holder.mAppInstall, map);
+							holder.mAppInstall);
 				} else {
 					// DJMarketUtils.cancelListDownload(context, apkItem);
 					Intent intent = new Intent(

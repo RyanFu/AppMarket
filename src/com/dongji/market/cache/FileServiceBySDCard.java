@@ -40,12 +40,8 @@ public class FileServiceBySDCard extends FileServiceAbstractDetails {
 		File file = new File(EXTERNAL_STORAGE_DIRECTORY_PATH);
 		if (!file.exists()) {
 			file.mkdirs();
-			// QQLiveLog.d(TAG,
-			// "To create picture directory on SD card. "+EXTERNAL_STORAGE_DIRECTORY_PATH);
 		} else if (file.isDirectory()) {
 			getFileMap(file);
-			// QQLiveLog.d(TAG,
-			// "To read all pictures files from SD card. "+EXTERNAL_STORAGE_DIRECTORY_PATH);
 		}
 	}
 

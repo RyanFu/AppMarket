@@ -46,10 +46,9 @@ public abstract class FileServiceAbstractDetails implements FileServiceInterface
 		BitmapDownloaderTask bitmapDownloaderTask = getBitmapDownloaderTask(imageview);
 		if (bitmapDownloaderTask != null) {
 			String bitmapUrl = bitmapDownloaderTask.url;
-			if ((bitmapUrl == null) || (!bitmapUrl.equals(url))) {
+			if ((bitmapUrl == null) || (!bitmapUrl.equals(url))) {//如果同一个imageView对应的url不同，则取消旧的url对应的下载任务
 				bitmapDownloaderTask.cancel(true);
-			} else {
-				// The same URL is already being downloaded.
+			} else {// The same URL is already being downloaded.
 				return false;
 			}
 		}

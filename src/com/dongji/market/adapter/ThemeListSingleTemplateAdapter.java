@@ -117,12 +117,7 @@ public class ThemeListSingleTemplateAdapter extends ListBaseAdapter implements A
 				if(item.status==STATUS_APK_UNINSTALL || item.status==STATUS_APK_UNUPDATE) {
 					int[] location = new int[2];
 					holder.mAppIconImageView.getLocationOnScreen(location);
-					Map<String, Object> map = new HashMap<String, Object>();
-					map.put("X", location[0]);
-					map.put("Y", location[1]);
-					map.put("icon", holder.mAppIconImageView.getDrawable());
-					
-					DownloadUtils.checkDownload(context, item, holder.mInstallTextView, map);
+					DownloadUtils.checkDownload(context, item, holder.mInstallTextView);
 //					DJMarketUtils.checkDownload(context, item, holder.mInstallTextView, ListSingleTemplateAdapter.this, map);
 				}else {
 //					DJMarketUtils.cancelListDownload(context, item);

@@ -18,99 +18,52 @@ import com.dongji.market.R;
 import com.dongji.market.activity.BackupOrRestoreActivity;
 import com.dongji.market.pojo.InstalledAppInfo;
 
+/**
+ * 备份列表页listview适配器
+ * 
+ * @author yvon
+ * 
+ */
 public class ChooseToBackupAdapter extends BaseAdapter {
 
-	Context context;
-	List<InstalledAppInfo> data;
-	LayoutInflater inflater;
-	int curItem;
+	private List<InstalledAppInfo> data;
+	private LayoutInflater inflater;
+	private List<Integer> flag_isCheck;
+	private Handler handler;
 
-	List<Integer> flag_isCheck;
-	Handler handler;
-
-	public ChooseToBackupAdapter(Context context, List<InstalledAppInfo> data,
-			Handler handler) {
+	public ChooseToBackupAdapter(Context context, List<InstalledAppInfo> data, Handler handler) {
 		super();
-		this.context = context;
 		this.data = data;
 		inflater = LayoutInflater.from(context);
 		this.handler = handler;
 	}
 
-	public void addData(InstalledAppInfo info) {
-		data.add(info);
-		flag_isCheck = new ArrayList<Integer>();
-		for (int i = 0; i < data.size(); i++) {
-			flag_isCheck.add(1);
-		}
-		notifyDataSetChanged();
-	}
-
-	public void clear() {
-		data.clear();
-	}
-
-	public List<Integer> getCheckdList() {
-		return flag_isCheck;
-	}
-
-	// public void setData(List<InstalledAppInfo> data) {
-	// this.data = data;
-	// notifyDataSetChanged();
-	// }
-
-	public void setAllChecked(boolean isChecked) {
-		if (flag_isCheck != null) {
-			for (int i = 0; i < flag_isCheck.size(); i++) {
-				flag_isCheck.set(i, isChecked ? 1 : 0);
-			}
-			notifyDataSetChanged();
-		}
-	}
-
+	@Override
 	public int getCount() {
 		return data == null ? 0 : data.size();
 	}
 
+	@Override
 	public Object getItem(int position) {
 		return data.get(position);
 	}
 
+	@Override
 	public long getItemId(int position) {
 		return position;
 	}
 
-	// public void reflash() {
-	// data.remove(curItem);
-	// notifyDataSetChanged();
-	// }
-
-	public void removeItemByPosition(int position) {
-		if (data != null && data.size() > position) {
-			data.remove(position);
-			if (flag_isCheck != null && flag_isCheck.size() > position) {
-				flag_isCheck.remove(position);
-			}
-		}
-	}
-
+	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		final ViewHolder holder;
 		if (convertView == null) {
-			convertView = inflater.inflate(R.layout.item_list_choosetobackup,
-					null);
+			convertView = inflater.inflate(R.layout.item_list_choosetobackup, null);
 			holder = new ViewHolder();
-			holder.mIconImageView = (ImageView) convertView
-					.findViewById(R.id.app_icon);
-			holder.mNameTextView = (TextView) convertView
-					.findViewById(R.id.app_name);
-			holder.mVersionTextView = (TextView) convertView
-					.findViewById(R.id.app_version);
-			holder.mSizeTextView = (TextView) convertView
-					.findViewById(R.id.app_size);
-			holder.cbChoosetobackup = (CheckBox) convertView
-					.findViewById(R.id.cbChoosetobackup);
-
+			holder.mIconImageView = (ImageView) convertView.findViewById(R.id.app_icon);
+			holder.mNameTextView = (TextView) convertView.findViewById(R.id.app_name);
+			holder.mVersionTextView = (TextView) convertView.findViewById(R.id.app_version);
+			holder.mSizeTextView = (TextView) convertView.findViewById(R.id.app_size);
+			holder.cbChoosetobackup = (CheckBox) convertView.findViewById(R.id.cbChoosetobackup);
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
@@ -163,4 +116,40 @@ public class ChooseToBackupAdapter extends BaseAdapter {
 		TextView mSizeTextView;
 		CheckBox cbChoosetobackup;
 	}
+
+	public void addData(InstalledAppInfo info) {
+		data.add(info);
+		flag_isCheck = new ArrayList<Integer>();
+		for (int i = 0; i < data.size(); i++) {
+			flag_isCheck.add(1);
+		}
+		notifyDataSetChanged();
+	}
+
+	public void clear() {
+		data.clear();
+	}
+
+	public List<Integer> getCheckdList() {
+		return flag_isCheck;
+	}
+
+	public void setAllChecked(boolean isChecked) {
+		if (flag_isCheck != null) {
+			for (int i = 0; i < flag_isCheck.size(); i++) {
+				flag_isCheck.set(i, isChecked ? 1 : 0);
+			}
+			notifyDataSetChanged();
+		}
+	}
+
+	public void removeItemByPosition(int position) {
+		if (data != null && data.size() > position) {
+			data.remove(position);
+			if (flag_isCheck != null && flag_isCheck.size() > position) {
+				flag_isCheck.remove(position);
+			}
+		}
+	}
+
 }

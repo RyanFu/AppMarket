@@ -615,11 +615,7 @@ public class Search_Activity extends PublicActivity {
 				if (item.status == AConstDefine.STATUS_APK_UNINSTALL || item.status == AConstDefine.STATUS_APK_UNUPDATE) {
 					int[] location = new int[2];
 					mAppIconImageView.getLocationOnScreen(location);
-					Map<String, Object> map = new HashMap<String, Object>();
-					map.put("X", location[0]);
-					map.put("Y", location[1]);
-					map.put("icon", mAppIconImageView.getDrawable());
-					DownloadUtils.checkDownload(Search_Activity.this, item, mInstallTextView, map);
+					DownloadUtils.checkDownload(Search_Activity.this, item, mInstallTextView);
 				} else {
 					Intent intent = new Intent(DownloadConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD);
 					DownloadEntity entity = new DownloadEntity(item);
@@ -655,6 +651,7 @@ public class Search_Activity extends PublicActivity {
 		case AConstDefine.STATUS_APK_UNINSTALL:
 			setvisibleInstallTextView(mTextView, true, R.string.install, R.drawable.button_has_border_selector, Color.BLACK);
 			break;
+		case AConstDefine.STATUS_APK_INSTALL:
 		case AConstDefine.STATUS_APK_UPDATE:
 			setvisibleInstallTextView(mTextView, true, R.string.cancel, R.drawable.cancel_selector, Color.parseColor("#7f5100"));
 			break;

@@ -332,7 +332,7 @@ public class BackupOrRestoreActivity extends Activity implements AConstDefine, O
 								checkCount++;
 							}
 						}
-						if (checkCount == checkdList.size()) {
+						if (checkCount == checkdList.size()) {//判断是否选择了全部，如果是则选中顶部框
 							isAll = true;
 						} else {
 							isAll = false;

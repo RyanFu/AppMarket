@@ -38,7 +38,6 @@ import com.dongji.market.download.DownloadUtils;
 import com.dongji.market.download.NetTool;
 import com.dongji.market.helper.AndroidUtils;
 import com.dongji.market.pojo.ApkItem;
-import com.umeng.common.net.r;
 
 /**
  * 更新、安装页expandable适配器
@@ -52,11 +51,9 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 	private List<String> groupList;
 	private String downloadingString, updatingString;
 	private Bitmap mDefaultBitmap;
-	private String continueString, cancelString, pauseString, installString, ignoreString, cancelIgnoreString, deleteString, updateString;
+	private String continueString, cancelString, pauseString, installString, ignoreString, deleteString, updateString;
 
 	private static final int EVENT_REFRESH_DATA = 2;
-
-	private boolean locked;
 
 	private MyHandler mHandler;
 
@@ -82,6 +79,18 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 		registerAllReceiver();
 	}
 
+	private void initString() {
+		downloadingString = context.getString(R.string.transferapk);
+		updatingString = context.getString(R.string.updateapk);
+		continueString = context.getString(R.string.button_status_continue);
+		cancelString = context.getString(R.string.button_status_cancel);
+		pauseString = context.getString(R.string.button_status_pause);
+		installString = context.getString(R.string.button_status_install);
+		ignoreString = context.getString(R.string.ignore);
+		deleteString = context.getString(R.string.app_delete);
+		updateString = context.getString(R.string.update);
+	}
+
 	private void registerAllReceiver() {
 		IntentFilter intentFilter = new IntentFilter();
 		intentFilter.addAction(BROADCAST_ACTION_COMPLETE_DOWNLOAD);
@@ -94,21 +103,213 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 		context.registerReceiver(mDownloadReceiver, intentFilter);
 	}
 
+	private BroadcastReceiver mDownloadReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (BROADCAST_ACTION_COMPLETE_DOWNLOAD.equals(intent.getAction())) {
+				Bundle bundle = intent.getExtras();
+				if (bundle != null) {
+					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
+					removeCompleteToInstall(entity);
+				}
+			} else if (BROADCAST_ACTION_ADD_UPDATE.equals(intent.getAction())) {
+				Bundle bundle = intent.getExtras();
+				if (bundle != null) {
+					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
+					addUpdate(entity);
+				}
+			} else if (BROADCAST_ACTION_INSTALL_COMPLETE.equals(intent.getAction())) {
+				Bundle bundle = intent.getExtras();
+				if (bundle != null) {
+					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
+					deleteWaitInstallApk(entity);
+					for (int i = 0; i < rootApkList.size(); i++) {
+						if (rootApkList.get(i).equals(entity.packageName)) {
+							rootApkList.remove(entity.packageName);
+						}
+					}
+				}
+			} else if (BROADCAST_ACTION_REMOVE_COMPLETE.equals(intent.getAction())) {
+				Bundle bundle = intent.getExtras();
+				if (bundle != null) {
+					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
+					deleteUpdateDownloadEntity(entity);
+				}
+			} else if (BROADCAST_ACTION_ADD_DOWNLOAD_LIST.equals(intent.getAction())) {
+				Bundle bundle = intent.getExtras();
+				if (bundle != null) {
+					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
+					addDownloadList(entity);
+				}
+			} else if (BROADCAST_ACTION_UPDATE_DATA_MERGE_DONE.equals(intent.getAction())) {
+
+			} else if (BROADCAST_ACTION_UPDATE_ROOTSTATUS.equals(intent.getAction())) {
+				updateInstallFailStatus(intent.getStringExtra(DOWNLOAD_APKPACKAGENAME));
+			}
+		}
+	};
+
 	public void unregisterAllReceiver() {
 		context.unregisterReceiver(mDownloadReceiver);
 	}
 
-	private void initString() {
-		downloadingString = context.getString(R.string.transferapk);
-		updatingString = context.getString(R.string.updateapk);
-		continueString = context.getString(R.string.button_status_continue);
-		cancelString = context.getString(R.string.button_status_cancel);
-		pauseString = context.getString(R.string.button_status_pause);
-		installString = context.getString(R.string.button_status_install);
-		ignoreString = context.getString(R.string.ignore);
-		cancelIgnoreString = context.getString(R.string.cancle_ignore);
-		deleteString = context.getString(R.string.app_delete);
-		updateString = context.getString(R.string.update);
+	/**
+	 * 将新更新添加至列表中
+	 * 
+	 * @param entity
+	 */
+	private void addUpdate(DownloadEntity entity) {
+		removeMessage();
+
+		List<DownloadEntity> downloadList = DownloadService.mDownloadService.getAllDownloadList();
+		for (int i = 0; i < downloadList.size(); i++) {
+			DownloadEntity d = downloadList.get(i);
+			if (d.packageName.equals(entity.packageName) && d.versionCode == entity.versionCode) {
+				int position = 0;
+				if (childList.size() > 3) {
+					position = 1;
+				}
+				childList.get(position).add(d);
+
+				DownloadUtils.fillUpdateNotifycation(context);
+				break;
+			}
+		}
+		sendMessage();
+	}
+
+	/**
+	 * 卸载后需将可更新应用移除
+	 */
+	private void deleteUpdateDownloadEntity(DownloadEntity entity) {
+		removeMessage();
+		int position = 0;
+		if (childList.size() == 4) {
+			position = 1;
+		}
+		for (int i = 0; i < childList.get(position).size(); i++) {
+			DownloadEntity d = childList.get(position).get(i);
+			if (d.packageName.equals(entity.packageName) && d.versionCode == entity.versionCode) {
+				childList.get(position).remove(i);
+				break;
+			}
+		}
+		sendMessage();
+	}
+
+	private void updateInstallFailStatus(String apkPackageName) {
+		removeMessage();
+		System.out.println("...........test0522...0....." + apkPackageName);
+		System.out.println("...........test0522....0.0.1......." + childList.size());
+		if (childList.size() == 3) {
+			System.out.println("...........test0522...0..3......" + childList.get(1).size());
+			for (int i = 0; i < childList.get(1).size(); i++) {
+				DownloadEntity downloadEntity = childList.get(1).get(i);
+				System.out.println(".............test0522........0.1.." + downloadEntity.packageName);
+				if (apkPackageName.equals(downloadEntity.packageName)) {
+					downloadEntity.downloadType = TYPE_OF_COMPLETE;
+					System.out.println("...........test0522........");
+					break;
+				}
+			}
+		} else {
+			for (int i = 0; i < childList.get(2).size(); i++) {
+				DownloadEntity downloadEntity = childList.get(2).get(i);
+				if (apkPackageName.equals(downloadEntity.packageName)) {
+					downloadEntity.downloadType = TYPE_OF_COMPLETE;
+					System.out.println("...........test0522.......1.");
+					break;
+				}
+			}
+		}
+		sendMessage();
+	}
+
+	/**
+	 * 添加至正在下载列表
+	 * 
+	 * @param entity
+	 */
+	private void addDownloadList(DownloadEntity entity) {
+		removeMessage();
+		List<DownloadEntity> downloadList = DownloadService.mDownloadService.getAllDownloadList();
+		for (int i = 0; i < downloadList.size(); i++) {
+			DownloadEntity d = downloadList.get(i);
+			if (d.packageName.equals(entity.packageName) && d.versionCode == entity.versionCode) {
+				System.out.println("==========" + groupList.size());
+				if (groupList.size() > 3) {
+					childList.get(0).add(d);
+					System.out.println("=========" + childList.get(childList.size() - 1).size());
+				} else {
+					groupList.add(0, context.getString(R.string.transferapk));
+					List<DownloadEntity> downloadingList = new ArrayList<DownloadEntity>();
+					downloadingList.add(d);
+					childList.add(0, downloadingList);
+				}
+				break;
+			}
+		}
+		sendMessage();
+	}
+
+	@Override
+	public Object getGroup(int groupPosition) {
+		return null;
+	}
+
+	@Override
+	public int getGroupCount() {
+		return groupList == null ? 0 : groupList.size();
+	}
+
+	@Override
+	public long getGroupId(int groupPosition) {
+		return groupPosition;
+	}
+
+	@Override
+	public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+		GroupViewHolder holder = null;
+		if (convertView == null) {
+			convertView = LayoutInflater.from(context).inflate(R.layout.adownloadexpandgroup, null);
+			holder = new GroupViewHolder();
+			holder.mTextView = (TextView) convertView.findViewById(R.id.tvExpandGroupTitle);
+			holder.mButton = (Button) convertView.findViewById(R.id.btnOneKeyUpdate);
+			holder.mImageView = (ImageView) convertView.findViewById(R.id.ivExpandGroupPic);
+
+			holder.mButton.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					DownloadUtils.checkOneKeyDownload(context, null);
+				}
+			});
+
+			convertView.setTag(holder);
+		} else {
+			holder = (GroupViewHolder) convertView.getTag();
+		}
+		String str = null;
+		if (groupList.size() > groupPosition) {
+			str = groupList.get(groupPosition);
+			holder.mTextView.setText(str);
+		}
+		if (isExpanded) {
+			holder.mImageView.setImageDrawable(context.getResources().getDrawable(R.drawable.pic_down));
+		} else {
+			holder.mImageView.setImageDrawable(context.getResources().getDrawable(R.drawable.pic_up));
+		}
+		holder.mImageView.setVisibility(View.VISIBLE);
+		if (downloadingString.equals(str)) {
+			holder.mButton.setVisibility(View.GONE);
+			holder.mImageView.setVisibility(View.VISIBLE);
+		} else if (updatingString.equals(str)) {
+			holder.mButton.setVisibility(View.VISIBLE);
+			holder.mImageView.setVisibility(View.GONE);
+		} else {
+			holder.mButton.setVisibility(View.GONE);
+			holder.mImageView.setVisibility(View.VISIBLE);
+		}
+		return convertView;
 	}
 
 	@Override
@@ -119,6 +320,11 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 	@Override
 	public long getChildId(int groupPosition, int childPosition) {
 		return childPosition;
+	}
+
+	@Override
+	public int getChildrenCount(int groupPosition) {
+		return childList == null ? 0 : childList.get(groupPosition).size() == 0 ? 1 : childList.get(groupPosition).size();
 	}
 
 	@Override
@@ -281,6 +487,16 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 		return convertView;
 	}
 
+	@Override
+	public boolean hasStableIds() {
+		return false;
+	}
+
+	@Override
+	public boolean isChildSelectable(int groupPosition, int childPosition) {
+		return true;
+	}
+
 	/**
 	 * 下载状态的条目显示
 	 * 
@@ -427,6 +643,12 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 		}
 	}
 
+	/**
+	 * 忽略条目显示
+	 * 
+	 * @param entity
+	 * @param holder
+	 */
 	private void fillIgnoreChildView(DownloadEntity entity, ChildViewHolder holder) {
 		if (entity == null) {
 			holder.mEmptyTextView.setVisibility(View.VISIBLE);
@@ -776,7 +998,32 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 				AndroidUtils.showToast(context, R.string.not_found_soft_detail);
 			}
 		}
+	}
 
+	/**
+	 * 将更新列表应用移至忽略
+	 */
+	private void updateToIgnore(DownloadEntity entity) {
+		int position = 0;
+
+		removeMessage();
+
+		if (childList.size() > 3) {
+			position = 1;
+		}
+		for (int i = 0; i < childList.get(position).size(); i++) {
+			DownloadEntity d = childList.get(position).get(i);
+			if (d.packageName.equals(entity.packageName) && d.versionCode == entity.versionCode) {
+				if (d.downloadType == TYPE_OF_UPDATE) {
+					childList.get(position).remove(i);
+					d.downloadType = TYPE_OF_IGNORE;
+					childList.get(childList.size() - 1).add(d);
+					DownloadUtils.fillUpdateNotifycation(context);
+				}
+				break;
+			}
+		}
+		sendMessage();
 	}
 
 	/**
@@ -795,6 +1042,104 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 		if (mHandler != null && !mHandler.hasMessages(EVENT_REFRESH_DATA)) {
 			mHandler.sendEmptyMessage(EVENT_REFRESH_DATA);
 		}
+	}
+
+	/**
+	 * 移除掉已忽略应用
+	 * 
+	 * @param entity
+	 */
+	private void deleteIgnore(DownloadEntity entity) {
+		removeMessage();
+		int position = childList.size() - 1;
+		for (int i = 0; i < childList.get(position).size(); i++) {
+			DownloadEntity d = childList.get(position).get(i);
+			if (d.packageName.equals(entity.packageName) && d.versionCode == entity.versionCode) {
+				childList.get(position).remove(i);
+				break;
+			}
+		}
+		sendMessage();
+	}
+
+	/**
+	 * 从待安装的列表中删除应用
+	 * 
+	 * @param entity
+	 */
+	private void deleteWaitInstallApk(DownloadEntity entity) {
+		removeMessage();
+		List<DownloadEntity> list = childList.get(childList.size() - 2);
+		for (int i = 0; i < list.size(); i++) {
+			DownloadEntity mDownloadEntity = list.get(i);
+			if (mDownloadEntity.packageName.equals(entity.packageName) && mDownloadEntity.versionCode == entity.versionCode) {
+				System.out.println("remove dasdasdasdasd");
+				list.remove(i);
+				break;
+			}
+		}
+		sendMessage();
+	}
+
+	/**
+	 * 取消下载
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	private boolean cancelDownloadEntity(DownloadEntity entity) {
+		removeMessage();
+		for (int i = 0; i < childList.get(0).size(); i++) {
+			DownloadEntity d = childList.get(0).get(i);
+			if (d.appId == entity.appId && d.category == entity.category) {
+				childList.get(0).remove(i);
+				if (childList.get(0).size() == 0) {
+					childList.remove(0);
+					groupList.remove(0);
+				}
+				break;
+			}
+		}
+		sendMessage();
+		return false;
+	}
+
+	/**
+	 * 发送广播
+	 * 
+	 * @param action
+	 * @param bundle
+	 */
+	private void sendServiceBroadcastByAction(String action, Bundle bundle) {
+		Intent intent = new Intent(action);
+		if (bundle != null) {
+			intent.putExtras(bundle);
+		}
+		context.sendBroadcast(intent);
+	}
+
+	private static final class GroupViewHolder {
+		TextView mTextView;
+		Button mButton;
+		ImageView mImageView;
+	}
+
+	private static final class ChildViewHolder {
+		ImageView mImageView; // 应用icon
+		TextView mAppNameTextView; // 应用名称
+		TextView mAppVersionTextView; // 应用版本名称
+		TextView mCenterTextView; // 下载指示(暂停等)
+		TextView mBottomTextView; // 底部文字
+		TextView mEmptyTextView; // 当没有可更新应用和安装应用时显示此
+		ProgressBar mProgressBar; // 下载进度条
+		Button mFirstButton, mSecondButton, mLongButton;
+		View mContentLayout;
+		ImageView mAuthorityImageview;
+	}
+
+	@Override
+	public void onDownloadChanged(DownloadEntity entity) {
+		removeCompleteToInstall(entity);
 	}
 
 	/**
@@ -833,237 +1178,6 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 		sendMessage();
 	}
 
-	/**
-	 * 将更新列表应用移至忽略
-	 */
-	private void updateToIgnore(DownloadEntity entity) {
-		int position = 0;
-
-		removeMessage();
-
-		if (childList.size() > 3) {
-			position = 1;
-		}
-		for (int i = 0; i < childList.get(position).size(); i++) {
-			DownloadEntity d = childList.get(position).get(i);
-			if (d.packageName.equals(entity.packageName) && d.versionCode == entity.versionCode) {
-				if (d.downloadType == TYPE_OF_UPDATE) {
-					childList.get(position).remove(i);
-					d.downloadType = TYPE_OF_IGNORE;
-					childList.get(childList.size() - 1).add(d);
-					DownloadUtils.fillUpdateNotifycation(context);
-				}
-				break;
-			}
-		}
-		sendMessage();
-	}
-
-	/**
-	 * 移除掉已忽略应用
-	 * 
-	 * @param entity
-	 */
-	private void deleteIgnore(DownloadEntity entity) {
-		removeMessage();
-		int position = childList.size() - 1;
-		for (int i = 0; i < childList.get(position).size(); i++) {
-			DownloadEntity d = childList.get(position).get(i);
-			if (d.packageName.equals(entity.packageName) && d.versionCode == entity.versionCode) {
-				childList.get(position).remove(i);
-				break;
-			}
-		}
-		sendMessage();
-	}
-
-	/**
-	 * 从待安装的列表中删除应用
-	 * 
-	 * @param entity
-	 */
-	private void deleteWaitInstallApk(DownloadEntity entity) {
-		removeMessage();
-		List<DownloadEntity> list = childList.get(childList.size() - 2);
-		for (int i = 0; i < list.size(); i++) {
-			DownloadEntity mDownloadEntity = list.get(i);
-			if (mDownloadEntity.packageName.equals(entity.packageName) && mDownloadEntity.versionCode == entity.versionCode) {
-				System.out.println("remove dasdasdasdasd");
-				list.remove(i);
-				break;
-			}
-		}
-		sendMessage();
-
-		// DownloadUtils.fillWaitInstallNotifycation(context);
-	}
-
-	/**
-	 * 取消下载
-	 * 
-	 * @param entity
-	 * @return
-	 */
-	private boolean cancelDownloadEntity(DownloadEntity entity) {
-		locked = true;
-		removeMessage();
-		for (int i = 0; i < childList.get(0).size(); i++) {
-			DownloadEntity d = childList.get(0).get(i);
-			if (d.appId == entity.appId && d.category == entity.category) {
-				childList.get(0).remove(i);
-				if (childList.get(0).size() == 0) {
-					childList.remove(0);
-					groupList.remove(0);
-				}
-				break;
-			}
-		}
-		locked = false;
-		sendMessage();
-		return false;
-	}
-
-	/**
-	 * 发送广播
-	 * 
-	 * @param action
-	 * @param bundle
-	 */
-	private void sendServiceBroadcastByAction(String action, Bundle bundle) {
-		Intent intent = new Intent(action);
-		if (bundle != null) {
-			intent.putExtras(bundle);
-		}
-		context.sendBroadcast(intent);
-	}
-
-	public void refreshAdapter() {
-		notifyDataSetChanged();
-	}
-
-	@Override
-	public int getChildrenCount(int groupPosition) {
-		// TODO Auto-generated method stub
-		return childList == null ? 0 : childList.get(groupPosition).size() == 0 ? 1 : childList.get(groupPosition).size();
-		// return childList==null?0:childList.size();
-	}
-
-	@Override
-	public Object getGroup(int groupPosition) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public int getGroupCount() {
-		// TODO Auto-generated method stub
-		return groupList == null ? 0 : groupList.size();
-	}
-
-	@Override
-	public long getGroupId(int groupPosition) {
-		// TODO Auto-generated method stub
-		return groupPosition;
-	}
-
-	@Override
-	public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-		GroupViewHolder holder = null;
-		if (convertView == null) {
-			convertView = LayoutInflater.from(context).inflate(R.layout.adownloadexpandgroup, null);
-			holder = new GroupViewHolder();
-			holder.mTextView = (TextView) convertView.findViewById(R.id.tvExpandGroupTitle);
-			holder.mButton = (Button) convertView.findViewById(R.id.btnOneKeyUpdate);
-			holder.mImageView = (ImageView) convertView.findViewById(R.id.ivExpandGroupPic);
-
-			holder.mButton.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					// sendServiceBroadcastByAction(
-					// BROADCAST_ACTION_ONEKEY_UPDATE, null);
-					DownloadUtils.checkOneKeyDownload(context, null);
-				}
-			});
-
-			convertView.setTag(holder);
-		} else {
-			holder = (GroupViewHolder) convertView.getTag();
-		}
-		String str = null;
-		if (groupList.size() > groupPosition) {
-			str = groupList.get(groupPosition);
-			holder.mTextView.setText(str);
-		}
-		if (isExpanded) {
-			holder.mImageView.setImageDrawable(context.getResources().getDrawable(R.drawable.pic_down));
-		} else {
-			holder.mImageView.setImageDrawable(context.getResources().getDrawable(R.drawable.pic_up));
-		}
-		holder.mImageView.setVisibility(View.VISIBLE);
-		if (downloadingString.equals(str)) {
-			holder.mButton.setVisibility(View.GONE);
-			holder.mImageView.setVisibility(View.VISIBLE);
-		} else if (updatingString.equals(str)) {
-			holder.mButton.setVisibility(View.VISIBLE);
-			holder.mImageView.setVisibility(View.GONE);
-		} else {
-			holder.mButton.setVisibility(View.GONE);
-			holder.mImageView.setVisibility(View.VISIBLE);
-		}
-		return convertView;
-	}
-
-	/**
-	 * 是否能点击伸缩第一个条目
-	 * 
-	 * @param groupPostion
-	 * @return
-	 */
-	public boolean canClickGroup(int groupPosition) {
-		if (!locked && groupList.size() > 3 && downloadingString.equals(groupList.get(groupPosition))) {
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public boolean hasStableIds() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean isChildSelectable(int groupPosition, int childPosition) {
-		// TODO Auto-generated method stub
-		return true;
-	}
-
-	private static final class ChildViewHolder {
-		ImageView mImageView; // 应用icon
-		TextView mAppNameTextView; // 应用名称
-		TextView mAppVersionTextView; // 应用版本名称
-		TextView mCenterTextView; // 下载指示(暂停等)
-		TextView mBottomTextView; // 底部文字
-		TextView mEmptyTextView; // 当没有可更新应用和安装应用时显示此
-		ProgressBar mProgressBar; // 下载进度条
-		Button mFirstButton, mSecondButton, mLongButton;
-		View mContentLayout;
-		ImageView mAuthorityImageview;
-	}
-
-	private static final class GroupViewHolder {
-		TextView mTextView;
-		Button mButton;
-		ImageView mImageView;
-	}
-
-	@Override
-	public void onDownloadChanged(DownloadEntity entity) {
-		locked = true;
-		removeCompleteToInstall(entity);
-		locked = false;
-	}
-
 	@Override
 	public void onUpdateListDone(List<DownloadEntity> list) {
 		removeMessage();
@@ -1075,157 +1189,14 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 		sendMessage();
 	}
 
-	/**
-	 * 将新更新添加至列表中
-	 * 
-	 * @param entity
-	 */
-	private void addUpdate(DownloadEntity entity) {
-		removeMessage();
-
-		List<DownloadEntity> downloadList = DownloadService.mDownloadService.getAllDownloadList();
-		for (int i = 0; i < downloadList.size(); i++) {
-			DownloadEntity d = downloadList.get(i);
-			if (d.packageName.equals(entity.packageName) && d.versionCode == entity.versionCode) {
-				int position = 0;
-				if (childList.size() > 3) {
-					position = 1;
-				}
-				childList.get(position).add(d);
-
-				DownloadUtils.fillUpdateNotifycation(context);
-				break;
-			}
-		}
-		sendMessage();
-	}
-
-	/**
-	 * 卸载后需将可更新应用移除
-	 */
-	private void deleteUpdateDownloadEntity(DownloadEntity entity) {
-		removeMessage();
-		int position = 0;
-		if (childList.size() == 4) {
-			position = 1;
-		}
-		for (int i = 0; i < childList.get(position).size(); i++) {
-			DownloadEntity d = childList.get(position).get(i);
-			if (d.packageName.equals(entity.packageName) && d.versionCode == entity.versionCode) {
-				childList.get(position).remove(i);
-				break;
-			}
-		}
-		sendMessage();
-	}
-
-	private void updateInstallFailStatus(String apkPackageName) {
-		removeMessage();
-		System.out.println("...........test0522...0....." + apkPackageName);
-		System.out.println("...........test0522....0.0.1......." + childList.size());
-		if (childList.size() == 3) {
-			System.out.println("...........test0522...0..3......" + childList.get(1).size());
-			for (int i = 0; i < childList.get(1).size(); i++) {
-				DownloadEntity downloadEntity = childList.get(1).get(i);
-				System.out.println(".............test0522........0.1.." + downloadEntity.packageName);
-				if (apkPackageName.equals(downloadEntity.packageName)) {
-					downloadEntity.downloadType = TYPE_OF_COMPLETE;
-					System.out.println("...........test0522........");
-					break;
-				}
-			}
-		} else {
-			for (int i = 0; i < childList.get(2).size(); i++) {
-				DownloadEntity downloadEntity = childList.get(2).get(i);
-				if (apkPackageName.equals(downloadEntity.packageName)) {
-					downloadEntity.downloadType = TYPE_OF_COMPLETE;
-					System.out.println("...........test0522.......1.");
-					break;
-				}
-			}
-		}
-		sendMessage();
-	}
-
-	/**
-	 * 添加至正在下载列表
-	 * 
-	 * @param entity
-	 */
-	private void addDownloadList(DownloadEntity entity) {
-		removeMessage();
-		List<DownloadEntity> downloadList = DownloadService.mDownloadService.getAllDownloadList();
-		for (int i = 0; i < downloadList.size(); i++) {
-			DownloadEntity d = downloadList.get(i);
-			if (d.packageName.equals(entity.packageName) && d.versionCode == entity.versionCode) {
-				System.out.println("==========" + groupList.size());
-				if (groupList.size() > 3) {
-					childList.get(0).add(d);
-					System.out.println("=========" + childList.get(childList.size() - 1).size());
-				} else {
-					groupList.add(0, context.getString(R.string.transferapk));
-					List<DownloadEntity> downloadingList = new ArrayList<DownloadEntity>();
-					downloadingList.add(d);
-					childList.add(0, downloadingList);
-				}
-				break;
-			}
-		}
-		sendMessage();
-	}
-
-	private BroadcastReceiver mDownloadReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			if (BROADCAST_ACTION_COMPLETE_DOWNLOAD.equals(intent.getAction())) {
-				Bundle bundle = intent.getExtras();
-				if (bundle != null) {
-					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
-					locked = true;
-					removeCompleteToInstall(entity);
-					locked = false;
-				}
-			} else if (BROADCAST_ACTION_ADD_UPDATE.equals(intent.getAction())) {
-				Bundle bundle = intent.getExtras();
-				if (bundle != null) {
-					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
-					addUpdate(entity);
-				}
-			} else if (BROADCAST_ACTION_INSTALL_COMPLETE.equals(intent.getAction())) {
-				Bundle bundle = intent.getExtras();
-				if (bundle != null) {
-					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
-					deleteWaitInstallApk(entity);
-					for (int i = 0; i < rootApkList.size(); i++) {
-						if (rootApkList.get(i).equals(entity.packageName)) {
-							rootApkList.remove(entity.packageName);
-						}
-					}
-				}
-			} else if (BROADCAST_ACTION_REMOVE_COMPLETE.equals(intent.getAction())) {
-				Bundle bundle = intent.getExtras();
-				if (bundle != null) {
-					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
-					deleteUpdateDownloadEntity(entity);
-				}
-			} else if (BROADCAST_ACTION_ADD_DOWNLOAD_LIST.equals(intent.getAction())) {
-				Bundle bundle = intent.getExtras();
-				if (bundle != null) {
-					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
-					addDownloadList(entity);
-				}
-			} else if (BROADCAST_ACTION_UPDATE_DATA_MERGE_DONE.equals(intent.getAction())) {
-
-			} else if (BROADCAST_ACTION_UPDATE_ROOTSTATUS.equals(intent.getAction())) {
-				updateInstallFailStatus(intent.getStringExtra(DOWNLOAD_APKPACKAGENAME));
-			}
-		}
-	};
-
 	@Override
 	public void onRemoveDownload(DownloadEntity entity) {
 		removeMessage();
 		cancelDownloadEntity(entity);
 		sendMessage();
+	}
+
+	public void refreshAdapter() {
+		notifyDataSetChanged();
 	}
 }

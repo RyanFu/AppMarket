@@ -46,26 +46,26 @@ public final class R {
 		public static final int toast_bg = 0x7f0200ae;
 	}
 	public static final class id {
-		public static final int btnClose = 0x7f0b014b;
-		public static final int btnSend = 0x7f0b014c;
-		public static final int etEdit = 0x7f0b0154;
-		public static final int flPic = 0x7f0b0151;
-		public static final int ivDelPic = 0x7f0b0153;
-		public static final int ivImage = 0x7f0b0152;
-		public static final int llImage = 0x7f0b014d;
-		public static final int ll_text_limit_unit = 0x7f0b014f;
-		public static final int loadinglayout = 0x7f0b011a;
-		public static final int rlTitle = 0x7f0b014a;
-		public static final int rlTotal = 0x7f0b014e;
-		public static final int send_twitter = 0x7f0b0161;
-		public static final int sharing_layout = 0x7f0b0162;
-		public static final int sharing_progressbar = 0x7f0b0141;
-		public static final int sharing_textview = 0x7f0b0142;
-		public static final int surplus_text = 0x7f0b015f;
-		public static final int text_limit_num = 0x7f0b0160;
-		public static final int toast_txt = 0x7f0b00aa;
-		public static final int tv_text_limit = 0x7f0b0150;
-		public static final int twitter_content = 0x7f0b015e;
+		public static final int btnClose = 0x7f0b014c;
+		public static final int btnSend = 0x7f0b014d;
+		public static final int etEdit = 0x7f0b0155;
+		public static final int flPic = 0x7f0b0152;
+		public static final int ivDelPic = 0x7f0b0154;
+		public static final int ivImage = 0x7f0b0153;
+		public static final int llImage = 0x7f0b014e;
+		public static final int ll_text_limit_unit = 0x7f0b0150;
+		public static final int loadinglayout = 0x7f0b011b;
+		public static final int rlTitle = 0x7f0b014b;
+		public static final int rlTotal = 0x7f0b014f;
+		public static final int send_twitter = 0x7f0b0162;
+		public static final int sharing_layout = 0x7f0b0163;
+		public static final int sharing_progressbar = 0x7f0b0142;
+		public static final int sharing_textview = 0x7f0b0143;
+		public static final int surplus_text = 0x7f0b0160;
+		public static final int text_limit_num = 0x7f0b0161;
+		public static final int toast_txt = 0x7f0b00ab;
+		public static final int tv_text_limit = 0x7f0b0151;
+		public static final int twitter_content = 0x7f0b015f;
 	}
 	public static final class layout {
 		public static final int custom_toast = 0x7f030018;

@@ -52,6 +52,7 @@ public abstract class ListBaseAdapter extends BaseAdapter implements AConstDefin
 					} else if (!isCancel && item.status == STATUS_APK_UNUPDATE) {
 						item.status = STATUS_APK_UPDATE;
 					}
+					break;
 				}
 			}
 			notifyDataSetChanged();
@@ -76,10 +77,12 @@ public abstract class ListBaseAdapter extends BaseAdapter implements AConstDefin
 				if (status == 1) {
 					if (item.packageName.equals(info.packageName) && item.versionCode == info.versionCode) {
 						list.get(i).status = STATUS_APK_INSTALL_DONE;
+						break;
 					}
 				} else if (status == 2) {
 					if (item.packageName.equals(info.packageName)) {
 						list.get(i).status = STATUS_APK_UNINSTALL;
+						break;
 					}
 				}
 			}

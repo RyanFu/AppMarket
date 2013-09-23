@@ -991,7 +991,6 @@ public class DownloadService extends Service implements DownloadConstDefine, OnD
 	 *
 	 */
 	public interface DownloadStatusListener {
-		void onDownloadChanged(DownloadEntity entity);
 		void onUpdateListDone(List<DownloadEntity> list);
 		void onRemoveDownload(DownloadEntity entity);
 	}

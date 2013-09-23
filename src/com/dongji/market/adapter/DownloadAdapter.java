@@ -49,7 +49,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 	private Context context;
 	private List<List<DownloadEntity>> childList;
 	private List<String> groupList;
-	private String downloadingString, updatingString;
+	private String updatingString;
 	private Bitmap mDefaultBitmap;
 	private String continueString, cancelString, pauseString, installString, ignoreString, deleteString, updateString;
 
@@ -80,7 +80,6 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 	}
 
 	private void initString() {
-		downloadingString = context.getString(R.string.transferapk);
 		updatingString = context.getString(R.string.updateapk);
 		continueString = context.getString(R.string.button_status_continue);
 		cancelString = context.getString(R.string.button_status_cancel);
@@ -98,7 +97,6 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 		intentFilter.addAction(BROADCAST_ACTION_INSTALL_COMPLETE);
 		intentFilter.addAction(BROADCAST_ACTION_REMOVE_COMPLETE);
 		intentFilter.addAction(BROADCAST_ACTION_ADD_DOWNLOAD_LIST);
-		intentFilter.addAction(BROADCAST_ACTION_UPDATE_DATA_MERGE_DONE);
 		intentFilter.addAction(BROADCAST_ACTION_UPDATE_ROOTSTATUS);
 		context.registerReceiver(mDownloadReceiver, intentFilter);
 	}
@@ -106,51 +104,81 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 	private BroadcastReceiver mDownloadReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if (BROADCAST_ACTION_COMPLETE_DOWNLOAD.equals(intent.getAction())) {
+			if (BROADCAST_ACTION_COMPLETE_DOWNLOAD.equals(intent.getAction())) {// 下载完成
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
 					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
-					removeCompleteToInstall(entity);
+					removeCompleteToInstall(entity);// 移除下载完成的应用至待安装
 				}
-			} else if (BROADCAST_ACTION_ADD_UPDATE.equals(intent.getAction())) {
+			} else if (BROADCAST_ACTION_ADD_UPDATE.equals(intent.getAction())) {// 添加至更新
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
 					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
-					addUpdate(entity);
+					addUpdate(entity);// 将新更新添加至列表中
 				}
-			} else if (BROADCAST_ACTION_INSTALL_COMPLETE.equals(intent.getAction())) {
+			} else if (BROADCAST_ACTION_INSTALL_COMPLETE.equals(intent.getAction())) {// 安装完成
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
 					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
-					deleteWaitInstallApk(entity);
+					deleteWaitInstallApk(entity);// 从待安装的列表中删除应用
 					for (int i = 0; i < rootApkList.size(); i++) {
 						if (rootApkList.get(i).equals(entity.packageName)) {
 							rootApkList.remove(entity.packageName);
 						}
 					}
 				}
-			} else if (BROADCAST_ACTION_REMOVE_COMPLETE.equals(intent.getAction())) {
+			} else if (BROADCAST_ACTION_REMOVE_COMPLETE.equals(intent.getAction())) {// 应用卸载完成
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
 					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
 					deleteUpdateDownloadEntity(entity);
 				}
-			} else if (BROADCAST_ACTION_ADD_DOWNLOAD_LIST.equals(intent.getAction())) {
+			} else if (BROADCAST_ACTION_ADD_DOWNLOAD_LIST.equals(intent.getAction())) {// 加入下载列表
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
 					DownloadEntity entity = bundle.getParcelable(DOWNLOAD_ENTITY);
-					addDownloadList(entity);
+					addDownloadList(entity);// 添加至正在下载列表
 				}
-			} else if (BROADCAST_ACTION_UPDATE_DATA_MERGE_DONE.equals(intent.getAction())) {
-
-			} else if (BROADCAST_ACTION_UPDATE_ROOTSTATUS.equals(intent.getAction())) {
-				updateInstallFailStatus(intent.getStringExtra(DOWNLOAD_APKPACKAGENAME));
+			} else if (BROADCAST_ACTION_UPDATE_ROOTSTATUS.equals(intent.getAction())) {// Root安装失败
+				updateInstallFailStatus(intent.getStringExtra(DOWNLOAD_APKPACKAGENAME));// 更新安装失败状态
 			}
 		}
 	};
 
 	public void unregisterAllReceiver() {
 		context.unregisterReceiver(mDownloadReceiver);
+	}
+
+	/**
+	 * 移除下载完成的应用至待安装
+	 * 
+	 * @param entity
+	 */
+	private void removeCompleteToInstall(DownloadEntity entity) {
+		boolean removed = false;
+		removeMessage();
+		for (int i = 0; i < childList.size(); i++) {
+			int j = 0;
+			for (; j < childList.get(i).size(); j++) {
+				DownloadEntity d = childList.get(i).get(j);
+				if (d.appId == entity.appId && d.category == entity.category) {
+					childList.get(i).remove(j);// 移除
+					if (childList.size() > 3 && i == 0 && childList.get(i).size() == 0) {
+						groupList.remove(i);
+						childList.remove(i);
+					}
+					entity.downloadType = TYPE_OF_COMPLETE;
+					childList.get(childList.size() - 2).add(entity);// 添加到待安装
+
+					removed = true;
+					break;
+				}
+			}
+			if (removed) {
+				break;
+			}
+		}
+		sendMessage();
 	}
 
 	/**
@@ -169,9 +197,27 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 				if (childList.size() > 3) {
 					position = 1;
 				}
-				childList.get(position).add(d);
+				childList.get(position).add(d);// 添加到更新位置
 
-				DownloadUtils.fillUpdateNotifycation(context);
+				DownloadUtils.fillUpdateNotifycation(context);// 通知栏更新
+				break;
+			}
+		}
+		sendMessage();
+	}
+
+	/**
+	 * 从待安装的列表中删除应用
+	 * 
+	 * @param entity
+	 */
+	private void deleteWaitInstallApk(DownloadEntity entity) {
+		removeMessage();
+		List<DownloadEntity> list = childList.get(childList.size() - 2);
+		for (int i = 0; i < list.size(); i++) {
+			DownloadEntity mDownloadEntity = list.get(i);
+			if (mDownloadEntity.packageName.equals(entity.packageName) && mDownloadEntity.versionCode == entity.versionCode) {
+				list.remove(i);// 移除
 				break;
 			}
 		}
@@ -190,36 +236,8 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 		for (int i = 0; i < childList.get(position).size(); i++) {
 			DownloadEntity d = childList.get(position).get(i);
 			if (d.packageName.equals(entity.packageName) && d.versionCode == entity.versionCode) {
-				childList.get(position).remove(i);
+				childList.get(position).remove(i);// 从更新位置移除
 				break;
-			}
-		}
-		sendMessage();
-	}
-
-	private void updateInstallFailStatus(String apkPackageName) {
-		removeMessage();
-		System.out.println("...........test0522...0....." + apkPackageName);
-		System.out.println("...........test0522....0.0.1......." + childList.size());
-		if (childList.size() == 3) {
-			System.out.println("...........test0522...0..3......" + childList.get(1).size());
-			for (int i = 0; i < childList.get(1).size(); i++) {
-				DownloadEntity downloadEntity = childList.get(1).get(i);
-				System.out.println(".............test0522........0.1.." + downloadEntity.packageName);
-				if (apkPackageName.equals(downloadEntity.packageName)) {
-					downloadEntity.downloadType = TYPE_OF_COMPLETE;
-					System.out.println("...........test0522........");
-					break;
-				}
-			}
-		} else {
-			for (int i = 0; i < childList.get(2).size(); i++) {
-				DownloadEntity downloadEntity = childList.get(2).get(i);
-				if (apkPackageName.equals(downloadEntity.packageName)) {
-					downloadEntity.downloadType = TYPE_OF_COMPLETE;
-					System.out.println("...........test0522.......1.");
-					break;
-				}
 			}
 		}
 		sendMessage();
@@ -236,12 +254,10 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 		for (int i = 0; i < downloadList.size(); i++) {
 			DownloadEntity d = downloadList.get(i);
 			if (d.packageName.equals(entity.packageName) && d.versionCode == entity.versionCode) {
-				System.out.println("==========" + groupList.size());
 				if (groupList.size() > 3) {
-					childList.get(0).add(d);
-					System.out.println("=========" + childList.get(childList.size() - 1).size());
+					childList.get(0).add(d);// 添加至正在下载
 				} else {
-					groupList.add(0, context.getString(R.string.transferapk));
+					groupList.add(0, context.getString(R.string.transferapk));// 添加一组
 					List<DownloadEntity> downloadingList = new ArrayList<DownloadEntity>();
 					downloadingList.add(d);
 					childList.add(0, downloadingList);
@@ -250,6 +266,51 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 			}
 		}
 		sendMessage();
+	}
+
+	/**
+	 * 更新root安装失败的状态
+	 * 
+	 * @param apkPackageName
+	 */
+	private void updateInstallFailStatus(String apkPackageName) {
+		removeMessage();
+		if (childList.size() == 3) {
+			for (int i = 0; i < childList.get(1).size(); i++) {
+				DownloadEntity downloadEntity = childList.get(1).get(i);
+				if (apkPackageName.equals(downloadEntity.packageName)) {
+					downloadEntity.downloadType = TYPE_OF_COMPLETE;// 更新应用下载类型
+					break;
+				}
+			}
+		} else {
+			for (int i = 0; i < childList.get(2).size(); i++) {
+				DownloadEntity downloadEntity = childList.get(2).get(i);
+				if (apkPackageName.equals(downloadEntity.packageName)) {
+					downloadEntity.downloadType = TYPE_OF_COMPLETE;// 更新应用下载类型
+					break;
+				}
+			}
+		}
+		sendMessage();
+	}
+
+	/**
+	 * 删除刷新消息
+	 */
+	private void removeMessage() {
+		if (mHandler != null && mHandler.hasMessages(EVENT_REFRESH_DATA)) {
+			mHandler.removeMessages(EVENT_REFRESH_DATA);
+		}
+	}
+
+	/**
+	 * 发送刷新消息
+	 */
+	private void sendMessage() {
+		if (mHandler != null && !mHandler.hasMessages(EVENT_REFRESH_DATA)) {
+			mHandler.sendEmptyMessage(EVENT_REFRESH_DATA);
+		}
 	}
 
 	@Override
@@ -291,21 +352,18 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 		String str = null;
 		if (groupList.size() > groupPosition) {
 			str = groupList.get(groupPosition);
-			holder.mTextView.setText(str);
+			holder.mTextView.setText(str);// 设置组title
 		}
-		if (isExpanded) {
+		if (isExpanded) {// 是否扩展
 			holder.mImageView.setImageDrawable(context.getResources().getDrawable(R.drawable.pic_down));
 		} else {
 			holder.mImageView.setImageDrawable(context.getResources().getDrawable(R.drawable.pic_up));
 		}
 		holder.mImageView.setVisibility(View.VISIBLE);
-		if (downloadingString.equals(str)) {
-			holder.mButton.setVisibility(View.GONE);
-			holder.mImageView.setVisibility(View.VISIBLE);
-		} else if (updatingString.equals(str)) {
+		if (updatingString.equals(str)) {// title为可更新应用
 			holder.mButton.setVisibility(View.VISIBLE);
 			holder.mImageView.setVisibility(View.GONE);
-		} else {
+		} else {// title为其它
 			holder.mButton.setVisibility(View.GONE);
 			holder.mImageView.setVisibility(View.VISIBLE);
 		}
@@ -352,10 +410,10 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 		}
 
 		DownloadEntity entity = null;
-		if (childList.size() > groupPosition && childList.get(groupPosition).size() > childPosition) {
+		if (childList.size() > groupPosition && childList.get(groupPosition).size() > childPosition) {// childPosition可能为0，因为getChildrenCount至少大于1
 			entity = childList.get(groupPosition).get(childPosition);
 			switch (entity.downloadType) {
-			case DownloadConstDefine.TYPE_OF_DOWNLOAD:
+			case DownloadConstDefine.TYPE_OF_DOWNLOAD:// 正在下载
 				fillDownloadChildView(entity, holder);
 				if (!TextUtils.isEmpty(entity.iconUrl)) {
 					try {
@@ -367,7 +425,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 					}
 				}
 				break;
-			case DownloadConstDefine.TYPE_OF_UPDATE:
+			case DownloadConstDefine.TYPE_OF_UPDATE:// 正在更新
 				fillUpdateChildView(entity, holder);
 				if (entity != null && entity.installedIcon != null) {
 					holder.mImageView.setImageBitmap(((BitmapDrawable) entity.installedIcon).getBitmap());
@@ -375,7 +433,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 					holder.mImageView.setImageBitmap(mDefaultBitmap);
 				}
 				break;
-			case DownloadConstDefine.TYPE_OF_COMPLETE:
+			case DownloadConstDefine.TYPE_OF_COMPLETE:// 下载完成
 				fillWaitInstallChildView(entity, holder);
 				if (!TextUtils.isEmpty(entity.iconUrl)) {
 					try {
@@ -387,7 +445,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 					}
 				}
 				break;
-			case TYPE_OF_IGNORE:
+			case TYPE_OF_IGNORE:// 忽略类型
 				fillIgnoreChildView(entity, holder);
 				if (entity != null && entity.installedIcon != null) {
 					holder.mImageView.setImageBitmap(((BitmapDrawable) entity.installedIcon).getBitmap());
@@ -396,12 +454,14 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 				}
 				break;
 			}
-		} else {
-			if (childList.size() == 4) {
-				if (groupPosition == 0) {
+		} else {// childList.get(groupPosition).size()=0 的情况
+			if (childList.size() == 4) {// 有正在下载
+
+				if (groupPosition == 0) {// 正在传输
 					if (childList.get(groupPosition).size() > childPosition) {
 						entity = childList.get(groupPosition).get(childPosition);
-						fillDownloadChildView(entity, holder);
+						fillDownloadChildView(entity, holder);// 填充下载childView
+
 						if (!TextUtils.isEmpty(entity.iconUrl)) {
 							try {
 								FileService.getBitmap(entity.iconUrl, holder.mImageView, mDefaultBitmap, 0);
@@ -412,18 +472,22 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 							}
 						}
 					}
-				} else if (groupPosition == 1) {
+				} else if (groupPosition == 1) {// 正在更新
 					if (childList.get(groupPosition).size() > childPosition) {
 						entity = childList.get(groupPosition).get(childPosition);
+
 						if (entity != null && entity.installedIcon != null) {
 							holder.mImageView.setImageBitmap(((BitmapDrawable) entity.installedIcon).getBitmap());
 						} else {
 							holder.mImageView.setImageBitmap(mDefaultBitmap);
 						}
 					}
-					fillUpdateChildView(entity, holder);
-				} else if (groupPosition == 2) {
+
+					fillUpdateChildView(entity, holder);// 填充更新childView
+
+				} else if (groupPosition == 2) {//等待安装
 					if (childList.get(groupPosition).size() > childPosition) {
+						entity = childList.get(groupPosition).get(childPosition);
 						if (entity != null && !TextUtils.isEmpty(entity.iconUrl)) {
 							try {
 								FileService.getBitmap(entity.iconUrl, holder.mImageView, mDefaultBitmap, 0);
@@ -434,7 +498,9 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 							}
 						}
 					}
-					fillWaitInstallChildView(entity, holder);
+					
+					fillWaitInstallChildView(entity, holder);// 填充等待安装childView
+					
 				} else if (groupPosition == 3) {
 					if (childList.get(groupPosition).size() > childPosition) {
 						entity = childList.get(groupPosition).get(childPosition);
@@ -444,9 +510,11 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 							holder.mImageView.setImageBitmap(mDefaultBitmap);
 						}
 					}
-					fillIgnoreChildView(entity, holder);
+					fillIgnoreChildView(entity, holder);//填充忽略childView
 				}
+
 			} else {
+
 				if (groupPosition == 0) {
 					if (childList.get(0).size() > childPosition) {
 						entity = childList.get(groupPosition).get(childPosition);
@@ -482,6 +550,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 					}
 					fillIgnoreChildView(entity, holder);
 				}
+
 			}
 		}
 		return convertView;
@@ -623,7 +692,6 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 			holder.mEmptyTextView.setText(R.string.current_not_install_app);
 			return;
 		}
-		System.out.println("..........test0522.....fillWaitInstallChildView..." + entity.appName + "," + entity.downloadType);
 		holder.mContentLayout.setOnClickListener(new DetailOnClickListener(entity));
 		holder.mEmptyTextView.setVisibility(View.GONE);
 		holder.mContentLayout.setVisibility(View.VISIBLE);
@@ -687,7 +755,6 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 			case STATUS_OF_PREPARE:
 			case STATUS_OF_DOWNLOADING:
 				holder.mFirstButton.setVisibility(View.GONE);
-
 				setFirstButtonStyle(holder.mSecondButton, pauseString);
 				holder.mSecondButton.setOnClickListener(new OnDownloadClickListener(entity, holder));
 				break;
@@ -701,14 +768,11 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 				break;
 			case STATUS_OF_COMPLETE:
 				holder.mFirstButton.setVisibility(View.GONE);
-
 				setFirstButtonStyle(holder.mSecondButton, pauseString);
 				holder.mSecondButton.setEnabled(false);
 				break;
 			default:
-
 				setFirstButtonStyle(holder.mFirstButton, continueString);
-
 				setSecondButtonStyle(holder.mSecondButton, cancelString);
 				break;
 			}
@@ -716,24 +780,18 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 			switch (entity.getStatus()) {
 			case STATUS_OF_IGNORE:
 				holder.mLongButton.setVisibility(View.VISIBLE);
-
 				holder.mLongButton.setOnClickListener(new OnDownloadClickListener(entity, holder));
 				break;
 			case STATUS_OF_INITIAL:
 				holder.mLongButton.setVisibility(View.GONE);
-
 				setFirstButtonStyle(holder.mSecondButton, updateString);
-
 				setSecondButtonStyle(holder.mFirstButton, ignoreString);
-
 				holder.mFirstButton.setOnClickListener(new OnDownloadClickListener(entity, holder));
 				holder.mSecondButton.setOnClickListener(new OnDownloadClickListener(entity, holder));
-
 				break;
 			case STATUS_OF_DOWNLOADING:
 			case STATUS_OF_PREPARE:
 				holder.mLongButton.setVisibility(View.GONE);
-
 				setSecondButtonStyle(holder.mFirstButton, pauseString);
 				setFirstButtonStyle(holder.mSecondButton, cancelString);
 				holder.mFirstButton.setOnClickListener(new OnDownloadClickListener(entity, holder));
@@ -742,7 +800,6 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 			case STATUS_OF_EXCEPTION:
 			case STATUS_OF_PAUSE:
 				holder.mLongButton.setVisibility(View.GONE);
-
 				setSecondButtonStyle(holder.mFirstButton, continueString);
 				setFirstButtonStyle(holder.mSecondButton, cancelString);
 				holder.mFirstButton.setOnClickListener(new OnDownloadClickListener(entity, holder));
@@ -760,14 +817,10 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 			holder.mLongButton.setVisibility(View.GONE);
 			holder.mSecondButton.setVisibility(View.VISIBLE);
 			holder.mFirstButton.setVisibility(View.VISIBLE);
-
 			setCommonButtonStyle(holder.mFirstButton, installString);
-
 			setSecondButtonStyle(holder.mSecondButton, deleteString);
-
 			holder.mSecondButton.setOnClickListener(new OnDownloadClickListener(entity, holder));
 			holder.mFirstButton.setOnClickListener(new OnDownloadClickListener(entity, holder));
-
 			for (int i = 0; i < rootApkList.size(); i++) {
 				if (null != entity.packageName && rootApkList.get(i).equals(entity.packageName)) {
 					holder.mFirstButton.setFocusable(false);
@@ -781,11 +834,8 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 					holder.mFirstButton.setText(R.string.installing);
 				}
 			}
-
 		} else if (entity.downloadType == TYPE_OF_IGNORE) {
-
 			setSecondButtonStyle(holder.mLongButton, context.getString(R.string.cancle_ignore));
-
 			holder.mFirstButton.setVisibility(View.GONE);
 			holder.mSecondButton.setVisibility(View.GONE);
 			holder.mLongButton.setVisibility(View.VISIBLE);
@@ -888,8 +938,6 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 					Bundle bundle = new Bundle();
 					bundle.putParcelable(DOWNLOAD_ENTITY, entity);
 					sendServiceBroadcastByAction(BROADCAST_ACTION_CANCEL_DOWNLOAD, bundle);
-
-					System.out.println("on download cancel!");
 				}
 			} else if (entity.downloadType == TYPE_OF_UPDATE) {
 				// 当按钮为更新时，点击需要下载此应用更新
@@ -956,7 +1004,6 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 					boolean flag = DownloadUtils.deleteDownloadFile(path);
 					if (flag) {
 						deleteWaitInstallApk(entity);
-						System.out.println(entity.appName + ", " + entity.downloadType + ", " + entity.getStatus());
 						Bundle bundle = new Bundle();
 						bundle.putParcelable(DOWNLOAD_ENTITY, entity);
 						sendServiceBroadcastByAction(BROADCAST_ACTION_REMOVE_DOWNLOAD, bundle);
@@ -1027,24 +1074,6 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 	}
 
 	/**
-	 * 删除刷新消息
-	 */
-	private void removeMessage() {
-		if (mHandler != null && mHandler.hasMessages(EVENT_REFRESH_DATA)) {
-			mHandler.removeMessages(EVENT_REFRESH_DATA);
-		}
-	}
-
-	/**
-	 * 发送刷新消息
-	 */
-	private void sendMessage() {
-		if (mHandler != null && !mHandler.hasMessages(EVENT_REFRESH_DATA)) {
-			mHandler.sendEmptyMessage(EVENT_REFRESH_DATA);
-		}
-	}
-
-	/**
 	 * 移除掉已忽略应用
 	 * 
 	 * @param entity
@@ -1056,25 +1085,6 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 			DownloadEntity d = childList.get(position).get(i);
 			if (d.packageName.equals(entity.packageName) && d.versionCode == entity.versionCode) {
 				childList.get(position).remove(i);
-				break;
-			}
-		}
-		sendMessage();
-	}
-
-	/**
-	 * 从待安装的列表中删除应用
-	 * 
-	 * @param entity
-	 */
-	private void deleteWaitInstallApk(DownloadEntity entity) {
-		removeMessage();
-		List<DownloadEntity> list = childList.get(childList.size() - 2);
-		for (int i = 0; i < list.size(); i++) {
-			DownloadEntity mDownloadEntity = list.get(i);
-			if (mDownloadEntity.packageName.equals(entity.packageName) && mDownloadEntity.versionCode == entity.versionCode) {
-				System.out.println("remove dasdasdasdasd");
-				list.remove(i);
 				break;
 			}
 		}
@@ -1135,47 +1145,6 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 		Button mFirstButton, mSecondButton, mLongButton;
 		View mContentLayout;
 		ImageView mAuthorityImageview;
-	}
-
-	@Override
-	public void onDownloadChanged(DownloadEntity entity) {
-		removeCompleteToInstall(entity);
-	}
-
-	/**
-	 * 移除下载完成的应用至待安装
-	 * 
-	 * @param entity
-	 */
-	private void removeCompleteToInstall(DownloadEntity entity) {
-		System.out.println(".........test0522....removeCompleteToInstall..." + entity.downloadType);
-		boolean removed = false;
-		removeMessage();
-		for (int i = 0; i < childList.size(); i++) {
-			int j = 0;
-			for (; j < childList.get(i).size(); j++) {
-				DownloadEntity d = childList.get(i).get(j);
-				if (d.appId == entity.appId && d.category == entity.category) {
-					System.out.println("removeCompleteToInstall:" + entity.appName + ", " + mHandler.hasMessages(2));
-
-					childList.get(i).remove(j);
-					if (childList.size() > 3 && i == 0 && childList.get(i).size() == 0) {
-						groupList.remove(i);
-						childList.remove(i);
-					}
-					entity.downloadType = TYPE_OF_COMPLETE;
-					childList.get(childList.size() - 2).add(entity);
-
-					removed = true;
-					break;
-				}
-			}
-			if (removed) {
-				System.out.println("removed");
-				break;
-			}
-		}
-		sendMessage();
 	}
 
 	@Override

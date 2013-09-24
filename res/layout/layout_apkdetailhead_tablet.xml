@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="#ffffff"
+    android:orientation="vertical" >
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="80dp"
+        android:paddingBottom="5dip"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:paddingTop="3dip" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <ImageView
+                    android:id="@+id/ivApkIcon"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_marginTop="4dip" />
+
+                <ImageView
+                    android:id="@+id/ivdongji_head"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_marginTop="4dip"
+                    android:src="@drawable/dongjituijian" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.0"
+                android:orientation="vertical"
+                android:paddingLeft="10dip"
+                android:paddingRight="100dip" >
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_gravity="top"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        android:id="@+id/tvApkName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#3b3b3b"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <!--
+                         <TextView
+                        android:id="@+id/tvApkVersion"
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:layout_marginRight="5dip"
+                        android:gravity="center"
+                        android:textColor="#666666"
+                        android:textSize="15sp"
+                        android:layout_weight="1.0"
+                        android:text="V1.2.3.4.5.6"/>                    -->
+
+
+                    <!--
+                         <ImageView
+                        android:id="@+id/ivApkType"
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:gravity="center" />                    -->
+
+                </LinearLayout>
+
+                <RatingBar
+                    android:id="@+id/detail_head_RatingBar"
+                    style="@style/apkdetail_head.smellRatingBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="14dip"
+                    android:isIndicator="true"
+                    android:numStars="5"
+                    android:rating="3" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        style="@style/detail_head_small_textstyle"
+                        android:text="@string/detail_apkVersion" />
+
+                    <TextView
+                        android:id="@+id/tvApkVersion"
+                        style="@style/detail_head_small_textstyle" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        style="@style/detail_head_small_textstyle"
+                        android:text="@string/detail_apkSize" />
+
+                    <TextView
+                        android:id="@+id/tvApkSize"
+                        style="@style/detail_head_small_textstyle" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        style="@style/detail_head_small_textstyle"
+                        android:text="@string/detail_installCount" />
+
+                    <TextView
+                        android:id="@+id/tvApkInstallCount"
+                        style="@style/detail_head_small_textstyle" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        style="@style/detail_head_small_textstyle"
+                        android:text="@string/detail_developer" />
+
+                    <TextView
+                        android:id="@+id/tvApkDeveloper"
+                        style="@style/detail_head_small_textstyle_nosingleline" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:orientation="vertical"
+            android:paddingTop="4dip" >
+
+            <Button
+                android:id="@+id/btnInstall"
+                android:layout_width="fill_parent"
+                android:layout_height="33dip"
+                android:background="@drawable/button_has_border_selector"
+                android:text="@string/detail_install"
+                android:textSize="16sp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:paddingTop="5dip" >
+
+                <ImageView
+                    android:layout_width="14dip"
+                    android:layout_height="14dip"
+                    android:background="@drawable/safe" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dip"
+                    android:singleLine="true"
+                    android:text="@string/detail_safepass"
+                    android:textColor="#66aa00"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    style="@style/detail_head_small_textstyle"
+                    android:text="@string/detail_publishDate" />
+
+                <TextView
+                    android:id="@+id/tvApkPublishDate"
+                    style="@style/detail_head_small_textstyle"
+                    android:ellipsize="none" />
+            </LinearLayout>
+        </LinearLayout>
+    </FrameLayout>
+
+</LinearLayout>

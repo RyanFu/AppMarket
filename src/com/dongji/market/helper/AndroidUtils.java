@@ -1084,4 +1084,15 @@ public class AndroidUtils {
 		}
 		return 0;
 	}
+
+	/**
+	 * 判断是否是手机
+	 * 
+	 * @param context
+	 * @return
+	 */
+	public static boolean isPhone(Activity context) {
+		return ((context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) < Configuration.SCREENLAYOUT_SIZE_LARGE) || AndroidUtils.getPhysicalSize(context) < 6;
+	}
+
 }

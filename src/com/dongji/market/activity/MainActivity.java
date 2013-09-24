@@ -95,6 +95,7 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		mApp = (AppMarket) getApplication();
 		boolean flag = DJMarketUtils.isSaveFlow(this);// 是否开启流量模式
 		mApp.setRemoteImage(!flag);// 是否下载图片
+		mApp.setIsPhone(AndroidUtils.isPhone(this));//判断是不是手机
 
 		checkFirstLaunch();
 		if (DEBUG)

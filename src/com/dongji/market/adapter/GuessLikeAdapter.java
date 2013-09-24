@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.dongji.market.R;
 import com.dongji.market.activity.ApkDetailActivity;
+import com.dongji.market.application.AppMarket;
 import com.dongji.market.cache.FileService;
 import com.dongji.market.pojo.ApkItem;
 
@@ -30,6 +31,7 @@ public class GuessLikeAdapter extends BaseAdapter {
 	private Activity context;
 	private List<ApkItem> data;
 	private Bitmap defaultBitmap_icon;
+	private boolean isPhone;
 
 	public GuessLikeAdapter() {
 		super();
@@ -40,6 +42,8 @@ public class GuessLikeAdapter extends BaseAdapter {
 		this.context = context;
 		this.data = data;
 		this.defaultBitmap_icon = defaultBitmap_icon;
+		AppMarket mApp = (AppMarket) context.getApplication();
+		isPhone = mApp.isPhone();
 	}
 
 	@Override
@@ -62,7 +66,11 @@ public class GuessLikeAdapter extends BaseAdapter {
 		ViewHolder holder;
 		if (convertView == null) {
 			holder = new ViewHolder();
-			convertView = LayoutInflater.from(context).inflate(R.layout.item_guess_gridview, null);
+			if (isPhone) {
+				convertView = LayoutInflater.from(context).inflate(R.layout.item_guess_gridview, null);
+			} else {
+				convertView = LayoutInflater.from(context).inflate(R.layout.item_guess_gridview_tablet, null);
+			}
 			holder.mIconImage = (ImageView) convertView.findViewById(R.id.app_icon);
 			holder.mTextView = (TextView) convertView.findViewById(R.id.app_name);
 			holder.ivdongji_guess = (ImageView) convertView.findViewById(R.id.ivdongji_guess);

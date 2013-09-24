@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.myjson.JSONException;
 
+import android.R.integer;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.graphics.Bitmap;
@@ -150,7 +151,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mApp = (AppMarket) getApplication();
-		isPhone=mApp.isPhone();
+		isPhone = mApp.isPhone();
 		if (isPhone) {
 			setContentView(R.layout.activity_apkdetail);
 		} else {
@@ -956,12 +957,26 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 		int n = 0;
 		LayoutInflater mInflater = LayoutInflater.from(this);
 		DisplayMetrics dm = AndroidUtils.getScreenSize(this);
-		int maxWidth = dm.widthPixels - AndroidUtils.dip2px(this, 10.0f);
-		int imageWidth = AndroidUtils.dip2px(this, 30.0f);
-		int spacing = AndroidUtils.dip2px(this, 10.0f);
+		int maxWidth, imageWidth, spacing;
+
+		if (isPhone) {
+			maxWidth = dm.widthPixels - AndroidUtils.dip2px(this, 10.0f);
+			imageWidth = AndroidUtils.dip2px(this, 30.0f);
+			spacing = AndroidUtils.dip2px(this, 10.0f);
+		} else {
+			maxWidth = dm.widthPixels - AndroidUtils.dip2px(this, 15.0f);
+			imageWidth = AndroidUtils.dip2px(this, 35.0f);
+			spacing = AndroidUtils.dip2px(this, 15.0f);
+		}
+
 		while (n < permissionList.size()) {
 			LinearLayout mLinearLayout = getLinearLayout();
-			LinearLayout mChildLayout = (LinearLayout) mInflater.inflate(R.layout.layout_permission, null);
+			LinearLayout mChildLayout;
+			if (isPhone) {
+				mChildLayout = (LinearLayout) mInflater.inflate(R.layout.layout_permission, null);
+			} else {
+				mChildLayout = (LinearLayout) mInflater.inflate(R.layout.layout_permission_tablet, null);
+			}
 			TextView mTextView = (TextView) mChildLayout.findViewById(R.id.textview);
 			float textWidth = mTextView.getPaint().measureText(permissionList.get(n));
 			mTextView.setText(permissionList.get(n++));
@@ -969,7 +984,12 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 			float tempWidth = imageWidth;
 			textWidth += (spacing + imageWidth);
 			while (textWidth + tempWidth < maxWidth && n < permissionList.size()) {
-				LinearLayout mChildLayout2 = (LinearLayout) mInflater.inflate(R.layout.layout_permission, null);
+				LinearLayout mChildLayout2;
+				if (isPhone) {
+					mChildLayout2 = (LinearLayout) mInflater.inflate(R.layout.layout_permission, null);
+				} else {
+					mChildLayout2 = (LinearLayout) mInflater.inflate(R.layout.layout_permission_tablet, null);
+				}
 				TextView mTextView2 = (TextView) mChildLayout2.findViewById(R.id.textview);
 				ImageView mImageView = (ImageView) mChildLayout2.findViewById(R.id.imageview);
 				tempWidth = mTextView2.getPaint().measureText(permissionList.get(n));
@@ -1100,21 +1120,21 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 			tvTips.setPadding(0, padding, 0, padding);
 			tvTips.setTextSize(15);
 			tvTips.setText(R.string.none_likeapp);
-			return tvTips; 		
+			return tvTips;
 		}
 
 		HorizontalScrollView mScrollView2 = (HorizontalScrollView) LayoutInflater.from(this).inflate(R.layout.layout_detail_scrollview, null);
 		mContentLayout2 = (LinearLayout) mScrollView2.findViewById(R.id.contentlayout);
-		int columnWidth=0;
+		int columnWidth = 0;
 		int padding_10;
 		if (isPhone) {
-			 columnWidth= AndroidUtils.dip2px(this, 48);
-			 padding_10= AndroidUtils.dip2px(this, 10);
-		}else {
-			columnWidth=AndroidUtils.dip2px(this, 70);
-			padding_10=AndroidUtils.dip2px(this, 20);
+			columnWidth = AndroidUtils.dip2px(this, 48);
+			padding_10 = AndroidUtils.dip2px(this, 10);
+		} else {
+			columnWidth = AndroidUtils.dip2px(this, 68);
+			padding_10 = AndroidUtils.dip2px(this, 20);
 		}
-		
+
 		LayoutParams params = new LayoutParams(likeApkItems.size() * columnWidth + likeApkItems.size() * padding_10, columnWidth + padding_10 * 4);
 		GridView gvPrintScreen = new GridView(this);
 		gvPrintScreen.setLayoutParams(params);

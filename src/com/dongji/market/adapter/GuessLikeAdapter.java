@@ -11,13 +11,17 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.LinearLayout.LayoutParams;
 
 import com.dongji.market.R;
 import com.dongji.market.activity.ApkDetailActivity;
 import com.dongji.market.application.AppMarket;
 import com.dongji.market.cache.FileService;
+import com.dongji.market.helper.AndroidUtils;
 import com.dongji.market.pojo.ApkItem;
 
 /**
@@ -66,14 +70,13 @@ public class GuessLikeAdapter extends BaseAdapter {
 		ViewHolder holder;
 		if (convertView == null) {
 			holder = new ViewHolder();
-			if (isPhone) {
-				convertView = LayoutInflater.from(context).inflate(R.layout.item_guess_gridview, null);
-			} else {
-				convertView = LayoutInflater.from(context).inflate(R.layout.item_guess_gridview_tablet, null);
-			}
+			convertView = LayoutInflater.from(context).inflate(R.layout.item_guess_gridview, null);
 			holder.mIconImage = (ImageView) convertView.findViewById(R.id.app_icon);
 			holder.mTextView = (TextView) convertView.findViewById(R.id.app_name);
 			holder.ivdongji_guess = (ImageView) convertView.findViewById(R.id.ivdongji_guess);
+			if (!isPhone) {
+				adapterTablet(holder);
+			}
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
@@ -109,6 +112,42 @@ public class GuessLikeAdapter extends BaseAdapter {
 			}
 		});
 		return convertView;
+	}
+
+	/**
+	 * 适配平板
+	 * 
+	 * @param holder
+	 */
+	private void adapterTablet(ViewHolder holder) {
+		int columnWidth = 0;
+		int padding_10;
+		int screenWidth = AndroidUtils.getScreenSize(context).widthPixels;
+		padding_10 = (int) (screenWidth * 0.0278);
+		columnWidth = (int) ((screenWidth - padding_10 * 10) / 8);
+
+		LinearLayout.LayoutParams linearParams;
+		FrameLayout.LayoutParams frameParams;
+		int actualHeight;
+		int actualWidth;
+
+		actualWidth = columnWidth;
+		actualHeight = actualWidth;
+		frameParams = (FrameLayout.LayoutParams) holder.ivdongji_guess.getLayoutParams();
+		frameParams.width = actualWidth;
+		frameParams.height = actualHeight;
+		holder.ivdongji_guess.setLayoutParams(frameParams);
+
+		frameParams = (FrameLayout.LayoutParams) holder.mIconImage.getLayoutParams();
+		frameParams.width = actualWidth;
+		frameParams.height = actualHeight;
+		holder.mIconImage.setLayoutParams(frameParams);
+
+		linearParams = (LayoutParams) holder.mTextView.getLayoutParams();
+		linearParams.width = actualWidth;
+		holder.mTextView.setLayoutParams(linearParams);
+		holder.mTextView.setTextSize(AndroidUtils.sp2px(context, 11f));
+
 	}
 
 	private static class ViewHolder {

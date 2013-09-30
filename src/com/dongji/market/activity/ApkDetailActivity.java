@@ -31,10 +31,12 @@ import android.view.View.OnTouchListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.RatingBar;
 import android.widget.ScrollView;
@@ -194,6 +196,26 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 		ivdongji_head = (ImageView) findViewById(R.id.ivdongji_head);
 
 		initLoadingView();
+		
+		if (!isPhone) {
+			adapterTablet();
+		}
+	}
+
+	private void adapterTablet() {
+		int screenHeight = AndroidUtils.getScreenSize(this).heightPixels;
+		int screenWidth = AndroidUtils.getScreenSize(this).widthPixels;
+		LinearLayout.LayoutParams linearParams;
+		FrameLayout.LayoutParams frameParams;
+		RelativeLayout.LayoutParams relativeParams;
+		int actualHeight;
+		int actualWidth;
+		int leftMargin;
+		int rightMargin;
+		
+		int padding_10 = (int) (screenWidth * 0.0278);
+		llLikeApp.setPadding(padding_10, padding_10, padding_10, padding_10);
+		
 	}
 
 	private void initLoadingView() {
@@ -1131,8 +1153,9 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 			columnWidth = AndroidUtils.dip2px(this, 48);
 			padding_10 = AndroidUtils.dip2px(this, 10);
 		} else {
-			columnWidth = AndroidUtils.dip2px(this, 68);
-			padding_10 = AndroidUtils.dip2px(this, 20);
+			int screenWidth = AndroidUtils.getScreenSize(this).widthPixels;
+			padding_10 = (int)(screenWidth*0.0278);
+			columnWidth=(int)((screenWidth-padding_10*10)/8);
 		}
 
 		LayoutParams params = new LayoutParams(likeApkItems.size() * columnWidth + likeApkItems.size() * padding_10, columnWidth + padding_10 * 4);

@@ -24,7 +24,6 @@ import com.dongji.market.helper.AndroidUtils;
  */
 public class FileServiceBySDCard extends FileServiceAbstractDetails {
 
-	private final static String TAG = "FileServiceBySDCard";
 	private final long NEED_DELETED_TIME_INTERVAL = 48 * 3600000;// 2天（该变量用作判断2天前的图片会被删除）
 	final static String EXTERNAL_STORAGE_DIRECTORY_PATH = AndroidUtils.getSdcardFile().getPath() + "/.dongji/dongjiMarket/cache/images/";
 	static HashMap<String, String> urlMap;// key:URL hash code value:file
@@ -69,10 +68,8 @@ public class FileServiceBySDCard extends FileServiceAbstractDetails {
 						} else {
 							imageView.setImageBitmap(bm);
 						}
-						// return;
 					}
 				} else {
-					// imageView.setImageBitmap(defaultBitmap);
 					synchronized (urlMap) {
 						urlMap.remove(urlHashCode);
 					}
@@ -80,13 +77,10 @@ public class FileServiceBySDCard extends FileServiceAbstractDetails {
 			}
 		} catch (FileNotFoundException e) {
 			System.out.println("============" + filePath + ", " + e);
-			// QQLiveLog.d(TAG,
-			// "FileNotFoundException when get Bitmap from sd card.");
 		} catch (OutOfMemoryError e) {
 			if (bm != null && !bm.isRecycled()) {
 				bm.recycle();
 			}
-			// QQLiveLog.d(TAG, "OutOfMemoryError:"+e.getMessage());
 		}
 		return bm;
 	}
@@ -155,13 +149,11 @@ public class FileServiceBySDCard extends FileServiceAbstractDetails {
 
 	@Override
 	public boolean getFile(String path, String targetPath) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean clearFile(String path) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -189,20 +181,15 @@ public class FileServiceBySDCard extends FileServiceAbstractDetails {
 				urlMap.put(urlHashCode, EXTERNAL_STORAGE_DIRECTORY_PATH + urlHashCode + "_" + postfixName);
 			}
 		} catch (FileNotFoundException e) {
-			// QQLiveLog.d(TAG, "FileNotFoundException:" + e.getMessage());
-
 			System.out.println("====save bitmap file notfound:" + e);
 		} catch (IOException e) {
 			System.out.println("====save bitmap io:" + e);
-			// QQLiveLog.d(TAG, "IOException:" + e.getMessage());
 		} catch (NullPointerException e) {
-			// QQLiveLog.d(TAG, "NullPointerException:" + e.getMessage());
 		} finally {
 			if (outStream != null) {
 				try {
 					outStream.close();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

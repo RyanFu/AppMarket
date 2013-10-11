@@ -23,7 +23,7 @@ import android.widget.TextView.OnEditorActionListener;
 
 import com.dongji.market.R;
 import com.dongji.market.activity.Login_Activity;
-import com.dongji.market.download.AConstDefine;
+import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.AndroidUtils;
 
 public class LoginDialog2 extends Dialog implements android.view.View.OnClickListener{

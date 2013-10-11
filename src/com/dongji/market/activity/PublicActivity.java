@@ -15,10 +15,10 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.dongji.market.application.AppMarket;
-import com.dongji.market.download.AConstDefine;
 import com.dongji.market.download.DownloadConstDefine;
 import com.dongji.market.download.DownloadEntity;
 import com.dongji.market.download.DownloadService;
+import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.AndroidUtils;
 import com.dongji.market.pojo.ApkItem;
 import com.dongji.market.pojo.HistoryApkItem;

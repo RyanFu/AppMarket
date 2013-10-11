@@ -49,13 +49,13 @@ import com.dongji.market.adapter.GuessLikeAdapter;
 import com.dongji.market.application.AppMarket;
 import com.dongji.market.cache.FileService;
 import com.dongji.market.database.MarketDatabase;
-import com.dongji.market.download.AConstDefine;
 import com.dongji.market.download.DownloadConstDefine;
 import com.dongji.market.download.DownloadEntity;
 import com.dongji.market.download.DownloadUtils;
-import com.dongji.market.download.NetTool;
+import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.AndroidUtils;
 import com.dongji.market.helper.DJMarketUtils;
+import com.dongji.market.helper.NetTool;
 import com.dongji.market.helper.TitleUtil;
 import com.dongji.market.helper.TitleUtil.OnToolBarBlankClickListener;
 import com.dongji.market.pojo.ApkItem;
@@ -203,18 +203,18 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 	}
 
 	private void adapterTablet() {
-		int screenHeight = AndroidUtils.getScreenSize(this).heightPixels;
-		int screenWidth = AndroidUtils.getScreenSize(this).widthPixels;
-		LinearLayout.LayoutParams linearParams;
-		FrameLayout.LayoutParams frameParams;
-		RelativeLayout.LayoutParams relativeParams;
-		int actualHeight;
-		int actualWidth;
-		int leftMargin;
-		int rightMargin;
-		
-		int padding_10 = (int) (screenWidth * 0.0278);
-		llLikeApp.setPadding(padding_10, padding_10, padding_10, padding_10);
+//		int screenHeight = AndroidUtils.getScreenSize(this).heightPixels;
+//		int screenWidth = AndroidUtils.getScreenSize(this).widthPixels;
+//		LinearLayout.LayoutParams linearParams;
+//		FrameLayout.LayoutParams frameParams;
+//		RelativeLayout.LayoutParams relativeParams;
+//		int actualHeight;
+//		int actualWidth;
+//		int leftMargin;
+//		int rightMargin;
+//		
+//		int padding_10 = (int) (screenWidth * 0.0278);
+//		llLikeApp.setPadding(padding_10, padding_10, padding_10, padding_10);
 		
 	}
 

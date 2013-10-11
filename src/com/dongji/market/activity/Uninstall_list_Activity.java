@@ -21,7 +21,7 @@ import android.widget.Button;
 
 import com.dongji.market.R;
 import com.dongji.market.adapter.UninstallAdapter;
-import com.dongji.market.download.AConstDefine;
+import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.AndroidUtils;
 import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.helper.FileLoadTask;

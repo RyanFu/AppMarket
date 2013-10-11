@@ -49,7 +49,6 @@ import com.dongji.market.activity.SoftwareManageActivity;
 import com.dongji.market.adapter.SearchHistoryAdapter;
 import com.dongji.market.application.AppMarket;
 import com.dongji.market.database.MarketDatabase.SearchHistory;
-import com.dongji.market.download.AConstDefine;
 import com.dongji.market.download.DownloadConstDefine;
 import com.dongji.market.download.DownloadEntity;
 import com.dongji.market.download.DownloadService;

@@ -18,8 +18,8 @@ import android.widget.Toast;
 
 import com.dongji.market.R;
 import com.dongji.market.database.MarketDatabase.Setting_Service;
-import com.dongji.market.download.AConstDefine;
 import com.dongji.market.download.DownloadConstDefine;
+import com.dongji.market.helper.AConstDefine;
 
 public class SettingFlowDialog extends Dialog {
 	private Context cxt;

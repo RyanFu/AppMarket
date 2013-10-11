@@ -10,14 +10,13 @@ import android.os.Handler;
 import android.widget.ImageView;
 
 public class FileServiceByMemoary extends FileServiceAbstractDetails {
-	
+
 	@Override
 	public void loadFileToMap() {
 		// for memory, nothing to do.
 	}
-	
-	private Bitmap getBitmapByCache(String url, ImageView imageView,
-			Bitmap defaultBitmap, Integer scrollState) {
+
+	private Bitmap getBitmapByCache(String url, ImageView imageView, Bitmap defaultBitmap, Integer scrollState) {
 		resetPurgeTimer();
 		// scrollState 0:停止状态，需要加载图片(cache -> network)
 		// scrollState 1/2:滚动状态，此时就用cache图片，如果cache没有就用默认defaultBitmap
@@ -28,17 +27,15 @@ public class FileServiceByMemoary extends FileServiceAbstractDetails {
 			} else {
 				imageView.setImageBitmap(bitmap);
 			}
-//			return;
 		}
 		return bitmap;
 	}
 
 	@Override
-	public void getBitmap(String url, ImageView imageView,
-			Bitmap defaultBitmap, Integer scrollState) {
+	public void getBitmap(String url, ImageView imageView, Bitmap defaultBitmap, Integer scrollState) {
 
 		Bitmap bitmap = getBitmapByCache(url, imageView, defaultBitmap, scrollState);
-		
+
 		if (bitmap == null) {
 			forceDownload(url, imageView, defaultBitmap);
 		} else {
@@ -46,18 +43,15 @@ public class FileServiceByMemoary extends FileServiceAbstractDetails {
 			imageView.setImageBitmap(bitmap);
 		}
 	}
-	
 
 	@Override
-	public void getBitmap(String url, ImageView imageView,
-			Bitmap defaultBitmap, boolean isRemote) {
-		// TODO Auto-generated method stub
+	public void getBitmap(String url, ImageView imageView, Bitmap defaultBitmap, boolean isRemote) {
 		Bitmap bitmap = getBitmapByCache(url, imageView, defaultBitmap, 0);
-		
+
 		if (bitmap == null) {
-			if(!isRemote) {
+			if (!isRemote) {
 				imageView.setImageBitmap(defaultBitmap);
-			}else {
+			} else {
 				forceDownload(url, imageView, defaultBitmap);
 			}
 		} else {
@@ -66,25 +60,17 @@ public class FileServiceByMemoary extends FileServiceAbstractDetails {
 		}
 	}
 
-	// public void setMode(Mode mode) {
-	// this.mode = mode;
-	// clearCache();
-	// }
-
 	private static final int HARD_CACHE_CAPACITY = 30;
 	private static final int DELAY_BEFORE_PURGE = 10 * 1000; // in milliseconds
-	private final static HashMap<String, Bitmap> mHardBitmapCache = new LinkedHashMap<String, Bitmap>(
-			HARD_CACHE_CAPACITY, 0.75f, true) {
+	private final static HashMap<String, Bitmap> mHardBitmapCache = new LinkedHashMap<String, Bitmap>(HARD_CACHE_CAPACITY, 0.75f, true) {
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		protected boolean removeEldestEntry(
-				LinkedHashMap.Entry<String, Bitmap> eldest) {
+		protected boolean removeEldestEntry(LinkedHashMap.Entry<String, Bitmap> eldest) {
 			if (size() > HARD_CACHE_CAPACITY) {
 				// Entries push-out of hard reference cache are transferred to
 				// soft reference cache
-				mSoftBitmapCache.put(eldest.getKey(),
-						new SoftReference<Bitmap>(eldest.getValue()));
+				mSoftBitmapCache.put(eldest.getKey(), new SoftReference<Bitmap>(eldest.getValue()));
 				return true;
 			} else
 				return false;
@@ -95,8 +81,7 @@ public class FileServiceByMemoary extends FileServiceAbstractDetails {
 	 * Direct Reference 时才会清除，SoftReference 是用来设计 object-cache 之用的。 不但可以把对象
 	 * cache 起来，也不会造成内存不足的错误 （OutOfMemoryError）
 	 */
-	private final static ConcurrentHashMap<String, SoftReference<Bitmap>> mSoftBitmapCache = new ConcurrentHashMap<String, SoftReference<Bitmap>>(
-			HARD_CACHE_CAPACITY);
+	private final static ConcurrentHashMap<String, SoftReference<Bitmap>> mSoftBitmapCache = new ConcurrentHashMap<String, SoftReference<Bitmap>>(HARD_CACHE_CAPACITY);
 	private final static Handler mPurgeHandler = new Handler();
 	private final static Runnable mPurgerRunnable = new Runnable() {
 		public void run() {
@@ -140,13 +125,11 @@ public class FileServiceByMemoary extends FileServiceAbstractDetails {
 
 	@Override
 	public boolean getFile(String path, String targetPath) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean clearFile(String path) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

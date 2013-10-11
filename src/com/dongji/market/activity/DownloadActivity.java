@@ -16,11 +16,11 @@ import android.widget.ExpandableListView;
 import com.dongji.market.R;
 import com.dongji.market.adapter.DownloadAdapter;
 import com.dongji.market.application.AppMarket;
-import com.dongji.market.download.AConstDefine;
 import com.dongji.market.download.DownloadConstDefine;
 import com.dongji.market.download.DownloadEntity;
 import com.dongji.market.download.DownloadService;
 import com.dongji.market.download.DownloadUtils;
+import com.dongji.market.helper.AConstDefine;
 import com.umeng.analytics.MobclickAgent;
 
 public class DownloadActivity extends Activity implements DownloadConstDefine {

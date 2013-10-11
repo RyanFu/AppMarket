@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.view.View;
 
 import com.dongji.market.R;
+import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.widget.CustomNoTitleDialog;
 import com.dongji.market.widget.SettingFlowDialog;
 

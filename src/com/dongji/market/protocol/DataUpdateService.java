@@ -27,9 +27,9 @@ import android.os.Looper;
 import android.os.Message;
 
 import com.dongji.market.application.AppMarket;
-import com.dongji.market.download.AConstDefine;
 import com.dongji.market.download.DownloadConstDefine;
 import com.dongji.market.download.DownloadEntity;
+import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.AndroidUtils;
 import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.helper.ShareParams;

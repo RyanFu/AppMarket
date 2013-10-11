@@ -26,7 +26,7 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.dongji.market.R;
-import com.dongji.market.download.AConstDefine;
+import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.AndroidUtils;
 import com.dongji.market.protocol.DataManager;
 import com.dongji.market.receiver.CommonReceiver;

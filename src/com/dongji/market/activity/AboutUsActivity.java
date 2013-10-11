@@ -14,7 +14,7 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
 import com.dongji.market.R;
-import com.dongji.market.download.AConstDefine;
+import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.AndroidUtils;
 import com.dongji.market.receiver.CommonReceiver;
 

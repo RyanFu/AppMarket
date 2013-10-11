@@ -27,7 +27,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import com.dongji.market.R;
 import com.dongji.market.adapter.ListBaseAdapter;
 import com.dongji.market.adapter.ListSingleTemplateAdapter;
-import com.dongji.market.download.AConstDefine;
+import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.AndroidUtils;
 import com.dongji.market.helper.TitleUtil;
 import com.dongji.market.helper.TitleUtil.OnSortChangeListener;

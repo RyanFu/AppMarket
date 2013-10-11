@@ -35,8 +35,8 @@ import com.dongji.market.download.DownloadConstDefine;
 import com.dongji.market.download.DownloadEntity;
 import com.dongji.market.download.DownloadService;
 import com.dongji.market.download.DownloadUtils;
-import com.dongji.market.download.NetTool;
 import com.dongji.market.helper.AndroidUtils;
+import com.dongji.market.helper.NetTool;
 import com.dongji.market.pojo.ApkItem;
 
 /**

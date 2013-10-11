@@ -13,7 +13,9 @@ import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.AndroidUtils;
+import com.dongji.market.helper.NetTool;
 import com.dongji.market.pojo.ApkItem;
 
 /**
@@ -33,19 +35,18 @@ public class DownloadEntity implements Runnable, DownloadConstDefine, Parcelable
 	public String url; // 下载地址
 	private static final int REQUEST_TIME_OUT = 10000; // 请求超时时间
 	private static final String REQUEST_METHOD_GET = "GET"; // 请求方式
-	public int downloadType;
-	public String versionName;
-	private int retryNum;
+	public int downloadType;// 下载类型
+	public String versionName;// 版本名
 	public String iconUrl; // 图标地址
 	public String installedVersionName; // 已安装的软件版本名
 	public long installedFileLength; // 已安装的软件大小
 	public Drawable installedIcon; // 已安装的软件图标
 	public int installedVersionCode; // 已安装的软件版本号
-	public int heavy;
+	public int heavy;// 权重
 
-	private boolean isOver = true;
+	private boolean isOver = true;// 下载是否结束
 
-	private OnDownloadListener listener;
+	private OnDownloadListener listener;// 下载监听
 
 	public DownloadEntity() {
 		super();
@@ -130,12 +131,8 @@ public class DownloadEntity implements Runnable, DownloadConstDefine, Parcelable
 		boolean exists = AndroidUtils.checkFileExists(getPrepareAbsoluteFilePath());
 		// 容错处理：如果此文件被删除，则重新开始下载
 		if (currentPosition > 0 && !exists) {
-			// System.out.println(appName+" file not exists!");
 			currentPosition = 0;
 		}
-
-		// System.out.println(appName+" start currentPosition:"+currentPosition+", "+Thread.currentThread().getName()+", "+Thread.activeCount());
-
 		URL mUrl = new URL(url);
 		HttpURLConnection httpConnection = (HttpURLConnection) mUrl.openConnection();
 		httpConnection.setConnectTimeout(REQUEST_TIME_OUT);
@@ -183,23 +180,11 @@ public class DownloadEntity implements Runnable, DownloadConstDefine, Parcelable
 	 */
 	private void postExecute() {
 		synchronized (this) {
-			// System.out.println(appName+" over "+currentPosition+", "+fileLength+", "+status+", "+Thread.currentThread().getName()+", "+Thread.activeCount());
-			if (currentPosition == fileLength) {
-				// if (status == STATUS_OF_DOWNLOADING) {
+			if (currentPosition == fileLength) {// 下载完成
 				status = STATUS_OF_COMPLETE;
-				// setStatus(STATUS_OF_COMPLETE);
 				completeRenameFile();
-				// }
-			} else if (status == STATUS_OF_EXCEPTION) {
-				// retry
+			} else if (status == STATUS_OF_EXCEPTION || status == STATUS_OF_PAUSE || status == STATUS_OF_PAUSE_ON_TRAFFIC_LIMIT) {// 下载异常、暂停或者流量限制
 				notifyDownloadChange();
-			} else if (status == STATUS_OF_PAUSE || status == STATUS_OF_PAUSE_ON_TRAFFIC_LIMIT) {
-				notifyDownloadChange();
-			}/*
-			 * else if(!isRunning){ System.out.println(appName+" post pause!");
-			 * status=STATUS_OF_PAUSE; }
-			 */else if (status == STATUS_OF_PAUSE_ON_EXIT_SYSTEM) {
-
 			} else if (status == STATUS_OF_INITIAL) {
 				currentPosition = 0;
 				notifyDownloadChange();
@@ -211,17 +196,7 @@ public class DownloadEntity implements Runnable, DownloadConstDefine, Parcelable
 	}
 
 	public synchronized boolean canDownload() {
-		// if(status!=STATUS_OF_DOWNLOADING && !isRunning) { // &&
-		// Thread.currentThread().getName().equals("main")status==STATUS_OF_PREPARE
-		// &&
 		if (status != STATUS_OF_DOWNLOADING && isOver) {
-			return true;
-		}
-		return false;
-	}
-
-	public synchronized boolean canPause() {
-		if (status == STATUS_OF_DOWNLOADING && status != STATUS_OF_PAUSE) {
 			return true;
 		}
 		return false;
@@ -252,8 +227,7 @@ public class DownloadEntity implements Runnable, DownloadConstDefine, Parcelable
 		File file = new File(getPrepareAbsoluteFilePath());
 		File apkFile = new File(getPostAbsoluteFilePath());
 		if (file.exists() && !apkFile.exists()) {
-			boolean flag = file.renameTo(apkFile);
-			// System.out.println(appName+" rename:"+flag+", "+file.getPath()+", "+apkFile.getPath()+", "+status+", "+listener);
+			file.renameTo(apkFile);
 			notifyDownloadChange();
 		} else if (apkFile.exists()) {
 			notifyDownloadChange();
@@ -290,22 +264,18 @@ public class DownloadEntity implements Runnable, DownloadConstDefine, Parcelable
 		}
 	}
 
-	public void setRunning(boolean isRunning) {
-		// this.isRunning=isRunning;
-	}
-
 	/**
 	 * 设置下载状态值
 	 * 
 	 * @param status
 	 */
 	public synchronized void setStatus(int status) {
-		if ((this.currentPosition == this.fileLength && this.currentPosition > 0) || (this.status == STATUS_OF_COMPLETE && this.currentPosition > 0)) {
+		if ((this.currentPosition == this.fileLength && this.currentPosition > 0) || (this.status == STATUS_OF_COMPLETE && this.currentPosition > 0)) {//下载完成
 			this.status = STATUS_OF_COMPLETE;
 			return;
 		}
 		switch (status) {
-		case STATUS_OF_INITIAL:
+		case STATUS_OF_INITIAL://初始化状态
 			this.currentPosition = 0;
 			this.status = status;
 			break;
@@ -343,9 +313,6 @@ public class DownloadEntity implements Runnable, DownloadConstDefine, Parcelable
 	 * @return
 	 */
 	public synchronized int getStatus() {
-		/*
-		 * synchronized(this) { return this.status; }
-		 */
 		return this.status;
 	}
 
@@ -357,7 +324,6 @@ public class DownloadEntity implements Runnable, DownloadConstDefine, Parcelable
 
 	@Override
 	public int describeContents() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 

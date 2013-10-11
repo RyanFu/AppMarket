@@ -30,7 +30,7 @@ import android.widget.RadioButton;
 
 import com.dongji.market.R;
 import com.dongji.market.application.AppMarket;
-import com.dongji.market.download.AConstDefine;
+import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.AndroidUtils;
 import com.dongji.market.helper.ShareParams;
 import com.dongji.market.helper.TitleUtil;

@@ -27,8 +27,10 @@ import com.dongji.market.activity.BaseActivity;
 import com.dongji.market.activity.DownloadActivity;
 import com.dongji.market.activity.PublicActivity;
 import com.dongji.market.activity.SoftwareManageActivity;
+import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.AndroidUtils;
 import com.dongji.market.helper.DJMarketUtils;
+import com.dongji.market.helper.NetTool;
 import com.dongji.market.pojo.ApkItem;
 import com.dongji.market.widget.CustomNoTitleDialog;
 

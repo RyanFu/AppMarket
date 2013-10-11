@@ -15,7 +15,6 @@ public class DownloadDBHelper {
 	private static final int DATABASE_VERSION = 1;
 	private static final String DATABASE_NAME = "dongji_market_download_db.db";
 	private static final String DOWNLOAD_TABLE = "downloadTable";
-	private static final String IGNORE_TABLE = "ignoreTable";
 
 	private Context context;
 
@@ -36,7 +35,6 @@ public class DownloadDBHelper {
 		public void onCreate(SQLiteDatabase db) {
 			db.execSQL("create table if not exists " + DOWNLOAD_TABLE + "(_id INTEGER primary key autoincrement, " + DownloadDBConstDefine.DOWNLOAD_APPNAME + " TEXT, " + DownloadDBConstDefine.DOWNLOAD_APPID + " INTEGER, " + "" + DownloadDBConstDefine.DOWNLOAD_CATEGOTY + " INTEGER, " + DownloadDBConstDefine.DOWNLOAD_CURRENT_POSITION + " LONG, " + DownloadDBConstDefine.DOWNLOAD_FILE_LENGTH + " LONG, " + "" + DownloadDBConstDefine.DOWNLOAD_PACKAGENAME + " TEXT, " + DownloadDBConstDefine.DOWNLOAD_VERSION_CODE + " Integer, " + DownloadDBConstDefine.DOWNLOAD_APKURL + " TEXT, " + DownloadDBConstDefine.DOWNLOAD_ICON_URL + " TEXT, " + DownloadDBConstDefine.DOWNLOAD_VERSION_NAME + " TEXT, " + "" + DownloadDBConstDefine.DOWNLOAD_TYPE + " Integer, " + DownloadDBConstDefine.DOWNLOAD_STATUS
 					+ " Integer, " + DownloadDBConstDefine.HEAVY + " Integer);");
-			// db.execSQL()
 		}
 
 		@Override
@@ -116,17 +114,17 @@ public class DownloadDBHelper {
 			sqLiteDatabase = dbHelper.getReadableDatabase();
 			cursor = sqLiteDatabase.query(DOWNLOAD_TABLE, null, null, null, null, null, null);
 			if (cursor.getCount() > 0) {
-				boolean historyDownload = downloadList.size() > 0; // 是否有之前的下载数据
+				boolean hasHistoryDownload = downloadList.size() > 0; // 是否有之前的下载数据
 				cursor.moveToFirst();
 				while (!cursor.isAfterLast()) {
 					DownloadEntity entity = new DownloadEntity();
 					entity.appId = cursor.getInt(cursor.getColumnIndex(DownloadDBConstDefine.DOWNLOAD_APPID));
 					entity.category = cursor.getInt(cursor.getColumnIndex(DownloadDBConstDefine.DOWNLOAD_CATEGOTY));
 					boolean exists = false;
-					if (historyDownload) {
-						exists = hasDownloadEntity(downloadList, entity);
+					if (hasHistoryDownload) {// 已有下载数据
+						exists = hasDownloadEntity(downloadList, entity);// 是否已包含
 					}
-					if (!exists) {
+					if (!exists) {// 还未包含
 						entity.appName = cursor.getString(cursor.getColumnIndex(DownloadDBConstDefine.DOWNLOAD_APPNAME));
 						entity.currentPosition = cursor.getLong(cursor.getColumnIndex(DownloadDBConstDefine.DOWNLOAD_CURRENT_POSITION));
 						entity.fileLength = cursor.getLong(cursor.getColumnIndex(DownloadDBConstDefine.DOWNLOAD_FILE_LENGTH));

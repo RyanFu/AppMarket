@@ -22,7 +22,7 @@ import com.dongji.market.R;
 import com.dongji.market.activity.Login_Activity;
 import com.dongji.market.activity.Uninstall_list_Activity;
 import com.dongji.market.application.AppMarket;
-import com.dongji.market.download.AConstDefine;
+import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.AndroidUtils;
 import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.pojo.LoginParams;

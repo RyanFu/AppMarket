@@ -13,7 +13,6 @@ import com.dongji.market.activity.SoftwareMove_list_Activity;
 import com.dongji.market.adapter.ChooseToBackupAdapter;
 import com.dongji.market.adapter.SoftwareMoveAdapter;
 import com.dongji.market.adapter.UninstallAdapter;
-import com.dongji.market.download.AConstDefine;
 import com.dongji.market.pojo.InstalledAppInfo;
 
 public class FileLoadTask extends AsyncTask<Void, InstalledAppInfo, Void> {

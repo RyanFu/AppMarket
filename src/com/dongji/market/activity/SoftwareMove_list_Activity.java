@@ -24,7 +24,7 @@ import android.widget.TextView;
 
 import com.dongji.market.R;
 import com.dongji.market.adapter.SoftwareMoveAdapter;
-import com.dongji.market.download.AConstDefine;
+import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.FileLoadTask;
 import com.dongji.market.pojo.InstalledAppInfo;
 import com.dongji.market.widget.ScrollListView;

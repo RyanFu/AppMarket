@@ -8,7 +8,7 @@ import android.os.Handler;
 import android.os.Message;
 
 import com.dongji.market.activity.Login_Activity;
-import com.dongji.market.download.AConstDefine;
+import com.dongji.market.helper.AConstDefine;
 
 public class CommonReceiver extends BroadcastReceiver {
 

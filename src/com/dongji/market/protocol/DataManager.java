@@ -51,7 +51,7 @@ public class DataManager {
 
 	private static final String SINA_WEIBO_SHORT_URL_API = "http://api.t.sina.com.cn/short_url/shorten.json?source=2849184197&url_long=";
 
-//	private static final String DOMAIN_NAME = "http://192.168.1.200/cms/"
+	// private static final String DOMAIN_NAME = "http://192.168.1.200/cms/"
 	private static final String DOMAIN_NAME = "http://www.91dongji.com/";
 
 	private static final String NAV_URL = "json2/nav.txt";
@@ -259,118 +259,8 @@ public class DataManager {
 					list.add(info);
 				}
 				if (!isLocal) {
-					MarketDatabase db = new MarketDatabase(context);
-					if (list != null && list.size() > 0) {
-						List<ChannelListInfo> saveList = db.getAllChannel();
-						if (saveList == null) {
-							for (int i = 0; i < list.size(); i++) {
-								db.addChannel(list.get(i));
-							}
-						} else {
-							int j = 0;
-							for (int i = 0; i < list.size(); i++) {
-								for (j = 0; j < saveList.size(); j++) {
-									if (list.get(i).equals(saveList.get(j))) {
-										saveList.remove(j--);
-										db.deleteChannelById(list.get(i).id);
-										break;
-									}
-								}
-								if (j == saveList.size()) {
-									db.addChannel(list.get(i));
-								}
-							}
-						}
-						FsCache.cacheFileByMd5(result, CHANNEL_NAME);
-					} else {
-						db.deleteAllChannel();
-					}
+					FsCache.cacheFileByMd5(result, CHANNEL_NAME);
 				}
-			}
-		}
-		return list;
-	}
-
-	public ArrayList<ApkItem> getApps(Context context, NavigationInfo currentInfo, boolean isApp) throws JSONException {
-		ArrayList<ApkItem> list = null;
-		int position = isApp ? 0 : 1;
-		StaticAddress currentSd = (StaticAddress) currentInfo.staticAddress[position];
-		String md5Value = currentSd.md5Value;
-		String suffixUrl = currentSd.url;
-		String result = FsCache.getCacheString(md5Value);
-		boolean isLocal = false;
-		System.out.println("==================" + DOMAIN_NAME + suffixUrl);
-		if (TextUtils.isEmpty(result)) {
-			HttpClientApi httpClientApi = HttpClientApi.getInstance();
-			try {
-				result = httpClientApi.getContentFromUrl(DOMAIN_NAME + suffixUrl);
-			} catch (IOException e) {
-				isLocal = true;
-				// result=FsCache.getCacheString(md5Value);
-				System.out.println("getApps:" + e);
-			}
-		} else {
-			isLocal = true;
-		}
-		if (!TextUtils.isEmpty(result)) {
-			JSONArray jsonArray = new JSONArray(result);
-			if (jsonArray != null && jsonArray.length() > 0) {
-				list = new ArrayList<ApkItem>();
-				for (int i = 0; i < jsonArray.length(); i++) {
-					JSONObject jsonObject = jsonArray.getJSONObject(i);
-					ApkItem item = new ApkItem();
-					item.appId = jsonObject.getInt("id");
-					String category = jsonObject.getString("catcid");
-					if (!TextUtils.isEmpty(category)) {
-						item.category = Integer.parseInt(category);
-					}
-					// item.classx=jsonObject.getInt("catpid");
-					String language = jsonObject.getString("language");
-					if (TextUtils.isEmpty(language)) {
-						item.language = 1;
-					} else {
-						item.language = Integer.parseInt(language);
-					}
-					item.company = jsonObject.getString("developer");
-					String apkUrl = jsonObject.getString("down_url");
-					if (!TextUtils.isEmpty(apkUrl)) {
-						// item.apkUrl = ONLINE_DOMAIN_NAME + apkUrl;
-						item.apkUrl = ONLINE_STATIC_DOMAIN_NAME + apkUrl;
-					}
-					item.downloadNum = jsonObject.getLong("down_count");
-					String iconUrl = jsonObject.getString("apk_icon");
-
-					if (!TextUtils.isEmpty(iconUrl)) {
-						item.appIconUrl = ONLINE_DOMAIN_NAME + iconUrl;
-					}
-					item.appName = jsonObject.getString("apk_name");
-					item.fileSize = jsonObject.getLong("apk_size");
-					item.versionCode = jsonObject.getInt("apk_versioncode");
-					item.version = jsonObject.getString("apk_versionname");
-					item.packageName = jsonObject.getString("apk_packagename");
-					if (jsonObject.has("heavy")) {
-						item.heavy = jsonObject.getInt("heavy");
-					}
-					list.add(item);
-				}
-
-				MarketDatabase db = new MarketDatabase(context);
-				NavigationInfo saveInfo = db.getNavigationByNavId(currentInfo.id);
-				if (saveInfo == null) {
-					FsCache.cacheFileByMd5(result, md5Value);
-					db.addNavigation(currentInfo);
-				} else {
-					StaticAddress saveSd = (StaticAddress) saveInfo.staticAddress[position];
-					if (!currentSd.md5Value.equals(saveSd.md5Value)) {
-						FsCache.deleteCacheFileByMd5Value(saveSd.md5Value);
-						FsCache.cacheFileByMd5(result, md5Value);
-						db.updateNavigation(currentInfo, isApp);
-						System.out.println("cache File change!");
-					}
-				}
-			}
-			if (!isLocal) {
-				FsCache.cacheFileByMd5(result, md5Value);
 			}
 		}
 		return list;
@@ -567,6 +457,7 @@ public class DataManager {
 
 	/**
 	 * 通过分类id,以及应用id获取应用详情信息
+	 * 
 	 * @param category
 	 * @param appId
 	 * @return

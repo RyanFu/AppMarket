@@ -27,7 +27,7 @@ import android.widget.TextView;
 import com.dongji.market.R;
 import com.dongji.market.adapter.ListBaseAdapter;
 import com.dongji.market.adapter.ThemeListSingleTemplateAdapter;
-import com.dongji.market.download.AConstDefine;
+import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.AndroidUtils;
 import com.dongji.market.helper.TitleUtil;
 import com.dongji.market.helper.TitleUtil.OnToolBarBlankClickListener;

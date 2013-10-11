@@ -10,21 +10,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.dongji.market.pojo.ChannelListInfo;
-import com.dongji.market.pojo.NavigationInfo;
 import com.dongji.market.pojo.SettingConf;
-import com.dongji.market.pojo.StaticAddress;
 
 public class MarketDatabase {
 	private static final int DATABASE_VERSION = 2;
 	private static final String DATABASE_NAME = "dongji_market_db.db";
-	private static final String SETTING_TABLE = "setting_table";
-	private static final String SEARCH_HISTORY_TABLE = "search_history_table";
-	private static final String SEARCH_HOTWORDS_TABLE = "search_hotwords_table";
-	private static final String NAVIGATION_TABLE = "navigation_table";
-	private static final String CHANNEL_TABLE = "channel_table";
-	private static final String CHANNEL_REF_TABLE = "channel_ref_table";
-	private static final String RATING_TABLE = "rating_table";
+	private static final String SETTING_TABLE = "setting_table";// 保存设置项
+	private static final String SEARCH_HISTORY_TABLE = "search_history_table";// 保存搜索历史表
+	private static final String SEARCH_HOTWORDS_TABLE = "search_hotwords_table";// 保存搜索热词表
+	private static final String RATING_TABLE = "rating_table";// 评分表
 
 	private Context context;
 
@@ -46,9 +40,6 @@ public class MarketDatabase {
 			db.execSQL("create table if not exists " + SETTING_TABLE + "(_id INTEGER primary key autoincrement, name TEXT, value INTEGER)");
 			db.execSQL("create table if not exists " + SEARCH_HISTORY_TABLE + "(_id INTEGER primary key autoincrement, name TEXT)");
 			db.execSQL("create table if not exists " + SEARCH_HOTWORDS_TABLE + "(_id INTEGER primary key autoincrement, hotword TEXT)");
-			db.execSQL("create table if not exists " + NAVIGATION_TABLE + "(_id INTEGER primary key autoincrement, nav_id INTEGER, nav_name TEXT, gameUrl TEXT, gameMd5Value TEXT, appUrl TEXT, appMd5Value TEXT);");
-			db.execSQL("create table if not exists " + CHANNEL_TABLE + "(_id INTEGER primary key autoincrement, catid INTEGER, name TEXT, parentId INTEGER);");
-			db.execSQL("create table if not exists " + CHANNEL_REF_TABLE + "(_id INTEGER primary key autoincrement, catid INTEGER, _index INTEGER, url TEXT, md5Value TEXT);");
 			db.execSQL("create table if not exists " + RATING_TABLE + "(_id INTEGER primary key autoincrement, typeid INTEGER, appid INTEGER,rating float);");
 		}
 
@@ -57,293 +48,10 @@ public class MarketDatabase {
 			db.execSQL("DROP TABLE IF EXISTS " + SETTING_TABLE);
 			db.execSQL("DROP TABLE IF EXISTS " + SEARCH_HISTORY_TABLE);
 			db.execSQL("DROP TABLE IF EXISTS " + SEARCH_HOTWORDS_TABLE);
-			db.execSQL("DROP TABLE IF EXISTS " + NAVIGATION_TABLE);
-			db.execSQL("DROP TABLE IF EXISTS " + CHANNEL_TABLE);
-			db.execSQL("DROP TABLE IF EXISTS " + CHANNEL_REF_TABLE);
 			db.execSQL("DROP TABLE IF EXISTS " + RATING_TABLE);
 			onCreate(db);
 		}
 
-	}
-
-	public void addChannel(ChannelListInfo info) {
-		SQLiteDatabase sqLiteDatabase = null;
-		try {
-			sqLiteDatabase = dbHelper.getWritableDatabase();
-			ContentValues values = new ContentValues();
-			values.put("catid", info.id);
-			values.put("name", info.name);
-			values.put("parentId", info.parentId);
-			// sqLiteDatabase.beginTransaction();
-			sqLiteDatabase.insert(CHANNEL_TABLE, null, values);
-			/*
-			 * if (info.staticAddress != null && info.staticAddress.length > 0)
-			 * { for(int i=0;i<info.staticAddress.length;i++) { ContentValues
-			 * values2=new ContentValues(); StaticAddress
-			 * staticAddress=info.staticAddress[i]; values2.put("catid",
-			 * info.id); values2.put("index", 0); values2.put("url",
-			 * staticAddress.url); values2.put("md5Value",
-			 * staticAddress.md5Value); sqLiteDatabase.insert(CHANNEL_REF_TABLE,
-			 * null, values2); } } sqLiteDatabase.setTransactionSuccessful();
-			 * sqLiteDatabase.endTransaction();
-			 */
-		} catch (SQLiteException e) {
-			System.out.println("add channel:" + e);
-		} finally {
-			release(sqLiteDatabase, null);
-		}
-	}
-
-	public ChannelListInfo getChannel(int channelId) {
-		/*
-		 * SQLiteDatabase sqLiteDatabase=null; Cursor cursor=null; Cursor
-		 * cursor2=null; try{ sqLiteDatabase=dbHelper.getReadableDatabase();
-		 * ChannelListInfo info=new ChannelListInfo(); cursor =
-		 * sqLiteDatabase.query(CHANNEL_TABLE, new String[] { "catid", "name",
-		 * "parentId" }, "catid=?", new String[] { String.valueOf(channelId) },
-		 * null, null, null); if (cursor != null && cursor.getCount() > 0) {
-		 * cursor.moveToFirst();
-		 * info.id=cursor.getInt(cursor.getColumnIndex("catid"));
-		 * info.name=cursor.getString(cursor.getColumnIndex("name"));
-		 * info.parentId=cursor.getInt(cursor.getColumnIndex("parentId"));
-		 * cursor2 = sqLiteDatabase.query(CHANNEL_REF_TABLE, new String[] {
-		 * "catid", "_index", "url", "md5Value" }, "catid=?", new String[] {
-		 * String.valueOf(info.id) }, null, null, null); if(cursor2!=null &&
-		 * cursor2.getCount()>0) { // info.staticAddress = new
-		 * StaticAddress[cursor2.getCount()+1]; // cursor2.moveToFirst(); //
-		 * while(!cursor2.isAfterLast()) { // StaticAddress staticAddress=new
-		 * StaticAddress(); //
-		 * staticAddress.url=cursor2.getString(cursor2.getColumnIndex("url"));
-		 * // staticAddress.md5Value=cursor2.getString(cursor2.getColumnIndex(
-		 * "md5Value")); // int
-		 * index=cursor2.getInt(cursor2.getColumnIndex("_index")); //
-		 * System.out.
-		 * println("length:"+info.staticAddress.length+", index:"+index); //
-		 * if(index<info.staticAddress.length) { // info.staticAddress[index] =
-		 * staticAddress; // } // cursor2.moveToNext(); // } } } return info;
-		 * }catch(SQLiteException e) {
-		 * 
-		 * }finally { if(cursor2!=null && !cursor2.isClosed()) {
-		 * cursor2.close(); } release(sqLiteDatabase, cursor); }
-		 */
-		return null;
-	}
-
-	public List<ChannelListInfo> getAllChannel() {
-		/*
-		 * SQLiteDatabase sqLiteDatabase=null; List<ChannelListInfo> list=null;
-		 * Cursor cursor=null; try{
-		 * sqLiteDatabase=dbHelper.getReadableDatabase();
-		 * cursor=sqLiteDatabase.query(CHANNEL_TABLE, null, null, null, null,
-		 * null, null); if (cursor != null && cursor.getCount() > 0) { list=new
-		 * ArrayList<ChannelListInfo>(); cursor.moveToFirst();
-		 * while(!cursor.isAfterLast()) { ChannelListInfo info=new
-		 * ChannelListInfo();
-		 * info.id=cursor.getInt(cursor.getColumnIndex("catid"));
-		 * info.name=cursor.getString(cursor.getColumnIndex("name"));
-		 * info.parentId=cursor.getInt(cursor.getColumnIndex("parentId"));
-		 * cursor.moveToNext(); list.add(info); } for(int i=0;i<list.size();i++)
-		 * { ChannelListInfo info=list.get(i); Cursor
-		 * refCursor=sqLiteDatabase.query(CHANNEL_REF_TABLE, null, "catid=?",
-		 * new String[]{String.valueOf(info.id)}, null, null, null);
-		 * if(refCursor!=null && refCursor.getCount()>0) {
-		 * refCursor.moveToFirst(); // info.staticAddress=new
-		 * StaticAddress[refCursor.getCount()+1]; // //
-		 * while(!refCursor.isAfterLast()) { // StaticAddress staticAddress=new
-		 * StaticAddress(); //
-		 * staticAddress.url=refCursor.getString(refCursor.getColumnIndex
-		 * ("url")); //
-		 * staticAddress.md5Value=refCursor.getString(refCursor.getColumnIndex
-		 * ("md5Value")); // int
-		 * index=refCursor.getInt(refCursor.getColumnIndex("_index")); //
-		 * System.
-		 * out.println("length:"+info.staticAddress.length+", index:"+index); //
-		 * if(info.staticAddress.length>index) { //
-		 * info.staticAddress[index]=staticAddress; // } //
-		 * refCursor.moveToNext(); // } } if(refCursor!=null &&
-		 * !refCursor.isClosed()) { refCursor.close(); } } }
-		 * }catch(SQLiteException e) {
-		 * 
-		 * }finally { release(sqLiteDatabase, cursor); } return list;
-		 */
-		return null;
-	}
-
-	public boolean deleteAllChannel() {
-		SQLiteDatabase sqLiteDatabase = null;
-		try {
-			sqLiteDatabase = dbHelper.getWritableDatabase();
-			sqLiteDatabase.beginTransaction();
-			sqLiteDatabase.delete(CHANNEL_REF_TABLE, null, null);
-			sqLiteDatabase.delete(CHANNEL_TABLE, null, null);
-			sqLiteDatabase.setTransactionSuccessful();
-			sqLiteDatabase.endTransaction();
-			return true;
-		} catch (SQLiteException e) {
-
-		} finally {
-			release(sqLiteDatabase, null);
-		}
-		return false;
-	}
-
-	public boolean deleteChannelById(int id) {
-		SQLiteDatabase sqLiteDatabase = null;
-		try {
-			sqLiteDatabase = dbHelper.getWritableDatabase();
-			sqLiteDatabase.beginTransaction();
-			sqLiteDatabase.delete(CHANNEL_REF_TABLE, "catid=?", new String[] { String.valueOf(id) });
-			sqLiteDatabase.delete(CHANNEL_TABLE, "catid=?", new String[] { String.valueOf(id) });
-			sqLiteDatabase.setTransactionSuccessful();
-			sqLiteDatabase.endTransaction();
-			return true;
-		} catch (SQLiteException e) {
-
-		} finally {
-			release(sqLiteDatabase, null);
-		}
-		return false;
-	}
-
-	public boolean deleteChannelRefByIndex(int channelId, int index) {
-		SQLiteDatabase sqLiteDatabase = null;
-		try {
-			sqLiteDatabase = dbHelper.getWritableDatabase();
-			int count = sqLiteDatabase.delete(CHANNEL_REF_TABLE, "channelId=? and _index=?", new String[] { String.valueOf(channelId), String.valueOf(index) });
-			return count > 0;
-		} catch (SQLiteException e) {
-
-		} finally {
-			release(sqLiteDatabase, null);
-		}
-		return false;
-	}
-
-	public boolean addChannelRef(StaticAddress staticAddress, int index, int channelId) {
-		SQLiteDatabase sqLiteDatabase = null;
-		try {
-			sqLiteDatabase = dbHelper.getWritableDatabase();
-			ContentValues values = new ContentValues();
-			values.put("catid", channelId);
-			values.put("_index", index);
-			values.put("url", staticAddress.url);
-			values.put("md5Value", staticAddress.md5Value);
-			long count = sqLiteDatabase.insert(CHANNEL_REF_TABLE, null, values);
-			return count > 0;
-		} catch (SQLiteException e) {
-
-		} finally {
-			release(sqLiteDatabase, null);
-		}
-		return false;
-	}
-
-	public boolean updateChannelRefById(StaticAddress staticAddress, int index, int channelId) {
-		SQLiteDatabase sqLiteDatabase = null;
-		try {
-			sqLiteDatabase = dbHelper.getWritableDatabase();
-			ContentValues values = new ContentValues();
-			values.put("url", staticAddress.url);
-			values.put("md5Value", staticAddress.md5Value);
-			int count = sqLiteDatabase.update(CHANNEL_REF_TABLE, values, "catid=? and _index=?", new String[] { String.valueOf(channelId), String.valueOf(index) });
-			return count > 0;
-		} catch (SQLiteException e) {
-
-		} finally {
-			release(sqLiteDatabase, null);
-		}
-		return false;
-	}
-
-	public boolean deleteChannelRefByChannelId(int channelId) {
-		SQLiteDatabase sqLiteDatabase = null;
-		try {
-			sqLiteDatabase = dbHelper.getWritableDatabase();
-			int count = sqLiteDatabase.delete(CHANNEL_REF_TABLE, "catid=?", new String[] { String.valueOf(channelId) });
-			return count > 0;
-		} catch (SQLiteException e) {
-
-		} finally {
-			release(sqLiteDatabase, null);
-		}
-		return false;
-	}
-
-	public boolean addNavigation(NavigationInfo info) {
-		SQLiteDatabase sqLiteDatabase = null;
-		try {
-			sqLiteDatabase = dbHelper.getWritableDatabase();
-			StaticAddress appStaticAddress = (StaticAddress) info.staticAddress[0];
-			StaticAddress gameStaticAddress = (StaticAddress) info.staticAddress[1];
-			ContentValues values = new ContentValues();
-			values.put("nav_id", info.id);
-			values.put("nav_name", info.name);
-			values.put("gameUrl", gameStaticAddress.url);
-			values.put("gameMd5Value", gameStaticAddress.md5Value);
-			values.put("appUrl", appStaticAddress.url);
-			values.put("appMd5Value", appStaticAddress.md5Value);
-			long result = sqLiteDatabase.insert(NAVIGATION_TABLE, null, values);
-			return result > 0;
-		} catch (SQLiteException e) {
-
-		} finally {
-			release(sqLiteDatabase, null);
-		}
-		return false;
-	}
-
-	public boolean updateNavigation(NavigationInfo info, boolean isApp) {
-		SQLiteDatabase sqLiteDatabase = null;
-		try {
-			sqLiteDatabase = dbHelper.getWritableDatabase();
-			ContentValues values = new ContentValues();
-			values.put("nav_name", info.name);
-			if (!isApp) {
-				values.put("gameUrl", ((StaticAddress) info.staticAddress[1]).url);
-				values.put("gameMd5Value", ((StaticAddress) info.staticAddress[1]).md5Value);
-			} else {
-				values.put("appUrl", ((StaticAddress) info.staticAddress[0]).url);
-				values.put("appMd5Value", ((StaticAddress) info.staticAddress[0]).md5Value);
-			}
-			int result = sqLiteDatabase.update(NAVIGATION_TABLE, values, "nav_id=?", new String[] { String.valueOf(info.id) });
-			return result > 0;
-		} catch (SQLiteException e) {
-
-		} finally {
-			release(sqLiteDatabase, null);
-		}
-		return false;
-	}
-
-	public NavigationInfo getNavigationByNavId(int navId) {
-		SQLiteDatabase sqLiteDatabase = null;
-		Cursor cursor = null;
-		try {
-			sqLiteDatabase = dbHelper.getReadableDatabase();
-			cursor = sqLiteDatabase.query(NAVIGATION_TABLE, new String[] { "nav_id", "nav_name", "gameUrl", "gameMd5Value", "appUrl", "appMd5Value" }, "nav_id=?", new String[] { String.valueOf(navId) }, null, null, null);
-			if (cursor != null && cursor.getCount() > 0) {
-				cursor.moveToFirst();
-				NavigationInfo info = new NavigationInfo();
-				info.id = navId;
-				info.name = cursor.getString(cursor.getColumnIndex("nav_name"));
-				StaticAddress[] staticAddress = new StaticAddress[2];
-				StaticAddress appStaticAddress = new StaticAddress();
-				StaticAddress gameStaticAddress = new StaticAddress();
-				appStaticAddress.url = cursor.getString(cursor.getColumnIndex("appUrl"));
-				appStaticAddress.md5Value = cursor.getString(cursor.getColumnIndex("appMd5Value"));
-				gameStaticAddress.url = cursor.getString(cursor.getColumnIndex("gameUrl"));
-				gameStaticAddress.md5Value = cursor.getString(cursor.getColumnIndex("gameMd5Value"));
-				staticAddress[0] = appStaticAddress;
-				staticAddress[1] = gameStaticAddress;
-				info.staticAddress = staticAddress;
-				return info;
-			}
-		} catch (SQLiteException e) {
-			System.out.println(e);
-		} finally {
-			release(sqLiteDatabase, cursor);
-		}
-		return null;
 	}
 
 	/**
@@ -394,7 +102,6 @@ public class MarketDatabase {
 			} finally {
 				release(db, null);
 			}
-			// db.close();
 		}
 
 		/**
@@ -412,7 +119,6 @@ public class MarketDatabase {
 			} finally {
 				release(db, null);
 			}
-			// db.close();
 		}
 
 		/**
@@ -433,7 +139,6 @@ public class MarketDatabase {
 			} finally {
 				release(db, null);
 			}
-			// db.close();
 		}
 
 		/**
@@ -541,7 +246,6 @@ public class MarketDatabase {
 			} finally {
 				release(db, null);
 			}
-			// db.close();
 		}
 
 		/**
@@ -559,7 +263,6 @@ public class MarketDatabase {
 			} finally {
 				release(db, null);
 			}
-			// db.close();
 		}
 
 		/**
@@ -579,7 +282,6 @@ public class MarketDatabase {
 			} finally {
 				release(db, null);
 			}
-			// db.close();
 		}
 
 		/**
@@ -640,7 +342,6 @@ public class MarketDatabase {
 			} finally {
 				release(db, null);
 			}
-			// db.close();
 		}
 
 		/**
@@ -760,7 +461,6 @@ public class MarketDatabase {
 			} finally {
 				release(db, null);
 			}
-			// db.close();
 		}
 
 		/**
@@ -776,7 +476,6 @@ public class MarketDatabase {
 			} finally {
 				release(db, null);
 			}
-			// db.close();
 		}
 
 		/**

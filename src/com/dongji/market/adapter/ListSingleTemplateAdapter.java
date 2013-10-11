@@ -15,12 +15,12 @@ import android.widget.TextView;
 
 import com.dongji.market.R;
 import com.dongji.market.cache.FileService;
-import com.dongji.market.download.AConstDefine;
 import com.dongji.market.download.DownloadConstDefine;
 import com.dongji.market.download.DownloadEntity;
 import com.dongji.market.download.DownloadUtils;
-import com.dongji.market.download.NetTool;
+import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.DJMarketUtils;
+import com.dongji.market.helper.NetTool;
 import com.dongji.market.pojo.ApkItem;
 
 /**

@@ -24,7 +24,6 @@ import android.widget.ImageView;
  */
 public abstract class FileServiceAbstractDetails implements FileServiceInterface {
 
-	private static final String TAG = "FileServiceAbstractDetails";
 	private static BitmapDownloaderTask task;
 	static final BitmapFactory.Options mOptions = new BitmapFactory.Options();// bitmap选项
 
@@ -108,7 +107,6 @@ public abstract class FileServiceAbstractDetails implements FileServiceInterface
 			if (mBitmap != null && !mBitmap.isRecycled()) {
 				mBitmap.recycle();
 			}
-			// QQLiveLog.d(TAG, "OutOfMemoryError:"+e.getMessage());
 		} finally {
 			if (is != null) {
 				try {

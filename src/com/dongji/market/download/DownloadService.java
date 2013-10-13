@@ -48,13 +48,13 @@ public class DownloadService extends Service implements DownloadConstDefine, OnD
 	private static List<DownloadEntity> downloadList = new ArrayList<DownloadEntity>(); // 下载队列
 	private static final int MAX_DOWNLOAD_NUM = 3; // 最大下载数量
 	private int currentDownloadNum; // 当前下载数量
-	public static DownloadService mDownloadService;
+	public static DownloadService mDownloadService;//当前下载服务
 
 	private static DownloadStatusListener mDownloadStatusListener;//下载状态监听
 
-	private DownloadDBHelper db;
+	private DownloadDBHelper db;//下载数据库管理器
 
-	private MyHandler mHandler;
+	private MyHandler mHandler;//下载事件处理器
 	private AppMarket mApp;
 
 	private long currentGprsTraffic; // 当前已使用的流量
@@ -107,8 +107,6 @@ public class DownloadService extends Service implements DownloadConstDefine, OnD
 		registerReceiver(mReceiver, intentFilter);
 		registerReceiver(mReceiver, packageIntentFilter);
 	}
-
-	
 	
 	/**
 	 * 初始化handler
@@ -119,7 +117,6 @@ public class DownloadService extends Service implements DownloadConstDefine, OnD
 		mHandler = new MyHandler(mHandlerThread.getLooper());
 		mHandler.sendEmptyMessage(EVENT_QUERY_DOWNLOAD);
 	}
-	
 	
 	private class MyHandler extends Handler {
 		MyHandler(Looper looper) {
@@ -132,15 +129,15 @@ public class DownloadService extends Service implements DownloadConstDefine, OnD
 			DownloadEntity entity = null;
 			switch (msg.what) {
 			case EVENT_QUERY_DOWNLOAD:// 查询所有下载
-				initGprsTraffic();
-				initDownloadListData();
+				initGprsTraffic();//初始化gprs流量
+				initDownloadListData();//初始化下载列表
 				break;
 			case EVENT_ADD_DOWNLOAD:// 添加应用到下载队列开始下载
 				entity = (DownloadEntity) msg.obj;
 				addDownloadToQueue(entity);
 				break;
 			case EVENT_UPDATE_DATA_DONE:// 当更新数据请求到了
-				updateDataDone();
+				updateDataDone();//需要刷新应用列表状态
 				break;
 			case EVENT_DWONLOAD_NEXT:// 处理下一个下载任务
 				currentDownloadNum--;
@@ -199,10 +196,10 @@ public class DownloadService extends Service implements DownloadConstDefine, OnD
 	private void initGprsTraffic() {
 		int tempTraffic = DJMarketUtils.getMaxFlow(this);// 流量限制值
 		if (tempTraffic > 0) {
-			maxGprsTraffic = tempTraffic * 1024 * 1024;
+			maxGprsTraffic = tempTraffic * 1024 * 1024;//初始化最大流量值
 		}
 		SharedPreferences pref = getSharedPreferences(AConstDefine.DONGJI_SHAREPREFERENCES, Context.MODE_PRIVATE);
-		currentGprsTraffic = pref.getLong(AConstDefine.SHARE_DOWNLOADSIZE, 0);
+		currentGprsTraffic = pref.getLong(AConstDefine.SHARE_DOWNLOADSIZE, 0);//初始化已用流量值
 	}
 
 	
@@ -211,13 +208,183 @@ public class DownloadService extends Service implements DownloadConstDefine, OnD
 	 */
 	private void initDownloadListData() {
 		db = new DownloadDBHelper(this);
-		db.getAllDownloadEntity(downloadList);
-		checkDownloadFile();
-		checkPrepareDownload();
+		db.getAllDownloadEntity(downloadList);//从下载数据库中获取下载缓存数据
+		checkDownloadFile();//检查下载文件
+		checkPrepareDownload();//检查预下载
 	}
 
+	/**
+	 * 容错处理，检查下载完成的文件是否存在
+	 */
+	private void checkDownloadFile() {
+		for (int i = 0; i < downloadList.size(); i++) {
+			DownloadEntity entity = downloadList.get(i);
+			String path = DOWNLOAD_ROOT_PATH + entity.hashCode();
+			if (entity.getStatus() == STATUS_OF_COMPLETE) {//是否有下载已完成的应用
+				path += DOWNLOAD_FILE_POST_SUFFIX;
+				File file = new File(path);
+				if (!file.exists()) {//如果文件不存在，则删除缓存记录
+					downloadList.remove(i--);
+					db.deleteDownloadEntity(entity);
+				}
+			} else if (entity.getStatus() == STATUS_OF_DOWNLOADING || entity.getStatus() == STATUS_OF_EXCEPTION) {
+				//是否有正在下载的应用或下载发生异常的应用
+				path += DOWNLOAD_FILE_PREPARE_SUFFIX;
+				File file = new File(path);
+				if (!file.exists()) {//如果文件不存在，则删除缓存记录
+					downloadList.remove(i--);
+					db.deleteDownloadEntity(entity);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * 检查准备下载
+	 */
+	private void checkPrepareDownload() {
+		for (int i = 0; i < downloadList.size(); i++) {
+			DownloadEntity entity = downloadList.get(i);
+			if (entity.getStatus() == STATUS_OF_PREPARE || entity.getStatus() == STATUS_OF_PAUSE_ON_EXIT_SYSTEM) {
+				//是否有准备开始下载的应用或者是系统退出而暂停下载的应用，有则发出下载广播
+				Intent intent = new Intent(BROADCAST_ACTION_CHECK_DOWNLOAD);
+				sendBroadcast(intent);
+				break;
+			}
+		}
+	}
+	
+	
+	/**
+	 * 开始下载可以下载的应用
+	 */
+	private void startAllDownload() {
+		if (currentDownloadNum < MAX_DOWNLOAD_NUM) {//是否正在下载应用数小于最大可下载数
+			for (int i = 0; i < downloadList.size(); i++) {
+				final DownloadEntity entity = downloadList.get(i);
+				// 当此应用为初始化状态或应用退出后暂停状态时，则需要立即开始下载
+				if (entity.getStatus() == STATUS_OF_PREPARE || entity.getStatus() == STATUS_OF_PAUSE_ON_EXIT_SYSTEM) {
+					entity.setOnDownloadListener(DownloadService.this);
+					currentDownloadNum++;
+					new Thread(entity).start();
+				}
+				if (currentDownloadNum == MAX_DOWNLOAD_NUM) {//如果达到最大可下载数则退出
+					break;
+				}
+			}
+		}
+	}
 
+	
+	/**
+	 * 添加应用到下载队列
+	 * 
+	 * @param entity
+	 */
+	private void addDownloadToQueue(DownloadEntity entity) {
+		if (entity != null) {
+			startDownload(entity);
+		}
+	}
+	
+	/**
+	 * 开始单个下载
+	 * 
+	 * @param entity
+	 */
+	private void startDownload(DownloadEntity entity) {
+		int i = 0;
+		boolean hasEntity = false; // 用来判断是否该应用是否已存在于下载列表
+		for (; i < downloadList.size(); i++) {
+			DownloadEntity d = downloadList.get(i);
+			synchronized (d) {
+				if (entity.appId == d.appId && entity.category == d.category) {//应用已存在下载列表
+					hasEntity = true;
+					if (entity.getStatus() == STATUS_OF_PREPARE) {//处于准备下载状态
+						d.setStatus(STATUS_OF_PREPARE);//重设下载列表状态
+						if (currentDownloadNum < MAX_DOWNLOAD_NUM) {//小于最大下载数则开始下载
+							startDownloadByEntity(d);
+							break;
+						}
+					}
+				}
+			}
+		}
+		if (i == downloadList.size() && !hasEntity) { // downloadList.size() > 0 应用未在下载列表中
+													
+			System.out.println("add entity " + entity.appName + ", " + entity.getStatus() + ", " + entity.downloadType + ", " + downloadList.size());
+			downloadList.add(entity);//添加应用至下载列表中
+			int lastIndex = downloadList.size() - 1;//获取最后一个下载应用索引
+			downloadList.get(lastIndex).downloadType = TYPE_OF_DOWNLOAD;//设置最后一个应用的下载类型
+			if (currentDownloadNum < MAX_DOWNLOAD_NUM && entity.getStatus() == STATUS_OF_PREPARE) {//如果小于最大下载数开始下载
+				startDownloadByEntity(downloadList.get(lastIndex));
+			} else {//否则设置应用状态为准备状态
+				downloadList.get(lastIndex).setStatus(STATUS_OF_PREPARE);
+			}
+		}
+	}
 
+	
+	
+	/**
+	 * 当应用更新的数据请求到了
+	 */
+	private void updateDataDone() {
+		ArrayList<ApkItem> list = mApp.getUpdateList();//获取更新列表
+		List<DownloadEntity> tempList = new ArrayList<DownloadEntity>();
+		if (list != null && list.size() > 0) {
+			for (int i = 0; i < list.size(); i++) {//遍历更新列表
+				ApkItem item = list.get(i);
+				int j = 0;
+				for (; j < downloadList.size(); j++) {
+					DownloadEntity entity = downloadList.get(j);
+					if (entity.appId == item.appId && entity.category == item.category) {//已存在下载列表中
+						break;
+					}
+				}
+				if (j == downloadList.size()) {//未存在下载列表中
+					DownloadEntity d = new DownloadEntity(item);
+					d.downloadType = TYPE_OF_UPDATE;
+					DownloadUtils.setInstallDownloadEntity(this, d);
+					tempList.add(d);
+				}
+			}
+		}
+		boolean isAutoUpdate = DJMarketUtils.isAutoUpdate(this);
+		if (isAutoUpdate) {//是自动更新
+			autoUpdate(tempList);
+		}
+
+		downloadList.addAll(tempList);//添加到下载列表
+
+		if (mDownloadStatusListener != null) {//添加至可更新列表，并刷新适配器
+			mDownloadStatusListener.onUpdateListDone(tempList);
+		}
+		Intent intent = new Intent(BROADCAST_ACTION_UPDATE_DATA_MERGE_DONE);
+		sendBroadcast(intent);//发出更新数据合并广播
+
+		DownloadUtils.fillUpdateNotifycation(this, downloadList); // 显示标题栏可更新数目
+	}
+	
+	/**
+	 * 自动更新
+	 * 
+	 * @param updateList
+	 */
+	private void autoUpdate(List<DownloadEntity> updateList) {
+		for (int i = 0; i < updateList.size(); i++) {
+			final DownloadEntity entity = updateList.get(i);
+			entity.setStatus(STATUS_OF_PREPARE);
+			if (currentDownloadNum < MAX_DOWNLOAD_NUM) {
+				if (entity.getStatus() == STATUS_OF_PREPARE || entity.getStatus() == STATUS_OF_PAUSE_ON_EXIT_SYSTEM) {
+					entity.setOnDownloadListener(DownloadService.this);
+					currentDownloadNum++;
+					new Thread(entity).start();
+				}
+			}
+		}
+	}
+	
 	private BroadcastReceiver mReceiver = new BroadcastReceiver() {
 
 		@Override
@@ -339,152 +506,13 @@ public class DownloadService extends Service implements DownloadConstDefine, OnD
 	
 	
 
-	/**
-	 * 容错处理，检查下载完成的文件是否存在
-	 */
-	private void checkDownloadFile() {
-		for (int i = 0; i < downloadList.size(); i++) {
-			DownloadEntity entity = downloadList.get(i);
-			String path = DOWNLOAD_ROOT_PATH + entity.hashCode();
-			if (entity.getStatus() == STATUS_OF_COMPLETE) {
-				path += DOWNLOAD_FILE_POST_SUFFIX;
-				File file = new File(path);
-				if (!file.exists()) {
-					downloadList.remove(i--);
-					db.deleteDownloadEntity(entity);
-				}
-			} else if (entity.getStatus() == STATUS_OF_DOWNLOADING || entity.getStatus() == STATUS_OF_EXCEPTION) {
-				path += DOWNLOAD_FILE_PREPARE_SUFFIX;
-				File file = new File(path);
-				if (!file.exists()) {
-					downloadList.remove(i--);
-					db.deleteDownloadEntity(entity);
-				}
-			}
-		}
-	}
+	
+	
 
-	/**
-	 * 检查准备下载
-	 */
-	private void checkPrepareDownload() {
-		for (int i = 0; i < downloadList.size(); i++) {
-			DownloadEntity entity = downloadList.get(i);
-			if (entity.getStatus() == STATUS_OF_PREPARE || entity.getStatus() == STATUS_OF_PAUSE_ON_EXIT_SYSTEM) {
-				Intent intent = new Intent(BROADCAST_ACTION_CHECK_DOWNLOAD);
-				sendBroadcast(intent);
-				break;
-			}
-		}
-	}
 
-	/**
-	 * 添加应用到下载队列
-	 * 
-	 * @param entity
-	 */
-	private void addDownloadToQueue(DownloadEntity entity) {
-		if (entity != null) {
-			startDownload(entity);
-		}
-	}
-
-	/**
-	 * 开始单个下载
-	 * 
-	 * @param entity
-	 */
-	private void startDownload(DownloadEntity entity) {
-		int i = 0;
-		boolean hasEntity = false; // 用来判断是否该应用是否已存在于下载列表
-		for (; i < downloadList.size(); i++) {
-			DownloadEntity d = downloadList.get(i);
-			synchronized (d) {
-				if (entity.appId == d.appId && entity.category == d.category) {
-					hasEntity = true;
-					if (entity.getStatus() == STATUS_OF_PREPARE) {
-						d.setStatus(STATUS_OF_PREPARE);
-						if (currentDownloadNum < MAX_DOWNLOAD_NUM) {
-							startDownloadByEntity(d);
-							break;
-						}
-					}
-				}
-			}
-		}
-		if (i == downloadList.size() && !hasEntity) { // downloadList.size() > 0
-														// &&
-			System.out.println("add entity " + entity.appName + ", " + entity.getStatus() + ", " + entity.downloadType + ", " + downloadList.size());
-			downloadList.add(entity);
-			int lastIndex = downloadList.size() - 1;
-			downloadList.get(lastIndex).downloadType = TYPE_OF_DOWNLOAD;
-			if (currentDownloadNum < MAX_DOWNLOAD_NUM && entity.getStatus() == STATUS_OF_PREPARE) {
-				startDownloadByEntity(downloadList.get(lastIndex));
-			} else {
-				downloadList.get(lastIndex).setStatus(STATUS_OF_PREPARE);
-			}
-		}
-	}
-
-	/**
-	 * 当应用更新的数据请求到了
-	 */
-	private void updateDataDone() {
-		ArrayList<ApkItem> list = mApp.getUpdateList();
-		List<DownloadEntity> tempList = new ArrayList<DownloadEntity>();
-		if (list != null && list.size() > 0) {
-			for (int i = 0; i < list.size(); i++) {
-				ApkItem item = list.get(i);
-				int j = 0;
-				for (; j < downloadList.size(); j++) {
-					DownloadEntity entity = downloadList.get(j);
-					if (entity.appId == item.appId && entity.category == item.category) {
-						break;
-					}
-				}
-				if (j == downloadList.size()) {
-					DownloadEntity d = new DownloadEntity(item);
-					d.downloadType = TYPE_OF_UPDATE;
-					DownloadUtils.setInstallDownloadEntity(this, d);
-					tempList.add(d);
-				}
-			}
-		}
-		boolean isAutoUpdate = DJMarketUtils.isAutoUpdate(this);
-		if (isAutoUpdate) {
-			autoUpdate(tempList);
-		}
-
-		downloadList.addAll(tempList);
-
-		if (mDownloadStatusListener != null) {
-			mDownloadStatusListener.onUpdateListDone(tempList);
-		}
-		Intent intent = new Intent(BROADCAST_ACTION_UPDATE_DATA_MERGE_DONE);
-		sendBroadcast(intent);
-
-		DownloadUtils.fillUpdateNotifycation(this, downloadList); // 显示标题栏可更新数目
-	}
-
-	/**
-	 * 自动更新
-	 * 
-	 * @param updateList
-	 */
-	private void autoUpdate(List<DownloadEntity> updateList) {
-		for (int i = 0; i < updateList.size(); i++) {
-			final DownloadEntity entity = updateList.get(i);
-			entity.setStatus(STATUS_OF_PREPARE);
-			if (currentDownloadNum < MAX_DOWNLOAD_NUM) {
-				if (entity.getStatus() == STATUS_OF_PREPARE || entity.getStatus() == STATUS_OF_PAUSE_ON_EXIT_SYSTEM) {
-					entity.setOnDownloadListener(DownloadService.this);
-					currentDownloadNum++;
-					new Thread(entity).start();
-				}
-			}
-		}
-	}
-
+	
+	
+	
 	/**
 	 * 开始下载下一个应用
 	 */
@@ -733,25 +761,7 @@ public class DownloadService extends Service implements DownloadConstDefine, OnD
 		sendBroadcast(intent);
 	}
 
-	/**
-	 * 开始下载可以下载的应用
-	 */
-	private void startAllDownload() {
-		if (currentDownloadNum < MAX_DOWNLOAD_NUM) {
-			for (int i = 0; i < downloadList.size(); i++) {
-				final DownloadEntity entity = downloadList.get(i);
-				// 当此应用为初始化状态或应用退出后暂停状态时，则需要立即开始下载
-				if (entity.getStatus() == STATUS_OF_PREPARE || entity.getStatus() == STATUS_OF_PAUSE_ON_EXIT_SYSTEM) {
-					entity.setOnDownloadListener(DownloadService.this);
-					currentDownloadNum++;
-					new Thread(entity).start();
-				}
-				if (currentDownloadNum == MAX_DOWNLOAD_NUM) {
-					break;
-				}
-			}
-		}
-	}
+	
 
 	/**
 	 * 下载云恢复

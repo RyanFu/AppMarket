@@ -18,7 +18,7 @@ import android.widget.Toast;
 
 import com.dongji.market.R;
 import com.dongji.market.database.MarketDatabase.Setting_Service;
-import com.dongji.market.download.DownloadConstDefine;
+import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.AConstDefine;
 
 public class SettingFlowDialog extends Dialog {
@@ -97,7 +97,7 @@ public class SettingFlowDialog extends Dialog {
 				editor.commit();
 
 				// 设置好流量后通知 service 继续下载
-				Intent trafficIntent = new Intent(DownloadConstDefine.BROADCAST_ACTION_GPRS_SETTING_CHANGE);
+				Intent trafficIntent = new Intent(AConstDefine.BROADCAST_ACTION_GPRS_SETTING_CHANGE);
 				Bundle bundle = new Bundle();
 				bundle.putLong("limitFlow", setttingflow);
 				bundle.putBoolean("isOnlyWifi", false);

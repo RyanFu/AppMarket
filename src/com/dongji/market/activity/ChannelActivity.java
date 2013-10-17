@@ -24,7 +24,7 @@ import android.widget.TextView;
 import com.dongji.market.R;
 import com.dongji.market.adapter.ChannelAdapter;
 import com.dongji.market.helper.AConstDefine;
-import com.dongji.market.helper.AndroidUtils;
+import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.pojo.ChannelListInfo;
 import com.dongji.market.protocol.DataManager;
 import com.dongji.market.widget.ScrollListView;
@@ -126,7 +126,7 @@ public class ChannelActivity extends BaseActivity {
 					}
 				} catch (JSONException e) {
 					isLoading = false;
-					if (!AndroidUtils.isNetworkAvailable(context)) {
+					if (!DJMarketUtils.isNetworkAvailable(context)) {
 						sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
 					} else {
 						sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
@@ -154,7 +154,7 @@ public class ChannelActivity extends BaseActivity {
 		List<ChannelListInfo> gameListInfo = new ArrayList<ChannelListInfo>();
 		int appId = 0;
 		int gameId = 0;
-		if (AndroidUtils.getLanguageType() == 1) {
+		if (DJMarketUtils.getLanguageType() == 1) {
 			for (int i = 0; i < channelList.size(); i++) {
 				ChannelListInfo info = channelList.get(i);
 				if (APP_STRING2.equals(info.name)) {
@@ -315,7 +315,7 @@ public class ChannelActivity extends BaseActivity {
 					mLoadingProgressBar.setVisibility(View.GONE);
 					mLoadingTextView.setText(rId);
 				} else {
-					AndroidUtils.showToast(context, rId2);
+					DJMarketUtils.showToast(context, rId2);
 				}
 			}
 		});

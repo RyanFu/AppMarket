@@ -1,5 +1,7 @@
 package com.dongji.market.helper;
 
+import android.os.Environment;
+
 public interface AConstDefine {
 	// ————————————————————————————————————NOTIFICATION————————————————————————————————————
 	/**
@@ -23,49 +25,6 @@ public interface AConstDefine {
 	 */
 	public static final int FLAG_NOTIFICATION_WAITINGINSTALL = 5;
 
-	// ———————————————————————————————————————批量下载与更新—————————————————————————————————
-	/**
-	 * 标志：有未完成的下载与更新
-	 */
-	public static final int FLAG_LISTUNDOWNTASK = 1;
-	/**
-	 * 标志：一键更新
-	 */
-	public static final int FLAG_ONEKEYUPDATEING = 2;
-	/**
-	 * 标志：继续因流量不足而暂停的任务
-	 */
-	public static final int INT_CONTINUEPAUSETASK = 3;
-	/**
-	 * 标志：云恢复
-	 */
-	public static final int INT_CLOUDRESTORE = 4;
-
-	/**
-	 * 标志：是否有未完成的任务
-	 */
-	public static final String FLAG_ISUNDONETASK = "flag_isUndoneTask";
-	/**
-	 * 标志：一键更新
-	 */
-	public static final String FLAG_ONEKEYUPDATE = "flag_onekeyupdate";
-	/**
-	 * 标志：继续因流量不足而暂停的任务
-	 */
-	public static final String FLAG_CONTINUEPAUSETASK = "flag_continuepausetask";
-	/**
-	 * 标志：继续因流量不足而暂停的任务
-	 */
-	public static final String FLAG_BUNDLECONTINUEPAUSETASK = "flag_bundlecontinuepausetask";
-	/**
-	 * 标志：是否停止所有下载
-	 */
-	public static final String FLAG_ISSTOPALLDWONLOAD = "flag_isStopAllDownload";
-	/**
-	 * 标志：云恢复
-	 */
-	public static final String FLAG_CLOUDRESTORE = "flag_cloudrestore";
-
 	// ———————————————————————————————————————sharepreferences—————————————————————————————————
 	/**
 	 * sharepreferences名字
@@ -75,79 +34,12 @@ public interface AConstDefine {
 	 * sharepreferences--已用蜂窝下载的值
 	 */
 	public static final String SHARE_DOWNLOADSIZE = "share_downloadsize";
-
-	/**
-	 * sharepreferences--定时删除垃圾文件
-	 */
-	public static final String SHARE_DELETEFILETIME = "share_deletefiletime";
 	/**
 	 * sharepreferences--记录TOP50获取时间
 	 */
 	public static final String SHARE_GETTOP50TIME = "share_gettop50time";
-
-	// ———————————————————————————————————————APK状态—————————————————————————————————
-	/**
-	 * 准备下载
-	 */
-	public static final int STATUS_OF_PREPAREDOWNLOAD = 1;
-	/**
-	 * 正在下载
-	 */
-	public static final int STATUS_OF_DOWNLOADING = 2;
-	/**
-	 * 被动暂停下载
-	 */
-	public static final int STATUS_OF_PAUSE = 3;
-	/**
-	 * 手动暂停下载
-	 */
-	public static final int STATUS_OF_PAUSE_BYHAND = 4;
-	/**
-	 * 下载完成
-	 */
-	public static final int STATUS_OF_DOWNLOADCOMPLETE = 5;
-	/**
-	 * 下载异常
-	 */
-	public static final int STATUS_OF_DOWNLOADEXCEPTION = 6;
-	/**
-	 * 更新
-	 */
-	public static final int STATUS_OF_UPDATE = 7;
-	/**
-	 * 准备更新
-	 */
-	public static final int STATUS_OF_PREPAREUPDATE = 8;
-	/**
-	 * 更新中
-	 */
-	public static final int STATUS_OF_UPDATEING = 9;
-	/**
-	 * 被动暂停更新
-	 */
-	public static final int STATUS_OF_PAUSEUPDATE = 10;
-	/**
-	 * 手动暂停更新
-	 */
-	public static final int STATUS_OF_PAUSEUPDATE_BYHAND = 11;
-	/**
-	 * 更新完成
-	 */
-	public static final int STATUS_OF_UPDATECOMPLETE = 13;
-	/**
-	 * 更新异常
-	 */
-	public static final int STATUS_OF_UPDATEEXCEPTION = 14;
-	/**
-	 * 取消
-	 */
-	public static final int STATUS_OF_CANCEL = 15;
-
+	
 	// ———————————————————————————————————————广播—————————————————————————————————
-	/**
-	 * 系统广播_网络状态改变
-	 */
-	public static final String BROADCAST_SYS_ACTION_CONNECTCHANGE = "android.net.conn.CONNECTIVITY_CHANGE";
 	/**
 	 * 系统广播_app安装成功
 	 */
@@ -157,34 +49,6 @@ public interface AConstDefine {
 	 */
 	public static final String BROADCAST_SYS_ACTION_APPREMOVE = "android.intent.action.PACKAGE_REMOVED";
 	/**
-	 * 广播ACTION_下载
-	 */
-	public static final String BROADCAST_ACTION_DOWNLOAD = "com.dongji.market.action.receiver.DOWNLOAD";
-	/**
-	 * 广播ACTION_更新
-	 */
-	public static final String BROADCAST_ACTION_UPDATE = "com.dongji.market.action.receiver.UPDATE";
-	/**
-	 * 广播ACTION_云恢复
-	 */
-	public static final String BROADCAST_ACTION_CLOUDRESTORE = "com.dongji.market.action.receiver.CLOUDRESTORE";
-	/**
-	 * 广播ACTION_更新TitleNum
-	 */
-	public static final String BROADCAST_ACTION_UPDATECOUNT = "com.dongji.market.action.receiver.title.updatecount";
-	/**
-	 * 广播ACTION_更新DownloadAdapter
-	 */
-	public static final String BROADCAST_ACTION_DOWNLOADADAPTER = "com.dongji.market.action.receiver.downloadapdater";
-	/**
-	 * 广播ACTION_下载
-	 */
-	public static final String BROADCAST_ACTION_TITLERECEIVER = "com.dongji.market.action.receiver.title.receiver";
-	/**
-	 * 设置界面修改了流量限制
-	 */
-	public static final String BROADCAST_ACTION_LIMITFLOWCHANGE = "com.dongji.market.limitFlowChange";
-	/**
 	 * 对话框修改了流量限制
 	 */
 	public static final String BROADCAST_ACTION_DIALOG_LIMITFLOWCHANGE = "com.dongji.market.dialogFlowChange";
@@ -192,123 +56,24 @@ public interface AConstDefine {
 	 * 设置流量已用完
 	 */
 	public static final String BROADCAST_ACTION_NOFLOW = "com.dongji.market.action.noflow";
-
-	/**
-	 * 广播_批量任务
-	 */
-	public static final String BROADCAST_LISTTASK = "broadcast_listtask";
-	/**
-	 * 广播_开始下载
-	 */
-	public static final String BROADCAST_STARTDOWNLOAD = "broadcast_startdownload";
-	/**
-	 * 广播_暂停下载
-	 */
-	public static final String BROADCAST_PAUSEDOWNLOAD = "broadcast_pausedownload";
-	/**
-	 * 广播_继续下载
-	 */
-	public static final String BROADCAST_CONTINUEDOWNLOAD = "broadcast_continuedownload";
-	/**
-	 * 广播_取消下载
-	 */
-	public static final String BROADCAST_CANCELDOWNLOAD = "broadcast_canceldownload";
-	/**
-	 * 广播_下载完成
-	 */
-	public static final String BROADCAST_COMPLETEDOWNLOAD = "broadcast_completedownload";
-	/**
-	 * 广播_取消安装文件
-	 */
-	public static final String BROADCAST_CANCELINSTALL = "broadcast_cancelInstall";
-	/**
-	 * 广播_更新
-	 */
-	public static final String BROADCAST_UPDATEAPP = "broadcast_updateapp";
-	/**
-	 * 广播_一键更新
-	 */
-	public static final String BROADCAST_ONEKEYUPDATE = "broadcast_onekeyupdate";
-	/**
-	 * 广播_开始更新
-	 */
-	public static final String BROADCAST_STARTUPDATE = "broadcast_startupdate";
-	/**
-	 * 广播_继续更新
-	 */
-	public static final String BROADCAST_CONTINUEUPDATE = "broadcast_continueupdate";
-	/**
-	 * 广播_暂停更新
-	 */
-	public static final String BROADCAST_PAUSEUPDATE = "broadcast_pauseupdate";
-	/**
-	 * 广播_取消更新
-	 */
-	public static final String BROADCAST_CANCELUPDATE = "broadcast_cancelupdate";
-	/**
-	 * 广播_忽略更新
-	 */
-	public static final String BROADCAST_IGNOREUPDATE = "broadcast_ignoreupdate";
-	public static final String BROADCAST_IGNOREUPDATE_VERSION = "broadcast_ignoreupdate_name";
-	public static final String BROADCAST_IGNOREUPDATE_PACKAGE = "broadcast_ignoreupdate_package";
-	/**
-	 * 广播_取消忽略更新
-	 */
-	public static final String BROADCAST_CANCELIGNORE = "broadcast_cancelignore";
-	public static final String BROADCAST_CANCELIGNORE_PACKAGE = "broadcast_cancelignore_package";
-	/**
-	 * 广播_apk被删除
-	 */
-	public static final String BROADCAST_APKISDELETE = "broadcast_apkisdelete";
-	/**
-	 * 广播_APK下载目录不存在
-	 */
-	public static final String BROADCAST_APKLISTISNULL = "broadcast_apklistisnull";
-
-	public static final String BROADCAST_UPDATE_DATA_REFRESH = "com.dongji.market.update_data_refresh";
-
-	// ———————————————————————————————————————其它—————————————————————————————————
-	/**
-	 * 刷新进程
-	 */
-	public static final int REFERENSH_PROGRESS = 1;
-	/**
-	 * 刷新屏幕
-	 */
-	public static final int REFERENSH_SCREEN = 2;
-
-	/**
-	 * 标志：异常信息
-	 */
-	public static final String FLAG_EXCEPTION_STATUS = "flag_exception_status";
-	/**
-	 * 标志：异常APKID
-	 */
-	public static final String FLAG_EXCEPTION_APKSAVENAME = "flag_exception_apksavename";
-	/**
-	 * 广播_异常处理
-	 */
-	public static final String BROADCAST_DOWNLOAD_ERROR = "broadcast_download_error";
-	/**
-	 * 广播删除
-	 */
-	public static final String BROADCAST_DELETE_APK_FILE = "broadcast_delete_apkfile";
-
+	
 	/**
 	 * 广播_删除已下载安装包
 	 */
 	public static final String BROADCAST_DEL_DOWNLOADED_APK = "com.dongji.market.del_all_apk";
+	
+	public static final String BROADCAST_DIALOG_LOGIN = "broadcast_dialog_login";
+	
+	public static final String BROADCAST_ACTION_SHOWBANDRLIST = "broadcast_action_showbandrlist";
+	
+	public static final String BROADCAST_ACTION_SHOWUNINSTALLLIST = "broadcast_action_showuninstalllist";
+	
+	public static final String GO_HOME_BROADCAST = "com.dongji.market.goHome_broadcast";
+	
+	public static final String SAVE_FLOW_BROADCAST = "com.dongji.market.saveFlow_changed_broadcast";
 
-	public static final String BROADCAST_REQUEST_UPDATE_ACTION = "com.dongji.market.updateReceiver";
-
-	public static final String CHILDISNULL = "childisnull";
-	public static final String APKDOWNLOADITEM = "apkDownloadItem";
-	public static final String APKDOWNLOADITEM_APKID = "apkDownloadItem_apkid";
-	public static final String APPUPDATELIST = "updateList";
-	public static final String SETTINGFLOWDATA = "settingflowdata";
+	// ———————————————————————————————————————其它—————————————————————————————————
 	public static final String CANCELNOFLOWDIALOG = "cancelnoflowdialog";
-	public static final String CANCELFLOWCHANGEDIALOG = "cancelchangedialog";
-	public static final String HANDLER_CLEARPACKAGE = "handler_clearPackage";
 
 	/*************** apk状态值 **********************/
 	public static final int STATUS_APK_UNINSTALL = 0; // 未安装
@@ -317,44 +82,240 @@ public interface AConstDefine {
 	public static final int STATUS_APK_UPDATE = 3; // 正在更新
 	public static final int STATUS_APK_UNUPDATE = 4; // 未更新
 	/*************** apk状态值 **********************/
-
-	public static final String DIALOG_LOGIN = "dialog_login";
-	public static final String BROADCAST_DIALOG_LOGIN = "broadcast_dialog_login";
 	public static final String FLAG_ACTIVITY_BANDR = "flag_activity_bandr";
 	public static final int ACTIVITY_RESTORE = 1;
 	public static final int ACTIVITY_BACKUP = 2;
 	public static final int ACTIVITY_CLOUD_BACKUP = 3;
 	public static final int ACTIVITY_CLOUD_RESTORE = 4;
-
-	public static final String FLAG_RESTORELIST = "flag_restorelist";
-	public static final String BROADCAST_ACTION_SHOWBANDRLIST = "broadcast_action_showbandrlist";
-	public static final String BROADCAST_ACTION_SHOWUNINSTALLLIST = "broadcast_action_showuninstalllist";
-
-	// ——————————————————————————————登录相关——————————————————————————————————————
-	public static final String LOGIN_URL = "http://www.91dongji.com/index.php?g=Api&m=UserApi&a=mlogin";
-	public static final String DIALOG_LOGIN_URL = "http://www.91dongji.com/index.php?g=Api&m=UserApi&a=login";
-	public static final String REGISTER_URL = "http://www.91dongji.com/index.php?g=Api&m=UserApi&a=register";
-	public static final String REGISTER_LOGIN_SUCCESS_URL = "http://www.91dongji.com/index.php?g=Api&m=UserApi&a=loginsuc";
-	public static final String RETAKE_PWD_URL = "http://www.91dongji.com/index.php?g=Api&m=UserApi&a=findpwd";
-	public static final String CHANGE_PWD_URL = "http://www.91dongji.com/index.php?g=Api&m=UserApi&a=changepwd";
-
-	public static final int LOGIN_SUCCESS_FLAG = 1; // 登录成功标识
-	public static final int LOGIN_ONGOING_FLAG = 0; // 正在登录标识
-	public static final int LOGIN_OUT_FLAG = -1; // 登出标识
-	public static final String LOGIN_SOURCE = "com.dongji.market.fromDialog";
-	public static final String LOGIN_SERVICE_ACTION = "com.dongji.market.loginService";
-	public static final String LOGIN_STATUS_BROADCAST = "login_status_broadcast";
-	public static final String LOGIN_STATUS = "loginStatus";
-
-	public static final String FEEDBACK_URL = "http://bbs.91dongji.com/forum-57-1.html";
-
-	// ———————————————————————————————回到首页广播————————————————————————————————————
-	public static final String GO_HOME_BROADCAST = "com.dongji.market.goHome_broadcast";
-
-	// ———————————————————————————————节省流量模式改变广播————————————————————————————————————
-	public static final String SAVE_FLOW_BROADCAST = "com.dongji.market.saveFlow_changed_broadcast";
-
+	
 	public static final int THRESHOLD = Integer.MAX_VALUE;
 
 	public static final int AUTO_SCRLL_TIMES = 5;
+
+	// ——————————————————————————————登录相关——————————————————————————————————————
+	public static final String DIALOG_LOGIN_URL = "http://www.91dongji.com/index.php?g=Api&m=UserApi&a=login";
+	public static final String REGISTER_LOGIN_SUCCESS_URL = "http://www.91dongji.com/index.php?g=Api&m=UserApi&a=loginsuc";
+	public static final String LOGIN_SOURCE = "com.dongji.market.fromDialog";
+	public static final String LOGIN_STATUS_BROADCAST = "login_status_broadcast";
+	public static final String LOGIN_STATUS = "loginStatus";
+	
+
+
+	/******************************************* 应用下载处于各种状态 ***************************************************/
+
+	/**
+	 * 下载初始化状态
+	 */
+	public static final int STATUS_OF_INITIAL = 0;
+
+	/**
+	 * 正在下载状态
+	 */
+	public static final int STATUS_OF_DOWNLOADING = 1;
+
+	/**
+	 * 下载暂停状态
+	 */
+	public static final int STATUS_OF_PAUSE = 2;
+
+	/**
+	 * 下载完成状态
+	 */
+	public static final int STATUS_OF_COMPLETE = 3;
+
+	/**
+	 * 下载发生异常状态
+	 */
+	public static final int STATUS_OF_EXCEPTION = 4;
+
+	/**
+	 * 下载开始请求状态
+	 */
+	public static final int STATUS_OF_PREPARE = 5;
+
+	/**
+	 * 退出后台程序后暂停下载
+	 */
+	public static final int STATUS_OF_PAUSE_ON_EXIT_SYSTEM = 6;
+
+	/**
+	 * 因无网络状态暂停下载
+	 */
+	public static final int STATUS_OF_PAUSE_ON_NOT_NETWORK = 7;
+
+	/**
+	 * 忽略更新状态
+	 */
+	public static final int STATUS_OF_IGNORE = 8;
+
+	/**
+	 * 因达到流量限制暂停下载
+	 */
+	public static final int STATUS_OF_PAUSE_ON_TRAFFIC_LIMIT = 9;
+
+	/******************************************* 应用下载处于各种状态 ***************************************************/
+	
+	
+
+	/******************************************* 应用类型（下载、可更新、待安装、忽略） ***************************************************/
+
+	/**
+	 * 下载类型
+	 */
+	public static final int TYPE_OF_DOWNLOAD = 1;
+
+	/**
+	 * 更新类型
+	 */
+	public static final int TYPE_OF_UPDATE = 2;
+
+	/**
+	 * 下载完成类型
+	 */
+	public static final int TYPE_OF_COMPLETE = 3;
+
+	/**
+	 * 更新忽略类型
+	 */
+	public static final int TYPE_OF_IGNORE = 4;
+
+	/******************************************* 应用类型（下载、可更新、待安装、忽略） ***************************************************/
+	
+	
+
+	/******************************************* 广播 ****************************************/
+	/**
+	 * 添加下载广播
+	 */
+	public static final String BROADCAST_ACTION_ADD_DOWNLOAD = "com.dongji.market.ADD_DOWNLOAD";
+
+	/**
+	 * 删除下载广播
+	 */
+	public static final String BROADCAST_ACTION_REMOVE_DOWNLOAD = "com.dongji.market.REMOVE_DOWNLOAD";
+
+
+	/**
+	 * 取消下载广播
+	 */
+	public static final String BROADCAST_ACTION_CANCEL_DOWNLOAD = "com.dongji.market.CANCEL_DOWNLOAD";
+
+	/**
+	 * 一键更新广播
+	 */
+	public static final String BROADCAST_ACTION_ONEKEY_UPDATE = "com.dongji.market.ONEKEY_UPDATE";
+
+	/**
+	 * 更新数据请求完成
+	 */
+	public static final String BROADCAST_ACTION_APP_UPDATE_DATADONE = "com.dongji.market.APP_UPDATE_DATADONE";
+
+	/**
+	 * 更新数据合并完成
+	 */
+	public static final String BROADCAST_ACTION_UPDATE_DATA_MERGE_DONE = "com.dongji.market.UPDATE_DATA_MERGE_DONE";
+	/**
+	 * 更新Root安装失败后的状态
+	 */
+	public static final String BROADCAST_ACTION_UPDATE_ROOTSTATUS = "com.dongji.market.UPDATE_ROOTSTATUS";
+
+	/**
+	 * 下载完成广播
+	 */
+	public static final String BROADCAST_ACTION_COMPLETE_DOWNLOAD = "com.dongji.market.COMPLETE_DOWNLOAD";
+
+	/**
+	 * 添加更新应用广播
+	 */
+	public static final String BROADCAST_ACTION_ADD_UPDATE = "com.dongji.market.ADD_UPDATE";
+
+	/**
+	 * 取消忽略广播
+	 */
+	public static final String BROADCAST_ACTION_CANCEL_IGNORE = "com.dongji.market.CANCEL_IGNORE";
+
+	/**
+	 * 流量使用完广播
+	 */
+	public static final String BROADCAST_ACTION_TRAFFIC_OVER = "com.dongji.market.TRAFFIC_OVER";
+
+	/**
+	 * 流量设置改变广播
+	 */
+	public static final String BROADCAST_ACTION_GPRS_SETTING_CHANGE = "com.dongji.market.GPRS_SETTING_CHANGE";
+
+	/**
+	 * 程序退出后台继续下载广播
+	 */
+	public static final String BROADCAST_ACTION_BACKGROUND_DOWNLOAD = "com.dongji.market.BACKGROUND_DOWNLOAD";
+
+	/**
+	 * 请求单个应用的更新
+	 */
+	public static final String BROADCAST_ACTION_REQUEST_SINGLE_UPDATE = "com.dongji.market.REQUEST_SINGLE_UPDATE";
+
+	/**
+	 * 单个应用的更新数据已经请求到
+	 */
+	public static final String BROADCAST_ACTION_SINGLE_UPDATE_DONE = "com.dongji.market.SINGLE_UPDATE_DONE";
+
+	/**
+	 * 应用安装完成
+	 */
+	public static final String BROADCAST_ACTION_INSTALL_COMPLETE = "com.dongji.market.INSTALL_COMPLETE";
+
+	/**
+	 * 应用卸载完成
+	 */
+	public static final String BROADCAST_ACTION_REMOVE_COMPLETE = "com.dongji.market.REMOVE_COMPLETE";
+
+	/**
+	 * 检查所有下载
+	 */
+	public static final String BROADCAST_ACTION_CHECK_DOWNLOAD = "com.dongji.market.CHECK_DOWNLOAD";
+
+	/**
+	 * 开始所有下载
+	 */
+	public static final String BROADCAST_ACTION_START_ALL_DOWNLOAD = "com.dongji.market.START_ALL_DOWNLOAD";
+
+	/**
+	 * 云恢复广播
+	 */
+	public static final String BROADCAST_ACTION_CLOUD_RESTORE = "com.dongji.market.CLOUD_RESTORE";
+
+	/**
+	 * 添加到下载列表
+	 */
+	public static final String BROADCAST_ACTION_ADD_DOWNLOAD_LIST = "com.dongji.market.ADD_DOWNLOAD_LIST";
+
+	/******************************************* 广播 ****************************************/
+	
+	
+
+	/**
+	 * 下载存储根路径
+	 */
+	public static final String DOWNLOAD_ROOT_PATH = Environment.getExternalStorageDirectory().getPath() + "/.dongji/dongjiMarket/cache/apk/";
+
+	/**
+	 * 下载完成的文件后缀
+	 */
+	public static final String DOWNLOAD_FILE_POST_SUFFIX = ".apk";
+
+	/**
+	 * 下载未完成的文件后缀
+	 */
+	public static final String DOWNLOAD_FILE_PREPARE_SUFFIX = ".apk.temp";
+
+	/**
+	 * 下载实体类
+	 */
+	public static final String DOWNLOAD_ENTITY = "DownloadEntity";
+
+	/**
+	 * 包名
+	 */
+	public static final String DOWNLOAD_APKPACKAGENAME = "ApkPackageName";
+
 }

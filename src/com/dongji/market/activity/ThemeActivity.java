@@ -30,7 +30,7 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
 import com.dongji.market.R;
-import com.dongji.market.helper.AndroidUtils;
+import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.helper.WaterFallCell;
 import com.dongji.market.helper.WaterFallItem;
 import com.dongji.market.pojo.SubjectInfo;
@@ -160,13 +160,13 @@ public class ThemeActivity extends BaseActivity implements OnClickListener {
 						});
 					}
 				} catch (IOException e) {
-					if (!AndroidUtils.isNetworkAvailable(ThemeActivity.this)) {
+					if (!DJMarketUtils.isNetworkAvailable(ThemeActivity.this)) {
 						sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
 					} else {
 						sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
 					}
 				} catch (JSONException e) {
-					if (!AndroidUtils.isNetworkAvailable(ThemeActivity.this)) {
+					if (!DJMarketUtils.isNetworkAvailable(ThemeActivity.this)) {
 						sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
 					} else {
 						sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
@@ -353,13 +353,13 @@ public class ThemeActivity extends BaseActivity implements OnClickListener {
 						result = DataManager.newInstance().subjectCount(subjectId);
 					}
 				} catch (IOException e) {
-					if (!AndroidUtils.isNetworkAvailable(ThemeActivity.this)) {
+					if (!DJMarketUtils.isNetworkAvailable(ThemeActivity.this)) {
 						sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
 					} else {
 						sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
 					}
 				} catch (JSONException e) {
-					if (!AndroidUtils.isNetworkAvailable(ThemeActivity.this)) {
+					if (!DJMarketUtils.isNetworkAvailable(ThemeActivity.this)) {
 						sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
 					} else {
 						sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
@@ -389,7 +389,7 @@ public class ThemeActivity extends BaseActivity implements OnClickListener {
 					mLoadingProgressBar.setVisibility(View.GONE);
 					mLoadingTextView.setText(rId);
 				} else {
-					AndroidUtils.showToast(ThemeActivity.this, rId2);
+					DJMarketUtils.showToast(ThemeActivity.this, rId2);
 				}
 			}
 		});

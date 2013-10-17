@@ -24,7 +24,7 @@ import android.widget.TextView.OnEditorActionListener;
 import com.dongji.market.R;
 import com.dongji.market.activity.Login_Activity;
 import com.dongji.market.helper.AConstDefine;
-import com.dongji.market.helper.AndroidUtils;
+import com.dongji.market.helper.DJMarketUtils;
 
 public class LoginDialog2 extends Dialog implements android.view.View.OnClickListener{
 	
@@ -156,17 +156,17 @@ public class LoginDialog2 extends Dialog implements android.view.View.OnClickLis
 	
 	private boolean loginMtd() {
 		String pwdStr = mETPassword.getText().toString();
-		if (!AndroidUtils.isNetworkAvailable(context)) {
-			AndroidUtils.showToast(context, R.string.net_error);
+		if (!DJMarketUtils.isNetworkAvailable(context)) {
+			DJMarketUtils.showToast(context, R.string.net_error);
 			return false;
 		} else if (TextUtils.isEmpty(pwdStr)) {
-			AndroidUtils.showToast(context, R.string.password_null);
+			DJMarketUtils.showToast(context, R.string.password_null);
 			return false;
-		} else if (!AndroidUtils.passwdFormat(pwdStr)) {
-			AndroidUtils.showToast(context, R.string.passwd_format_error);
+		} else if (!DJMarketUtils.passwdFormat(pwdStr)) {
+			DJMarketUtils.showToast(context, R.string.passwd_format_error);
 			return false;
 		} else {
-			AndroidUtils.showToast(context, R.string.is_logining);
+			DJMarketUtils.showToast(context, R.string.is_logining);
 			return true;
 		}
 	}

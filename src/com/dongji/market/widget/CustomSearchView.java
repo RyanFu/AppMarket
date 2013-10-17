@@ -23,7 +23,7 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 
 import com.dongji.market.R;
-import com.dongji.market.helper.AndroidUtils;
+import com.dongji.market.helper.DJMarketUtils;
 
 public class CustomSearchView extends EditText {
 
@@ -71,8 +71,8 @@ public class CustomSearchView extends EditText {
 	 * 设置popupWindow高度最大为屏幕高度的1/4
 	 */
 	private void initMaxPopupSize() {
-		DisplayMetrics metrics = AndroidUtils.getScreenSize((Activity) cxt);
-		mPopupItemHeight = AndroidUtils.dip2px(cxt, 17) + AndroidUtils.sp2px(cxt, 17);
+		DisplayMetrics metrics = DJMarketUtils.getScreenSize((Activity) cxt);
+		mPopupItemHeight = DJMarketUtils.dip2px(cxt, 17) + DJMarketUtils.sp2px(cxt, 17);
 		mPopupMaxHeight = metrics.heightPixels / 4;
 	}
 

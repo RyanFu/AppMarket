@@ -10,14 +10,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.dongji.market.helper.AndroidUtils;
+import com.dongji.market.helper.DJMarketUtils;
 
 public class FsCache {
 	private static String DATA_CACHE_DIRECTORY;
 	private static final String updateFileName="softUpdate";
 	
 	static {
-		DATA_CACHE_DIRECTORY = AndroidUtils.cachePath+"data/";
+		DATA_CACHE_DIRECTORY = DJMarketUtils.cachePath+"data/";
 	}
 	
 	/**

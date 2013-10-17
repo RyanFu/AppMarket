@@ -31,13 +31,13 @@ import com.dongji.market.activity.ApkDetailActivity;
 import com.dongji.market.activity.DownloadActivity;
 import com.dongji.market.activity.DownloadActivity.MyHandler;
 import com.dongji.market.cache.FileService;
-import com.dongji.market.download.DownloadConstDefine;
-import com.dongji.market.download.DownloadEntity;
-import com.dongji.market.download.DownloadService;
-import com.dongji.market.download.DownloadUtils;
-import com.dongji.market.helper.AndroidUtils;
+import com.dongji.market.helper.DJMarketUtils;
+import com.dongji.market.helper.AConstDefine;
+import com.dongji.market.helper.DownloadUtils;
 import com.dongji.market.helper.NetTool;
 import com.dongji.market.pojo.ApkItem;
+import com.dongji.market.pojo.DownloadEntity;
+import com.dongji.market.service.DownloadService;
 
 /**
  * 更新、安装页expandable适配器
@@ -45,7 +45,7 @@ import com.dongji.market.pojo.ApkItem;
  * @author yvon
  * 
  */
-public class DownloadAdapter extends BaseExpandableListAdapter implements DownloadConstDefine, DownloadService.DownloadStatusListener {
+public class DownloadAdapter extends BaseExpandableListAdapter implements AConstDefine, DownloadService.DownloadStatusListener {
 	private Context context;
 	private List<List<DownloadEntity>> childList;
 	private List<String> groupList;
@@ -413,7 +413,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 		if (childList.size() > groupPosition && childList.get(groupPosition).size() > childPosition) {// childPosition可能为0，因为getChildrenCount至少大于1
 			entity = childList.get(groupPosition).get(childPosition);
 			switch (entity.downloadType) {
-			case DownloadConstDefine.TYPE_OF_DOWNLOAD:// 正在下载
+			case AConstDefine.TYPE_OF_DOWNLOAD:// 正在下载
 				fillDownloadChildView(entity, holder);
 				if (!TextUtils.isEmpty(entity.iconUrl)) {
 					try {
@@ -425,7 +425,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 					}
 				}
 				break;
-			case DownloadConstDefine.TYPE_OF_UPDATE:// 正在更新
+			case AConstDefine.TYPE_OF_UPDATE:// 正在更新
 				fillUpdateChildView(entity, holder);
 				if (entity != null && entity.installedIcon != null) {
 					holder.mImageView.setImageBitmap(((BitmapDrawable) entity.installedIcon).getBitmap());
@@ -433,7 +433,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 					holder.mImageView.setImageBitmap(mDefaultBitmap);
 				}
 				break;
-			case DownloadConstDefine.TYPE_OF_COMPLETE:// 下载完成
+			case AConstDefine.TYPE_OF_COMPLETE:// 下载完成
 				fillWaitInstallChildView(entity, holder);
 				if (!TextUtils.isEmpty(entity.iconUrl)) {
 					try {
@@ -1042,7 +1042,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements Downlo
 					context.startActivity(intent);
 				}
 			} else {
-				AndroidUtils.showToast(context, R.string.not_found_soft_detail);
+				DJMarketUtils.showToast(context, R.string.not_found_soft_detail);
 			}
 		}
 	}

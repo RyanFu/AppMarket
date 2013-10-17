@@ -31,7 +31,7 @@ import android.widget.RadioButton;
 import com.dongji.market.R;
 import com.dongji.market.application.AppMarket;
 import com.dongji.market.helper.AConstDefine;
-import com.dongji.market.helper.AndroidUtils;
+import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.helper.ShareParams;
 import com.dongji.market.helper.TitleUtil;
 import com.dongji.market.helper.TitleUtil.OnToolBarBlankClickListener;
@@ -112,8 +112,8 @@ public class SoftwareManageActivity extends ActivityGroup implements OnClickList
 	
 	private void initSlideImageView() {
 		mSlideImageView = (ImageView) findViewById(R.id.slide_image);
-		DisplayMetrics dm = AndroidUtils.getScreenSize(this);
-		int num = AndroidUtils.dip2px(this, 2);
+		DisplayMetrics dm = DJMarketUtils.getScreenSize(this);
+		int num = DJMarketUtils.dip2px(this, 2);
 		float singleWidth = (dm.widthPixels - num * 2) / 3.0f;
 		LayoutParams mParams = (LayoutParams) mSlideImageView.getLayoutParams();
 		mParams.width = (int) singleWidth;

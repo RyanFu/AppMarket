@@ -49,14 +49,12 @@ import com.dongji.market.activity.SoftwareManageActivity;
 import com.dongji.market.adapter.SearchHistoryAdapter;
 import com.dongji.market.application.AppMarket;
 import com.dongji.market.database.MarketDatabase.SearchHistory;
-import com.dongji.market.download.DownloadConstDefine;
-import com.dongji.market.download.DownloadEntity;
-import com.dongji.market.download.DownloadService;
-import com.dongji.market.download.FlowBroadcastReceiver;
 import com.dongji.market.pojo.ApkItem;
+import com.dongji.market.pojo.DownloadEntity;
 import com.dongji.market.pojo.LoginParams;
 import com.dongji.market.protocol.DataManager;
 import com.dongji.market.receiver.CommonReceiver;
+import com.dongji.market.service.DownloadService;
 import com.dongji.market.widget.CustomSearchView;
 import com.dongji.market.widget.CustomSearchView.OnItemClickListener;
 import com.dongji.market.widget.CustomSearchView.OnKeyDownListener;
@@ -278,12 +276,12 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 			mSortPageShrinkIcon = (ImageView) titleView.findViewById(R.id.shrink_icon);
 		}
 		
-		if (!AndroidUtils.isTablet(cxt)||AndroidUtils.getPhysicalSize(cxt)<6) {
+		if (DJMarketUtils.isPhone(cxt)||DJMarketUtils.getPhysicalSize(cxt)<6) {
 			return;
 		}
 		
-		int screenHeight = AndroidUtils.getScreenSize(cxt).heightPixels;
-		int screenWidth = AndroidUtils.getScreenSize(cxt).widthPixels;
+		int screenHeight = DJMarketUtils.getScreenSize(cxt).heightPixels;
+		int screenWidth = DJMarketUtils.getScreenSize(cxt).widthPixels;
 		LinearLayout.LayoutParams linearParams;
 		FrameLayout.LayoutParams frameParams;
 		RelativeLayout.LayoutParams relativeParams;
@@ -419,8 +417,8 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 	}
 
 	private void initSearchLayout() {
-		int screenHeight = AndroidUtils.getScreenSize(cxt).heightPixels;
-		int screenWidth = AndroidUtils.getScreenSize(cxt).widthPixels;
+		int screenHeight = DJMarketUtils.getScreenSize(cxt).heightPixels;
+		int screenWidth = DJMarketUtils.getScreenSize(cxt).widthPixels;
 		LinearLayout.LayoutParams linearParams;
 		FrameLayout.LayoutParams frameParams;
 		int actualHeight;
@@ -495,8 +493,8 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 	}
 
 	private void initCommonLayout() {
-		int screenHeight = AndroidUtils.getScreenSize(cxt).heightPixels;
-		int screenWidth = AndroidUtils.getScreenSize(cxt).widthPixels;
+		int screenHeight = DJMarketUtils.getScreenSize(cxt).heightPixels;
+		int screenWidth = DJMarketUtils.getScreenSize(cxt).widthPixels;
 		LinearLayout.LayoutParams linearParams;
 		FrameLayout.LayoutParams frameParams;
 		int actualHeight;
@@ -707,7 +705,7 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 				}
 				loginParams.setSessionId(null);
 				loginParams.setUserName(null);
-				AndroidUtils.showToast(cxt, R.string.login_out);
+				DJMarketUtils.showToast(cxt, R.string.login_out);
 				if (cxt.getClass().equals(Change_Pwd_Activity.class)) {
 					cxt.finish();
 				}
@@ -761,7 +759,7 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 			break;
 		case R.id.popup_sina_share:
 			if (isSharing) {
-				AndroidUtils.showToast(cxt, R.string.is_loading);
+				DJMarketUtils.showToast(cxt, R.string.is_loading);
 			} else {
 				if (DJMarketUtils.isSinaLogin(cxt)) {
 					isSharing = true;
@@ -774,7 +772,7 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 			break;
 		case R.id.popup_tencent_share:
 			if (isSharing) {
-				AndroidUtils.showToast(cxt, R.string.is_loading);
+				DJMarketUtils.showToast(cxt, R.string.is_loading);
 			} else {
 				if (DJMarketUtils.isTencentLogin(cxt)) {
 					isSharing = true;
@@ -836,7 +834,7 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 			intent.setClass(cxt, Search_Result_Activity.class);
 			cxt.startActivity(intent);
 		} else {
-			AndroidUtils.showToast(cxt, cxt.getResources().getString(R.string.input_keyword_please));
+			DJMarketUtils.showToast(cxt, cxt.getResources().getString(R.string.input_keyword_please));
 		}
 	}
 
@@ -988,7 +986,7 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		mPopDownloadMost = (TextView) mLayout.findViewById(R.id.popup_download_most);
 		mPopGradeTop = (TextView) mLayout.findViewById(R.id.popup_grade_top);
 		mPopRiseFastest = (TextView) mLayout.findViewById(R.id.popup_rise_fastest);
-		mSortPopup = new PopupWindow(mLayout, mSortPageShrinkIcon.getWidth() + AndroidUtils.dip2px(cxt, 80), AndroidUtils.dip2px(cxt, 139), true);
+		mSortPopup = new PopupWindow(mLayout, mSortPageShrinkIcon.getWidth() + DJMarketUtils.dip2px(cxt, 80), DJMarketUtils.dip2px(cxt, 139), true);
 		mSortPopup.setBackgroundDrawable(cxt.getResources().getDrawable(R.drawable.sort_popup_bg));
 		mSortPopup.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
 		mSortPopup.setOutsideTouchable(true);
@@ -1044,7 +1042,7 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		mPopLogin = (TextView) mLayout.findViewById(R.id.popup_login);
 		mPopSettingDiv = (TextView) mLayout.findViewById(R.id.popup_chg_pwd_divider);
 		mPopChgPwd = (TextView) mLayout.findViewById(R.id.popup_change_pwd);
-		mSettingPopup = new PopupWindow(mLayout, mSettingButton.getWidth() * 5, (AndroidUtils.dip2px(cxt, 100)), true);
+		mSettingPopup = new PopupWindow(mLayout, mSettingButton.getWidth() * 5, (DJMarketUtils.dip2px(cxt, 100)), true);
 		mSettingPopup.setBackgroundDrawable(cxt.getResources().getDrawable(R.drawable.setting_pop_bg));
 		mSettingPopup.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
 		mSettingPopup.setOutsideTouchable(true);
@@ -1074,7 +1072,7 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 			if (mSettingPopup.isShowing()) {
 				mSettingPopup.dismiss();
 			} else {
-				mSettingPopup.showAsDropDown(titleView, AndroidUtils.getScreenSize(cxt).widthPixels, 3);
+				mSettingPopup.showAsDropDown(titleView, DJMarketUtils.getScreenSize(cxt).widthPixels, 3);
 			}
 		}
 	}
@@ -1087,12 +1085,12 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 			mPopLogin.setText(R.string.login_out);
 			mPopSettingDiv.setVisibility(View.VISIBLE);
 			mPopChgPwd.setVisibility(View.VISIBLE);
-			mSettingPopup.setHeight(AndroidUtils.dip2px(cxt, 148));
+			mSettingPopup.setHeight(DJMarketUtils.dip2px(cxt, 148));
 		} else if (!DJMarketUtils.isLogin(cxt) && mPopSettingDiv.getVisibility() == View.VISIBLE) {
 			mPopLogin.setText(R.string.login);
 			mPopSettingDiv.setVisibility(View.GONE);
 			mPopChgPwd.setVisibility(View.GONE);
-			mSettingPopup.setHeight(AndroidUtils.dip2px(cxt, 100));
+			mSettingPopup.setHeight(DJMarketUtils.dip2px(cxt, 100));
 		}
 	}
 
@@ -1132,11 +1130,11 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 					int updateCount = 0;
 					for (int i = 0; i < downloadList.size(); i++) {
 						DownloadEntity entity = downloadList.get(i);
-						if (entity.downloadType == DownloadConstDefine.TYPE_OF_DOWNLOAD) {// 需下载的类型
+						if (entity.downloadType == AConstDefine.TYPE_OF_DOWNLOAD) {// 需下载的类型
 							downloadLength += entity.fileLength;// 下载的的总长度
 							downloadCur += entity.currentPosition;// 已经下载的数量
-						} else if (entity.downloadType == DownloadConstDefine.TYPE_OF_UPDATE) {// 需更新的类型
-							if (entity.getStatus() != DownloadConstDefine.STATUS_OF_INITIAL && entity.getStatus() != DownloadConstDefine.STATUS_OF_IGNORE) {
+						} else if (entity.downloadType == AConstDefine.TYPE_OF_UPDATE) {// 需更新的类型
+							if (entity.getStatus() != AConstDefine.STATUS_OF_INITIAL && entity.getStatus() != AConstDefine.STATUS_OF_IGNORE) {
 								downloadLength += entity.fileLength;
 								downloadCur += entity.currentPosition;
 							} else {// 下载状态为初始化状态或忽略更新状态

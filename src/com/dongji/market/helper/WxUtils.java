@@ -34,7 +34,7 @@ public class WxUtils {
 	private static IWXAPI api;
 	private static final String TAG = "WxUtil";
 	private static final int MAX_DECODE_PICTURE_SIZE = 1920 * 1440;
-	private static final String EXTERNAL_STORAGE_DIRECTORY_PATH = AndroidUtils.getSdcardFile().getPath() + "/.dongji/dongjiMarket/cache/images/";
+	private static final String EXTERNAL_STORAGE_DIRECTORY_PATH = DJMarketUtils.getSdcardFile().getPath() + "/.dongji/dongjiMarket/cache/images/";
 	private static final BitmapFactory.Options mOptions = new BitmapFactory.Options();
 
 	static {

@@ -28,7 +28,7 @@ import com.dongji.market.R;
 import com.dongji.market.adapter.ListBaseAdapter;
 import com.dongji.market.adapter.ThemeListSingleTemplateAdapter;
 import com.dongji.market.helper.AConstDefine;
-import com.dongji.market.helper.AndroidUtils;
+import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.helper.TitleUtil;
 import com.dongji.market.helper.TitleUtil.OnToolBarBlankClickListener;
 import com.dongji.market.pojo.ApkItem;
@@ -97,7 +97,7 @@ public class ThemeListActivity extends PublicActivity implements OnItemClickList
 				findViewById(R.id.shawview).setVisibility(View.GONE);
 			}
 		} else {
-			AndroidUtils.showToast(this, R.string.request_channel_data_error);
+			DJMarketUtils.showToast(this, R.string.request_channel_data_error);
 			finish();
 		}
 	}
@@ -198,7 +198,7 @@ public class ThemeListActivity extends PublicActivity implements OnItemClickList
 						}
 
 					} else {
-						if (!AndroidUtils.isNetworkAvailable(context)) {
+						if (!DJMarketUtils.isNetworkAvailable(context)) {
 							System.out.println(" network  error ");
 							sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
 						} else {
@@ -208,7 +208,7 @@ public class ThemeListActivity extends PublicActivity implements OnItemClickList
 					}
 				} catch (JSONException e) {
 					System.out.println("jsonexception:" + e);
-					if (!AndroidUtils.isNetworkAvailable(context)) {
+					if (!DJMarketUtils.isNetworkAvailable(context)) {
 						sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
 					} else {
 						sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
@@ -241,7 +241,7 @@ public class ThemeListActivity extends PublicActivity implements OnItemClickList
 					mLoadingProgressBar.setVisibility(View.GONE);
 					mLoadingTextView.setText(rId);
 				} else {
-					AndroidUtils.showToast(context, rId2);
+					DJMarketUtils.showToast(context, rId2);
 				}
 			}
 		});

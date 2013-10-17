@@ -18,7 +18,7 @@ import android.widget.LinearLayout;
 
 import com.dongji.market.R;
 import com.dongji.market.adapter.GalleryDetailAdapter;
-import com.dongji.market.helper.AndroidUtils;
+import com.dongji.market.helper.DJMarketUtils;
 
 public class CustomGalleryDialog extends Dialog {
 	private View mContentView;
@@ -44,8 +44,8 @@ public class CustomGalleryDialog extends Dialog {
 		FrameLayout mFrameLayout = (FrameLayout) mContentView.findViewById(R.id.framelayout);
 		DisplayMetrics dm = new DisplayMetrics();
 		getWindow().getWindowManager().getDefaultDisplay().getMetrics(dm);
-		int num1 = AndroidUtils.dip2px(context, 30);
-		int num2 = AndroidUtils.dip2px(context, 60);
+		int num1 = DJMarketUtils.dip2px(context, 30);
+		int num2 = DJMarketUtils.dip2px(context, 60);
 		LinearLayout.LayoutParams mParams = (LinearLayout.LayoutParams) mFrameLayout.getLayoutParams();
 		mParams.width = dm.widthPixels - (num1 * 2);
 		mParams.height = dm.heightPixels - (num2 * 2);

@@ -27,7 +27,7 @@ import android.widget.TextView.OnEditorActionListener;
 
 import com.dongji.market.R;
 import com.dongji.market.application.AppMarket;
-import com.dongji.market.helper.AndroidUtils;
+import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.helper.TitleUtil;
 import com.dongji.market.protocol.DataManager;
 import com.dongji.market.widget.CustomProgressDialog;
@@ -134,7 +134,7 @@ public class Register_Activity extends Activity implements OnClickListener {
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						AndroidUtils.showToast(Register_Activity.this, R.string.register_and_login);
+						DJMarketUtils.showToast(Register_Activity.this, R.string.register_and_login);
 						setResult(1, null);
 						finish();
 					}
@@ -145,7 +145,7 @@ public class Register_Activity extends Activity implements OnClickListener {
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						AndroidUtils.showToast(Register_Activity.this, R.string.email_occupied_error);
+						DJMarketUtils.showToast(Register_Activity.this, R.string.email_occupied_error);
 						mEmailET.requestFocus();
 					}
 				});
@@ -154,7 +154,7 @@ public class Register_Activity extends Activity implements OnClickListener {
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						AndroidUtils.showToast(Register_Activity.this, R.string.register_fail);
+						DJMarketUtils.showToast(Register_Activity.this, R.string.register_fail);
 					}
 				});
 				break;
@@ -163,14 +163,14 @@ public class Register_Activity extends Activity implements OnClickListener {
 			runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
-					AndroidUtils.showToast(Register_Activity.this, R.string.register_timeout);
+					DJMarketUtils.showToast(Register_Activity.this, R.string.register_timeout);
 				}
 			});
 		} catch (JSONException e) {
 			runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
-					AndroidUtils.showToast(Register_Activity.this, R.string.register_fail);
+					DJMarketUtils.showToast(Register_Activity.this, R.string.register_fail);
 				}
 			});
 		} finally {
@@ -241,33 +241,33 @@ public class Register_Activity extends Activity implements OnClickListener {
 		String pwdStr = mPasswordET.getText().toString();
 		String pwdAgainStr = mPwdAgainET.getText().toString();
 		if (TextUtils.isEmpty(emailString)) {
-			AndroidUtils.showToast(this, R.string.email_null);
+			DJMarketUtils.showToast(this, R.string.email_null);
 			mEmailET.requestFocus();
-		} else if (!AndroidUtils.isEmail(emailString)) {
-			AndroidUtils.showToast(this, R.string.email_format_error);
+		} else if (!DJMarketUtils.isEmail(emailString)) {
+			DJMarketUtils.showToast(this, R.string.email_format_error);
 			mEmailET.requestFocus();
 		} else if (TextUtils.isEmpty(pwdStr) || TextUtils.isEmpty(pwdAgainStr)) {
-			AndroidUtils.showToast(this, R.string.password_null);
+			DJMarketUtils.showToast(this, R.string.password_null);
 			if (TextUtils.isEmpty(pwdStr) || (TextUtils.isEmpty(pwdStr) && TextUtils.isEmpty(pwdAgainStr))) {
 				mPasswordET.requestFocus();
 			} else if (TextUtils.isEmpty(pwdAgainStr)) {
 				mPwdAgainET.requestFocus();
 			}
 		} else if (emailString.length() > MAX_EMAIL_LENGTH) {
-			AndroidUtils.showToast(this, R.string.email_is_notoverfifty);
+			DJMarketUtils.showToast(this, R.string.email_is_notoverfifty);
 			mEmailET.requestFocus();
 		} else if (pwdStr.length() < MIN_PASSWORD_LENGTH || pwdAgainStr.length() < MIN_PASSWORD_LENGTH) {
-			AndroidUtils.showToast(this, R.string.pwd_is_notlowsix);
+			DJMarketUtils.showToast(this, R.string.pwd_is_notlowsix);
 			if (pwdStr.length() < MIN_PASSWORD_LENGTH || (pwdStr.length() < MIN_PASSWORD_LENGTH && pwdAgainStr.length() < MIN_PASSWORD_LENGTH)) {
 				mPasswordET.requestFocus();
 			} else if (pwdAgainStr.length() < MIN_PASSWORD_LENGTH) {
 				mPwdAgainET.requestFocus();
 			}
 		} else if (!pwdStr.equals(pwdAgainStr)) {
-			AndroidUtils.showToast(this, R.string.pwd_is_different);
+			DJMarketUtils.showToast(this, R.string.pwd_is_different);
 			mPwdAgainET.requestFocus();
-		} else if (!AndroidUtils.isNetworkAvailable(this)) {
-			AndroidUtils.showToast(this, R.string.no_network_msg1);
+		} else if (!DJMarketUtils.isNetworkAvailable(this)) {
+			DJMarketUtils.showToast(this, R.string.no_network_msg1);
 		} else {
 			showProgressDialog();
 			return true;

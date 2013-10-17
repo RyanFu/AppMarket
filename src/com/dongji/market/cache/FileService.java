@@ -1,6 +1,6 @@
 package com.dongji.market.cache;
 
-import com.dongji.market.helper.AndroidUtils;
+import com.dongji.market.helper.DJMarketUtils;
 
 import android.graphics.Bitmap;
 import android.widget.ImageView;
@@ -14,7 +14,7 @@ public class FileService {
 	 * 如果要将图片存在sd card，则在调用getBitmap() 之前，必须调用本方法。
 	 */
 	public static void loadFileToMap() {
-		if (AndroidUtils.isSdcardExists()) {
+		if (DJMarketUtils.isSdcardExists()) {
 			mFileServerBySDCard = new FileServiceBySDCard();// 存在SD card
 			mFileServerBySDCard.loadFileToMap();
 		}
@@ -36,7 +36,7 @@ public class FileService {
 	 *            SCROLL_STATUS_STOP[类型:Integer]
 	 */
 	public static void getBitmap(String url, ImageView imageView, Bitmap defaultBitmap, Integer scrollState) {
-		if (AndroidUtils.isSdcardExists() && mFileServerBySDCard != null) {
+		if (DJMarketUtils.isSdcardExists() && mFileServerBySDCard != null) {
 			mFileServerBySDCard.getBitmap(url, imageView, defaultBitmap, scrollState);
 		} else {
 			if (mFileServerByMemory != null)
@@ -59,7 +59,7 @@ public class FileService {
 	 * 
 	 */
 	public static void getBitmap(String url, ImageView imageView, Bitmap defaultBitmap, boolean isRemote) {
-		if (AndroidUtils.isSdcardExists() && mFileServerBySDCard != null) {
+		if (DJMarketUtils.isSdcardExists() && mFileServerBySDCard != null) {
 			mFileServerBySDCard.getBitmap(url, imageView, defaultBitmap, isRemote);
 		} else {
 			if (mFileServerByMemory != null)

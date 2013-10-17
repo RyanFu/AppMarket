@@ -52,17 +52,17 @@ import com.dongji.market.cache.FileService;
 import com.dongji.market.database.MarketDatabase;
 import com.dongji.market.database.MarketDatabase.HotwordsService;
 import com.dongji.market.database.MarketDatabase.SearchHistory;
-import com.dongji.market.download.DownloadConstDefine;
-import com.dongji.market.download.DownloadEntity;
-import com.dongji.market.download.DownloadUtils;
 import com.dongji.market.helper.AConstDefine;
-import com.dongji.market.helper.AndroidUtils;
 import com.dongji.market.helper.DJMarketUtils;
+import com.dongji.market.helper.DJMarketUtils;
+import com.dongji.market.helper.AConstDefine;
+import com.dongji.market.helper.DownloadUtils;
 import com.dongji.market.helper.NetTool;
 import com.dongji.market.helper.ShareParams;
 import com.dongji.market.helper.TitleUtil;
 import com.dongji.market.listener.ShakeListener;
 import com.dongji.market.pojo.ApkItem;
+import com.dongji.market.pojo.DownloadEntity;
 import com.dongji.market.protocol.DataManager;
 import com.umeng.analytics.MobclickAgent;
 
@@ -185,7 +185,7 @@ public class Search_Activity extends PublicActivity {
 					mHandler.sendEmptyMessage(EVENT_REQUEST_GUESS_LIST);
 				} catch (IOException e) {
 					e.printStackTrace();
-					if (!AndroidUtils.isNetworkAvailable(getApplicationContext())) {
+					if (!DJMarketUtils.isNetworkAvailable(getApplicationContext())) {
 						mHandler.sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
 					} else {
 						mHandler.sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
@@ -201,7 +201,7 @@ public class Search_Activity extends PublicActivity {
 					data = hotwordsService.getAll();
 				} catch (IOException e) {
 					e.printStackTrace();
-					if (!AndroidUtils.isNetworkAvailable(getApplicationContext())) {
+					if (!DJMarketUtils.isNetworkAvailable(getApplicationContext())) {
 						sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
 					} else {
 						sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
@@ -288,11 +288,11 @@ public class Search_Activity extends PublicActivity {
 					public void run() {
 						if (defImage) {
 							mShake_image.setImageResource(R.drawable.wave_running);
-							mShake_image.setPadding(0, AndroidUtils.dip2px(Search_Activity.this, 30), 0, AndroidUtils.dip2px(Search_Activity.this, 30));
+							mShake_image.setPadding(0, DJMarketUtils.dip2px(Search_Activity.this, 30), 0, DJMarketUtils.dip2px(Search_Activity.this, 30));
 							defImage = false;
 						} else {
 							mShake_image.setImageResource(R.drawable.wave_default);
-							mShake_image.setPadding(0, AndroidUtils.dip2px(Search_Activity.this, 30), 0, AndroidUtils.dip2px(Search_Activity.this, 30));
+							mShake_image.setPadding(0, DJMarketUtils.dip2px(Search_Activity.this, 30), 0, DJMarketUtils.dip2px(Search_Activity.this, 30));
 							defImage = true;
 						}
 					}
@@ -344,19 +344,19 @@ public class Search_Activity extends PublicActivity {
 					mLoadingProgressBar.setVisibility(View.GONE);
 					mLoadingTextView.setText(rId);
 				} else {
-					AndroidUtils.showToast(Search_Activity.this, rId2);
+					DJMarketUtils.showToast(Search_Activity.this, rId2);
 				}
 				if (mShakeLoadingLayout.getVisibility() == View.VISIBLE) {
 					mShakeLoadingProgressBar.setVisibility(View.GONE);
 					mShakeLoadingTextView.setText(R.string.request_data_error_msg2);
 				} else {
-					AndroidUtils.showToast(Search_Activity.this, rId2);
+					DJMarketUtils.showToast(Search_Activity.this, rId2);
 				}
 				if (mGuessLoadingLayout.getVisibility() == View.VISIBLE) {
 					mGuessLoadingProgressBar.setVisibility(View.GONE);
 					mGuessLoadingTextView.setText(R.string.request_data_error_msg2);
 				} else {
-					AndroidUtils.showToast(Search_Activity.this, rId2);
+					DJMarketUtils.showToast(Search_Activity.this, rId2);
 				}
 			}
 		});
@@ -388,7 +388,7 @@ public class Search_Activity extends PublicActivity {
 			TextView tvTips = new TextView(this);
 			tvTips.setGravity(Gravity.CENTER);
 			tvTips.setTextColor(getResources().getColor(android.R.color.black));
-			int padding = AndroidUtils.dip2px(this, 5.0f);
+			int padding = DJMarketUtils.dip2px(this, 5.0f);
 			tvTips.setPadding(0, padding, 0, padding);
 			tvTips.setTextSize(15);
 			tvTips.setText(R.string.not_hotkeyword);
@@ -397,9 +397,9 @@ public class Search_Activity extends PublicActivity {
 		}
 		position = 0;
 		LayoutInflater inflater = LayoutInflater.from(this);
-		DisplayMetrics dm = AndroidUtils.getScreenSize(this);
-		int maxWidth = dm.widthPixels - AndroidUtils.dip2px(this, 10f);
-		float spaceWidth = AndroidUtils.dip2px(this, 68);
+		DisplayMetrics dm = DJMarketUtils.getScreenSize(this);
+		int maxWidth = dm.widthPixels - DJMarketUtils.dip2px(this, 10f);
+		float spaceWidth = DJMarketUtils.dip2px(this, 68);
 		while (position < data.size()) {
 			LinearLayout mLinearLayout = getLinearLayout();
 			LinearLayout mChildLayout = (LinearLayout) inflater.inflate(R.layout.item_view_hotwords, null);
@@ -479,8 +479,8 @@ public class Search_Activity extends PublicActivity {
 			mGuessLoadingLayout.setVisibility(View.GONE);
 			mGuessLikeGrid.setVisibility(View.VISIBLE);
 		}
-		int columnWidth = AndroidUtils.dip2px(this, 48);
-		int horizontalSpacing = AndroidUtils.dip2px(this, 10);
+		int columnWidth = DJMarketUtils.dip2px(this, 48);
+		int horizontalSpacing = DJMarketUtils.dip2px(this, 10);
 		LayoutParams params = new LayoutParams(list.size() * columnWidth + list.size() * horizontalSpacing, columnWidth + horizontalSpacing * 4);
 		mGuessLikeGrid.setLayoutParams(params);
 		mGuessLikeGrid.setColumnWidth(columnWidth);
@@ -614,17 +614,17 @@ public class Search_Activity extends PublicActivity {
 				if (item.status == AConstDefine.STATUS_APK_UNINSTALL || item.status == AConstDefine.STATUS_APK_UNUPDATE) {
 					int[] location = new int[2];
 					mAppIconImageView.getLocationOnScreen(location);
-					DownloadUtils.checkDownload(Search_Activity.this, item, mInstallTextView);
+					DownloadUtils.checkDownload(Search_Activity.this, item);
 				} else {
-					Intent intent = new Intent(DownloadConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD);
+					Intent intent = new Intent(AConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD);
 					DownloadEntity entity = new DownloadEntity(item);
 					Bundle bundle = new Bundle();
-					bundle.putParcelable(DownloadConstDefine.DOWNLOAD_ENTITY, entity);
+					bundle.putParcelable(AConstDefine.DOWNLOAD_ENTITY, entity);
 					intent.putExtras(bundle);
 					sendBroadcast(intent);
-					if (entity.downloadType == DownloadConstDefine.TYPE_OF_DOWNLOAD) {
+					if (entity.downloadType == AConstDefine.TYPE_OF_DOWNLOAD) {
 						DownloadUtils.fillDownloadNotifycation(Search_Activity.this, false);
-					} else if (entity.downloadType == DownloadConstDefine.TYPE_OF_UPDATE) {
+					} else if (entity.downloadType == AConstDefine.TYPE_OF_UPDATE) {
 						DownloadUtils.fillUpdateAndUpdatingNotifycation(Search_Activity.this, false);
 					}
 				}
@@ -639,7 +639,7 @@ public class Search_Activity extends PublicActivity {
 		}
 		mShake_layout.addView(mShake_item);
 		View mDividerView = new View(this);
-		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, AndroidUtils.px2dip(this, 1));
+		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, DJMarketUtils.px2dip(this, 1));
 		mDividerView.setLayoutParams(params);
 		mDividerView.setBackgroundColor(0xffd3d3d3);
 		mShake_layout.addView(mDividerView);

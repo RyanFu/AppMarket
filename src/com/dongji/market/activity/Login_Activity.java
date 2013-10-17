@@ -31,7 +31,7 @@ import android.widget.TextView.OnEditorActionListener;
 
 import com.dongji.market.R;
 import com.dongji.market.application.AppMarket;
-import com.dongji.market.helper.AndroidUtils;
+import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.helper.TitleUtil;
 import com.dongji.market.protocol.DataManager;
 import com.dongji.market.widget.CustomProgressDialog;
@@ -154,7 +154,7 @@ public class Login_Activity extends Activity {
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						AndroidUtils.showToast(Login_Activity.this, R.string.login_success);
+						DJMarketUtils.showToast(Login_Activity.this, R.string.login_success);
 						finish();
 					}
 				});
@@ -164,7 +164,7 @@ public class Login_Activity extends Activity {
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						AndroidUtils.showToast(Login_Activity.this, R.string.email_or_password_error);
+						DJMarketUtils.showToast(Login_Activity.this, R.string.email_or_password_error);
 					}
 				});
 				break;
@@ -172,7 +172,7 @@ public class Login_Activity extends Activity {
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						AndroidUtils.showToast(Login_Activity.this, R.string.login_failed);
+						DJMarketUtils.showToast(Login_Activity.this, R.string.login_failed);
 					}
 				});
 				break;
@@ -181,14 +181,14 @@ public class Login_Activity extends Activity {
 			runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
-					AndroidUtils.showToast(Login_Activity.this, R.string.login_timeout);
+					DJMarketUtils.showToast(Login_Activity.this, R.string.login_timeout);
 				}
 			});
 		} catch (JSONException e) {
 			runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
-					AndroidUtils.showToast(Login_Activity.this, R.string.login_failed);
+					DJMarketUtils.showToast(Login_Activity.this, R.string.login_failed);
 				}
 			});
 		} finally {
@@ -219,7 +219,7 @@ public class Login_Activity extends Activity {
 		mOtherLoginTV.measure(0, 0);
 		float charWidth = mPaint.measureText("-");
 		float strWidth = mPaint.measureText(mOtherLoginTV.getText().toString());
-		int charCount = (int) ((screenWidth - AndroidUtils.dip2px(this, 25 * 2) - (int) strWidth) / 2 / (charWidth));
+		int charCount = (int) ((screenWidth - DJMarketUtils.dip2px(this, 25 * 2) - (int) strWidth) / 2 / (charWidth));
 		StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < charCount * 2; i++) {
 			builder.append("-");
@@ -269,22 +269,22 @@ public class Login_Activity extends Activity {
 		String emailString = mEmailET.getText().toString();
 		String passwordString = mPasswordET.getText().toString();
 		if (TextUtils.isEmpty(emailString)) {
-			AndroidUtils.showToast(this, R.string.email_null);
+			DJMarketUtils.showToast(this, R.string.email_null);
 			mEmailET.requestFocus();
-		} else if (!AndroidUtils.isEmail(emailString)) {
-			AndroidUtils.showToast(this, R.string.emailformat_is_error);
+		} else if (!DJMarketUtils.isEmail(emailString)) {
+			DJMarketUtils.showToast(this, R.string.emailformat_is_error);
 			mEmailET.requestFocus();
 		} else if (TextUtils.isEmpty(passwordString)) {
-			AndroidUtils.showToast(this, R.string.password_null);
+			DJMarketUtils.showToast(this, R.string.password_null);
 			mPasswordET.requestFocus();
 		} else if (emailString.length() > MAX_EMAIL_LENGTH) {
-			AndroidUtils.showToast(this, R.string.email_is_notoverfifty);
+			DJMarketUtils.showToast(this, R.string.email_is_notoverfifty);
 			mEmailET.requestFocus();
 		} else if (passwordString.length() < MIN_PASSWORD_LENGTH) {
-			AndroidUtils.showToast(this, R.string.pwd_is_notlowsix);
+			DJMarketUtils.showToast(this, R.string.pwd_is_notlowsix);
 			mPasswordET.requestFocus();
-		} else if (!AndroidUtils.isNetworkAvailable(this)) {
-			AndroidUtils.showToast(this, R.string.no_web_to_login);
+		} else if (!DJMarketUtils.isNetworkAvailable(this)) {
+			DJMarketUtils.showToast(this, R.string.no_web_to_login);
 		} else {
 			showProgressDialog();
 			return true;

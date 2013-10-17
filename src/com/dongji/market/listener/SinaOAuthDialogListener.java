@@ -12,7 +12,7 @@ import android.os.Handler;
 import com.dongji.market.R;
 import com.dongji.market.activity.Login_Activity;
 import com.dongji.market.application.AppMarket;
-import com.dongji.market.helper.AndroidUtils;
+import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.helper.TitleUtil;
 import com.dongji.market.pojo.LoginParams;
 import com.weibo.net.AccessToken;
@@ -71,17 +71,17 @@ public class SinaOAuthDialogListener implements WeiboDialogListener {
 
 	@Override
 	public void onWeiboException(WeiboException e) {
-		AndroidUtils.showToast(context, "Auth exception : " + e.getMessage());
+		DJMarketUtils.showToast(context, "Auth exception : " + e.getMessage());
 	}
 
 	@Override
 	public void onError(DialogError e) {
-		AndroidUtils.showToast(context, "Auth error : " + e.getMessage());
+		DJMarketUtils.showToast(context, "Auth error : " + e.getMessage());
 	}
 
 	@Override
 	public void onCancel() {
-		AndroidUtils.showToast(context, context.getResources().getString(R.string.auth_cancel));
+		DJMarketUtils.showToast(context, context.getResources().getString(R.string.auth_cancel));
 	}
 
 	private AsyncWeiboRunner.RequestListener mRequestListener = new RequestListener() {

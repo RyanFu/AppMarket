@@ -27,7 +27,7 @@ import android.widget.TextView.OnEditorActionListener;
 
 import com.dongji.market.R;
 import com.dongji.market.helper.AConstDefine;
-import com.dongji.market.helper.AndroidUtils;
+import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.protocol.DataManager;
 import com.dongji.market.receiver.CommonReceiver;
 import com.umeng.analytics.MobclickAgent;
@@ -97,7 +97,7 @@ public class FeedbackActivity extends Activity {
 	private void judgeIfSend() {
 		if (TextUtils.isEmpty(mContentET.getText().toString())) {
 			mHandler.sendEmptyMessage(EVENT_CONTENT_EMPTY_PROMPT);
-		} else if (!AndroidUtils.isNetworkAvailable(FeedbackActivity.this)) {
+		} else if (!DJMarketUtils.isNetworkAvailable(FeedbackActivity.this)) {
 			mHandler.sendEmptyMessage(EVENT_NET_ERROR_PROMPT);
 		} else {
 			mHandler.sendEmptyMessage(EVENT_SEND_FEEDBACK);
@@ -124,7 +124,7 @@ public class FeedbackActivity extends Activity {
 					@Override
 					public void run() {
 						mSubmitBtn.setClickable(false);
-						AndroidUtils.showToast(FeedbackActivity.this, R.string.is_committing);
+						DJMarketUtils.showToast(FeedbackActivity.this, R.string.is_committing);
 						mHandler.sendEmptyMessageDelayed(CHECK_RESPONSE_TIMEOUT, 10000);
 					}
 				});
@@ -136,7 +136,7 @@ public class FeedbackActivity extends Activity {
 
 						@Override
 						public void run() {
-							AndroidUtils.showToast(FeedbackActivity.this, R.string.net_conn_timeout);
+							DJMarketUtils.showToast(FeedbackActivity.this, R.string.net_conn_timeout);
 							mSubmitBtn.setClickable(true);
 						}
 					});
@@ -157,7 +157,7 @@ public class FeedbackActivity extends Activity {
 
 					@Override
 					public void run() {
-						AndroidUtils.showToast(FeedbackActivity.this, R.string.net_error);
+						DJMarketUtils.showToast(FeedbackActivity.this, R.string.net_error);
 						mSubmitBtn.setClickable(true);
 					}
 				});
@@ -167,7 +167,7 @@ public class FeedbackActivity extends Activity {
 
 					@Override
 					public void run() {
-						AndroidUtils.showToast(FeedbackActivity.this, R.string.content_empty);
+						DJMarketUtils.showToast(FeedbackActivity.this, R.string.content_empty);
 						mSubmitBtn.setClickable(true);
 					}
 				});
@@ -213,10 +213,10 @@ public class FeedbackActivity extends Activity {
 	private void feedbackPrompt(int status) {
 		switch (status) {
 		case 0:
-			AndroidUtils.showToast(getApplicationContext(), R.string.feedback_failed);
+			DJMarketUtils.showToast(getApplicationContext(), R.string.feedback_failed);
 			break;
 		case 1:
-			AndroidUtils.showToast(getApplicationContext(), R.string.feedback_success);
+			DJMarketUtils.showToast(getApplicationContext(), R.string.feedback_success);
 			mHandler.sendEmptyMessageDelayed(EVENT_EXIT_PAGE, 500);
 			break;
 		default:

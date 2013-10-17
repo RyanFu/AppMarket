@@ -21,7 +21,7 @@ import com.dongji.market.R;
 import com.dongji.market.activity.ApkDetailActivity;
 import com.dongji.market.application.AppMarket;
 import com.dongji.market.cache.FileService;
-import com.dongji.market.helper.AndroidUtils;
+import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.pojo.ApkItem;
 
 /**
@@ -122,7 +122,7 @@ public class GuessLikeAdapter extends BaseAdapter {
 	private void adapterTablet(ViewHolder holder) {
 		int columnWidth = 0;
 		int padding_10;
-		int screenWidth = AndroidUtils.getScreenSize(context).widthPixels;
+		int screenWidth = DJMarketUtils.getScreenSize(context).widthPixels;
 		padding_10 = (int) (screenWidth * 0.0278);
 		columnWidth = (int) ((screenWidth - padding_10 * 10) / 8);
 
@@ -146,7 +146,7 @@ public class GuessLikeAdapter extends BaseAdapter {
 		linearParams = (LayoutParams) holder.mTextView.getLayoutParams();
 		linearParams.width = actualWidth;
 		holder.mTextView.setLayoutParams(linearParams);
-		holder.mTextView.setTextSize(AndroidUtils.sp2px(context, 11f));
+		holder.mTextView.setTextSize(DJMarketUtils.sp2px(context, 11f));
 
 	}
 

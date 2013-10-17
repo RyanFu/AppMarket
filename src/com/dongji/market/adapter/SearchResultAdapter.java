@@ -15,11 +15,11 @@ import android.widget.TextView;
 
 import com.dongji.market.R;
 import com.dongji.market.cache.FileService;
-import com.dongji.market.download.DownloadConstDefine;
-import com.dongji.market.download.DownloadEntity;
-import com.dongji.market.download.DownloadUtils;
 import com.dongji.market.helper.AConstDefine;
+import com.dongji.market.helper.AConstDefine;
+import com.dongji.market.helper.DownloadUtils;
 import com.dongji.market.pojo.ApkItem;
+import com.dongji.market.pojo.DownloadEntity;
 
 /**
  * 搜索结果列表页listview适配器
@@ -108,12 +108,12 @@ public class SearchResultAdapter extends ListBaseAdapter implements AConstDefine
 				if (apkItem.status == STATUS_APK_UNINSTALL || apkItem.status == STATUS_APK_UNUPDATE) {
 					int[] location = new int[2];
 					holder.mAppIcon.getLocationOnScreen(location);
-					DownloadUtils.checkDownload(context, apkItem, holder.mAppInstall);
+					DownloadUtils.checkDownload(context, apkItem);
 				} else {
-					Intent intent = new Intent(DownloadConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD);
+					Intent intent = new Intent(AConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD);
 					DownloadEntity entity = new DownloadEntity(apkItem);
 					Bundle bundle = new Bundle();
-					bundle.putParcelable(DownloadConstDefine.DOWNLOAD_ENTITY, entity);
+					bundle.putParcelable(AConstDefine.DOWNLOAD_ENTITY, entity);
 					intent.putExtras(bundle);
 					context.sendBroadcast(intent);
 				}

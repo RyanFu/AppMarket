@@ -14,7 +14,7 @@ import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import com.dongji.market.R;
-import com.dongji.market.helper.AndroidUtils;
+import com.dongji.market.helper.DJMarketUtils;
 
 /**
  * 启动界面
@@ -46,9 +46,9 @@ public class LauncherActivity extends Activity implements AnimationListener {
 	private void initData() {
 		arr = new int[] { R.drawable.launcher_anim1, R.drawable.launcher_anim2, R.drawable.launcher_anim3, R.drawable.launcher_anim4, R.drawable.launcher_anim5 };
 		mAnimImageView = (ImageView) findViewById(R.id.imageview);
-		DisplayMetrics dm = AndroidUtils.getScreenSize(this);
+		DisplayMetrics dm = DJMarketUtils.getScreenSize(this);
 		int num = dm.heightPixels / 2;
-		num -= AndroidUtils.dip2px(this, 85);
+		num -= DJMarketUtils.dip2px(this, 85);
 		LinearLayout.LayoutParams mParams = (LinearLayout.LayoutParams) mAnimImageView.getLayoutParams();
 		mParams.topMargin = num;
 		mAnimImageView.setLayoutParams(mParams);
@@ -93,7 +93,7 @@ public class LauncherActivity extends Activity implements AnimationListener {
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						AndroidUtils.showToast(LauncherActivity.this, R.string.datarequest_is_error);
+						DJMarketUtils.showToast(LauncherActivity.this, R.string.datarequest_is_error);
 						finish();
 					}
 				});

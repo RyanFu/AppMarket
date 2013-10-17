@@ -15,13 +15,13 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.dongji.market.application.AppMarket;
-import com.dongji.market.download.DownloadConstDefine;
-import com.dongji.market.download.DownloadEntity;
-import com.dongji.market.download.DownloadService;
 import com.dongji.market.helper.AConstDefine;
-import com.dongji.market.helper.AndroidUtils;
+import com.dongji.market.helper.DJMarketUtils;
+import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.pojo.ApkItem;
+import com.dongji.market.pojo.DownloadEntity;
 import com.dongji.market.pojo.HistoryApkItem;
+import com.dongji.market.service.DownloadService;
 import com.umeng.analytics.MobclickAgent;
 
 public abstract class PublicActivity extends Activity {
@@ -53,10 +53,10 @@ public abstract class PublicActivity extends Activity {
 	private void registerAllReceiver() {
 		mApkStatusReceiver = new ApkStatusReceiver();// apk状态接收者
 		IntentFilter intentFilter = new IntentFilter();
-		intentFilter.addAction(DownloadConstDefine.BROADCAST_ACTION_ADD_DOWNLOAD);// 下载
-		intentFilter.addAction(DownloadConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD);// 取消
-		intentFilter.addAction(DownloadConstDefine.BROADCAST_ACTION_COMPLETE_DOWNLOAD);// 下载完成
-		intentFilter.addAction(DownloadConstDefine.BROADCAST_ACTION_UPDATE_DATA_MERGE_DONE);// 更新数据合并
+		intentFilter.addAction(AConstDefine.BROADCAST_ACTION_ADD_DOWNLOAD);// 下载
+		intentFilter.addAction(AConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD);// 取消
+		intentFilter.addAction(AConstDefine.BROADCAST_ACTION_COMPLETE_DOWNLOAD);// 下载完成
+		intentFilter.addAction(AConstDefine.BROADCAST_ACTION_UPDATE_DATA_MERGE_DONE);// 更新数据合并
 		intentFilter.addAction(AConstDefine.SAVE_FLOW_BROADCAST);// 节省流量
 		intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);// 网络连接
 
@@ -80,7 +80,7 @@ public abstract class PublicActivity extends Activity {
 	protected List<ApkItem> setApkStatus(List<ApkItem> items) {
 		if (items != null && items.size() > 0) {
 			// 获取手机上已安装的应用
-			List<PackageInfo> infos = AndroidUtils.getInstalledPackages(this);
+			List<PackageInfo> infos = DJMarketUtils.getInstalledPackages(this);
 			for (int i = 0; i < items.size(); i++) {
 				ApkItem item = items.get(i);
 				// 与后台下载应用信息作比较
@@ -90,17 +90,17 @@ public abstract class PublicActivity extends Activity {
 						DownloadEntity entity = downloadList.get(j);
 						if (item.packageName.equals(entity.packageName) && item.versionCode == entity.versionCode) {
 							switch (entity.downloadType) {// 重新设置apk的状态
-							case DownloadConstDefine.TYPE_OF_DOWNLOAD:// 为正在下载类型的应用
+							case AConstDefine.TYPE_OF_DOWNLOAD:// 为正在下载类型的应用
 								items.get(i).status = AConstDefine.STATUS_APK_INSTALL;// 设置应用为安装状态
 								break;
-							case DownloadConstDefine.TYPE_OF_UPDATE:// 为可更新类型的应用
-								if (entity.getStatus() != DownloadConstDefine.STATUS_OF_INITIAL && entity.getStatus() != DownloadConstDefine.STATUS_OF_IGNORE) {// 此类型应用是否处于下载初始化或忽略状态
+							case AConstDefine.TYPE_OF_UPDATE:// 为可更新类型的应用
+								if (entity.getStatus() != AConstDefine.STATUS_OF_INITIAL && entity.getStatus() != AConstDefine.STATUS_OF_IGNORE) {// 此类型应用是否处于下载初始化或忽略状态
 									items.get(i).status = AConstDefine.STATUS_APK_UPDATE;// 设置应用为更新状态
 								} else {
 									items.get(i).status = AConstDefine.STATUS_APK_UNUPDATE;// 设置应用为未更新状态
 								}
 								break;
-							case DownloadConstDefine.TYPE_OF_COMPLETE:// 为可安装类型的应用
+							case AConstDefine.TYPE_OF_COMPLETE:// 为可安装类型的应用
 								if (item.status == AConstDefine.STATUS_APK_INSTALL) {// 判断应用状态是否是已安装，
 									items.get(i).status = AConstDefine.STATUS_APK_UNINSTALL;// 设置应用为未安装
 								} else if (item.status == AConstDefine.STATUS_APK_UPDATE) {// 判断应用状态是否是更新
@@ -135,7 +135,7 @@ public abstract class PublicActivity extends Activity {
 	protected ApkItem setApkStatus(ApkItem item) {
 		if (item != null) {
 			// 获取手机上已安装的应用
-			List<PackageInfo> infos = AndroidUtils.getInstalledPackages(this);
+			List<PackageInfo> infos = DJMarketUtils.getInstalledPackages(this);
 			if (DownloadService.mDownloadService != null) {
 				List<DownloadEntity> downloadList = DownloadService.mDownloadService.getAllDownloadList();
 				for (int j = 0; j < downloadList.size(); j++) {
@@ -143,17 +143,17 @@ public abstract class PublicActivity extends Activity {
 					if (null != entity && null != item && null != item.packageName && null != entity.packageName) {
 						if (item.packageName.equals(entity.packageName) && item.versionCode == entity.versionCode) {
 							switch (entity.downloadType) {
-							case DownloadConstDefine.TYPE_OF_DOWNLOAD:
+							case AConstDefine.TYPE_OF_DOWNLOAD:
 								item.status = AConstDefine.STATUS_APK_INSTALL;
 								break;
-							case DownloadConstDefine.TYPE_OF_UPDATE:
-								if (entity.getStatus() != DownloadConstDefine.STATUS_OF_INITIAL && entity.getStatus() != DownloadConstDefine.STATUS_OF_IGNORE) {
+							case AConstDefine.TYPE_OF_UPDATE:
+								if (entity.getStatus() != AConstDefine.STATUS_OF_INITIAL && entity.getStatus() != AConstDefine.STATUS_OF_IGNORE) {
 									item.status = AConstDefine.STATUS_APK_UPDATE;
 								} else {
 									item.status = AConstDefine.STATUS_APK_UNUPDATE;
 								}
 								break;
-							case DownloadConstDefine.TYPE_OF_COMPLETE:
+							case AConstDefine.TYPE_OF_COMPLETE:
 								if (item.status == AConstDefine.STATUS_APK_INSTALL) {
 									item.status = AConstDefine.STATUS_APK_UNINSTALL;
 								} else if (item.status == AConstDefine.STATUS_APK_UPDATE) {
@@ -171,16 +171,16 @@ public abstract class PublicActivity extends Activity {
 						HistoryApkItem historyItem = item.historys[i];
 						for (int j = 0; j < downloadList.size(); j++) {
 							DownloadEntity entity = downloadList.get(j);
-							PackageInfo info = AndroidUtils.getPackageInfo(this, item.packageName);
+							PackageInfo info = DJMarketUtils.getPackageInfo(this, item.packageName);
 							if (null != entity && null != entity.packageName) {
 								if (item.packageName.equals(entity.packageName)) {
 									switch (entity.downloadType) {
-									case DownloadConstDefine.TYPE_OF_DOWNLOAD:
+									case AConstDefine.TYPE_OF_DOWNLOAD:
 										if (historyItem.versionCode == entity.versionCode) {
 											if (info != null) {
 												// 本地版本小于历史版本，所以此历史版本肯定可以更新，此时判断正在下载的更新版本出于何种下载状态，如果是处于初始状态、或者忽略状态，则设置此应用为未更新状态，否则设置成更新状态
 												if (info.versionCode < historyItem.versionCode) {// 判断获取应用的版本是否小于历史版本
-													if (entity.getStatus() != DownloadConstDefine.STATUS_OF_INITIAL && entity.getStatus() != DownloadConstDefine.STATUS_OF_IGNORE) {// 是否处于初始化或忽略状态
+													if (entity.getStatus() != AConstDefine.STATUS_OF_INITIAL && entity.getStatus() != AConstDefine.STATUS_OF_IGNORE) {// 是否处于初始化或忽略状态
 														historyItem.status = AConstDefine.STATUS_APK_UPDATE;// 设置应用为更新状态
 													} else {
 														historyItem.status = AConstDefine.STATUS_APK_UNUPDATE;// 设置应用为未更新状态
@@ -192,10 +192,10 @@ public abstract class PublicActivity extends Activity {
 											}
 										}
 										break;
-									case DownloadConstDefine.TYPE_OF_UPDATE:
+									case AConstDefine.TYPE_OF_UPDATE:
 										if (info != null) {
 											if (info.versionCode < historyItem.versionCode) {
-												if (entity.getStatus() != DownloadConstDefine.STATUS_OF_INITIAL && entity.getStatus() != DownloadConstDefine.STATUS_OF_IGNORE) {
+												if (entity.getStatus() != AConstDefine.STATUS_OF_INITIAL && entity.getStatus() != AConstDefine.STATUS_OF_IGNORE) {
 													historyItem.status = AConstDefine.STATUS_APK_UPDATE;
 												} else {
 													historyItem.status = AConstDefine.STATUS_APK_UNUPDATE;
@@ -206,7 +206,7 @@ public abstract class PublicActivity extends Activity {
 											}
 										}
 										break;
-									case DownloadConstDefine.TYPE_OF_COMPLETE:
+									case AConstDefine.TYPE_OF_COMPLETE:
 										if (info != null) {
 											if (info.versionCode == historyItem.versionCode) {
 												if (historyItem.status == AConstDefine.STATUS_APK_INSTALL) {
@@ -250,31 +250,31 @@ public abstract class PublicActivity extends Activity {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if (DownloadConstDefine.BROADCAST_ACTION_ADD_DOWNLOAD.equals(intent.getAction())) {// 正在下载状态
+			if (AConstDefine.BROADCAST_ACTION_ADD_DOWNLOAD.equals(intent.getAction())) {// 正在下载状态
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
-					DownloadEntity entity = bundle.getParcelable(DownloadConstDefine.DOWNLOAD_ENTITY);
+					DownloadEntity entity = bundle.getParcelable(AConstDefine.DOWNLOAD_ENTITY);
 					if (entity != null) {
 						onAppStatusChange(false, entity.packageName, entity.versionCode);// 回调改变状态
 					}
 				}
-			} else if (DownloadConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD.equals(intent.getAction())) {// 取消下载
+			} else if (AConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD.equals(intent.getAction())) {// 取消下载
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
-					DownloadEntity entity = bundle.getParcelable(DownloadConstDefine.DOWNLOAD_ENTITY);
+					DownloadEntity entity = bundle.getParcelable(AConstDefine.DOWNLOAD_ENTITY);
 					if (entity != null) {
 						onAppStatusChange(true, entity.packageName, entity.versionCode);
 					}
 				}
-			} else if (DownloadConstDefine.BROADCAST_ACTION_COMPLETE_DOWNLOAD.equals(intent.getAction())) {// 下载完成
+			} else if (AConstDefine.BROADCAST_ACTION_COMPLETE_DOWNLOAD.equals(intent.getAction())) {// 下载完成
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
-					DownloadEntity entity = bundle.getParcelable(DownloadConstDefine.DOWNLOAD_ENTITY);
+					DownloadEntity entity = bundle.getParcelable(AConstDefine.DOWNLOAD_ENTITY);
 					if (entity != null) {
 						onAppStatusChange(true, entity.packageName, entity.versionCode);
 					}
 				}
-			} else if (DownloadConstDefine.BROADCAST_ACTION_UPDATE_DATA_MERGE_DONE.equals(intent.getAction())) {// 更新数据合并广播
+			} else if (AConstDefine.BROADCAST_ACTION_UPDATE_DATA_MERGE_DONE.equals(intent.getAction())) {// 更新数据合并广播
 				onUpdateDataDone();// 更新数据
 			} else if (AConstDefine.SAVE_FLOW_BROADCAST.equals(intent.getAction())) {// 节省流量广播
 				isRemoteImage = !(intent.getBooleanExtra("save_flow_status", true));//

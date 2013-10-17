@@ -49,16 +49,16 @@ import com.dongji.market.adapter.GuessLikeAdapter;
 import com.dongji.market.application.AppMarket;
 import com.dongji.market.cache.FileService;
 import com.dongji.market.database.MarketDatabase;
-import com.dongji.market.download.DownloadConstDefine;
-import com.dongji.market.download.DownloadEntity;
-import com.dongji.market.download.DownloadUtils;
 import com.dongji.market.helper.AConstDefine;
-import com.dongji.market.helper.AndroidUtils;
 import com.dongji.market.helper.DJMarketUtils;
+import com.dongji.market.helper.DJMarketUtils;
+import com.dongji.market.helper.AConstDefine;
+import com.dongji.market.helper.DownloadUtils;
 import com.dongji.market.helper.NetTool;
 import com.dongji.market.helper.TitleUtil;
 import com.dongji.market.helper.TitleUtil.OnToolBarBlankClickListener;
 import com.dongji.market.pojo.ApkItem;
+import com.dongji.market.pojo.DownloadEntity;
 import com.dongji.market.pojo.HistoryApkItem;
 import com.dongji.market.protocol.DataManager;
 import com.dongji.market.widget.CustomGalleryDialog;
@@ -203,8 +203,8 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 	}
 
 	private void adapterTablet() {
-//		int screenHeight = AndroidUtils.getScreenSize(this).heightPixels;
-//		int screenWidth = AndroidUtils.getScreenSize(this).widthPixels;
+//		int screenHeight = DJMarketUtils.getScreenSize(this).heightPixels;
+//		int screenWidth = DJMarketUtils.getScreenSize(this).widthPixels;
 //		LinearLayout.LayoutParams linearParams;
 //		FrameLayout.LayoutParams frameParams;
 //		RelativeLayout.LayoutParams relativeParams;
@@ -540,7 +540,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 				}
 				break;
 			case R.id.ivGalleryLeft:// gallery左移
-				int flagInt = AndroidUtils.dip2px(ApkDetailActivity.this, 170);
+				int flagInt = DJMarketUtils.dip2px(ApkDetailActivity.this, 170);
 				if (mScrollView.getScrollX() % flagInt == 0 || mScrollView.getScrollX() == 0) {
 					mScrollView.scrollBy(-flagInt, 0);
 				} else {
@@ -549,7 +549,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 
 				break;
 			case R.id.ivGalleryRight:// gallery右移
-				flagInt = AndroidUtils.dip2px(ApkDetailActivity.this, 170);
+				flagInt = DJMarketUtils.dip2px(ApkDetailActivity.this, 170);
 				mScrollView.scrollBy(flagInt - mScrollView.getScrollX() % flagInt, 0);
 				break;
 			}
@@ -579,12 +579,12 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 			item.version = historyItem.versionName;
 			item.packageName = apkItem.packageName;
 			if (historyItem.status == STATUS_APK_UNINSTALL || historyItem.status == STATUS_APK_UNUPDATE) {
-				DownloadUtils.checkDownload(ApkDetailActivity.this, item, btnInstall);
+				DownloadUtils.checkDownload(ApkDetailActivity.this, item);
 			} else {// 取消下载
-				Intent intent = new Intent(DownloadConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD);
+				Intent intent = new Intent(AConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD);
 				DownloadEntity entity = new DownloadEntity(item);
 				Bundle bundle = new Bundle();
-				bundle.putParcelable(DownloadConstDefine.DOWNLOAD_ENTITY, entity);
+				bundle.putParcelable(AConstDefine.DOWNLOAD_ENTITY, entity);
 				intent.putExtras(bundle);
 				sendBroadcast(intent);
 			}
@@ -644,7 +644,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 							@Override
 							public void run() {
 								btnGrade.setEnabled(true);
-								AndroidUtils.showToast(ApkDetailActivity.this, R.string.grade_failed);
+								DJMarketUtils.showToast(ApkDetailActivity.this, R.string.grade_failed);
 							}
 						});
 					}
@@ -706,7 +706,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 				});
 			}
 		} catch (IOException e) {
-			if (!AndroidUtils.isNetworkAvailable(this)) {
+			if (!DJMarketUtils.isNetworkAvailable(this)) {
 				mDataHandler.sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
 			} else {
 				mDataHandler.sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
@@ -834,12 +834,12 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 			@Override
 			public void onClick(View v) {
 				if (apkItem.status == STATUS_APK_UNINSTALL || apkItem.status == STATUS_APK_UNUPDATE) {// 下载
-					DownloadUtils.checkDownload(ApkDetailActivity.this, apkItem, btnInstall);
+					DownloadUtils.checkDownload(ApkDetailActivity.this, apkItem);
 				} else {// 取消下载
-					Intent intent = new Intent(DownloadConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD);
+					Intent intent = new Intent(AConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD);
 					DownloadEntity entity = new DownloadEntity(apkItem);
 					Bundle bundle = new Bundle();
-					bundle.putParcelable(DownloadConstDefine.DOWNLOAD_ENTITY, entity);
+					bundle.putParcelable(AConstDefine.DOWNLOAD_ENTITY, entity);
 					intent.putExtras(bundle);
 					sendBroadcast(intent);
 				}
@@ -910,7 +910,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 			tvTips.setLayoutParams(lp);
 			tvTips.setGravity(Gravity.CENTER);
 			tvTips.setTextColor(getResources().getColor(android.R.color.black));
-			int padding = AndroidUtils.dip2px(this, 5.0f);
+			int padding = DJMarketUtils.dip2px(this, 5.0f);
 			tvTips.setPadding(0, padding, 0, padding);
 			tvTips.setTextSize(15);
 			tvTips.setText(R.string.none_printscreen);
@@ -922,9 +922,9 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 		mScrollView = (HorizontalScrollView) LayoutInflater.from(this).inflate(R.layout.layout_detail_scrollview, null);
 		mContentLayout = (LinearLayout) mScrollView.findViewById(R.id.contentlayout);
 
-		int columnWidth = AndroidUtils.dip2px(this, 160);
-		int padding = AndroidUtils.dip2px(this, 10);
-		LayoutParams params = new LayoutParams(arr.size() * columnWidth + arr.size() * padding, AndroidUtils.dip2px(this, 240));
+		int columnWidth = DJMarketUtils.dip2px(this, 160);
+		int padding = DJMarketUtils.dip2px(this, 10);
+		LayoutParams params = new LayoutParams(arr.size() * columnWidth + arr.size() * padding, DJMarketUtils.dip2px(this, 240));
 		GridView mGuessLikeGrid = new GridView(ApkDetailActivity.this);
 		mGuessLikeGrid.setLayoutParams(params);
 		mGuessLikeGrid.setColumnWidth(columnWidth);
@@ -969,7 +969,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 			TextView tvTips = new TextView(ApkDetailActivity.this);
 			tvTips.setGravity(Gravity.CENTER);
 			tvTips.setTextColor(getResources().getColor(android.R.color.black));
-			int padding = AndroidUtils.dip2px(this, 5.0f);
+			int padding = DJMarketUtils.dip2px(this, 5.0f);
 			tvTips.setPadding(0, padding, 0, padding);
 			tvTips.setTextSize(15);
 			tvTips.setText(R.string.none_permission);
@@ -978,17 +978,17 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 		}
 		int n = 0;
 		LayoutInflater mInflater = LayoutInflater.from(this);
-		DisplayMetrics dm = AndroidUtils.getScreenSize(this);
+		DisplayMetrics dm = DJMarketUtils.getScreenSize(this);
 		int maxWidth, imageWidth, spacing;
 
 		if (isPhone) {
-			maxWidth = dm.widthPixels - AndroidUtils.dip2px(this, 10.0f);
-			imageWidth = AndroidUtils.dip2px(this, 30.0f);
-			spacing = AndroidUtils.dip2px(this, 10.0f);
+			maxWidth = dm.widthPixels - DJMarketUtils.dip2px(this, 10.0f);
+			imageWidth = DJMarketUtils.dip2px(this, 30.0f);
+			spacing = DJMarketUtils.dip2px(this, 10.0f);
 		} else {
-			maxWidth = dm.widthPixels - AndroidUtils.dip2px(this, 15.0f);
-			imageWidth = AndroidUtils.dip2px(this, 35.0f);
-			spacing = AndroidUtils.dip2px(this, 15.0f);
+			maxWidth = dm.widthPixels - DJMarketUtils.dip2px(this, 15.0f);
+			imageWidth = DJMarketUtils.dip2px(this, 35.0f);
+			spacing = DJMarketUtils.dip2px(this, 15.0f);
 		}
 
 		while (n < permissionList.size()) {
@@ -1045,7 +1045,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 			TextView tvTips = new TextView(ApkDetailActivity.this);
 			tvTips.setGravity(Gravity.CENTER);
 			tvTips.setTextColor(getResources().getColor(android.R.color.black));
-			int padding = AndroidUtils.dip2px(this, 5.0f);
+			int padding = DJMarketUtils.dip2px(this, 5.0f);
 			tvTips.setPadding(0, padding, 0, padding);
 			tvTips.setTextSize(15);
 			tvTips.setText(R.string.none_history);
@@ -1138,7 +1138,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 			tvTips.setLayoutParams(lp);
 			tvTips.setGravity(Gravity.CENTER);
 			tvTips.setTextColor(getResources().getColor(android.R.color.black));
-			int padding = AndroidUtils.dip2px(this, 5.0f);
+			int padding = DJMarketUtils.dip2px(this, 5.0f);
 			tvTips.setPadding(0, padding, 0, padding);
 			tvTips.setTextSize(15);
 			tvTips.setText(R.string.none_likeapp);
@@ -1150,10 +1150,10 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 		int columnWidth = 0;
 		int padding_10;
 		if (isPhone) {
-			columnWidth = AndroidUtils.dip2px(this, 48);
-			padding_10 = AndroidUtils.dip2px(this, 10);
+			columnWidth = DJMarketUtils.dip2px(this, 48);
+			padding_10 = DJMarketUtils.dip2px(this, 10);
 		} else {
-			int screenWidth = AndroidUtils.getScreenSize(this).widthPixels;
+			int screenWidth = DJMarketUtils.getScreenSize(this).widthPixels;
 			padding_10 = (int)(screenWidth*0.0278);
 			columnWidth=(int)((screenWidth-padding_10*10)/8);
 		}

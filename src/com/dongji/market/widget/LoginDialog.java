@@ -23,7 +23,7 @@ import com.dongji.market.activity.Login_Activity;
 import com.dongji.market.activity.Uninstall_list_Activity;
 import com.dongji.market.application.AppMarket;
 import com.dongji.market.helper.AConstDefine;
-import com.dongji.market.helper.AndroidUtils;
+import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.pojo.LoginParams;
 
@@ -218,7 +218,7 @@ public class LoginDialog extends Dialog implements AConstDefine {
 						localBackupDialog = new CustomDialog(cxt).setIcon(R.drawable.icon);
 						localBackupDialog.setTitle(R.string.local_backup);
 
-						localBackupDialog.setTextHeight(AndroidUtils.dip2px(cxt, getHeightFromText(R.string.cloud_backup_local_tip)));
+						localBackupDialog.setTextHeight(DJMarketUtils.dip2px(cxt, getHeightFromText(R.string.cloud_backup_local_tip)));
 						localBackupDialog.setMessage(R.string.cloud_backup_local_tip).setPositiveButton(R.string.chooseapptobackup, new View.OnClickListener() {
 
 							@Override
@@ -247,7 +247,7 @@ public class LoginDialog extends Dialog implements AConstDefine {
 					if (localRestoreDialog == null) {
 						localRestoreDialog = new CustomDialog(cxt).setIcon(R.drawable.icon);
 						localRestoreDialog.setTitle(R.string.local_restore);
-						localRestoreDialog.setTextHeight(AndroidUtils.dip2px(cxt, getHeightFromText(R.string.local_restore_tip)));
+						localRestoreDialog.setTextHeight(DJMarketUtils.dip2px(cxt, getHeightFromText(R.string.local_restore_tip)));
 						localRestoreDialog.setMessage(R.string.local_restore_tip).setPositiveButton(R.string.chooseapptorestore, new View.OnClickListener() {
 
 							@Override
@@ -363,17 +363,17 @@ public class LoginDialog extends Dialog implements AConstDefine {
 	 * private boolean loginMtd() { String emailStr =
 	 * mEmailET.getText().toString(); String passwordStr =
 	 * mPasswordEt.getText().toString(); if
-	 * (!AndroidUtils.isNetworkAvailable(cxt)) { AndroidUtils.showToast(cxt,
+	 * (!DJMarketUtils.isNetworkAvailable(cxt)) { DJMarketUtils.showToast(cxt,
 	 * R.string.net_error); return false; } else if
-	 * (TextUtils.isEmpty(emailStr)) { AndroidUtils.showToast(cxt,
+	 * (TextUtils.isEmpty(emailStr)) { DJMarketUtils.showToast(cxt,
 	 * R.string.email_null); return false; } else if
-	 * (!AndroidUtils.isEmail(emailStr)) { AndroidUtils.showToast(cxt,
+	 * (!DJMarketUtils.isEmail(emailStr)) { DJMarketUtils.showToast(cxt,
 	 * R.string.email_format_error); return false; } else if
-	 * (TextUtils.isEmpty(passwordStr)) { AndroidUtils.showToast(cxt,
+	 * (TextUtils.isEmpty(passwordStr)) { DJMarketUtils.showToast(cxt,
 	 * R.string.password_null); return false; } else if
-	 * (!AndroidUtils.passwdFormat(passwordStr)) { AndroidUtils.showToast(cxt,
+	 * (!DJMarketUtils.passwdFormat(passwordStr)) { DJMarketUtils.showToast(cxt,
 	 * R.string.passwd_format_error); return false; } else {
-	 * AndroidUtils.showToast(cxt, R.string.is_logining); return true; } }
+	 * DJMarketUtils.showToast(cxt, R.string.is_logining); return true; } }
 	 * 
 	 * private void login() { if (loginMtd()) { Intent intent=new
 	 * Intent("com.dongji.market.loginService");
@@ -410,17 +410,17 @@ public class LoginDialog extends Dialog implements AConstDefine {
 	 * private boolean loginMtd() { String emailStr =
 	 * mEmailET.getText().toString(); String passwordStr =
 	 * mPasswordEt.getText().toString(); if
-	 * (!AndroidUtils.isNetworkAvailable(cxt)) { // Toast.makeText(this,
+	 * (!DJMarketUtils.isNetworkAvailable(cxt)) { // Toast.makeText(this,
 	 * R.string.net_error, // Toast.LENGTH_SHORT).show();
-	 * AndroidUtils.showToast(cxt, R.string.net_error); return false; } else if
-	 * (!AndroidUtils.isEmail(emailStr)) { // Toast.makeText(this,
+	 * DJMarketUtils.showToast(cxt, R.string.net_error); return false; } else if
+	 * (!DJMarketUtils.isEmail(emailStr)) { // Toast.makeText(this,
 	 * R.string.email_format_error, // Toast.LENGTH_SHORT).show();
-	 * AndroidUtils.showToast(cxt, R.string.email_format_error); return false; }
-	 * else if (!AndroidUtils.passwdFormat(passwordStr)) { //
+	 * DJMarketUtils.showToast(cxt, R.string.email_format_error); return false; }
+	 * else if (!DJMarketUtils.passwdFormat(passwordStr)) { //
 	 * Toast.makeText(this, R.string.passwd_format_error, //
-	 * Toast.LENGTH_SHORT).show(); AndroidUtils.showToast(cxt,
+	 * Toast.LENGTH_SHORT).show(); DJMarketUtils.showToast(cxt,
 	 * R.string.passwd_format_error); return false; } else { if (!userIsExist())
-	 * { AndroidUtils.showToast(cxt, "此用户不存在,请先注册!"); } else { //用户存在,登录中...
+	 * { DJMarketUtils.showToast(cxt, "此用户不存在,请先注册!"); } else { //用户存在,登录中...
 	 * dismiss(); } return true; } }
 	 */
 

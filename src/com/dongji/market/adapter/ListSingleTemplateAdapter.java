@@ -15,13 +15,13 @@ import android.widget.TextView;
 
 import com.dongji.market.R;
 import com.dongji.market.cache.FileService;
-import com.dongji.market.download.DownloadConstDefine;
-import com.dongji.market.download.DownloadEntity;
-import com.dongji.market.download.DownloadUtils;
 import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.DJMarketUtils;
+import com.dongji.market.helper.AConstDefine;
+import com.dongji.market.helper.DownloadUtils;
 import com.dongji.market.helper.NetTool;
 import com.dongji.market.pojo.ApkItem;
+import com.dongji.market.pojo.DownloadEntity;
 
 /**
  * 应用列表页listview适配器
@@ -93,17 +93,17 @@ public class ListSingleTemplateAdapter extends ListBaseAdapter implements AConst
 				if (item.status == STATUS_APK_UNINSTALL || item.status == STATUS_APK_UNUPDATE) {// 未安装或未更新
 					int[] location = new int[2];
 					holder.mAppIconImageView.getLocationOnScreen(location);
-					DownloadUtils.checkDownload(context, item, holder.mInstallTextView);
+					DownloadUtils.checkDownload(context, item);
 				} else {// 取消下载
-					Intent intent = new Intent(DownloadConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD);
+					Intent intent = new Intent(AConstDefine.BROADCAST_ACTION_CANCEL_DOWNLOAD);
 					DownloadEntity entity = new DownloadEntity(item);
 					Bundle bundle = new Bundle();
-					bundle.putParcelable(DownloadConstDefine.DOWNLOAD_ENTITY, entity);
+					bundle.putParcelable(AConstDefine.DOWNLOAD_ENTITY, entity);
 					intent.putExtras(bundle);
 					context.sendBroadcast(intent);
-					if (entity.downloadType == DownloadConstDefine.TYPE_OF_DOWNLOAD) {
+					if (entity.downloadType == AConstDefine.TYPE_OF_DOWNLOAD) {
 						DownloadUtils.fillDownloadNotifycation(context, false);
-					} else if (entity.downloadType == DownloadConstDefine.TYPE_OF_UPDATE) {
+					} else if (entity.downloadType == AConstDefine.TYPE_OF_UPDATE) {
 						DownloadUtils.fillUpdateAndUpdatingNotifycation(context, false);
 					}
 				}

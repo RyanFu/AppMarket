@@ -14,7 +14,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.widget.ImageView;
 
-import com.dongji.market.helper.AndroidUtils;
+import com.dongji.market.helper.DJMarketUtils;
 
 /**
  * SD卡文件服务
@@ -25,7 +25,7 @@ import com.dongji.market.helper.AndroidUtils;
 public class FileServiceBySDCard extends FileServiceAbstractDetails {
 
 	private final long NEED_DELETED_TIME_INTERVAL = 48 * 3600000;// 2天（该变量用作判断2天前的图片会被删除）
-	final static String EXTERNAL_STORAGE_DIRECTORY_PATH = AndroidUtils.getSdcardFile().getPath() + "/.dongji/dongjiMarket/cache/images/";
+	final static String EXTERNAL_STORAGE_DIRECTORY_PATH = DJMarketUtils.getSdcardFile().getPath() + "/.dongji/dongjiMarket/cache/images/";
 	static HashMap<String, String> urlMap;// key:URL hash code value:file
 											// path，图片路径缓存
 

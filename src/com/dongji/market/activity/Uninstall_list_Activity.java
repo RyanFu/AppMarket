@@ -22,7 +22,7 @@ import android.widget.Button;
 import com.dongji.market.R;
 import com.dongji.market.adapter.UninstallAdapter;
 import com.dongji.market.helper.AConstDefine;
-import com.dongji.market.helper.AndroidUtils;
+import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.helper.FileLoadTask;
 import com.dongji.market.pojo.InstalledAppInfo;
@@ -77,9 +77,9 @@ public class Uninstall_list_Activity extends Activity {
 					}
 				} else {
 					if (cloudBackupOngoing) {
-						AndroidUtils.showToast(Uninstall_list_Activity.this, R.string.backup_running_prompt);
+						DJMarketUtils.showToast(Uninstall_list_Activity.this, R.string.backup_running_prompt);
 					} else if (cloudRestoreOngoing) {
-						AndroidUtils.showToast(Uninstall_list_Activity.this, R.string.restore_running_prompt);
+						DJMarketUtils.showToast(Uninstall_list_Activity.this, R.string.restore_running_prompt);
 					} else {
 						if (!isFinishing()) {
 							if (restoreDialog == null) {
@@ -123,9 +123,9 @@ public class Uninstall_list_Activity extends Activity {
 					}
 				} else {
 					if (cloudRestoreOngoing) {
-						AndroidUtils.showToast(Uninstall_list_Activity.this, R.string.restore_running_prompt);
+						DJMarketUtils.showToast(Uninstall_list_Activity.this, R.string.restore_running_prompt);
 					} else if (cloudBackupOngoing) {
-						AndroidUtils.showToast(Uninstall_list_Activity.this, R.string.backup_running_prompt);
+						DJMarketUtils.showToast(Uninstall_list_Activity.this, R.string.backup_running_prompt);
 					} else {
 						if (!isFinishing()) {
 							final CustomDialog backupDialog = new CustomDialog(Uninstall_list_Activity.this).setIcon(R.drawable.icon);
@@ -198,7 +198,7 @@ public class Uninstall_list_Activity extends Activity {
 
 								@Override
 								public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-									AndroidUtils.showInstalledAppDetails(Uninstall_list_Activity.this, ((InstalledAppInfo) adapter.getItem(position)).getPkgName());
+									DJMarketUtils.showInstalledAppDetails(Uninstall_list_Activity.this, ((InstalledAppInfo) adapter.getItem(position)).getPkgName());
 								}
 							});
 						}

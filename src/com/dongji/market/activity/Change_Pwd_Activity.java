@@ -24,7 +24,7 @@ import android.widget.EditText;
 import com.dongji.market.R;
 import com.dongji.market.application.AppMarket;
 import com.dongji.market.helper.AConstDefine;
-import com.dongji.market.helper.AndroidUtils;
+import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.helper.TitleUtil;
 import com.dongji.market.pojo.LoginParams;
 import com.dongji.market.protocol.DataManager;
@@ -130,7 +130,7 @@ public class Change_Pwd_Activity extends Activity implements OnClickListener{
 					runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
-							AndroidUtils.showToast(Change_Pwd_Activity.this, R.string.change_pwd_success);
+							DJMarketUtils.showToast(Change_Pwd_Activity.this, R.string.change_pwd_success);
 							finish();
 						}
 					});
@@ -139,7 +139,7 @@ public class Change_Pwd_Activity extends Activity implements OnClickListener{
 					runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
-							AndroidUtils.showToast(Change_Pwd_Activity.this, R.string.old_password_error);
+							DJMarketUtils.showToast(Change_Pwd_Activity.this, R.string.old_password_error);
 							mOldPwdET.requestFocus();
 						}
 					});
@@ -148,7 +148,7 @@ public class Change_Pwd_Activity extends Activity implements OnClickListener{
 						runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
-								AndroidUtils.showToast(Change_Pwd_Activity.this, R.string.modify_password_fail);
+								DJMarketUtils.showToast(Change_Pwd_Activity.this, R.string.modify_password_fail);
 							}
 						});
 						break;
@@ -157,14 +157,14 @@ public class Change_Pwd_Activity extends Activity implements OnClickListener{
 			runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
-					AndroidUtils.showToast(Change_Pwd_Activity.this, R.string.connection_timeout);
+					DJMarketUtils.showToast(Change_Pwd_Activity.this, R.string.connection_timeout);
 				}
 			});
 		} catch (JSONException e) {
 			runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
-					AndroidUtils.showToast(Change_Pwd_Activity.this, R.string.modify_password_fail);
+					DJMarketUtils.showToast(Change_Pwd_Activity.this, R.string.modify_password_fail);
 				}
 			});
 		}finally {
@@ -175,10 +175,10 @@ public class Change_Pwd_Activity extends Activity implements OnClickListener{
 	private void modifyPwdPrompt(int status) {
 		switch (status) {
 		case 0:			//必填项不能为空
-			AndroidUtils.showToast(this, R.string.must_input);
+			DJMarketUtils.showToast(this, R.string.must_input);
 			break;
 		case 1:			//修改成功
-			AndroidUtils.showToast(this, R.string.modify_success);
+			DJMarketUtils.showToast(this, R.string.modify_success);
 			if (loginParams == null) {
 				loginParams = ((AppMarket)getApplicationContext()).getLoginParams();
 			}
@@ -186,31 +186,31 @@ public class Change_Pwd_Activity extends Activity implements OnClickListener{
 			finish();
 			break;
 		case -1:		//旧密码不正确
-			AndroidUtils.showToast(this, R.string.old_pwd_error);
+			DJMarketUtils.showToast(this, R.string.old_pwd_error);
 			break;
 		case -2:		//两次密码不一致
-			AndroidUtils.showToast(this, R.string.pwd_discord);
+			DJMarketUtils.showToast(this, R.string.pwd_discord);
 			break;
 		case -4:		//Email格式有误
-			AndroidUtils.showToast(this, R.string.email_format_error);
+			DJMarketUtils.showToast(this, R.string.email_format_error);
 			break;
 		case -5:		//Email不允许注册
-			AndroidUtils.showToast(this, R.string.email_unallowed_reg);
+			DJMarketUtils.showToast(this, R.string.email_unallowed_reg);
 			break;
 		case -6:		//该 Email已经被注册
-			AndroidUtils.showToast(this, R.string.email_already_reg);
+			DJMarketUtils.showToast(this, R.string.email_already_reg);
 			break;
 		case -8:		//该用户受保护，无权限更改
-			AndroidUtils.showToast(this, R.string.no_authority_modify);
+			DJMarketUtils.showToast(this, R.string.no_authority_modify);
 			break;
 		case -9:		//密码长度在6-15位之间
-			AndroidUtils.showToast(this, R.string.pwd_length_error);
+			DJMarketUtils.showToast(this, R.string.pwd_length_error);
 			break;
 		case -10000:	//登陆失败(服务器错误)
-			AndroidUtils.showToast(this, R.string.login_failed);
+			DJMarketUtils.showToast(this, R.string.login_failed);
 			break;
 		case -9999:		//提交方式错误
-			AndroidUtils.showToast(this, R.string.commit_error);
+			DJMarketUtils.showToast(this, R.string.commit_error);
 			break;
 		default:
 			break;
@@ -239,30 +239,30 @@ public class Change_Pwd_Activity extends Activity implements OnClickListener{
 		String pwdStr = mNewPwdET.getText().toString();
 		String pwdAgainStr = mNewPwdRepeatET.getText().toString();
 		if(TextUtils.isEmpty(oldPwdStr)) {
-			AndroidUtils.showToast(this, R.string.pwd_is_notnull);
+			DJMarketUtils.showToast(this, R.string.pwd_is_notnull);
 			mOldPwdET.requestFocus();
 		}else if(oldPwdStr.length()<MIN_PASSWORD_LENGTH) {
-			AndroidUtils.showToast(this, R.string.pwd_is_notlowsix);
+			DJMarketUtils.showToast(this, R.string.pwd_is_notlowsix);
 			mOldPwdET.requestFocus();
 		}else if(TextUtils.isEmpty(pwdStr) || TextUtils.isEmpty(pwdAgainStr)) {
-			AndroidUtils.showToast(this, R.string.pwd_is_notnull);
+			DJMarketUtils.showToast(this, R.string.pwd_is_notnull);
 			if(TextUtils.isEmpty(pwdStr) || (TextUtils.isEmpty(pwdStr) && TextUtils.isEmpty(pwdAgainStr))) {
 				mNewPwdET.requestFocus();
 			}else if(TextUtils.isEmpty(pwdAgainStr)) {
 				mNewPwdRepeatET.requestFocus();
 			}
 		} else if(pwdStr.length()<MIN_PASSWORD_LENGTH || pwdAgainStr.length()<MIN_PASSWORD_LENGTH) {
-			AndroidUtils.showToast(this, R.string.pwd_is_notlowsix);
+			DJMarketUtils.showToast(this, R.string.pwd_is_notlowsix);
 			if(pwdStr.length()<MIN_PASSWORD_LENGTH || (pwdStr.length()<MIN_PASSWORD_LENGTH && pwdAgainStr.length()<MIN_PASSWORD_LENGTH)) {
 				mNewPwdET.requestFocus();
 			}else if(pwdAgainStr.length()<MIN_PASSWORD_LENGTH) {
 				mNewPwdRepeatET.requestFocus();
 			}
 		}else if(!pwdStr.equals(pwdAgainStr)) {
-			AndroidUtils.showToast(this, R.string.pwd_is_different);
+			DJMarketUtils.showToast(this, R.string.pwd_is_different);
 			mNewPwdRepeatET.requestFocus();
-		}else if(!AndroidUtils.isNetworkAvailable(this)) {
-			AndroidUtils.showToast(this, R.string.no_web_to_login);
+		}else if(!DJMarketUtils.isNetworkAvailable(this)) {
+			DJMarketUtils.showToast(this, R.string.no_web_to_login);
 		}else {
 			showProgressDialog();
 			return true;
@@ -367,7 +367,7 @@ public class Change_Pwd_Activity extends Activity implements OnClickListener{
 						@Override
 						public void run() {
 							// TODO Auto-generated method stub
-							AndroidUtils.showToast(Change_Pwd_Activity.this, R.string.net_conn_timeout);
+							DJMarketUtils.showToast(Change_Pwd_Activity.this, R.string.net_conn_timeout);
 							mConfirmBtn.setClickable(true);
 						}
 					});
@@ -390,7 +390,7 @@ public class Change_Pwd_Activity extends Activity implements OnClickListener{
 					@Override
 					public void run() {
 						// TODO Auto-generated method stub
-						AndroidUtils.showToast(Change_Pwd_Activity.this, R.string.net_error);
+						DJMarketUtils.showToast(Change_Pwd_Activity.this, R.string.net_error);
 						mConfirmBtn.setClickable(true);
 					}
 				});

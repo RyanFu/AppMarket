@@ -33,10 +33,10 @@ import com.dongji.market.application.AppMarket;
 import com.dongji.market.database.MarketDatabase;
 import com.dongji.market.database.MarketDatabase.SearchHistory;
 import com.dongji.market.database.MarketDatabase.Setting_Service;
-import com.dongji.market.download.DownloadConstDefine;
 import com.dongji.market.helper.AConstDefine;
-import com.dongji.market.helper.AndroidUtils;
 import com.dongji.market.helper.DJMarketUtils;
+import com.dongji.market.helper.DJMarketUtils;
+import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.ShareParams;
 import com.dongji.market.helper.TitleUtil;
 import com.dongji.market.helper.TitleUtil.OnToolBarBlankClickListener;
@@ -236,7 +236,7 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case CHECK_ROOT:
-				if (AndroidUtils.isRoot()) {
+				if (DJMarketUtils.isRoot()) {
 					runOnUiThread(new Runnable() {
 
 						@Override
@@ -260,7 +260,7 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 							mAuto_install.setEnabled(false);
 							mAuto_install_text1.setTextColor(Color.rgb(136, 136, 136));
 							mAuto_install_text2.setTextColor(Color.rgb(136, 136, 136));
-							AndroidUtils.showToast(getApplicationContext(), R.string.get_root_failed);
+							DJMarketUtils.showToast(getApplicationContext(), R.string.get_root_failed);
 						}
 					});
 				}
@@ -277,12 +277,12 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case CLEAR_SEARCH_HISTORY: // 清除搜索历史
-				AndroidUtils.showToast(Setting_Activity.this, R.string.has_clear_record);
+				DJMarketUtils.showToast(Setting_Activity.this, R.string.has_clear_record);
 				mClear_search_history.setEnabled(false);
 				mClear_search_history.setTextColor(Color.rgb(136, 136, 136));
 				break;
 			case DEL_DOWNLOADED_APK: // 删除已下载安装包
-				AndroidUtils.showToast(Setting_Activity.this, R.string.has_clear_pkgs);
+				DJMarketUtils.showToast(Setting_Activity.this, R.string.has_clear_pkgs);
 				mDel_pkg.setEnabled(false);
 				mDel_pkg.setTextColor(Color.rgb(136, 136, 136));
 				break;
@@ -510,7 +510,7 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 							num = Integer.parseInt(mLimit_flow.getText().toString());
 						}
 						if (num > 2048) {
-							AndroidUtils.showToast(Setting_Activity.this, getResources().getString(R.string.limit_flow_too_large));
+							DJMarketUtils.showToast(Setting_Activity.this, getResources().getString(R.string.limit_flow_too_large));
 							mLimit_flow.requestFocus();
 						} else {
 							save2db();
@@ -580,7 +580,7 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 			service.update("only_wifi", 1);
 			System.out.println("662:" + wifiSettingChange + ", " + isLimitFlowChange);
 			int value = -1;
-			Intent intent = new Intent(DownloadConstDefine.BROADCAST_ACTION_GPRS_SETTING_CHANGE);
+			Intent intent = new Intent(AConstDefine.BROADCAST_ACTION_GPRS_SETTING_CHANGE);
 			Bundle bundle = new Bundle();
 			if (isLimitFlowChange) {
 				if (TextUtils.isEmpty(mLimit_flow.getText())) {
@@ -602,7 +602,7 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 				value = Integer.parseInt(mLimit_flow.getText().toString());
 			}
 			System.out.println("686:" + wifiSettingChange + ", " + isLimitFlowChange);
-			Intent intent = new Intent(DownloadConstDefine.BROADCAST_ACTION_GPRS_SETTING_CHANGE);
+			Intent intent = new Intent(AConstDefine.BROADCAST_ACTION_GPRS_SETTING_CHANGE);
 			Bundle bundle = new Bundle();
 			if (isLimitFlowChange) {
 				service.update("limit_flow", value);

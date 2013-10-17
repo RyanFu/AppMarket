@@ -20,7 +20,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.text.TextUtils;
 
 import com.dongji.market.database.MarketDatabase;
-import com.dongji.market.helper.AndroidUtils;
+import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.pojo.ApkItem;
 import com.dongji.market.pojo.ChannelListInfo;
@@ -270,7 +270,7 @@ public class DataManager {
 		ArrayList<ApkItem> list = null;
 		String result = null;
 		String cacheSuffix = catid + (isApp ? "soft" : "game");
-		if (!AndroidUtils.isNetworkAvailable(context)) {
+		if (!DJMarketUtils.isNetworkAvailable(context)) {
 			result = FsCache.getCacheString(cacheSuffix);
 		} else {
 			String type = "&type=" + (isApp ? "soft" : "game");
@@ -721,7 +721,7 @@ public class DataManager {
 	}
 
 	private List<String[]> initRequestUpdateList(Context context) {
-		List<PackageInfo> infos = AndroidUtils.getInstalledPackages(context);
+		List<PackageInfo> infos = DJMarketUtils.getInstalledPackages(context);
 		List<String[]> items = null;
 		if (infos != null && infos.size() > 0) {
 			items = new ArrayList<String[]>();
@@ -1254,7 +1254,7 @@ public class DataManager {
 	}
 
 	public int collectLocalData(Context cxt) throws IOException {
-		Map<String, String> deviceInfo = AndroidUtils.getDeviceInfo(cxt);
+		Map<String, String> deviceInfo = DJMarketUtils.getDeviceInfo(cxt);
 		Map<String, String> dataMap = new HashMap<String, String>();
 		List<InstalledAppInfo> installedAppsList = DJMarketUtils.getInstalledApps(cxt);
 		// for (InstalledAppInfo info : installedAppsList) {
@@ -1271,7 +1271,7 @@ public class DataManager {
 			try {
 				jsonObj.put("app_name", info.getName());
 				jsonObj.put("pkg_name", info.getPkgName());
-				// AndroidUtils.parseSignature(AndroidUtils.getSignInfo(cxt,
+				// DJMarketUtils.parseSignature(DJMarketUtils.getSignInfo(cxt,
 				// info.getPkgName()));
 				appJsonArray.put(jsonObj);
 			} catch (JSONException e) {
@@ -1399,7 +1399,7 @@ public class DataManager {
 	public String getDJUrl(Context context) {
 		String result = null;
 		String cacheSuffix = DJ_ADRESS_URL;
-		if (!AndroidUtils.isNetworkAvailable(context)) {
+		if (!DJMarketUtils.isNetworkAvailable(context)) {
 			result = FsCache.getCacheString(cacheSuffix);
 		} else {
 			String suffixUrl = null;
@@ -1444,7 +1444,7 @@ public class DataManager {
 	public ApkItem getWxApp(Context context) throws JSONException {
 		String result = null;
 		String cacheSuffix = WX_DATA_URL;
-		if (!AndroidUtils.isNetworkAvailable(context)) {
+		if (!DJMarketUtils.isNetworkAvailable(context)) {
 			result = FsCache.getCacheString(cacheSuffix);
 		} else {
 			String suffixUrl = null;

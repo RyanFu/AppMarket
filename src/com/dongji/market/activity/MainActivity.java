@@ -34,12 +34,11 @@ import android.widget.RadioButton;
 import com.dongji.market.R;
 import com.dongji.market.application.AppMarket;
 import com.dongji.market.database.MarketDatabase.Setting_Service;
-import com.dongji.market.download.DownloadConstDefine;
-import com.dongji.market.download.DownloadService;
-import com.dongji.market.download.DownloadUtils;
 import com.dongji.market.helper.AConstDefine;
-import com.dongji.market.helper.AndroidUtils;
 import com.dongji.market.helper.DJMarketUtils;
+import com.dongji.market.helper.DJMarketUtils;
+import com.dongji.market.helper.AConstDefine;
+import com.dongji.market.helper.DownloadUtils;
 import com.dongji.market.helper.NetTool;
 import com.dongji.market.helper.ShareParams;
 import com.dongji.market.helper.TitleUtil;
@@ -47,6 +46,7 @@ import com.dongji.market.helper.TitleUtil.OnToolBarBlankClickListener;
 import com.dongji.market.pojo.LoginParams;
 import com.dongji.market.pojo.SettingConf;
 import com.dongji.market.protocol.DataUpdateService;
+import com.dongji.market.service.DownloadService;
 import com.dongji.market.widget.CustomNoTitleDialog;
 import com.dongji.market.widget.HorizontalScrollLayout;
 import com.dongji.market.widget.HorizontalScrollLayout.OnPageChangedListener;
@@ -95,7 +95,7 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		mApp = (AppMarket) getApplication();
 		boolean flag = DJMarketUtils.isSaveFlow(this);// 是否开启流量模式
 		mApp.setRemoteImage(!flag);// 是否下载图片
-		mApp.setIsPhone(AndroidUtils.isPhone(this));//判断是不是手机
+		mApp.setIsPhone(DJMarketUtils.isPhone(this));//判断是不是手机
 
 		checkFirstLaunch();
 		if (DEBUG)
@@ -316,8 +316,8 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 	 */
 	private void initSlideImageView() {
 		mSlideImageView = (ImageView) findViewById(R.id.slideimageview);
-		DisplayMetrics dm = AndroidUtils.getScreenSize(this);
-		int num = AndroidUtils.dip2px(this, 2);
+		DisplayMetrics dm = DJMarketUtils.getScreenSize(this);
+		int num = DJMarketUtils.dip2px(this, 2);
 		float singleWidth = (dm.widthPixels - num * 3) / 5.0f;
 		LayoutParams mParams = (LayoutParams) mSlideImageView.getLayoutParams();
 		mParams.width = (int) singleWidth;
@@ -329,7 +329,7 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 	 */
 	private void registerPackageReceiver() {
 		IntentFilter intentFilter = new IntentFilter();
-		intentFilter.addAction(DownloadConstDefine.BROADCAST_ACTION_CHECK_DOWNLOAD);
+		intentFilter.addAction(AConstDefine.BROADCAST_ACTION_CHECK_DOWNLOAD);
 		registerReceiver(mUpdateLoadedReceiver, intentFilter);
 	}
 
@@ -337,7 +337,7 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if (DownloadConstDefine.BROADCAST_ACTION_CHECK_DOWNLOAD.equals(intent.getAction())) {
+			if (AConstDefine.BROADCAST_ACTION_CHECK_DOWNLOAD.equals(intent.getAction())) {
 				DownloadUtils.startAllDownload(context, mApp.isIs3GDownloadPrompt());
 			}
 		}
@@ -508,7 +508,7 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 				}
 			} else {
 				isExit = true;
-				AndroidUtils.showToast(this, R.string.back_message);
+				DJMarketUtils.showToast(this, R.string.back_message);
 				mHandler.sendEmptyMessageDelayed(EVENT_CHANGE_EXIT_STATUS, 2500);// 延时2.5秒发送退出广播，此处很妙，如果在2.5秒内再按一次，则可以退出
 				return true;
 			}

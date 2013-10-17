@@ -237,8 +237,8 @@ public class NetTool implements AConstDefine {
 	}
 
 	public static void installBackupApp(Context context, String apkName) {
-		if (AndroidUtils.isRoot()) {
-			AndroidUtils.rootInstallApp(NetTool.BACKUPPATH + apkName + ".apk");
+		if (DJMarketUtils.isRoot()) {
+			DJMarketUtils.rootInstallApp(NetTool.BACKUPPATH + apkName + ".apk");
 		} else {
 			Intent installIntent = new Intent(Intent.ACTION_VIEW);
 			installIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

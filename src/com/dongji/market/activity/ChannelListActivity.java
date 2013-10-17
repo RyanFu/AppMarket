@@ -28,7 +28,7 @@ import com.dongji.market.R;
 import com.dongji.market.adapter.ListBaseAdapter;
 import com.dongji.market.adapter.ListSingleTemplateAdapter;
 import com.dongji.market.helper.AConstDefine;
-import com.dongji.market.helper.AndroidUtils;
+import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.helper.TitleUtil;
 import com.dongji.market.helper.TitleUtil.OnSortChangeListener;
 import com.dongji.market.helper.TitleUtil.OnToolBarBlankClickListener;
@@ -101,7 +101,7 @@ public class ChannelListActivity extends PublicActivity implements OnItemClickLi
 				info.currentPage = 1;
 			}
 		} else {
-			AndroidUtils.showToast(this, R.string.request_channel_data_error);
+			DJMarketUtils.showToast(this, R.string.request_channel_data_error);
 			finish();
 		}
 	}
@@ -210,7 +210,7 @@ public class ChannelListActivity extends PublicActivity implements OnItemClickLi
 								isLoading = false;
 								isRequestDelay = false;
 							}
-							if (!AndroidUtils.isNetworkAvailable(context)) {
+							if (!DJMarketUtils.isNetworkAvailable(context)) {
 								sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
 							} else {
 								sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
@@ -218,7 +218,7 @@ public class ChannelListActivity extends PublicActivity implements OnItemClickLi
 						}
 					} catch (JSONException e) {
 						System.out.println("jsonexception:" + e);
-						if (!AndroidUtils.isNetworkAvailable(context)) {
+						if (!DJMarketUtils.isNetworkAvailable(context)) {
 							sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
 						} else {
 							sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
@@ -473,7 +473,7 @@ public class ChannelListActivity extends PublicActivity implements OnItemClickLi
 					mLoadingProgressBar.setVisibility(View.GONE);
 					mLoadingTextView.setText(rId);
 				} else {
-					AndroidUtils.showToast(context, rId2);
+					DJMarketUtils.showToast(context, rId2);
 				}
 			}
 		});

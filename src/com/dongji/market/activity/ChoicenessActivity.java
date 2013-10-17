@@ -32,7 +32,7 @@ import com.dongji.market.adapter.ImageGalleryAdapter;
 import com.dongji.market.adapter.ListBaseAdapter;
 import com.dongji.market.adapter.ListSingleTemplateAdapter;
 import com.dongji.market.helper.AConstDefine;
-import com.dongji.market.helper.AndroidUtils;
+import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.pojo.ApkItem;
 import com.dongji.market.protocol.DataManager;
 import com.dongji.market.widget.ScrollListView;
@@ -176,7 +176,7 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 						sendEmptyMessage(EVENT_REQUEST_GAMELIST_DATA);
 					}
 				} else {
-					if (!AndroidUtils.isNetworkAvailable(context)) {
+					if (!DJMarketUtils.isNetworkAvailable(context)) {
 						sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
 					} else {
 						sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
@@ -210,7 +210,7 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 						}
 					});
 				} else {
-					if (!AndroidUtils.isNetworkAvailable(context)) {
+					if (!DJMarketUtils.isNetworkAvailable(context)) {
 						sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
 					} else {
 						sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
@@ -243,7 +243,7 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 						}
 					});
 				} else {
-					if (!AndroidUtils.isNetworkAvailable(context)) {
+					if (!DJMarketUtils.isNetworkAvailable(context)) {
 						sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
 					} else {
 						sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
@@ -258,7 +258,7 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 				break;
 			case EVENT_COLLECT_DEVICE_INFO:
 				try {
-					if (AndroidUtils.isNetworkAvailable(context)) {
+					if (DJMarketUtils.isNetworkAvailable(context)) {
 						responseResult = DataManager.newInstance().collectLocalData(context);
 					} else {
 						sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
@@ -340,7 +340,7 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 		mSwithBtnContainer = (LinearLayout) mHeaderView.findViewById(R.id.switcherbtn_container);
 
 		ImageView localImageView = null;
-		int num = AndroidUtils.dip2px(this, 10.0f);
+		int num = DJMarketUtils.dip2px(this, 10.0f);
 
 		SwitchBtnClickListener localSwitchBtnClickListener = new SwitchBtnClickListener();
 
@@ -469,7 +469,7 @@ public class ChoicenessActivity extends BaseActivity implements OnItemClickListe
 					mLoadingProgressBar.setVisibility(View.GONE);
 					mLoadingTextView.setText(rId);
 				} else {
-					AndroidUtils.showToast(context, rId2);
+					DJMarketUtils.showToast(context, rId2);
 				}
 			}
 		});

@@ -27,13 +27,13 @@ import android.os.Looper;
 import android.os.Message;
 
 import com.dongji.market.application.AppMarket;
-import com.dongji.market.download.DownloadConstDefine;
-import com.dongji.market.download.DownloadEntity;
 import com.dongji.market.helper.AConstDefine;
-import com.dongji.market.helper.AndroidUtils;
 import com.dongji.market.helper.DJMarketUtils;
+import com.dongji.market.helper.DJMarketUtils;
+import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.ShareParams;
 import com.dongji.market.pojo.ApkItem;
+import com.dongji.market.pojo.DownloadEntity;
 
 /**
  * 数据后台更新的service
@@ -98,7 +98,7 @@ public class DataUpdateService extends Service {
 		mNetWorkReceiver = new NetWodkStatusReceiver();
 		IntentFilter intentFilter = new IntentFilter();
 		intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION); // 注册网络监听广播
-		intentFilter.addAction(DownloadConstDefine.BROADCAST_ACTION_REQUEST_SINGLE_UPDATE); // 请求单个应用的更新
+		intentFilter.addAction(AConstDefine.BROADCAST_ACTION_REQUEST_SINGLE_UPDATE); // 请求单个应用的更新
 		registerReceiver(mNetWorkReceiver, intentFilter);
 
 		IntentFilter packageIntentFilter = new IntentFilter();
@@ -131,7 +131,7 @@ public class DataUpdateService extends Service {
 			currentRetry = 0;
 		} catch (IOException e) {
 			System.out.println("request update data error!" + e);
-			if (AndroidUtils.isNetworkAvailable(this)) {
+			if (DJMarketUtils.isNetworkAvailable(this)) {
 				if (currentRetry < MAX_REQUEST_UPDATE_RETRY_NUM) {
 					currentRetry++;
 					requestUpdateData();
@@ -147,7 +147,7 @@ public class DataUpdateService extends Service {
 	private void requestCacheData() throws IOException, JSONException {
 		ArrayList<ApkItem> updateList = dataManager.getUpdateList(this);
 		if (updateList != null && updateList.size() > 0) {
-			List<PackageInfo> infos = AndroidUtils.getInstalledPackages(this);//安装应用总数
+			List<PackageInfo> infos = DJMarketUtils.getInstalledPackages(this);//安装应用总数
 			mApp.setUpdateList(updateList);
 			int count = (infos == null ? 0 : infos.size());
 			int k = 0;//非系统应用数
@@ -166,7 +166,7 @@ public class DataUpdateService extends Service {
 					}
 				}
 			}
-			Intent intent = new Intent(DownloadConstDefine.BROADCAST_ACTION_APP_UPDATE_DATADONE);
+			Intent intent = new Intent(AConstDefine.BROADCAST_ACTION_APP_UPDATE_DATADONE);
 			sendBroadcast(intent);
 		}
 	}
@@ -176,10 +176,10 @@ public class DataUpdateService extends Service {
 		public void onReceive(Context context, Intent intent) { 
 			if (ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction())) {
 				onNetworkStatusReceiver(context);
-			} else if (DownloadConstDefine.BROADCAST_ACTION_REQUEST_SINGLE_UPDATE.equals(intent.getAction())) {
+			} else if (AConstDefine.BROADCAST_ACTION_REQUEST_SINGLE_UPDATE.equals(intent.getAction())) {
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
-					DownloadEntity entity = bundle.getParcelable(DownloadConstDefine.DOWNLOAD_ENTITY);
+					DownloadEntity entity = bundle.getParcelable(AConstDefine.DOWNLOAD_ENTITY);
 					Bundle requestBundle = new Bundle();
 					String[] data = new String[] { String.valueOf(entity.installedVersionCode), entity.packageName };
 					requestBundle.putStringArray("updateData", data);
@@ -325,10 +325,10 @@ public class DataUpdateService extends Service {
 			if (item != null) {
 				mApp.addUpdate(item);
 				System.out.println("broadcast single update!");
-				Intent intent = new Intent(DownloadConstDefine.BROADCAST_ACTION_SINGLE_UPDATE_DONE);
+				Intent intent = new Intent(AConstDefine.BROADCAST_ACTION_SINGLE_UPDATE_DONE);
 				DownloadEntity entity = new DownloadEntity(item);
 				Bundle bundle = new Bundle();
-				bundle.putParcelable(DownloadConstDefine.DOWNLOAD_ENTITY, entity);
+				bundle.putParcelable(AConstDefine.DOWNLOAD_ENTITY, entity);
 				intent.putExtras(bundle);
 				sendBroadcast(intent);
 			}

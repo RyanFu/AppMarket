@@ -43,10 +43,10 @@ import com.dongji.market.R;
 import com.dongji.market.adapter.ChooseToBackupAdapter;
 import com.dongji.market.adapter.ChooseToCloudRestoreAdapter;
 import com.dongji.market.application.AppMarket;
-import com.dongji.market.download.DownloadUtils;
 import com.dongji.market.helper.AConstDefine;
-import com.dongji.market.helper.AndroidUtils;
 import com.dongji.market.helper.DJMarketUtils;
+import com.dongji.market.helper.DJMarketUtils;
+import com.dongji.market.helper.DownloadUtils;
 import com.dongji.market.helper.FileLoadTask;
 import com.dongji.market.helper.NetTool;
 import com.dongji.market.pojo.ApkItem;
@@ -418,9 +418,9 @@ public class BackupOrRestoreActivity extends Activity implements AConstDefine, O
 			}
 			NetTool.deleteNoBackupApk(nameList);
 			if (isBakcup) {
-				if (!AndroidUtils.isSdcardExists()) {
+				if (!DJMarketUtils.isSdcardExists()) {
 					showMyToast(R.string.nosdcardtobackup);
-				} else if (AndroidUtils.getSdcardAvalilaleSize() < totalBackupSize) {
+				} else if (DJMarketUtils.getSdcardAvalilaleSize() < totalBackupSize) {
 					showMyToast(R.string.sdcardnospacetobackup);
 				} else {
 					mHandler.sendEmptyMessage(EVENT_LOCAL_BACKUPRESULT);
@@ -447,7 +447,7 @@ public class BackupOrRestoreActivity extends Activity implements AConstDefine, O
 			boolean isSelected = false;
 			boolean isRootInstall = DJMarketUtils.isDefaultInstall(this);
 			if (isRootInstall) {
-				isRootInstall = AndroidUtils.isRoot();
+				isRootInstall = DJMarketUtils.isRoot();
 			}
 			for (int i = 0; i < checkFlag.size(); i++) {
 				if (checkFlag.get(i) == 1) {

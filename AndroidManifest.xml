@@ -262,7 +262,7 @@
             android:theme="@style/Theme.kaizhang" >
         </activity>
 
-        <service android:name=".download.DownloadService" />
+        <service android:name="com.dongji.market.service.DownloadService" />
     </application>
 
     <supports-screens

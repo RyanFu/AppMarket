@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import com.dongji.market.R;
 import com.dongji.market.activity.SoftwareMove_list_Activity;
-import com.dongji.market.helper.AndroidUtils;
+import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.pojo.InstalledAppInfo;
 
@@ -89,7 +89,7 @@ public class SoftwareMoveAdapter extends BaseAdapter {
 		holder.mUninstallView.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
-				AndroidUtils.showInstalledAppDetails(context, ((InstalledAppInfo) getItem(position)).getPkgName());
+				DJMarketUtils.showInstalledAppDetails(context, ((InstalledAppInfo) getItem(position)).getPkgName());
 			}
 
 		});
@@ -97,7 +97,7 @@ public class SoftwareMoveAdapter extends BaseAdapter {
 
 			@Override
 			public void onClick(View v) {
-				AndroidUtils.showInstalledAppDetails(context, ((InstalledAppInfo) getItem(position)).getPkgName());
+				DJMarketUtils.showInstalledAppDetails(context, ((InstalledAppInfo) getItem(position)).getPkgName());
 			}
 		});
 		return convertView;

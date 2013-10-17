@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import com.dongji.market.R;
 import com.dongji.market.helper.AConstDefine;
-import com.dongji.market.helper.AndroidUtils;
+import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.receiver.CommonReceiver;
 
 public class AboutUsActivity extends Activity {
@@ -53,12 +53,12 @@ public class AboutUsActivity extends Activity {
 			}
 		});
 
-		if (!AndroidUtils.isTablet(this)||AndroidUtils.getPhysicalSize(this)<6) {
+		if (!DJMarketUtils.isPhone(this)||DJMarketUtils.getPhysicalSize(this)<6) {
 			return;
 		}
 		
-		int screenHeight = AndroidUtils.getScreenSize(this).heightPixels;
-		int screenWidth = AndroidUtils.getScreenSize(this).widthPixels;
+		int screenHeight = DJMarketUtils.getScreenSize(this).heightPixels;
+		int screenWidth = DJMarketUtils.getScreenSize(this).widthPixels;
 		LinearLayout.LayoutParams linearParams;
 		int actualHeight;
 		int actualWidth;

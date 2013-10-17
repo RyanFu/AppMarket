@@ -26,7 +26,7 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.dongji.market.R;
-import com.dongji.market.helper.AndroidUtils;
+import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.helper.TitleUtil;
 import com.dongji.market.protocol.DataManager;
 import com.dongji.market.widget.CustomProgressDialog;
@@ -122,7 +122,7 @@ public class Passwd_Retake_Activity extends Activity implements OnClickListener 
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						AndroidUtils.showToast(Passwd_Retake_Activity.this, R.string.send_password_success);
+						DJMarketUtils.showToast(Passwd_Retake_Activity.this, R.string.send_password_success);
 						finish();
 					}
 				});
@@ -131,7 +131,7 @@ public class Passwd_Retake_Activity extends Activity implements OnClickListener 
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						AndroidUtils.showToast(Passwd_Retake_Activity.this, R.string.send_failed);
+						DJMarketUtils.showToast(Passwd_Retake_Activity.this, R.string.send_failed);
 					}
 				});
 				break;
@@ -139,7 +139,7 @@ public class Passwd_Retake_Activity extends Activity implements OnClickListener 
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						AndroidUtils.showToast(Passwd_Retake_Activity.this, R.string.user_not_exist);
+						DJMarketUtils.showToast(Passwd_Retake_Activity.this, R.string.user_not_exist);
 					}
 				});
 				break;
@@ -148,14 +148,14 @@ public class Passwd_Retake_Activity extends Activity implements OnClickListener 
 			runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
-					AndroidUtils.showToast(Passwd_Retake_Activity.this, R.string.connection_timeout);
+					DJMarketUtils.showToast(Passwd_Retake_Activity.this, R.string.connection_timeout);
 				}
 			});
 		} catch (JSONException e) {
 			runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
-					AndroidUtils.showToast(Passwd_Retake_Activity.this, R.string.send_failed);
+					DJMarketUtils.showToast(Passwd_Retake_Activity.this, R.string.send_failed);
 				}
 			});
 		} finally {
@@ -201,13 +201,13 @@ public class Passwd_Retake_Activity extends Activity implements OnClickListener 
 	private boolean checkEmail() {
 		String emailString = mEmailET.getText().toString();
 		if (TextUtils.isEmpty(emailString)) {
-			AndroidUtils.showToast(this, R.string.email_null);
+			DJMarketUtils.showToast(this, R.string.email_null);
 			mEmailET.requestFocus();
-		} else if (!AndroidUtils.isEmail(emailString)) {
-			AndroidUtils.showToast(this, R.string.emailformat_is_error);
+		} else if (!DJMarketUtils.isEmail(emailString)) {
+			DJMarketUtils.showToast(this, R.string.emailformat_is_error);
 			mEmailET.requestFocus();
-		} else if (!AndroidUtils.isNetworkAvailable(this)) {
-			AndroidUtils.showToast(this, R.string.no_network_msg1);
+		} else if (!DJMarketUtils.isNetworkAvailable(this)) {
+			DJMarketUtils.showToast(this, R.string.no_network_msg1);
 		} else {
 			showProgressDialog();
 			return true;

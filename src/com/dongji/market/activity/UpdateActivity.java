@@ -25,7 +25,7 @@ import com.dongji.market.R;
 import com.dongji.market.adapter.ListBaseAdapter;
 import com.dongji.market.adapter.ListSingleTemplateAdapter;
 import com.dongji.market.helper.AConstDefine;
-import com.dongji.market.helper.AndroidUtils;
+import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.pojo.ApkItem;
 import com.dongji.market.protocol.DataManager;
 import com.dongji.market.widget.ScrollListView;
@@ -174,7 +174,7 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener 
 						}
 					});
 				} else {
-					if (!AndroidUtils.isNetworkAvailable(context)) {
+					if (!DJMarketUtils.isNetworkAvailable(context)) {
 						sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
 					} else {
 						sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
@@ -186,7 +186,7 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener 
 					games = getApps();
 					games = setApkStatus(games);
 				} catch (IOException e) {
-					if (!AndroidUtils.isNetworkAvailable(context)) {
+					if (!DJMarketUtils.isNetworkAvailable(context)) {
 						sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
 					} else {
 						sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
@@ -214,7 +214,7 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener 
 						}
 					});
 				} else {
-					if (!AndroidUtils.isNetworkAvailable(context)) {
+					if (!DJMarketUtils.isNetworkAvailable(context)) {
 						sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
 					} else {
 						sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
@@ -247,7 +247,7 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener 
 					mLoadingProgressBar.setVisibility(View.GONE);
 					mLoadingTextView.setText(rId);
 				} else {
-					AndroidUtils.showToast(context, rId2);
+					DJMarketUtils.showToast(context, rId2);
 				}
 			}
 		});

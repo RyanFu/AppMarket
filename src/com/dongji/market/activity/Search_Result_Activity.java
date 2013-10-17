@@ -37,7 +37,7 @@ import com.dongji.market.R;
 import com.dongji.market.adapter.GuessLikeAdapter;
 import com.dongji.market.adapter.SearchResultAdapter;
 import com.dongji.market.helper.AConstDefine;
-import com.dongji.market.helper.AndroidUtils;
+import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.helper.NetTool;
 import com.dongji.market.helper.TitleUtil;
 import com.dongji.market.helper.TitleUtil.OnToolBarBlankClickListener;
@@ -151,7 +151,7 @@ public class Search_Result_Activity extends PublicActivity implements OnScrollLi
 					data = setApkStatus(data);
 				} catch (IOException e) {
 					e.printStackTrace();
-					if (!AndroidUtils.isNetworkAvailable(Search_Result_Activity.this)) {
+					if (!DJMarketUtils.isNetworkAvailable(Search_Result_Activity.this)) {
 						handler.sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
 					} else {
 						handler.sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
@@ -210,7 +210,7 @@ public class Search_Result_Activity extends PublicActivity implements OnScrollLi
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
-					if (!AndroidUtils.isNetworkAvailable(getApplicationContext())) {
+					if (!DJMarketUtils.isNetworkAvailable(getApplicationContext())) {
 						handler.sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
 					} else {
 						handler.sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
@@ -295,7 +295,7 @@ public class Search_Result_Activity extends PublicActivity implements OnScrollLi
 					mLoadingProgressBar.setVisibility(View.GONE);
 					mLoadingTextView.setText(rId);
 				} else {
-					AndroidUtils.showToast(Search_Result_Activity.this, rId2);
+					DJMarketUtils.showToast(Search_Result_Activity.this, rId2);
 				}
 			}
 		});
@@ -336,8 +336,8 @@ public class Search_Result_Activity extends PublicActivity implements OnScrollLi
 			mGuessLoadingLayout.setVisibility(View.GONE);
 			mGuessLikeGrid.setVisibility(View.VISIBLE);
 		}
-		int columnWidth = AndroidUtils.dip2px(this, 48);
-		int horizontalSpacing = AndroidUtils.dip2px(this, 10);
+		int columnWidth = DJMarketUtils.dip2px(this, 48);
+		int horizontalSpacing = DJMarketUtils.dip2px(this, 10);
 		LayoutParams params = new LayoutParams(list.size() * columnWidth + list.size() * horizontalSpacing, columnWidth + horizontalSpacing * 4);
 		mGuessLikeGrid.setLayoutParams(params);
 		mGuessLikeGrid.setColumnWidth(columnWidth);

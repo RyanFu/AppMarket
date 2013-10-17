@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.dongji.market.download.DownloadEntity;
+import com.dongji.market.pojo.DownloadEntity;
 
 public class DownloadDBHelper {
 	private static final int DATABASE_VERSION = 1;

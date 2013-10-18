@@ -31,7 +31,7 @@ import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.helper.AConstDefine;
-import com.dongji.market.helper.ShareParams;
+import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.pojo.ApkItem;
 import com.dongji.market.pojo.DownloadEntity;
 
@@ -264,8 +264,8 @@ public class DataUpdateService extends Service {
 	 */
 	private void initLastUpdateTime() {
 		if (lastUpdateTime == 0) {
-			SharedPreferences mSharedPreferences = getSharedPreferences(ShareParams.SHARE_FILE_NAME, Context.MODE_PRIVATE);
-			lastUpdateTime = mSharedPreferences.getLong(ShareParams.LAST_UPDATE_TIME, 0);
+			SharedPreferences mSharedPreferences = getSharedPreferences(AConstDefine.SHARE_FILE_NAME, Context.MODE_PRIVATE);
+			lastUpdateTime = mSharedPreferences.getLong(AConstDefine.LAST_UPDATE_TIME, 0);
 		}
 	}
 
@@ -275,9 +275,9 @@ public class DataUpdateService extends Service {
 	private void writeLastUpdateTime() {
 		long updateTime = System.currentTimeMillis();
 		lastUpdateTime = updateTime;
-		SharedPreferences mSharedPreferences = getSharedPreferences(ShareParams.SHARE_FILE_NAME, Context.MODE_PRIVATE);
+		SharedPreferences mSharedPreferences = getSharedPreferences(AConstDefine.SHARE_FILE_NAME, Context.MODE_PRIVATE);
 		SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-		mEditor.putLong(ShareParams.LAST_UPDATE_TIME, updateTime);
+		mEditor.putLong(AConstDefine.LAST_UPDATE_TIME, updateTime);
 		mEditor.commit();
 	}
 

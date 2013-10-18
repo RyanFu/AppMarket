@@ -31,6 +31,11 @@ import com.dongji.market.protocol.DataManager;
 import com.dongji.market.widget.CustomProgressDialog;
 import com.umeng.analytics.MobclickAgent;
 
+/**
+ * 修改密码
+ * @author yvon
+ *
+ */
 public class Change_Pwd_Activity extends Activity implements OnClickListener{
 	
 	private EditText mOldPwdET;

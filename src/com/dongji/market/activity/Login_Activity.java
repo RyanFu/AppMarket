@@ -37,6 +37,11 @@ import com.dongji.market.protocol.DataManager;
 import com.dongji.market.widget.CustomProgressDialog;
 import com.umeng.analytics.MobclickAgent;
 
+/**
+ * 登陆界面
+ * @author yvon
+ *
+ */
 public class Login_Activity extends Activity {
 
 	private EditText mEmailET;

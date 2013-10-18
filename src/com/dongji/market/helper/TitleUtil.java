@@ -2,13 +2,9 @@ package com.dongji.market.helper;
 
 import java.util.List;
 
-import org.apache.http.message.LineParser;
-
-import android.R.integer;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Resources.NotFoundException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -34,7 +30,6 @@ import android.widget.PopupWindow.OnDismissListener;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.dongji.market.R;
 import com.dongji.market.activity.ApkDetailActivity;
@@ -60,10 +55,6 @@ import com.dongji.market.widget.CustomSearchView.OnItemClickListener;
 import com.dongji.market.widget.CustomSearchView.OnKeyDownListener;
 import com.dongji.market.widget.CustomSearchView.OnTextChangeListener;
 import com.dongji.market.widget.ShareDialog;
-import com.tencent.weibo.demo.OAuthV2ImplicitGrant;
-import com.tencent.weibo.oauthv2.OAuthV2;
-import com.weibo.net.Weibo;
-import com.weibo.net.WeiboException;
 
 /**
  * Title部分公共类
@@ -92,7 +83,6 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 	public SearchHistory history;
 	private List<String> data;
 	public SearchHistoryAdapter historyAdapter;
-	private OAuthV2ImplicitGrant tencentOAuth;
 	private LoginParams loginParams;
 	private CommonReceiver commonRecv;
 
@@ -271,15 +261,15 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 			mSearchEdit = (CustomSearchView) titleView.findViewById(R.id.searchEdittext);
 			mClearLayout = (LinearLayout) titleView.findViewById(R.id.clearLayout);
 			mClearKeywordBtn = (Button) titleView.findViewById(R.id.clearKeyword);
-		}else {
+		} else {
 			mPageNameTextView = (TextView) titleView.findViewById(R.id.page_name);
 			mSortPageShrinkIcon = (ImageView) titleView.findViewById(R.id.shrink_icon);
 		}
-		
-		if (DJMarketUtils.isPhone(cxt)||DJMarketUtils.getPhysicalSize(cxt)<6) {
+
+		if (DJMarketUtils.isPhone(cxt) || DJMarketUtils.getPhysicalSize(cxt) < 6) {
 			return;
 		}
-		
+
 		int screenHeight = DJMarketUtils.getScreenSize(cxt).heightPixels;
 		int screenWidth = DJMarketUtils.getScreenSize(cxt).widthPixels;
 		LinearLayout.LayoutParams linearParams;
@@ -290,7 +280,7 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		int leftMargin;
 		int rightMargin;
 		if (isSearchActivity) {
-			
+
 			actualHeight = (int) (screenHeight * 0.038);
 			leftMargin = (int) (screenWidth * 0.01);
 			rightMargin = (int) (screenWidth * 0.016);
@@ -300,13 +290,11 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 			linearParams.rightMargin = rightMargin;
 			searchLayout.setLayoutParams(linearParams);
 
-		
 			actualWidth = (int) (screenWidth * 0.04);
 			relativeParams = (RelativeLayout.LayoutParams) mClearLayout.getLayoutParams();
 			relativeParams.width = actualWidth;
 			mClearLayout.setLayoutParams(relativeParams);
 
-			
 			actualHeight = (int) (screenHeight * 0.016);
 			actualWidth = actualHeight;
 			rightMargin = (int) (screenWidth * 0.003);
@@ -317,7 +305,7 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 			mClearKeywordBtn.setLayoutParams(linearParams);
 
 		} else {
-			
+
 			actualHeight = (int) (screenHeight * 0.02);
 			actualWidth = actualHeight;
 			leftMargin = (int) (screenWidth * 0.008);
@@ -327,14 +315,12 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 			linearParams.leftMargin = leftMargin;
 			mSortPageShrinkIcon.setLayoutParams(linearParams);
 		}
-		
-		
+
 		actualWidth = (int) (screenWidth * 0.1);
 		linearParams = (LayoutParams) mTopLogoLayout.getLayoutParams();
 		linearParams.width = actualWidth;
 		mTopLogoLayout.setLayoutParams(linearParams);
 
-		
 		actualHeight = (int) (screenHeight * 0.013);
 		actualWidth = (int) (actualHeight * 0.4);
 		leftMargin = (int) (screenWidth * 0.008);
@@ -343,7 +329,7 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		frameParams.height = actualHeight;
 		frameParams.leftMargin = leftMargin;
 		mBackButton.setLayoutParams(frameParams);
-	
+
 		actualHeight = (int) (screenHeight * 0.042);
 		actualWidth = actualHeight;
 		leftMargin = (int) (screenWidth * 0.022);
@@ -352,7 +338,7 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		frameParams.height = actualHeight;
 		frameParams.leftMargin = leftMargin;
 		topLogo.setLayoutParams(frameParams);
-	
+
 		actualHeight = (int) (screenHeight * 0.03);
 		actualWidth = actualHeight;
 		linearParams = (LayoutParams) mSearchButton.getLayoutParams();
@@ -360,7 +346,6 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		linearParams.height = actualHeight;
 		mSearchButton.setLayoutParams(linearParams);
 
-		
 		actualHeight = (int) (screenHeight * 0.03);
 		actualWidth = (int) (actualHeight * 0.692);
 		leftMargin = (int) (screenWidth * 0.036);
@@ -370,7 +355,6 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		linearParams.leftMargin = leftMargin;
 		mShareButton.setLayoutParams(linearParams);
 
-	
 		actualHeight = (int) (screenHeight * 0.033);
 		actualWidth = (int) (actualHeight * 0.97);
 		leftMargin = (int) (screenWidth * 0.036);
@@ -381,7 +365,7 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		linearParams.leftMargin = leftMargin;
 		linearParams.rightMargin = rightMargin;
 		softManagerLay1.setLayoutParams(linearParams);
-	
+
 		actualHeight = (int) (screenHeight * 0.028);
 		actualWidth = actualHeight;
 		frameParams = (FrameLayout.LayoutParams) softManagerLay2.getLayoutParams();
@@ -389,7 +373,6 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		frameParams.height = actualHeight;
 		softManagerLay2.setLayoutParams(frameParams);
 
-	
 		actualHeight = (int) (screenHeight * 0.002);
 		actualWidth = (int) (actualHeight * 11.3);
 		frameParams = (FrameLayout.LayoutParams) manager_progress.getLayoutParams();
@@ -397,7 +380,6 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		frameParams.height = actualHeight;
 		manager_progress.setLayoutParams(frameParams);
 
-	
 		actualHeight = (int) (screenHeight * 0.013);
 		actualWidth = actualHeight;
 		frameParams = (FrameLayout.LayoutParams) tvCount.getLayoutParams();
@@ -405,7 +387,6 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		frameParams.height = actualHeight;
 		tvCount.setLayoutParams(frameParams);
 
-		
 		actualHeight = (int) (screenHeight * 0.03);
 		actualWidth = actualHeight;
 		rightMargin = (int) (screenWidth * 0.02);
@@ -757,32 +738,6 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 			}
 			mSharePopup.dismiss();
 			break;
-		case R.id.popup_sina_share:
-			if (isSharing) {
-				DJMarketUtils.showToast(cxt, R.string.is_loading);
-			} else {
-				if (DJMarketUtils.isSinaLogin(cxt)) {
-					isSharing = true;
-					mHandler.sendEmptyMessage(SINA_SHARE);
-				} else {
-					DJMarketUtils.sinaLogin(cxt, mHandler);
-				}
-			}
-			mSharePopup.dismiss();
-			break;
-		case R.id.popup_tencent_share:
-			if (isSharing) {
-				DJMarketUtils.showToast(cxt, R.string.is_loading);
-			} else {
-				if (DJMarketUtils.isTencentLogin(cxt)) {
-					isSharing = true;
-					mHandler.sendEmptyMessage(TENCENT_SHARE);
-				} else {
-					DJMarketUtils.tencentLogin(cxt, mHandler);
-				}
-			}
-			mSharePopup.dismiss();
-			break;
 		case R.id.shrink_icon:
 		case R.id.page_name:
 			if (cxt.getClass().equals(ChannelListActivity.class)) {
@@ -850,25 +805,6 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 			case SMS_SHARE:
 				executeSmsShare();
 				break;
-			case SINA_SHARE:
-				executeSinaShare();
-				break;
-			case TENCENT_SHARE:
-				executeTencentShare(((AppMarket) cxt.getApplicationContext()).getLoginParams().getTencent_oAuth());
-				break;
-			case OAuthV2ImplicitGrant.GET_OATHV2:
-				DJMarketUtils.getTencentUsrInfo(cxt, (OAuthV2) msg.obj, mHandler);
-				break;
-			case OAuthV2ImplicitGrant.TENCENT_LOGIN_SUCCESS:
-				((Activity) cxt).runOnUiThread(new Runnable() {
-
-					@Override
-					public void run() {
-						Toast.makeText(cxt, R.string.tencent_oAuth_success, Toast.LENGTH_SHORT).show();
-					}
-				});
-				mHandler.sendEmptyMessage(TENCENT_SHARE);
-				break;
 			}
 		}
 
@@ -920,39 +856,6 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 			Intent intent = new Intent(Intent.ACTION_SENDTO, smsUri);
 			intent.putExtra("sms_body", cxt.getResources().getString(R.string.share_text1) + apkItem.appName + cxt.getResources().getString(R.string.share_text2) + DataManager.newInstance().getShortUrlByLongUrl(apkItem.apkUrl));
 			cxt.startActivity(intent);
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			isSharing = false;
-		}
-	}
-
-	/**
-	 * 新浪微博分享实现
-	 */
-	private void executeSinaShare() {
-		ApkItem apkItem = bundle.getParcelable("apkItem");
-		Weibo weibo = Weibo.getInstance();
-		try {
-			weibo.share2weibo(cxt, weibo.getAccessToken().getToken(), weibo.getAccessToken().getSecret(), cxt.getResources().getString(R.string.share_text1) + apkItem.appName + cxt.getResources().getString(R.string.share_text2) + DataManager.newInstance().getShortUrlByLongUrl(apkItem.apkUrl), null);
-		} catch (NotFoundException e) {
-			e.printStackTrace();
-		} catch (WeiboException e) {
-			e.printStackTrace();
-		} finally {
-			isSharing = false;
-		}
-	}
-
-	/**
-	 * 腾讯微博分享实现
-	 */
-	private void executeTencentShare(OAuthV2 oAuth) {
-		try {
-			ApkItem apkItem = bundle.getParcelable("apkItem");
-			String content = cxt.getResources().getString(R.string.share_text1) + apkItem.appName + cxt.getResources().getString(R.string.share_text2) + DataManager.newInstance().getShortUrlByLongUrl(apkItem.apkUrl);
-
-			new OAuthV2ImplicitGrant(cxt).shareContent(content, oAuth);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {

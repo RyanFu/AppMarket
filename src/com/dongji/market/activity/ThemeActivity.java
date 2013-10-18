@@ -10,7 +10,6 @@ import net.tsz.afinal.FinalBitmap;
 
 import org.myjson.JSONException;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.os.Bundle;
@@ -38,6 +37,12 @@ import com.dongji.market.protocol.DataManager;
 import com.dongji.market.widget.LazyScrollView;
 import com.dongji.market.widget.LazyScrollView.ScrollListener;
 
+/**
+ * 专题页面
+ * 
+ * @author yvon
+ * 
+ */
 public class ThemeActivity extends BaseActivity implements OnClickListener {
 
 	private static final int COLUMN_COUNT = 2;// 列数

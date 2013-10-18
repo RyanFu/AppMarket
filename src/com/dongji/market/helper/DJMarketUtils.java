@@ -3,6 +3,7 @@ package com.dongji.market.helper;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -27,11 +28,14 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.json.JSONObject;
-
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -43,33 +47,30 @@ import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.net.NetworkInfo.State;
 import android.os.Build;
 import android.os.Environment;
-import android.os.Handler;
 import android.os.StatFs;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
+import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import com.dongji.market.R;
+import com.dongji.market.activity.SoftwareManageActivity;
 import com.dongji.market.activity.SoftwareMove_list_Activity;
+import com.dongji.market.activity.BackupOrRestoreActivity.OnProgressChangeListener;
 import com.dongji.market.application.AppMarket;
 import com.dongji.market.database.MarketDatabase.Setting_Service;
-import com.dongji.market.listener.SinaOAuthDialogListener;
+import com.dongji.market.pojo.BackupItemInfo;
 import com.dongji.market.pojo.InstalledAppInfo;
 import com.dongji.market.pojo.LoginParams;
 import com.dongji.market.service.DownloadService;
-import com.dongji.market.widget.TencentLoginDialog;
-import com.tencent.weibo.api.UserAPI;
-import com.tencent.weibo.constants.OAuthConstants;
-import com.tencent.weibo.demo.OAuthV2ImplicitGrant;
-import com.tencent.weibo.oauthv2.OAuthV2;
-import com.tencent.weibo.oauthv2.OAuthV2Client;
-import com.weibo.net.Weibo;
 
 /**
  * 用于放置关于动机应用市场相关的帮助方法
@@ -91,14 +92,16 @@ public class DJMarketUtils implements AConstDefine {
 	public static final int MOVEAPPTYPE_MOVETOPHONE = 2;
 	public static final int MOVEAPPTYPE_NONE = 3;
 	private static NumberFormat numberFormat = new DecimalFormat("###,###");
-	
+
 	public static String cachePath;
 	private static DisplayMetrics mDisplayMetrics;
+
+	public static String DOWNLOADPATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/.dongji/dongjiMarket/cache/apk/";
+	public static String BACKUPPATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/.dongji/dongjiMarket/backup/";
 
 	static {
 		cachePath = Environment.getExternalStorageDirectory().getPath() + "/.dongji/dongjiMarket/cache/";
 	}
-
 
 	/**
 	 * 是否默认安装
@@ -469,13 +472,13 @@ public class DJMarketUtils implements AConstDefine {
 	}
 
 	public static List<InstalledAppInfo> getBackupItemList(Context context) {
-		File directory = new File(NetTool.BACKUPPATH);
+		File directory = new File(BACKUPPATH);
 		List<InstalledAppInfo> backupItemInfos = new ArrayList<InstalledAppInfo>();
 		if (directory.exists()) {
 			int i;
 			File[] files = directory.listFiles();
 			for (i = 0; i < files.length; i++) {
-				InstalledAppInfo tempBackupItemInfo = getApkFileInfo(context, NetTool.BACKUPPATH + files[i].getName());
+				InstalledAppInfo tempBackupItemInfo = getApkFileInfo(context, BACKUPPATH + files[i].getName());
 				if (null != tempBackupItemInfo) {
 					backupItemInfos.add(tempBackupItemInfo);
 				}
@@ -585,20 +588,6 @@ public class DJMarketUtils implements AConstDefine {
 		return null;
 	}
 
-	/**
-	 * 格式化数据大小
-	 * 
-	 * @param size
-	 * @return
-	 */
-	public static String sizeFormat(int size) {
-		if ((float) size / 1024 > 1024) {
-			float size_mb = (float) size / 1024 / 1024;
-			return String.format("%.2f", size_mb) + "M";
-		}
-		return size / 1024 + "K";
-	}
-
 	public static long sizeFromMToLong(String sizeString) {
 		long size = 0;
 		if (sizeString.endsWith("M")) {
@@ -609,32 +598,6 @@ public class DJMarketUtils implements AConstDefine {
 			size = (long) ((Double.valueOf(sizeString)) * 1024);
 		}
 		return size;
-	}
-
-	/**
-	 * 新浪登录对话框
-	 * 
-	 * @param context
-	 * @param handler
-	 */
-	public static void sinaLogin(Activity context, Handler handler) {
-		final String CONSUMER_KEY = "1699956234";// 替换为开发者的appkey，例如"1646212960";
-		final String CONSUMER_SECRET = "c01ed617178219c1344777e27623cade";// 替换为开发者的appkey，例如"94098772160b6f8ffc1315374d8861f9";
-
-		if (isNetworkAvailable(context)) {
-			Weibo weibo = Weibo.getInstance();
-			weibo.setupConsumerConfig(CONSUMER_KEY, CONSUMER_SECRET);
-
-			// Oauth2.0
-			// 隐式授权认证方式
-			weibo.setRedirectUrl("http://91dongji.com");// 此处回调页内容应该替换为与appkey对应的应用回调页
-			// 对应的应用回调页可在开发者登陆新浪微博开发平台之后，
-			// 进入我的应用--应用详情--应用信息--高级信息--授权设置--应用回调页进行设置和查看，
-			// 应用回调页不可为空
-			weibo.authorize(context, new SinaOAuthDialogListener(context, handler, CONSUMER_KEY, CONSUMER_SECRET));
-		} else {
-			showToast(context, R.string.net_error);
-		}
 	}
 
 	public static String getCookieValue(Context context, String url, String key) {
@@ -709,55 +672,6 @@ public class DJMarketUtils implements AConstDefine {
 		}
 	}
 
-	public static void tencentLogin(Activity context, Handler handler) {
-		// !!!请根据您的实际情况修改!!! 认证成功后浏览器会被重定向到这个url中 必须与注册时填写的一致
-		String redirectUri = "http://www.91dongji.com/";
-		// !!!请根据您的实际情况修改!!! 换为您为自己的应用申请到的APP KEY
-		String clientId = "801317350";
-		// !!!请根据您的实际情况修改!!! 换为您为自己的应用申请到的APP SECRET
-		String clientSecret = "0b46e85979a4d529cf44b864900406d2";
-
-		OAuthV2 oAuth;
-
-		if (isNetworkAvailable(context)) {
-			oAuth = new OAuthV2(redirectUri);
-			oAuth.setClientId(clientId);
-			oAuth.setClientSecret(clientSecret);
-
-			// 关闭OAuthV2Client中的默认开启的QHttpClient。
-			OAuthV2Client.getQHttpClient().shutdownConnection();
-
-			new TencentLoginDialog(context, oAuth, handler).show();
-		} else {
-			showToast(context, R.string.net_error);
-		}
-	}
-
-	public static void getTencentUsrInfo(Context context, OAuthV2 oAuth, Handler handler) {
-
-		String response;
-		UserAPI userAPI;
-		JSONObject jsonObject;
-
-		if (oAuth.getStatus() != 0) {
-			Toast.makeText(context, R.string.tencetn_oAuth_failed, Toast.LENGTH_SHORT).show();
-		} else {
-			userAPI = new UserAPI(OAuthConstants.OAUTH_VERSION_2_A);
-			LoginParams loginParams = ((AppMarket) context.getApplicationContext()).getLoginParams();
-			try {
-				response = userAPI.info(oAuth, "json");// 调用QWeiboSDK获取用户信息
-				jsonObject = new JSONObject(new JSONObject(response).getString("data"));
-				loginParams.setTencentUserName(jsonObject.getString("nick"));
-				loginParams.setTencent_oAuth(oAuth);
-				handler.sendEmptyMessage(OAuthV2ImplicitGrant.TENCENT_LOGIN_SUCCESS);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			userAPI.shutdownConnection();
-		}
-		return;
-	}
-
 	public static boolean isTencentLogin(Context context) {
 		LoginParams loginParams = ((AppMarket) context.getApplicationContext()).getLoginParams();
 		String tencent_nick = loginParams.getTencentUserName();
@@ -767,10 +681,6 @@ public class DJMarketUtils implements AConstDefine {
 		return false;
 	}
 
-	
-	
-
-	
 	/**
 	 * 自定义Toast
 	 */
@@ -1429,7 +1339,7 @@ public class DJMarketUtils implements AConstDefine {
 	public static boolean isPhone(Activity context) {
 		return ((context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) < Configuration.SCREENLAYOUT_SIZE_LARGE) || getPhysicalSize(context) < 6;
 	}
-	
+
 	/**
 	 * 格式化文件大小
 	 * 
@@ -1444,5 +1354,400 @@ public class DJMarketUtils implements AConstDefine {
 		return size / 1024 + "KB";
 	}
 
+	/**
+	 * 检查网络连接情况
+	 * 
+	 * @param context
+	 * @return 1: 无网络 2: Wifi 3: GPRS 4: 其他网络
+	 */
+	public static int getNetWorkType(Context context) {
+		// showLog("getNetWorkType");
+		ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+		if (null == networkInfo || !networkInfo.isAvailable()) {
+			return 1;
+		}
+		if (State.CONNECTED == connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState()) {
+			return 2;
+		}
+		if (State.CONNECTED == connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState()) {
+			return 3;
+		}
+		return 4;
+	}
+
+	public static void setSharedPreferences(Context context, String key, int value) {
+		SharedPreferences pref = context.getSharedPreferences(AConstDefine.DONGJI_SHAREPREFERENCES, Context.MODE_PRIVATE);
+		Editor editor = pref.edit();
+		editor.putInt(key, value);
+		editor.commit();
+	}
+
+	public static void setSharedPreferences(Context context, String key, String value) {
+		SharedPreferences pref = context.getSharedPreferences(AConstDefine.DONGJI_SHAREPREFERENCES, Context.MODE_PRIVATE);
+		Editor editor = pref.edit();
+		editor.putString(key, value);
+		editor.commit();
+	}
+
+	public static void setSharedPreferences(Context context, String key, boolean value) {
+		SharedPreferences pref = context.getSharedPreferences(AConstDefine.DONGJI_SHAREPREFERENCES, Context.MODE_PRIVATE);
+		Editor editor = pref.edit();
+		editor.putBoolean(key, value);
+		editor.commit();
+	}
+
+	public static int getSharedPreferences(Context context, String key, int value) {
+		SharedPreferences pref = context.getSharedPreferences(AConstDefine.DONGJI_SHAREPREFERENCES, Context.MODE_PRIVATE);
+		return pref.getInt(key, value);
+	}
+
+	public static String getSharedPreferences(Context context, String key, String value) {
+		SharedPreferences pref = context.getSharedPreferences(AConstDefine.DONGJI_SHAREPREFERENCES, Context.MODE_PRIVATE);
+		return pref.getString(key, value);
+	}
+
+	public static boolean getSharedPreferences(Context context, String key, boolean value) {
+		SharedPreferences pref = context.getSharedPreferences(AConstDefine.DONGJI_SHAREPREFERENCES, Context.MODE_PRIVATE);
+		return pref.getBoolean(key, value);
+	}
+
+	/**
+	 * 
+	 * @param rootPath
+	 *            后面不要带"/"
+	 * @param name
+	 * @param suffix
+	 * @return
+	 */
+	public static String getAbsolutePath(String name, String suffix) {
+		if (createPath(DOWNLOADPATH)) {
+			return DOWNLOADPATH + name + "." + suffix;
+		}
+		return DOWNLOADPATH + name + "." + suffix;
+	}
+
+	public static boolean createPath(String path) {
+		File newfolder = new File(path);
+		if (!newfolder.exists()) {
+			return newfolder.mkdirs();
+		}
+		return true;
+	}
+
+	public static void deleteLastSuffix(String filePath) {
+		System.out.println("deleteSuffix");
+		File file = new File(filePath);
+		String newFilePath = filePath.substring(0, filePath.lastIndexOf("."));
+		file.renameTo(new File(newFilePath));
+	}
+
+	public static String formatString(double value) {
+		DecimalFormat df = new DecimalFormat("##0.00");
+		return df.format(value);
+	}
+
+	public static void deleteFileByApkSaveName(String apkSaveName) {
+		File file = new File(DOWNLOADPATH + apkSaveName + ".apk");
+		file.delete();
+	}
+
+	public static void deleteFileByPackageName(Context context, String packageName) {
+		File directory = new File(DOWNLOADPATH);
+		int versionCode = DJMarketUtils.getInstalledAppVersionCodeByPackageName(context, packageName);
+		if (versionCode != -1) {
+			if (directory.exists()) {
+				File[] files = directory.listFiles();
+				for (int i = 0; i < files.length; i++) {
+					if (files[i].getName().equals(packageName + "_" + versionCode + ".apk")) {
+						files[i].delete();
+						return;
+					}
+				}
+			}
+		}
+	}
+
+	public static void deleteTempFileByApkSaveName(String apkSaveName) {
+		File file = new File(DOWNLOADPATH + apkSaveName + ".apk.temp");
+		file.delete();
+	}
+
+	public static boolean checkBackupApkIsExist(String apkName) {
+		boolean isExist = false;
+		File directory = new File(BACKUPPATH);
+		if (directory.exists()) {
+			File[] files = directory.listFiles();
+			for (int i = 0; i < files.length; i++) {
+				String tempName = files[i].getName();
+				tempName = tempName.substring(0, tempName.length() - 4);
+				if (tempName.equals(apkName)) {
+					isExist = true;
+					break;
+				}
+			}
+		}
+		return isExist;
+
+	}
+
+	public static void deleteNoBackupApk(List<String> apkNames) {
+		boolean isExist;
+		File directory = new File(BACKUPPATH);
+		if (directory.exists()) {
+			File[] files = directory.listFiles();
+			for (int i = 0; i < files.length; i++) {
+				isExist = false;
+				for (int j = 0; j < apkNames.size(); j++) {
+					String tempName = files[i].getName();
+					tempName = tempName.substring(0, tempName.length() - 4);
+					if (tempName.equals(apkNames.get(j))) {
+						isExist = true;
+						break;
+					}
+				}
+				if (!isExist) {
+					files[i].delete();
+				}
+
+			}
+		}
+	}
+
+	public static boolean checkApkIsExist(String apkSaveName) {
+		boolean isExist = false;
+		File directory = new File(DOWNLOADPATH);
+		if (directory.exists()) {
+			File[] files = directory.listFiles();
+			for (int i = 0; i < files.length; i++) {
+				String fileName = files[i].getName();
+				if (fileName.endsWith(".apk")) {
+					fileName = fileName.substring(0, fileName.length() - 4);
+					if (fileName.equals(apkSaveName)) {
+						isExist = true;
+						break;
+					}
+				}
+			}
+		}
+		return isExist;
+
+	}
+
+	public static boolean checkIsDownload(Context context, String apkSaveName) {
+		File directory = new File(DOWNLOADPATH);
+		if (directory.exists()) {
+			File[] files = directory.listFiles();
+			for (int i = 0; i < files.length; i++) {
+				if (files[i].getName().equals(apkSaveName + ".apk")) {
+					return true;
+				}
+			}
+		}
+		return false;
+
+	}
+
+	public static void installApp(Context context, String apkSaveName) {
+		Intent installIntent = new Intent(Intent.ACTION_VIEW);
+		installIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		installIntent.setDataAndType(Uri.fromFile(new File(DOWNLOADPATH + apkSaveName + ".apk")), "application/vnd.android.package-archive");
+		context.startActivity(installIntent);
+	}
+
+	public static void installBackupApp(Context context, String apkName) {
+		if (DJMarketUtils.isRoot()) {
+			DJMarketUtils.rootInstallApp(BACKUPPATH + apkName + ".apk");
+		} else {
+			Intent installIntent = new Intent(Intent.ACTION_VIEW);
+			installIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			installIntent.setDataAndType(Uri.fromFile(new File(BACKUPPATH + apkName + ".apk")), "application/vnd.android.package-archive");
+			context.startActivity(installIntent);
+		}
+	}
+
+	public static boolean isFastDoubleClick(long lastClickTime) {
+		long time = System.currentTimeMillis();
+		long timeD = time - lastClickTime;
+		if (0 < timeD && timeD < 800) {
+			return true;
+		}
+		return false;
+	}
+
+	public static void setNotification(Context context, int id, int count) {
+		NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+		Notification notice = new Notification();
+		notice.icon = R.drawable.icon;
+		RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.layout_notification);
+		int flag = 0;
+		switch (id) {
+		case FLAG_NOTIFICATION_DOWNLOAD:
+			notice.flags = Notification.FLAG_AUTO_CANCEL;
+			remoteViews.setTextViewText(R.id.tvNotificationTitle, context.getString(R.string.notification_tip_download));
+			remoteViews.setTextViewText(R.id.tvNotificationText, count + context.getString(R.string.notification_tip_clickdownloading));
+			flag = 1;
+			break;
+		case FLAG_NOTIFICATION_UPDATE:
+			if (DJMarketUtils.isUpdatePrompt(context)) {
+				notice.flags = Notification.FLAG_AUTO_CANCEL;
+				remoteViews.setTextViewText(R.id.tvNotificationTitle, context.getString(R.string.notification_tip_update));
+				remoteViews.setTextViewText(R.id.tvNotificationText, count + context.getString(R.string.notification_tip_clickupdate));
+				flag = 1;
+			}
+			break;
+		case FLAG_NOTIFICATION_UPDATEING:
+			notice.flags = Notification.FLAG_AUTO_CANCEL;
+			remoteViews.setTextViewText(R.id.tvNotificationTitle, context.getString(R.string.notification_tip_update));
+			remoteViews.setTextViewText(R.id.tvNotificationText, count + context.getString(R.string.notification_tip_clickupdateing));
+			flag = 1;
+			break;
+		case FLAG_NOTIFICATION_WAITINGINSTALL:
+			notice.flags = Notification.FLAG_AUTO_CANCEL;
+			remoteViews.setTextViewText(R.id.tvNotificationTitle, context.getString(R.string.notification_tip_download));
+			remoteViews.setTextViewText(R.id.tvNotificationText, count + context.getString(R.string.notification_tip_clickdownloaded));
+			flag = 1;
+			break;
+		}
+
+		if (flag == 1) {
+			notice.contentView = remoteViews;
+			notice.when = System.currentTimeMillis();
+			Intent intent = new Intent(context, SoftwareManageActivity.class);
+			intent.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+			PendingIntent pendingIntent = PendingIntent.getActivity(context, id, intent, 0);
+			notice.contentIntent = pendingIntent;
+			notificationManager.notify(id, notice);
+		}
+	}
+
+	public static void cancelNotification(Context context, int id) {
+		NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+		if (id == FLAG_NOTIFICATION_CANCELALL) {
+			notificationManager.cancelAll();
+		} else {
+			notificationManager.cancel(id);
+		}
+	}
+
+	public static int startToLocalBackup(Context context, List<BackupItemInfo> backupItemInfos, OnProgressChangeListener mListener) {
+		File fromFile, toFile;
+		String fromFileName;
+		int count = 0;
+		for (int i = 0; i < backupItemInfos.size(); i++) {
+			fromFileName = backupItemInfos.get(i).appName;
+			fromFile = new File(fromFileName);
+			showLog(BACKUPPATH + fromFileName.substring(10, fromFileName.length() - 6) + "_" + backupItemInfos.get(i).appVerCode + ".apk");
+			toFile = new File(BACKUPPATH + fromFileName.substring(10, fromFileName.length() - 6) + "_" + backupItemInfos.get(i).appVerCode + ".apk");
+			if (copyfile(fromFile, toFile) == 1) {
+				count++;
+			}
+			mListener.onProgressChange(fromFile.length());
+		}
+		return count;
+	}
+
+	public static int copyfile(File fromFile, File toFile) {
+		int i = 0;
+		if (!fromFile.exists()) {
+			return i;
+		}
+		if (!fromFile.isFile()) {
+			return i;
+		}
+		if (!fromFile.canRead()) {
+			return i;
+		}
+		if (!toFile.getParentFile().exists()) {
+			toFile.getParentFile().mkdirs();
+		}
+		if (toFile.exists()) {
+			toFile.delete();
+		}
+		try {
+			FileInputStream fosfrom = new FileInputStream(fromFile);
+			FileOutputStream fosto = new FileOutputStream(toFile);
+			byte bt[] = new byte[1024];
+			int c;
+			while ((c = fosfrom.read(bt)) > 0) {
+				fosto.write(bt, 0, c); // 将内容写到新文件当中
+			}
+			fosfrom.close();
+			fosto.close();
+			i = 1;
+		} catch (Exception ex) {
+			showErrorLog(ex.toString());
+		}
+		return i;
+	}
+
+	public static List<InstalledAppInfo> getAllInstallAppInfo(Context context) {
+
+		PackageManager pm = context.getPackageManager();
+		List<PackageInfo> packages = pm.getInstalledPackages(0);
+		List<InstalledAppInfo> list = new ArrayList<InstalledAppInfo>();
+		for (PackageInfo pInfo : packages) {
+
+			InstalledAppInfo installedAppInfo = new InstalledAppInfo();
+			ApplicationInfo info = pInfo.applicationInfo;
+			installedAppInfo.setAppInfo(info);
+			installedAppInfo.setIcon(info.loadIcon(pm));
+			installedAppInfo.setName(info.loadLabel(pm) + "");
+			installedAppInfo.setVersion(pInfo.versionName);
+			installedAppInfo.setVersionCode(pInfo.versionCode);
+			installedAppInfo.setPkgName(info.packageName);
+			// map.put("uninstall", R.drawable.uninstall);
+			// 获取软件大小：通过PackageInfo的applicationInfo的publicSourceDir获得路径，
+			// 再通过该路径创建一个文件new File(String dir)，得到该文件长度除以1024则取得该应用的大小
+			String dir = info.publicSourceDir;
+			int size = Integer.valueOf((int) new File(dir).length());
+			installedAppInfo.setSize(sizeFormat(size));
+			list.add(installedAppInfo);
+
+		}
+
+		return list;
+	}
+
+	public static InstalledAppInfo getInstallAppInfoByPackage(Context context, List<InstalledAppInfo> installedAppInfos, String apkPackageName) {
+		InstalledAppInfo installedAppInfo = new InstalledAppInfo();
+		for (int i = 0; i < installedAppInfos.size(); i++) {
+			if (null != installedAppInfos.get(i)) {
+				if (installedAppInfos.get(i).getPkgName().equals(apkPackageName)) {
+					return installedAppInfos.get(i);
+				}
+			}
+		}
+		return installedAppInfo;
+	}
+
+	public static String sizeFormat(int size) {
+		if ((float) size / 1024 > 1024) {
+			float size_mb = (float) size / 1024 / 1024;
+			return String.format("%.2f", size_mb) + "M";
+		}
+		return size / 1024 + "K";
+	}
+
+	public static String numberFormat(long number) {
+		String numberString = String.valueOf(number);
+		String returnString = "";
+		if (numberString.length() > 4) {
+			returnString = numberString.substring(0, numberString.length() - 4);
+		} else if (numberString.length() == 4) {
+			returnString = numberString.substring(0, 1) + "," + numberString.substring(1, 4);
+		} else {
+			returnString = numberString;
+		}
+		return returnString;
+	}
+
+	private static void showLog(String msg) {
+		Log.d("NetTool", msg);
+	}
+
+	private static void showErrorLog(String msg) {
+		Log.e("NetTool", msg);
+	}
 
 }

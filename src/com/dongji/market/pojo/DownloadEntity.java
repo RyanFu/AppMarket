@@ -16,7 +16,7 @@ import android.os.Parcelable;
 import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.helper.AConstDefine;
-import com.dongji.market.helper.NetTool;
+import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.listener.OnDownloadListener;
 import com.dongji.market.service.DownloadService;
 
@@ -159,7 +159,7 @@ public class DownloadEntity implements Runnable, AConstDefine, Parcelable {
 		randomAccessFile.seek(currentPosition);
 		byte[] data = new byte[1024 * 4];
 		int num = 0;
-		int networkType = NetTool.getNetWorkType(DownloadService.mDownloadService);
+		int networkType = DJMarketUtils.getNetWorkType(DownloadService.mDownloadService);
 		boolean useMobileGprs = false;
 		if (networkType == 3) {
 			useMobileGprs = true;

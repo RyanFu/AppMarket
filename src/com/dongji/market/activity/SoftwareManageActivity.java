@@ -32,7 +32,6 @@ import com.dongji.market.R;
 import com.dongji.market.application.AppMarket;
 import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.DJMarketUtils;
-import com.dongji.market.helper.ShareParams;
 import com.dongji.market.helper.TitleUtil;
 import com.dongji.market.helper.TitleUtil.OnToolBarBlankClickListener;
 import com.dongji.market.widget.HorizontalScrollLayout;
@@ -40,6 +39,11 @@ import com.dongji.market.widget.HorizontalScrollLayout.OnPageChangedListener;
 import com.dongji.market.widget.LoginDialog;
 import com.umeng.analytics.MobclickAgent;
 
+/**
+ * 软件管理页面
+ * @author yvon
+ *
+ */
 public class SoftwareManageActivity extends ActivityGroup implements OnClickListener, OnPageChangedListener, OnToolBarBlankClickListener {
 
 	private ImageView mSlideImageView;
@@ -130,7 +134,7 @@ public class SoftwareManageActivity extends ActivityGroup implements OnClickList
 	
 	private void checkFirstLauncherSoftMove() {
 		SharedPreferences mSharedPreferences = getSharedPreferences(this.getPackageName() + "_temp", Context.MODE_PRIVATE);
-		firstLauncherSoftMove = mSharedPreferences.getBoolean(ShareParams.FIRST_LAUNCHER_SOFT_MOVE, true);
+		firstLauncherSoftMove = mSharedPreferences.getBoolean(AConstDefine.FIRST_LAUNCHER_SOFT_MOVE, true);
 	}
 
 	public boolean is3GDownloadPromptUser() {
@@ -270,7 +274,7 @@ public class SoftwareManageActivity extends ActivityGroup implements OnClickList
 	private void setMaskForSoftMove() {
 		SharedPreferences mSharedPreferences = getSharedPreferences(this.getPackageName() + "_temp", Context.MODE_PRIVATE);
 		SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-		mEditor.putBoolean(ShareParams.FIRST_LAUNCHER_SOFT_MOVE, false);
+		mEditor.putBoolean(AConstDefine.FIRST_LAUNCHER_SOFT_MOVE, false);
 		boolean flag = mEditor.commit();
 		if (flag)
 			firstLauncherSoftMove = false;

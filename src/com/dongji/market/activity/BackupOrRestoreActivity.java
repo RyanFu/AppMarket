@@ -45,10 +45,8 @@ import com.dongji.market.adapter.ChooseToCloudRestoreAdapter;
 import com.dongji.market.application.AppMarket;
 import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.DJMarketUtils;
-import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.helper.DownloadUtils;
 import com.dongji.market.helper.FileLoadTask;
-import com.dongji.market.helper.NetTool;
 import com.dongji.market.pojo.ApkItem;
 import com.dongji.market.pojo.BackupItemInfo;
 import com.dongji.market.pojo.InstalledAppInfo;
@@ -57,8 +55,9 @@ import com.dongji.market.protocol.DataManager;
 
 /**
  * 应用备份和恢复
+ * 
  * @author yvon
- *
+ * 
  */
 public class BackupOrRestoreActivity extends Activity implements AConstDefine, OnCheckedChangeListener {
 	private static final int EVENT_REQUEST_SOFTWARE_LIST = 0;
@@ -99,19 +98,18 @@ public class BackupOrRestoreActivity extends Activity implements AConstDefine, O
 	private boolean btnCheck = false;
 	private CheckBox mCheckBox;
 
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_backuplist);
 		mApp = (AppMarket) getApplication();
-		
+
 		initHandler();
 		initBroadcastReceiver();
 		initDataAndView();
 		startLoad();
 	}
-	
+
 	/**
 	 * 初始化handler
 	 */
@@ -120,7 +118,7 @@ public class BackupOrRestoreActivity extends Activity implements AConstDefine, O
 		handlerThread.start();
 		mHandler = new MyHandler(handlerThread.getLooper());
 	}
-	
+
 	/**
 	 * 注册应用安装、卸载广播
 	 */
@@ -139,24 +137,24 @@ public class BackupOrRestoreActivity extends Activity implements AConstDefine, O
 	private void initDataAndView() {
 		mCheckBox = (CheckBox) findViewById(R.id.allcheckbox);
 		mCheckBox.setOnCheckedChangeListener(this);
-		mCheckBox.setOnClickListener(new OnClickListener() {//checkbox按钮监听
+		mCheckBox.setOnClickListener(new OnClickListener() {// checkbox按钮监听
 
-			@Override
-			public void onClick(View v) {
-				btnCheck = true;
-				if (mCheckBox.isChecked()) {
-					onCheckedChanged(mCheckBox, true);
-				} else {
-					onCheckedChanged(mCheckBox, false);
-				}
-			}
-		});
+					@Override
+					public void onClick(View v) {
+						btnCheck = true;
+						if (mCheckBox.isChecked()) {
+							onCheckedChanged(mCheckBox, true);
+						} else {
+							onCheckedChanged(mCheckBox, false);
+						}
+					}
+				});
 		tvTitleBAndR = (TextView) findViewById(R.id.tvTitleBAndR);
 		btnBAndR = (Button) findViewById(R.id.btnBAndR);
 		lvBackupList = (ListView) findViewById(R.id.lvBackupList);
 		tvNoAppTips = (TextView) findViewById(R.id.tvNoAppTips);
 		flag = getIntent().getIntExtra(FLAG_ACTIVITY_BANDR, 0);
-		if (flag == AConstDefine.ACTIVITY_RESTORE || flag == AConstDefine.ACTIVITY_CLOUD_RESTORE) {//如果是本地恢复或者是云恢复
+		if (flag == AConstDefine.ACTIVITY_RESTORE || flag == AConstDefine.ACTIVITY_CLOUD_RESTORE) {// 如果是本地恢复或者是云恢复
 			tvTitleBAndR.setText(R.string.title_choosetorestore);
 			btnBAndR.setText(R.string.backgroup_restore);
 			tvNoAppTips.setText(R.string.noRestoreApp);
@@ -167,22 +165,22 @@ public class BackupOrRestoreActivity extends Activity implements AConstDefine, O
 			public void onClick(View v) {
 				switch (flag) {
 				case ACTIVITY_BACKUP:
-					mHandler.sendEmptyMessage(EVENT_LOCAL_BACKUP);//本地备份
+					mHandler.sendEmptyMessage(EVENT_LOCAL_BACKUP);// 本地备份
 					break;
 				case ACTIVITY_RESTORE:
-					mHandler.sendEmptyMessage(EVENT_LOCAL_RESTORE);//本地恢复
+					mHandler.sendEmptyMessage(EVENT_LOCAL_RESTORE);// 本地恢复
 					break;
-				case ACTIVITY_CLOUD_BACKUP://云备份
+				case ACTIVITY_CLOUD_BACKUP:// 云备份
 					onClickCloudBackup();
 					break;
-				case ACTIVITY_CLOUD_RESTORE://云恢复
+				case ACTIVITY_CLOUD_RESTORE:// 云恢复
 					onClickCloudRestore();
 					break;
 				}
 			}
 		});
 	}
-	
+
 	/**
 	 * 开始加载数据
 	 */
@@ -196,22 +194,23 @@ public class BackupOrRestoreActivity extends Activity implements AConstDefine, O
 			public boolean onTouch(View v, MotionEvent event) {
 				if (mLoadingProgressBar.getVisibility() == View.GONE) {
 					setPreLoading();
-					mHandler.sendEmptyMessage(EVENT_CLOUND_RESTORE);//云恢复消息
+					mHandler.sendEmptyMessage(EVENT_CLOUND_RESTORE);// 云恢复消息
 				}
 				return false;
 			}
 		});
-		if (flag == ACTIVITY_CLOUD_RESTORE) {//如果是云恢复则发送云恢复消息
+		if (flag == ACTIVITY_CLOUD_RESTORE) {// 如果是云恢复则发送云恢复消息
 			mHandler.sendEmptyMessage(EVENT_CLOUND_RESTORE);
-		} else {//其它则先获取软件列表
+		} else {// 其它则先获取软件列表
 			mHandler.sendEmptyMessage(EVENT_REQUEST_SOFTWARE_LIST);
 		}
 	}
-	
+
 	/**
 	 * 消息处理
+	 * 
 	 * @author luonian
-	 *
+	 * 
 	 */
 	class MyHandler extends Handler {
 
@@ -226,7 +225,7 @@ public class BackupOrRestoreActivity extends Activity implements AConstDefine, O
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
-						if (chooseToBackupAdapter == null) {//初始化选择adapter
+						if (chooseToBackupAdapter == null) {// 初始化选择adapter
 							chooseToBackupAdapter = new ChooseToBackupAdapter(BackupOrRestoreActivity.this, new ArrayList<InstalledAppInfo>(), mHandler);
 							lvBackupList.setAdapter(chooseToBackupAdapter);
 						}
@@ -253,12 +252,12 @@ public class BackupOrRestoreActivity extends Activity implements AConstDefine, O
 
 				});
 				break;
-			case EVENT_LOCAL_BACKUP://本地备份
+			case EVENT_LOCAL_BACKUP:// 本地备份
 				onClickBackup();
 				break;
-			case EVENT_CLOUND_BACKUP://云备份
+			case EVENT_CLOUND_BACKUP:// 云备份
 				break;
-			case EVENT_CLOUND_RESTORE://云恢复
+			case EVENT_CLOUND_RESTORE:// 云恢复
 				DataManager dataManager = DataManager.newInstance();
 				ArrayList<ApkItem> apkItems = null;
 				try {
@@ -287,7 +286,7 @@ public class BackupOrRestoreActivity extends Activity implements AConstDefine, O
 					sendEmptyMessage(EVENT_LOADED);
 				}
 				break;
-			case EVENT_LOCAL_BACKUPRESULT://本地备份结果
+			case EVENT_LOCAL_BACKUPRESULT:// 本地备份结果
 				PackageManager pm = getPackageManager();
 				ApplicationInfo info;
 				for (int i = 0; i < backupItemInfos.size(); i++) {
@@ -307,7 +306,7 @@ public class BackupOrRestoreActivity extends Activity implements AConstDefine, O
 					}
 				});
 				showNotification(R.drawable.icon, getResources().getString(R.string.local_backup), getResources().getString(R.string.local_backuping));
-				NetTool.startToLocalBackup(BackupOrRestoreActivity.this, backupItemInfos, mOnProgressChangeListener);
+				DJMarketUtils.startToLocalBackup(BackupOrRestoreActivity.this, backupItemInfos, mOnProgressChangeListener);
 
 				runOnUiThread(new Runnable() {
 					public void run() {
@@ -317,10 +316,10 @@ public class BackupOrRestoreActivity extends Activity implements AConstDefine, O
 				});
 
 				break;
-			case EVENT_LOCAL_RESTORE://本地恢复
+			case EVENT_LOCAL_RESTORE:// 本地恢复
 				onClickRestore();
 				break;
-			case EVENT_CHECKCHANGE://检查改变
+			case EVENT_CHECKCHANGE:// 检查改变
 				if (null == chooseToBackupAdapter) {
 					btnCheck = false;
 					List<Integer> checkdList = chooseToCloudRestoreAdapter.getCheckdList();
@@ -332,7 +331,7 @@ public class BackupOrRestoreActivity extends Activity implements AConstDefine, O
 								checkCount++;
 							}
 						}
-						if (checkCount == checkdList.size()) {//判断是否选择了全部，如果是则选中顶部框
+						if (checkCount == checkdList.size()) {// 判断是否选择了全部，如果是则选中顶部框
 							isAll = true;
 						} else {
 							isAll = false;
@@ -381,7 +380,7 @@ public class BackupOrRestoreActivity extends Activity implements AConstDefine, O
 	 */
 	private void onClickBackup() {
 		if (null != chooseToBackupAdapter) {
-			List<Integer> checkFlag = chooseToBackupAdapter.getCheckdList();//获取需备份的应用列表
+			List<Integer> checkFlag = chooseToBackupAdapter.getCheckdList();// 获取需备份的应用列表
 			showLog(null == checkFlag ? "null" : ("not null" + checkFlag.size()));
 			if (null == checkFlag || checkFlag.size() == 0) {
 				showMyToast(R.string.not_backup);
@@ -403,7 +402,7 @@ public class BackupOrRestoreActivity extends Activity implements AConstDefine, O
 					apkName = installedAppInfo.getPkgName() + "_" + installedAppInfo.getVersion();
 					totalBackupSize += DJMarketUtils.sizeFromMToLong(installedAppInfo.getSize());
 					nameList.add(apkName);
-					if (!NetTool.checkBackupApkIsExist(apkName)) {
+					if (!DJMarketUtils.checkBackupApkIsExist(apkName)) {
 						isBakcup = true;
 						backupItemInfo = new BackupItemInfo();
 						backupItemInfo.appName = installedAppInfo.getPkgName();
@@ -416,7 +415,7 @@ public class BackupOrRestoreActivity extends Activity implements AConstDefine, O
 				showMyToast(R.string.not_select_backup);
 				return;
 			}
-			NetTool.deleteNoBackupApk(nameList);
+			DJMarketUtils.deleteNoBackupApk(nameList);
 			if (isBakcup) {
 				if (!DJMarketUtils.isSdcardExists()) {
 					showMyToast(R.string.nosdcardtobackup);
@@ -461,7 +460,7 @@ public class BackupOrRestoreActivity extends Activity implements AConstDefine, O
 						String apkPath = installedAppInfo.getPkgName() + "_" + installedAppInfo.getVersion();
 						Intent installIntent = new Intent(Intent.ACTION_VIEW);
 						installIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-						installIntent.setDataAndType(Uri.fromFile(new File(NetTool.BACKUPPATH + apkPath + ".apk")), "application/vnd.android.package-archive");
+						installIntent.setDataAndType(Uri.fromFile(new File(DJMarketUtils.BACKUPPATH + apkPath + ".apk")), "application/vnd.android.package-archive");
 						startActivity(installIntent);
 					}
 				}
@@ -614,7 +613,7 @@ public class BackupOrRestoreActivity extends Activity implements AConstDefine, O
 		}
 		return super.dispatchKeyEvent(event);
 	}
-	
+
 	/**
 	 * 结束当前activity
 	 */
@@ -624,19 +623,17 @@ public class BackupOrRestoreActivity extends Activity implements AConstDefine, O
 		BackupOrRestoreActivity.this.finish();
 	}
 
-	
 	private void setPreLoading() {
 		mLoadingView.setVisibility(View.VISIBLE);
 		mLoadingProgressBar.setVisibility(View.VISIBLE);
 		mLoadingTextView.setText(R.string.loading_txt);
 	}
 
-	
-
 	/**
 	 * 应用安装卸载广播接收器
+	 * 
 	 * @author luonian
-	 *
+	 * 
 	 */
 	class MyBroadcastReceiver extends BroadcastReceiver {
 
@@ -689,7 +686,6 @@ public class BackupOrRestoreActivity extends Activity implements AConstDefine, O
 	private void showLog(String msg) {
 		Log.d("BackupOrRestoreActivity", msg);
 	}
-	
 
 	public interface OnProgressChangeListener {
 		void onProgressChange(long progress);
@@ -731,9 +727,9 @@ public class BackupOrRestoreActivity extends Activity implements AConstDefine, O
 		}
 	}
 
-	
 	/**
 	 * 通知栏通知备份
+	 * 
 	 * @param icon
 	 * @param tickerText
 	 * @param title

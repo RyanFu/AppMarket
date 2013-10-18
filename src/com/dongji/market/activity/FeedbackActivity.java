@@ -32,6 +32,11 @@ import com.dongji.market.protocol.DataManager;
 import com.dongji.market.receiver.CommonReceiver;
 import com.umeng.analytics.MobclickAgent;
 
+/**
+ * 反馈界面
+ * @author yvon
+ *
+ */
 public class FeedbackActivity extends Activity {
 
 	private EditText mContentET, mContactET;

@@ -148,9 +148,9 @@ public class DownloadUtils implements AConstDefine {
 				count--;
 			}
 			if (count > 0) {//通知栏提示
-				NetTool.setNotification(context, 1, count);
+				DJMarketUtils.setNotification(context, 1, count);
 			} else {//取消提示
-				NetTool.cancelNotification(context, 1);
+				DJMarketUtils.cancelNotification(context, 1);
 			}
 		}
 	}
@@ -548,9 +548,9 @@ public class DownloadUtils implements AConstDefine {
 				}
 			}
 			if (count > 0) {
-				NetTool.setNotification(context, 2, count);
+				DJMarketUtils.setNotification(context, 2, count);
 			} else {
-				NetTool.cancelNotification(context, 2);
+				DJMarketUtils.cancelNotification(context, 2);
 			}
 		}
 	}
@@ -570,9 +570,9 @@ public class DownloadUtils implements AConstDefine {
 			}
 		}
 		if (count > 0) {
-			NetTool.setNotification(context, 2, count);
+			DJMarketUtils.setNotification(context, 2, count);
 		} else {
-			NetTool.cancelNotification(context, 2);
+			DJMarketUtils.cancelNotification(context, 2);
 		}
 	}
 
@@ -607,14 +607,14 @@ public class DownloadUtils implements AConstDefine {
 				updatingCount--;
 			}
 			if (updateCount > 0) {
-				NetTool.setNotification(context, 2, updateCount);
+				DJMarketUtils.setNotification(context, 2, updateCount);
 			} else {
-				NetTool.cancelNotification(context, 2);
+				DJMarketUtils.cancelNotification(context, 2);
 			}
 			if (updatingCount > 0) {
-				NetTool.setNotification(context, 3, updatingCount);
+				DJMarketUtils.setNotification(context, 3, updatingCount);
 			} else {
-				NetTool.cancelNotification(context, 3);
+				DJMarketUtils.cancelNotification(context, 3);
 			}
 		}
 	}
@@ -644,24 +644,24 @@ public class DownloadUtils implements AConstDefine {
 				}
 			}
 			if (downloadCount > 0) {
-				NetTool.setNotification(context, 1, downloadCount);
+				DJMarketUtils.setNotification(context, 1, downloadCount);
 			} else {
-				NetTool.cancelNotification(context, 1);
+				DJMarketUtils.cancelNotification(context, 1);
 			}
 			if (updateCount > 0) {
-				NetTool.setNotification(context, 2, updateCount);
+				DJMarketUtils.setNotification(context, 2, updateCount);
 			} else {
-				NetTool.cancelNotification(context, 2);
+				DJMarketUtils.cancelNotification(context, 2);
 			}
 			if (updatingCount > 0) {
-				NetTool.setNotification(context, 3, updatingCount);
+				DJMarketUtils.setNotification(context, 3, updatingCount);
 			} else {
-				NetTool.cancelNotification(context, 3);
+				DJMarketUtils.cancelNotification(context, 3);
 			}
 			if (completeCount > 0) {
-				NetTool.setNotification(context, 5, completeCount);
+				DJMarketUtils.setNotification(context, 5, completeCount);
 			} else {
-				NetTool.cancelNotification(context, 5);
+				DJMarketUtils.cancelNotification(context, 5);
 			}
 		}
 	}

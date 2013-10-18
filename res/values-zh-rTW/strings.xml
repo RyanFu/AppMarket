@@ -422,8 +422,6 @@
     <string name="update_time_txt">更新時間：</string>
     
     <!-- 分享 -->
-   	<string name="share_custom">自定義分享</string>
-    <string name="share_system">系統自帶分享</string>
     <string name="weixin">微信</string>
     <string name="pengyouquan">朋友圈</string>
     <string name="noweixin">您還未安裝微信，趕緊點擊去安裝體驗吧~還可以分享到屬於自己的朋友圈</string>

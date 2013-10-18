@@ -35,9 +35,6 @@ import com.dongji.market.database.MarketDatabase.SearchHistory;
 import com.dongji.market.database.MarketDatabase.Setting_Service;
 import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.DJMarketUtils;
-import com.dongji.market.helper.DJMarketUtils;
-import com.dongji.market.helper.AConstDefine;
-import com.dongji.market.helper.ShareParams;
 import com.dongji.market.helper.TitleUtil;
 import com.dongji.market.helper.TitleUtil.OnToolBarBlankClickListener;
 import com.dongji.market.helper.TitleUtil.SaveSettingListener;
@@ -47,6 +44,12 @@ import com.dongji.market.widget.SlipSwitch;
 import com.dongji.market.widget.SlipSwitch.OnSwitchListener;
 import com.umeng.analytics.MobclickAgent;
 
+/**
+ * 设置界面
+ * 
+ * @author yvon
+ * 
+ */
 public class Setting_Activity extends Activity implements OnToolBarBlankClickListener {
 
 	// Body
@@ -112,10 +115,10 @@ public class Setting_Activity extends Activity implements OnToolBarBlankClickLis
 
 	private void checkFirstLauncherSetting() {
 		SharedPreferences mSharedPreferences = getSharedPreferences(this.getPackageName() + "_temp", Context.MODE_PRIVATE);
-		boolean firstLaunch = mSharedPreferences.getBoolean(ShareParams.FIRST_LAUNCHER_SETTING2, true);
+		boolean firstLaunch = mSharedPreferences.getBoolean(AConstDefine.FIRST_LAUNCHER_SETTING2, true);
 		if (firstLaunch) {
 			SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-			mEditor.putBoolean(ShareParams.FIRST_LAUNCHER_SETTING2, false);
+			mEditor.putBoolean(AConstDefine.FIRST_LAUNCHER_SETTING2, false);
 			mEditor.commit();
 			mMaskView = findViewById(R.id.settingmasklayout);
 			mMaskView.setVisibility(View.VISIBLE);

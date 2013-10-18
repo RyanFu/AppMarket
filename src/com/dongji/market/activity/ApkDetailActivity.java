@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.myjson.JSONException;
 
-import android.R.integer;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.graphics.Bitmap;
@@ -31,12 +30,10 @@ import android.view.View.OnTouchListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.RatingBar;
 import android.widget.ScrollView;
@@ -51,10 +48,7 @@ import com.dongji.market.cache.FileService;
 import com.dongji.market.database.MarketDatabase;
 import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.DJMarketUtils;
-import com.dongji.market.helper.DJMarketUtils;
-import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.DownloadUtils;
-import com.dongji.market.helper.NetTool;
 import com.dongji.market.helper.TitleUtil;
 import com.dongji.market.helper.TitleUtil.OnToolBarBlankClickListener;
 import com.dongji.market.pojo.ApkItem;
@@ -196,26 +190,26 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 		ivdongji_head = (ImageView) findViewById(R.id.ivdongji_head);
 
 		initLoadingView();
-		
+
 		if (!isPhone) {
 			adapterTablet();
 		}
 	}
 
 	private void adapterTablet() {
-//		int screenHeight = DJMarketUtils.getScreenSize(this).heightPixels;
-//		int screenWidth = DJMarketUtils.getScreenSize(this).widthPixels;
-//		LinearLayout.LayoutParams linearParams;
-//		FrameLayout.LayoutParams frameParams;
-//		RelativeLayout.LayoutParams relativeParams;
-//		int actualHeight;
-//		int actualWidth;
-//		int leftMargin;
-//		int rightMargin;
-//		
-//		int padding_10 = (int) (screenWidth * 0.0278);
-//		llLikeApp.setPadding(padding_10, padding_10, padding_10, padding_10);
-		
+		// int screenHeight = DJMarketUtils.getScreenSize(this).heightPixels;
+		// int screenWidth = DJMarketUtils.getScreenSize(this).widthPixels;
+		// LinearLayout.LayoutParams linearParams;
+		// FrameLayout.LayoutParams frameParams;
+		// RelativeLayout.LayoutParams relativeParams;
+		// int actualHeight;
+		// int actualWidth;
+		// int leftMargin;
+		// int rightMargin;
+		//
+		// int padding_10 = (int) (screenWidth * 0.0278);
+		// llLikeApp.setPadding(padding_10, padding_10, padding_10, padding_10);
+
 	}
 
 	private void initLoadingView() {
@@ -809,7 +803,7 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 		float rating = getRating();
 		detail_head_RatingBar.setRating(rating);
 
-		tvApkSize.setText(NetTool.sizeFormat((int) apkItem.fileSize));
+		tvApkSize.setText(DJMarketUtils.sizeFormat((int) apkItem.fileSize));
 		if (null == apkItem.updateDate || apkItem.updateDate.trim().equals("")) {
 			tvApkPublishDate.setText(R.string.none);
 		} else {
@@ -1096,8 +1090,8 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 			tvOldVersionVersion.setText("V" + historyApkItems[i].versionName);
 			ivOldVersionType.setImageResource(getOldVersionApkTypeImage(historyApkItems[i].appType));
 			tvOldVersionPublishDate.setText(historyApkItems[i].updateDate);
-			tvOldVersionApkSize.setText(NetTool.sizeFormat((int) historyApkItems[i].appSize));
-			tvOldVersionInstallCount.setText(NetTool.numberFormat(historyApkItems[i].downloadNum));
+			tvOldVersionApkSize.setText(DJMarketUtils.sizeFormat((int) historyApkItems[i].appSize));
+			tvOldVersionInstallCount.setText(DJMarketUtils.numberFormat(historyApkItems[i].downloadNum));
 			itemOldVersionView.setClickable(true);
 			ApkItem tempApkItem = new ApkItem();
 			tempApkItem.category = historyApkItems[i].category;
@@ -1154,8 +1148,8 @@ public class ApkDetailActivity extends PublicActivity implements AConstDefine, O
 			padding_10 = DJMarketUtils.dip2px(this, 10);
 		} else {
 			int screenWidth = DJMarketUtils.getScreenSize(this).widthPixels;
-			padding_10 = (int)(screenWidth*0.0278);
-			columnWidth=(int)((screenWidth-padding_10*10)/8);
+			padding_10 = (int) (screenWidth * 0.0278);
+			columnWidth = (int) ((screenWidth - padding_10 * 10) / 8);
 		}
 
 		LayoutParams params = new LayoutParams(likeApkItems.size() * columnWidth + likeApkItems.size() * padding_10, columnWidth + padding_10 * 4);

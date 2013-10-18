@@ -29,7 +29,13 @@ import com.dongji.market.helper.FileLoadTask;
 import com.dongji.market.pojo.InstalledAppInfo;
 import com.dongji.market.widget.ScrollListView;
 
-public class SoftwareMove_list_Activity extends Activity implements OnClickListener{
+/**
+ * 软件搬家页
+ * 
+ * @author yvon
+ * 
+ */
+public class SoftwareMove_list_Activity extends Activity implements OnClickListener {
 
 	// TODO 这里与云备份那边的标志相冲突。最好写在一起
 	public static final int FLAG_SDCARD = 7;
@@ -60,7 +66,7 @@ public class SoftwareMove_list_Activity extends Activity implements OnClickListe
 		mListView = (ScrollListView) findViewById(R.id.list);
 		tvNoAppTips = (TextView) findViewById(R.id.tvNoAppTips);
 		mLoadingView = findViewById(R.id.loadinglayout);
-		
+
 		initBottomButton();
 		if (isCanMove(SoftwareMove_list_Activity.this)) {
 			initHandler();
@@ -75,8 +81,7 @@ public class SoftwareMove_list_Activity extends Activity implements OnClickListe
 			tvNoAppTips.setVisibility(View.VISIBLE);
 		}
 	}
-	
-	
+
 	private void initBottomButton() {
 		llBottomBtn = (LinearLayout) findViewById(R.id.llBottomBtn);
 		rbPhonecard = (RadioButton) findViewById(R.id.rbPhonecard);
@@ -85,7 +90,7 @@ public class SoftwareMove_list_Activity extends Activity implements OnClickListe
 		rbSdcard.setOnClickListener(this);
 		rbPhonecard.setChecked(true);
 	}
-	
+
 	public static boolean isCanMove(Context context) {
 		if ((Build.VERSION.SDK_INT > 7) && (Build.VERSION.SDK_INT < 11)) {
 			return true;
@@ -98,13 +103,13 @@ public class SoftwareMove_list_Activity extends Activity implements OnClickListe
 		}
 		return false;
 	}
-	
+
 	private void initHandler() {
 		HandlerThread handlerThread = new HandlerThread("handler");
 		handlerThread.start();
 		mHandler = new MyHandler(handlerThread.getLooper());
 	}
-	
+
 	class MyHandler extends Handler {
 
 		public MyHandler(Looper looper) {
@@ -152,11 +157,11 @@ public class SoftwareMove_list_Activity extends Activity implements OnClickListe
 			}
 		}
 	}
-	
+
 	private void startLoad() {
 		mHandler.sendEmptyMessage(EVENT_REQUEST_SOFTWARE_LIST);
 	}
-	
+
 	private void registerAllReceiver() {
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(AConstDefine.BROADCAST_SYS_ACTION_APPREMOVE);
@@ -220,7 +225,7 @@ public class SoftwareMove_list_Activity extends Activity implements OnClickListe
 		}
 		super.onDestroy();
 	}
-	
+
 	class MyBroadcastReceiver extends BroadcastReceiver {
 
 		@Override

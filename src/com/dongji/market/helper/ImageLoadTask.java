@@ -39,8 +39,7 @@ public class ImageLoadTask extends AsyncTask<Void, Void, Void> {
 
 		if (null != uninstallAdapter) {
 			for (int i = 0; i < uninstallAdapter.getCount(); i++) {
-				InstalledAppInfo info = (InstalledAppInfo) uninstallAdapter
-						.getItem(i);
+				InstalledAppInfo info = (InstalledAppInfo) uninstallAdapter.getItem(i);
 				Drawable icon = getIcon(info.getAppInfo());// 获取软件图标过程
 				if (icon != null) {
 					info.setIcon(icon);// 将取到的图标存入map
@@ -49,8 +48,7 @@ public class ImageLoadTask extends AsyncTask<Void, Void, Void> {
 			}
 		} else if (null != chooseToBackupAdapter) {
 			for (int i = 0; i < chooseToBackupAdapter.getCount(); i++) {
-				InstalledAppInfo info = (InstalledAppInfo) chooseToBackupAdapter
-						.getItem(i);
+				InstalledAppInfo info = (InstalledAppInfo) chooseToBackupAdapter.getItem(i);
 				Drawable icon = null;
 				if (info.getAppInfo() != null) {
 					icon = getIcon(info.getAppInfo());// 获取软件图标过程
@@ -62,8 +60,7 @@ public class ImageLoadTask extends AsyncTask<Void, Void, Void> {
 			}
 		} else if (null != softwareMoveAdapter) {
 			for (int i = 0; i < softwareMoveAdapter.getCount(); i++) {
-				InstalledAppInfo info = (InstalledAppInfo) softwareMoveAdapter
-						.getItem(i);
+				InstalledAppInfo info = (InstalledAppInfo) softwareMoveAdapter.getItem(i);
 				Drawable icon = null;
 				if (info.getAppInfo() != null) {
 					icon = getIcon(info.getAppInfo());// 获取软件图标过程

@@ -19,7 +19,7 @@ import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.DownloadUtils;
-import com.dongji.market.helper.NetTool;
+import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.pojo.ApkItem;
 import com.dongji.market.pojo.DownloadEntity;
 
@@ -83,7 +83,7 @@ public class ListSingleTemplateAdapter extends ListBaseAdapter implements AConst
 		final ApkItem item = list.get(position);
 		holder.mAppNameTextView.setText(item.appName);
 		holder.mAppOwnerTextView.setText(item.company);
-		holder.mAppSizeTextView.setText(context.getString(R.string.app_size) + NetTool.sizeFormat((int) item.fileSize));
+		holder.mAppSizeTextView.setText(context.getString(R.string.app_size) + DJMarketUtils.sizeFormat((int) item.fileSize));
 		holder.mAppInstallNumTextView.setText(context.getString(R.string.detail_installCount2) + DJMarketUtils.convertionInstallNumber(context, item.downloadNum));
 		setLanguageType(item.language, holder.mAppLanguageImageView, holder.mAppLanguageMultiImageView);
 		displayApkStatus(holder.mInstallTextView, item.status);

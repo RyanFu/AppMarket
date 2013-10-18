@@ -38,13 +38,18 @@ import com.dongji.market.adapter.GuessLikeAdapter;
 import com.dongji.market.adapter.SearchResultAdapter;
 import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.DJMarketUtils;
-import com.dongji.market.helper.NetTool;
 import com.dongji.market.helper.TitleUtil;
 import com.dongji.market.helper.TitleUtil.OnToolBarBlankClickListener;
 import com.dongji.market.pojo.ApkItem;
 import com.dongji.market.protocol.DataManager;
 import com.dongji.market.widget.ScrollListView;
 
+/**
+ * 搜索结果页
+ * 
+ * @author yvon
+ * 
+ */
 public class Search_Result_Activity extends PublicActivity implements OnScrollListener, OnToolBarBlankClickListener {
 
 	private static final int EVENT_REQUEST_SEARCH_LIST = 2;
@@ -201,12 +206,12 @@ public class Search_Result_Activity extends PublicActivity implements OnScrollLi
 				break;
 			case EVENT_REQUEST_GUESS_LIST:
 				try {
-					String top50time = NetTool.getSharedPreferences(Search_Result_Activity.this, AConstDefine.SHARE_GETTOP50TIME, "");
+					String top50time = DJMarketUtils.getSharedPreferences(Search_Result_Activity.this, AConstDefine.SHARE_GETTOP50TIME, "");
 					Calendar cal = Calendar.getInstance();
 					String dateString = "" + cal.get(Calendar.YEAR) + (cal.get(Calendar.MONTH) + 1) + cal.get(Calendar.DATE);
 					if (null == Search_Activity.apkItems || !top50time.equals(dateString)) {
 						Search_Activity.apkItems = DataManager.newInstance().getTop50();
-						NetTool.setSharedPreferences(Search_Result_Activity.this, AConstDefine.SHARE_GETTOP50TIME, dateString);
+						DJMarketUtils.setSharedPreferences(Search_Result_Activity.this, AConstDefine.SHARE_GETTOP50TIME, dateString);
 					}
 				} catch (IOException e) {
 					e.printStackTrace();

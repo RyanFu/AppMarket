@@ -17,13 +17,17 @@ import android.text.TextUtils;
 import com.dongji.market.application.AppMarket;
 import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.DJMarketUtils;
-import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.pojo.ApkItem;
 import com.dongji.market.pojo.DownloadEntity;
 import com.dongji.market.pojo.HistoryApkItem;
 import com.dongji.market.service.DownloadService;
 import com.umeng.analytics.MobclickAgent;
 
+/**
+ * baseActivity基类
+ * @author yvon
+ *
+ */
 public abstract class PublicActivity extends Activity {
 	protected final static int INSTALL_APP_DONE = 1;
 	protected final static int UNINSTALL_APP_DONE = 2;

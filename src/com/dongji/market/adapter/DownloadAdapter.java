@@ -34,7 +34,7 @@ import com.dongji.market.cache.FileService;
 import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.DownloadUtils;
-import com.dongji.market.helper.NetTool;
+import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.pojo.ApkItem;
 import com.dongji.market.pojo.DownloadEntity;
 import com.dongji.market.service.DownloadService;
@@ -636,10 +636,10 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements AConst
 		holder.mContentLayout.setVisibility(View.VISIBLE);
 		holder.mAppNameTextView.setText(entity.appName);
 		holder.mAppVersionTextView.setVisibility(View.VISIBLE);
-		holder.mAppVersionTextView.setText("V" + entity.installedVersionName + "/" + NetTool.sizeFormat((int) entity.installedFileLength));
+		holder.mAppVersionTextView.setText("V" + entity.installedVersionName + "/" + DJMarketUtils.sizeFormat((int) entity.installedFileLength));
 		holder.mBottomTextView.setVisibility(View.VISIBLE);
 
-		holder.mBottomTextView.setText("V" + entity.versionName + "/" + NetTool.sizeFormat((int) entity.fileLength));
+		holder.mBottomTextView.setText("V" + entity.versionName + "/" + DJMarketUtils.sizeFormat((int) entity.fileLength));
 
 		setButtonStatus(entity, holder);
 
@@ -700,7 +700,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements AConst
 		holder.mCenterTextView.setVisibility(View.GONE);
 		holder.mProgressBar.setVisibility(View.GONE);
 		holder.mBottomTextView.setVisibility(View.VISIBLE);
-		holder.mBottomTextView.setText("V" + entity.versionName + "/" + NetTool.sizeFormat((int) entity.fileLength));
+		holder.mBottomTextView.setText("V" + entity.versionName + "/" + DJMarketUtils.sizeFormat((int) entity.fileLength));
 
 		setButtonStatus(entity, holder);
 
@@ -733,7 +733,7 @@ public class DownloadAdapter extends BaseExpandableListAdapter implements AConst
 
 		holder.mAppVersionTextView.setVisibility(View.GONE);
 
-		holder.mBottomTextView.setText("V" + entity.installedVersionName + "/" + NetTool.formatString(entity.installedFileLength / 1048576.0) + "M");
+		holder.mBottomTextView.setText("V" + entity.installedVersionName + "/" + DJMarketUtils.formatString(entity.installedFileLength / 1048576.0) + "M");
 		holder.mProgressBar.setVisibility(View.GONE);
 
 		setButtonStatus(entity, holder);

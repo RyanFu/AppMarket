@@ -33,6 +33,11 @@ import com.dongji.market.protocol.DataManager;
 import com.dongji.market.widget.CustomProgressDialog;
 import com.umeng.analytics.MobclickAgent;
 
+/**
+ * 注册页面
+ * @author yvon
+ *
+ */
 public class Register_Activity extends Activity implements OnClickListener {
 
 	private EditText mEmailET;

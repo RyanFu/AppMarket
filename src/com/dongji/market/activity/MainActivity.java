@@ -36,11 +36,7 @@ import com.dongji.market.application.AppMarket;
 import com.dongji.market.database.MarketDatabase.Setting_Service;
 import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.DJMarketUtils;
-import com.dongji.market.helper.DJMarketUtils;
-import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.DownloadUtils;
-import com.dongji.market.helper.NetTool;
-import com.dongji.market.helper.ShareParams;
 import com.dongji.market.helper.TitleUtil;
 import com.dongji.market.helper.TitleUtil.OnToolBarBlankClickListener;
 import com.dongji.market.pojo.LoginParams;
@@ -52,6 +48,12 @@ import com.dongji.market.widget.HorizontalScrollLayout;
 import com.dongji.market.widget.HorizontalScrollLayout.OnPageChangedListener;
 import com.umeng.analytics.MobclickAgent;
 
+/**
+ * 主界面
+ * 
+ * @author yvon
+ * 
+ */
 public class MainActivity extends ActivityGroup implements OnClickListener, OnPageChangedListener, AConstDefine, OnToolBarBlankClickListener {
 
 	private static final boolean DEBUG = true;
@@ -95,7 +97,7 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		mApp = (AppMarket) getApplication();
 		boolean flag = DJMarketUtils.isSaveFlow(this);// 是否开启流量模式
 		mApp.setRemoteImage(!flag);// 是否下载图片
-		mApp.setIsPhone(DJMarketUtils.isPhone(this));//判断是不是手机
+		mApp.setIsPhone(DJMarketUtils.isPhone(this));// 判断是不是手机
 
 		checkFirstLaunch();
 		if (DEBUG)
@@ -113,7 +115,7 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 	 */
 	private void checkFirstLaunch() {
 		SharedPreferences mSharedPreferences = getSharedPreferences(this.getPackageName() + "_temp", Context.MODE_PRIVATE);
-		boolean firstLaunch = mSharedPreferences.getBoolean(ShareParams.FIRST_LAUNCHER, true);
+		boolean firstLaunch = mSharedPreferences.getBoolean(AConstDefine.FIRST_LAUNCHER, true);
 		if (firstLaunch) {
 			boolean hasShortcut = checkExistsShortcut();
 			if (!hasShortcut) {
@@ -161,7 +163,7 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		shortcut.putExtra("duplicate", false); // 不允许重复创建
 		// 指定当前的Activity为快捷方式启动的对象: com.everest.video.VideoPlayer
 		// 注意: ComponentName的第二个参数必须加上点号(.)，否则快捷方式无法启动相应程
-		ComponentName comp = new ComponentName(this.getPackageName(), ShareParams.LAUNCHER_STR);
+		ComponentName comp = new ComponentName(this.getPackageName(), AConstDefine.LAUNCHER_STR);
 		shortcut.putExtra(Intent.EXTRA_SHORTCUT_INTENT, new Intent(Intent.ACTION_MAIN).setComponent(comp));
 		// 快捷方式的图
 		ShortcutIconResource iconRes = Intent.ShortcutIconResource.fromContext(this, R.drawable.icon);
@@ -176,7 +178,7 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 	 */
 	private void changeFirstLaunch(SharedPreferences mSharedPreferences) {
 		SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-		mEditor.putBoolean(ShareParams.FIRST_LAUNCHER, false);
+		mEditor.putBoolean(AConstDefine.FIRST_LAUNCHER, false);
 		mEditor.commit();
 	}
 
@@ -499,12 +501,12 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 					} else {
 						stopService(new Intent(this, DataUpdateService.class));// 停止数据更新服务
 						stopService(new Intent(this, DownloadService.class));// 停止下载服务
-						NetTool.cancelNotification(this, 4);// 取消通知
+						DJMarketUtils.cancelNotification(this, 4);// 取消通知
 					}
 				} else {
 					stopService(new Intent(this, DataUpdateService.class));
 					stopService(new Intent(this, DownloadService.class));
-					NetTool.cancelNotification(this, 4);
+					DJMarketUtils.cancelNotification(this, 4);
 				}
 			} else {
 				isExit = true;
@@ -530,7 +532,7 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 						mExitDialog.dismiss();
 						stopService(new Intent(MainActivity.this, DataUpdateService.class));
 						stopService(new Intent(MainActivity.this, DownloadService.class));
-						NetTool.cancelNotification(MainActivity.this, 4);
+						DJMarketUtils.cancelNotification(MainActivity.this, 4);
 						finish();
 					}
 				}).setNeutralButton(getString(R.string.ok), new View.OnClickListener() {

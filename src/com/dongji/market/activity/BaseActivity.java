@@ -3,6 +3,11 @@ package com.dongji.market.activity;
 import android.view.KeyEvent;
 import android.view.Menu;
 
+/**
+ * activity基类
+ * @author yvon
+ *
+ */
 public abstract class BaseActivity extends PublicActivity {
 
 	public void OnToolBarClick() {

@@ -23,13 +23,16 @@ import com.dongji.market.R;
 import com.dongji.market.adapter.UninstallAdapter;
 import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.DJMarketUtils;
-import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.helper.FileLoadTask;
 import com.dongji.market.pojo.InstalledAppInfo;
 import com.dongji.market.widget.CustomDialog;
 import com.dongji.market.widget.LoginDialog;
 import com.dongji.market.widget.ScrollListView;
-
+/**
+ * 卸载列表页
+ * @author yvon
+ *
+ */
 public class Uninstall_list_Activity extends Activity {
 
 	public static final int FLAG_RESTORE = 1;

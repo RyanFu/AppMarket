@@ -54,11 +54,7 @@ import com.dongji.market.database.MarketDatabase.HotwordsService;
 import com.dongji.market.database.MarketDatabase.SearchHistory;
 import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.DJMarketUtils;
-import com.dongji.market.helper.DJMarketUtils;
-import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.DownloadUtils;
-import com.dongji.market.helper.NetTool;
-import com.dongji.market.helper.ShareParams;
 import com.dongji.market.helper.TitleUtil;
 import com.dongji.market.listener.ShakeListener;
 import com.dongji.market.pojo.ApkItem;
@@ -66,6 +62,12 @@ import com.dongji.market.pojo.DownloadEntity;
 import com.dongji.market.protocol.DataManager;
 import com.umeng.analytics.MobclickAgent;
 
+/**
+ * 搜索页面
+ * 
+ * @author yvon
+ * 
+ */
 public class Search_Activity extends PublicActivity {
 	private static final int EVENT_REQUEST_HOTWORDS_LIST = 2;
 	private static final int EVENT_NO_NETWORK_ERROR = 3;
@@ -175,12 +177,12 @@ public class Search_Activity extends PublicActivity {
 			switch (msg.what) {
 			case EVENT_REQUEST_DATA:
 				try {
-					String top50time = NetTool.getSharedPreferences(Search_Activity.this, AConstDefine.SHARE_GETTOP50TIME, "");
+					String top50time = DJMarketUtils.getSharedPreferences(Search_Activity.this, AConstDefine.SHARE_GETTOP50TIME, "");
 					Calendar cal = Calendar.getInstance();
 					String dateString = "" + cal.get(Calendar.YEAR) + (cal.get(Calendar.MONTH) + 1) + cal.get(Calendar.DATE);
 					if (null == apkItems || !top50time.equals(dateString)) {
 						apkItems = DataManager.newInstance().getTop50();
-						NetTool.setSharedPreferences(Search_Activity.this, AConstDefine.SHARE_GETTOP50TIME, dateString);
+						DJMarketUtils.setSharedPreferences(Search_Activity.this, AConstDefine.SHARE_GETTOP50TIME, dateString);
 					}
 					mHandler.sendEmptyMessage(EVENT_REQUEST_GUESS_LIST);
 				} catch (IOException e) {
@@ -369,7 +371,7 @@ public class Search_Activity extends PublicActivity {
 	 * @throws JSONException
 	 */
 	private void updateHotwords() throws IOException, JSONException {
-		SharedPreferences pref = getSharedPreferences(ShareParams.SHARE_FILE_NAME, Context.MODE_PRIVATE);
+		SharedPreferences pref = getSharedPreferences(AConstDefine.SHARE_FILE_NAME, Context.MODE_PRIVATE);
 		lastUpdateTime = pref.getLong("updateHotwordsTime", 0);
 		currUpdateTime = System.currentTimeMillis() / (3600 * 1000);// 取当前日期到1970年1月1日的小时数
 		hotwordsService = new MarketDatabase.HotwordsService(this);
@@ -604,7 +606,7 @@ public class Search_Activity extends PublicActivity {
 		mAppNameTextView.setText(item.appName);
 		mAppVersionTextView.setText(" V" + item.version);
 		mAppOwnerTextView.setText(item.company);
-		mAppSizeTextView.setText(getString(R.string.app_size) + NetTool.sizeFormat((int) item.fileSize));
+		mAppSizeTextView.setText(getString(R.string.app_size) + DJMarketUtils.sizeFormat((int) item.fileSize));
 		mAppInstallNumTextView.setText(getString(R.string.detail_installCount2) + DJMarketUtils.convertionInstallNumber(this, item.downloadNum));
 		setLanguageType(item.language, mAppLanguageImageView, mAppLanguageMultiImageView);
 		displayApkStatus(mInstallTextView, item.status);
@@ -776,7 +778,7 @@ public class Search_Activity extends PublicActivity {
 
 	private void checkFirstInSearch() {
 		SharedPreferences mSharedPreferences = getSharedPreferences(this.getPackageName() + "_temp", Context.MODE_PRIVATE);
-		boolean isFirst = mSharedPreferences.getBoolean(ShareParams.FIRST_LAUNCHER_SEARCH, true);
+		boolean isFirst = mSharedPreferences.getBoolean(AConstDefine.FIRST_LAUNCHER_SEARCH, true);
 		if (isFirst) {
 			mMaskView = findViewById(R.id.searchmasklayout);
 			mMaskView.setVisibility(View.VISIBLE);
@@ -789,7 +791,7 @@ public class Search_Activity extends PublicActivity {
 				}
 			});
 			SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-			mEditor.putBoolean(ShareParams.FIRST_LAUNCHER_SEARCH, false);
+			mEditor.putBoolean(AConstDefine.FIRST_LAUNCHER_SEARCH, false);
 			mEditor.commit();
 		}
 	}

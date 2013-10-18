@@ -17,12 +17,17 @@ import com.dongji.market.R;
 import com.dongji.market.adapter.DownloadAdapter;
 import com.dongji.market.application.AppMarket;
 import com.dongji.market.helper.AConstDefine;
-import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.DownloadUtils;
 import com.dongji.market.pojo.DownloadEntity;
 import com.dongji.market.service.DownloadService;
 import com.umeng.analytics.MobclickAgent;
 
+/**
+ * 更新和安装页
+ * 
+ * @author yvon
+ * 
+ */
 public class DownloadActivity extends Activity implements AConstDefine {
 	private static final int EVENT_REQUEST_DATA = 1; // 请求与下载有关的数据
 	private static final int EVENT_REFRESH_DATA = 2; // 刷新显示数据

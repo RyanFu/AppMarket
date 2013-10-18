@@ -15,6 +15,12 @@ import com.dongji.market.adapter.SoftwareMoveAdapter;
 import com.dongji.market.adapter.UninstallAdapter;
 import com.dongji.market.pojo.InstalledAppInfo;
 
+
+/**
+ * 加载本地图片
+ * @author yvon
+ *
+ */
 public class FileLoadTask extends AsyncTask<Void, InstalledAppInfo, Void> {
 
 	public static final int EVENT_LOADED = 1;

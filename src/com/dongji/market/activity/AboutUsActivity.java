@@ -18,6 +18,11 @@ import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.receiver.CommonReceiver;
 
+/**
+ * 关于界面
+ * @author yvon
+ *
+ */
 public class AboutUsActivity extends Activity {
 	private TextView mPublishDateTV, mVersionInfoTV;
 	private ImageView mTopLogo;

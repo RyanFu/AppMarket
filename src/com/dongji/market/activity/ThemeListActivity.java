@@ -37,6 +37,12 @@ import com.dongji.market.pojo.SubjectItem;
 import com.dongji.market.protocol.DataManager;
 import com.umeng.analytics.MobclickAgent;
 
+/**
+ * 专题列表页
+ * 
+ * @author yvon
+ * 
+ */
 public class ThemeListActivity extends PublicActivity implements OnItemClickListener, OnToolBarBlankClickListener {
 
 	private SubjectInfo info;

@@ -50,8 +50,8 @@ public class WxUtils {
 	 */
 	public static IWXAPI registWxApi(Context context) {
 		if (api == null) {
-			api = WXAPIFactory.createWXAPI(context, WXConstants.APP_ID, false);
-			api.registerApp(WXConstants.APP_ID);
+			api = WXAPIFactory.createWXAPI(context, AConstDefine.APP_ID, false);
+			api.registerApp(AConstDefine.APP_ID);
 		}
 		return api;
 	}
@@ -223,15 +223,20 @@ public class WxUtils {
 		WXMediaMessage localWXMediaMessage = new WXMediaMessage(localWXWebpageObject);
 		localWXMediaMessage.title = title;
 		localWXMediaMessage.description = text;
+		byte[] bytes = null;
 		if (bitmap != null) {
-			localWXMediaMessage.thumbData = bmpToByteArray(bitmap, true);
+			if (bitmap.getHeight() * bitmap.getWidth() > AConstDefine.IMAGE_SIZE_LIMIT) {
+				bytes = getBitmapBytes(bitmap, true, AConstDefine.THUMB_SIZE, AConstDefine.THUMB_SIZE);
+			} else {
+				bytes = bmpToByteArray(bitmap, true);
+			}
 		}
+		localWXMediaMessage.thumbData = bytes;
 		SendMessageToWX.Req localReq = new SendMessageToWX.Req();
 		localReq.transaction = System.currentTimeMillis() + "";
 		localReq.message = localWXMediaMessage;
 		localReq.scene = scene;
 		api.sendReq(localReq);
-
 	}
 
 	/**
@@ -263,7 +268,6 @@ public class WxUtils {
 		localReq.message = localWXMediaMessage;
 		localReq.scene = scene;
 		api.sendReq(localReq);
-
 	}
 
 	/**
@@ -447,22 +451,25 @@ public class WxUtils {
 	 * @return
 	 */
 	public static Bitmap getBitmapFromFile(String url) {
-		String filePath = null;
-		Bitmap bm = null;
-		try {
-			filePath = EXTERNAL_STORAGE_DIRECTORY_PATH + getHashCode(url) + "_" + url.substring(url.lastIndexOf(".") + 1, url.length());
-			File imageFile = new File(filePath);
-			if (imageFile.exists()) {
-				bm = BitmapFactory.decodeStream(new FileInputStream(imageFile), null, mOptions);
+		if (!TextUtils.isEmpty(url)) {
+			String filePath = null;
+			Bitmap bm = null;
+			try {
+				filePath = EXTERNAL_STORAGE_DIRECTORY_PATH + getHashCode(url) + "_" + url.substring(url.lastIndexOf(".") + 1, url.length());
+				File imageFile = new File(filePath);
+				if (imageFile.exists()) {
+					bm = BitmapFactory.decodeStream(new FileInputStream(imageFile), null, mOptions);
+				}
+			} catch (FileNotFoundException e) {
+				System.out.println("============" + filePath + ", " + e);
+			} catch (OutOfMemoryError e) {
+				if (bm != null && !bm.isRecycled()) {
+					bm.recycle();
+				}
 			}
-		} catch (FileNotFoundException e) {
-			System.out.println("============" + filePath + ", " + e);
-		} catch (OutOfMemoryError e) {
-			if (bm != null && !bm.isRecycled()) {
-				bm.recycle();
-			}
+			return bm;
 		}
-		return bm;
+		return null;
 	}
 
 	/**

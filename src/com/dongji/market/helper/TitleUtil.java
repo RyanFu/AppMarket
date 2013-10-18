@@ -72,7 +72,7 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 	private TextView mPageNameTextView;
 	public CustomSearchView mSearchEdit;
 	private FrameLayout mTopLogoLayout;
-	private ImageView mToplogo, mSortPageShrinkIcon;
+	private ImageView mSortPageShrinkIcon;
 	private PopupWindow mSettingPopup, mSharePopup, mSortPopup;
 	private Button mClearKeywordBtn;
 	private String pageName;
@@ -86,10 +86,8 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 	private LoginParams loginParams;
 	private CommonReceiver commonRecv;
 
-	private LinearLayout mPopSmsShare;
-	private TextView mPopSettingDiv, mPopChgPwd, mPopLogin, mPopShareDiv_1, mPopShareDiv_2;
+	private TextView mPopSettingDiv, mPopChgPwd, mPopLogin;
 	private TextView mPopDownloadMost, mPopGradeTop, mPopRiseFastest;
-	private int popLenParam;
 	private SaveSettingListener saveListener;
 	public static final int SEARCH_PAGE_FLAG = 100;
 	public static final int SOFTMNG_PAGE_FLAG = 101;
@@ -106,11 +104,7 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 
 	private OnSortChangeListener listener;
 	private OnToolBarBlankClickListener mOnToolBarBlankClickListener;
-
-	private static final String BROADCAST_CLOSE_ACTIVITY = "com.dongji.market.CLOSE_ACTIVITY";
-
 	public boolean isSharing = false;
-	private LinearLayout mainTopLayout;
 	private ImageView topLogo;
 	private FrameLayout softManagerLay1;
 	private FrameLayout softManagerLay2;
@@ -390,180 +384,6 @@ public class TitleUtil implements OnClickListener, AConstDefine {
 		actualHeight = (int) (screenHeight * 0.03);
 		actualWidth = actualHeight;
 		rightMargin = (int) (screenWidth * 0.02);
-		linearParams = (LayoutParams) mSettingButton.getLayoutParams();
-		linearParams.width = actualWidth;
-		linearParams.height = actualHeight;
-		linearParams.rightMargin = rightMargin;
-		mSettingButton.setLayoutParams(linearParams);
-	}
-
-	private void initSearchLayout() {
-		int screenHeight = DJMarketUtils.getScreenSize(cxt).heightPixels;
-		int screenWidth = DJMarketUtils.getScreenSize(cxt).widthPixels;
-		LinearLayout.LayoutParams linearParams;
-		FrameLayout.LayoutParams frameParams;
-		int actualHeight;
-		int actualWidth;
-		int leftMargin;
-		int rightMargin;
-		int textSize;
-
-		mTopLogoLayout = (FrameLayout) titleView.findViewById(R.id.top_logo_layout);
-		actualWidth = (int) (screenWidth * 0.114);
-		linearParams = (LayoutParams) mTopLogoLayout.getLayoutParams();
-		linearParams.width = actualWidth;
-		mTopLogoLayout.setLayoutParams(linearParams);
-
-		mBackButton = (Button) titleView.findViewById(R.id.backButton);
-		actualHeight = (int) (screenHeight * 0.023);
-		actualWidth = (int) (actualHeight * 0.4);
-		leftMargin = (int) (screenWidth * 0.008);
-		frameParams = (FrameLayout.LayoutParams) mBackButton.getLayoutParams();
-		frameParams.width = actualWidth;
-		frameParams.height = actualHeight;
-		frameParams.leftMargin = leftMargin;
-		mBackButton.setLayoutParams(frameParams);
-
-		topLogo = (ImageView) titleView.findViewById(R.id.top_logo);
-		actualHeight = (int) (screenHeight * 0.052);
-		actualWidth = actualHeight;
-		leftMargin = (int) (screenWidth * 0.022);
-		frameParams = (FrameLayout.LayoutParams) topLogo.getLayoutParams();
-		frameParams.width = actualWidth;
-		frameParams.height = actualHeight;
-		frameParams.leftMargin = leftMargin;
-		topLogo.setLayoutParams(frameParams);
-
-		softManagerLay1 = (FrameLayout) titleView.findViewById(R.id.softmanager_layout1);
-		actualHeight = (int) (screenHeight * 0.045);
-		actualWidth = (int) (actualHeight * 0.97);
-		leftMargin = (int) (screenWidth * 0.036);
-		rightMargin = (int) (screenWidth * 0.025);
-		linearParams = (LayoutParams) softManagerLay1.getLayoutParams();
-		linearParams.width = actualWidth;
-		linearParams.height = actualHeight;
-		linearParams.leftMargin = leftMargin;
-		linearParams.rightMargin = rightMargin;
-		softManagerLay1.setLayoutParams(linearParams);
-
-		softManagerLay2 = (FrameLayout) titleView.findViewById(R.id.softmanager_layout2);
-		actualHeight = (int) (screenHeight * 0.034);
-		actualWidth = actualHeight;
-		frameParams = (FrameLayout.LayoutParams) softManagerLay2.getLayoutParams();
-		frameParams.width = actualWidth;
-		frameParams.height = actualHeight;
-		softManagerLay2.setLayoutParams(frameParams);
-
-		manager_progress = (ProgressBar) titleView.findViewById(R.id.manager_progress);
-		actualHeight = (int) (screenHeight * 0.0023);
-		actualWidth = (int) (actualHeight * 11.3);
-		frameParams = (FrameLayout.LayoutParams) manager_progress.getLayoutParams();
-		frameParams.width = actualWidth;
-		frameParams.height = actualHeight;
-		manager_progress.setLayoutParams(frameParams);
-
-		tvCount = (TextView) titleView.findViewById(R.id.tvCount);
-		actualHeight = (int) (screenHeight * 0.018);
-		actualWidth = actualHeight;
-		textSize = (int) (screenWidth * 0.019);
-		frameParams = (FrameLayout.LayoutParams) tvCount.getLayoutParams();
-		frameParams.width = actualWidth;
-		frameParams.height = actualHeight;
-		tvCount.setLayoutParams(frameParams);
-		tvCount.setTextSize(textSize);
-	}
-
-	private void initCommonLayout() {
-		int screenHeight = DJMarketUtils.getScreenSize(cxt).heightPixels;
-		int screenWidth = DJMarketUtils.getScreenSize(cxt).widthPixels;
-		LinearLayout.LayoutParams linearParams;
-		FrameLayout.LayoutParams frameParams;
-		int actualHeight;
-		int actualWidth;
-		int leftMargin;
-		int rightMargin;
-
-		mTopLogoLayout = (FrameLayout) titleView.findViewById(R.id.top_logo_layout);
-		actualWidth = (int) (screenWidth * 0.114);
-		linearParams = (LayoutParams) mTopLogoLayout.getLayoutParams();
-		linearParams.width = actualWidth;
-		mTopLogoLayout.setLayoutParams(linearParams);
-
-		mBackButton = (Button) titleView.findViewById(R.id.backButton);
-		actualHeight = (int) (screenHeight * 0.023);
-		actualWidth = (int) (actualHeight * 0.4);
-		leftMargin = (int) (screenWidth * 0.008);
-		frameParams = (FrameLayout.LayoutParams) mBackButton.getLayoutParams();
-		frameParams.width = actualWidth;
-		frameParams.height = actualHeight;
-		frameParams.leftMargin = leftMargin;
-		mBackButton.setLayoutParams(frameParams);
-
-		topLogo = (ImageView) titleView.findViewById(R.id.top_logo);
-		actualHeight = (int) (screenHeight * 0.052);
-		actualWidth = actualHeight;
-		leftMargin = (int) (screenWidth * 0.022);
-		frameParams = (FrameLayout.LayoutParams) topLogo.getLayoutParams();
-		frameParams.width = actualWidth;
-		frameParams.height = actualHeight;
-		frameParams.leftMargin = leftMargin;
-		topLogo.setLayoutParams(frameParams);
-
-		actualHeight = (int) (screenHeight * 0.045);
-		actualWidth = actualHeight;
-		linearParams = (LayoutParams) mSearchButton.getLayoutParams();
-		linearParams.width = actualWidth;
-		linearParams.height = actualHeight;
-		mSearchButton.setLayoutParams(linearParams);
-
-		actualHeight = (int) (screenHeight * 0.045);
-		actualWidth = (int) (actualHeight * 0.692);
-		leftMargin = (int) (screenWidth * 0.036);
-		linearParams = (LayoutParams) mShareButton.getLayoutParams();
-		linearParams.width = actualWidth;
-		linearParams.height = actualHeight;
-		linearParams.leftMargin = leftMargin;
-		mShareButton.setLayoutParams(linearParams);
-
-		softManagerLay1 = (FrameLayout) titleView.findViewById(R.id.softmanager_layout1);
-		actualHeight = (int) (screenHeight * 0.05);
-		actualWidth = (int) (actualHeight * 0.97);
-		leftMargin = (int) (screenWidth * 0.036);
-		rightMargin = (int) (screenWidth * 0.025);
-		linearParams = (LayoutParams) softManagerLay1.getLayoutParams();
-		linearParams.width = actualWidth;
-		linearParams.height = actualHeight;
-		linearParams.leftMargin = leftMargin;
-		linearParams.rightMargin = rightMargin;
-		softManagerLay1.setLayoutParams(linearParams);
-
-		softManagerLay2 = (FrameLayout) titleView.findViewById(R.id.softmanager_layout2);
-		actualHeight = (int) (screenHeight * 0.039);
-		actualWidth = actualHeight;
-		frameParams = (FrameLayout.LayoutParams) softManagerLay2.getLayoutParams();
-		frameParams.width = actualWidth;
-		frameParams.height = actualHeight;
-		softManagerLay2.setLayoutParams(frameParams);
-
-		manager_progress = (ProgressBar) titleView.findViewById(R.id.manager_progress);
-		actualHeight = (int) (screenHeight * 0.0035);
-		actualWidth = (int) (actualHeight * 11.3);
-		frameParams = (FrameLayout.LayoutParams) manager_progress.getLayoutParams();
-		frameParams.width = actualWidth;
-		frameParams.height = actualHeight;
-		manager_progress.setLayoutParams(frameParams);
-
-		tvCount = (TextView) titleView.findViewById(R.id.tvCount);
-		actualHeight = (int) (screenHeight * 0.023);
-		actualWidth = actualHeight;
-		frameParams = (FrameLayout.LayoutParams) tvCount.getLayoutParams();
-		frameParams.width = actualWidth;
-		frameParams.height = actualHeight;
-		tvCount.setLayoutParams(frameParams);
-
-		actualHeight = (int) (screenHeight * 0.045);
-		actualWidth = actualHeight;
-		rightMargin = (int) (screenWidth * 0.014);
 		linearParams = (LayoutParams) mSettingButton.getLayoutParams();
 		linearParams.width = actualWidth;
 		linearParams.height = actualHeight;

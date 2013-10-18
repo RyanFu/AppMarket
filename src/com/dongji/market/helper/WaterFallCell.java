@@ -1,6 +1,5 @@
 package com.dongji.market.helper;
 
-
 import com.dongji.market.R;
 
 import net.tsz.afinal.FinalBitmap;
@@ -17,9 +16,7 @@ public class WaterFallCell extends ImageView {
 
 	public static final int ADD_INTO = 1;
 	public static final int LOAD_PIC = 2;
-	
-	private Context mContext;
-	
+
 	private int mColumn;
 	private int mRow;
 	private int mID;
@@ -31,21 +28,13 @@ public class WaterFallCell extends ImageView {
 	private int mCount;
 	private View mContentView;
 	public boolean hadLoadPic = true;
-	
+
 	public WaterFallCell(Context context) {
 		super(context);
-		this.mContext = context;
-		init();
-	}
-	
-	public WaterFallCell(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		this.mContext = context;
-		init();
 	}
 
-	private void init(){
-//		this.setOnClickListener(listener);
+	public WaterFallCell(Context context, AttributeSet attrs) {
+		super(context, attrs);
 	}
 
 	public View getmContentView() {
@@ -124,12 +113,12 @@ public class WaterFallCell extends ImageView {
 		this.mID = mID;
 	}
 
-	//计算图片的高宽，然后回调给handler添加到LL
-	public void startResize(){
-		//TODO
-		new Thread(){
+	// 计算图片的高宽，然后回调给handler添加到LL
+	public void startResize() {
+		// TODO
+		new Thread() {
 			public void run() {
-				if(mItem.imgheight != 0){
+				if (mItem.imgheight != 0) {
 					mHeight = (mItem.imgheight * mColumnWidth) / mItem.imgwidth;
 					FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(mColumnWidth, mHeight);
 					setLayoutParams(params);
@@ -141,9 +130,9 @@ public class WaterFallCell extends ImageView {
 			};
 		}.start();
 	}
-	
-	public void reload(){
-		if(!hadLoadPic){
+
+	public void reload() {
+		if (!hadLoadPic) {
 			this.setBackgroundResource(R.drawable.water_fall_cell_bg);
 			mFinalBitmap.configLoadingImage(null);
 			mFinalBitmap.configLoadfailImage(null);
@@ -151,11 +140,11 @@ public class WaterFallCell extends ImageView {
 			hadLoadPic = true;
 		}
 	}
-	
-	public void recycle(){
+
+	public void recycle() {
 		Drawable d = this.getDrawable();
 		this.setImageBitmap(null);
-		if(d != null){
+		if (d != null) {
 			d.setCallback(null);
 		}
 		hadLoadPic = false;

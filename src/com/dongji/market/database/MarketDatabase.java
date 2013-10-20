@@ -19,6 +19,7 @@ public class MarketDatabase {
 	private static final String SEARCH_HISTORY_TABLE = "search_history_table";// 保存搜索历史表
 	private static final String SEARCH_HOTWORDS_TABLE = "search_hotwords_table";// 保存搜索热词表
 	private static final String RATING_TABLE = "rating_table";// 评分表
+	private static final String UPDATE_TABLE = "update_table";// 更新表
 
 	private Context context;
 
@@ -41,6 +42,7 @@ public class MarketDatabase {
 			db.execSQL("create table if not exists " + SEARCH_HISTORY_TABLE + "(_id INTEGER primary key autoincrement, name TEXT)");
 			db.execSQL("create table if not exists " + SEARCH_HOTWORDS_TABLE + "(_id INTEGER primary key autoincrement, hotword TEXT)");
 			db.execSQL("create table if not exists " + RATING_TABLE + "(_id INTEGER primary key autoincrement, typeid INTEGER, appid INTEGER,rating float);");
+			db.execSQL("create table if not exists " + UPDATE_TABLE + "(_id INTEGER primary key autoincrement, newUpdateTime LONG);");
 		}
 
 		@Override
@@ -49,6 +51,7 @@ public class MarketDatabase {
 			db.execSQL("DROP TABLE IF EXISTS " + SEARCH_HISTORY_TABLE);
 			db.execSQL("DROP TABLE IF EXISTS " + SEARCH_HOTWORDS_TABLE);
 			db.execSQL("DROP TABLE IF EXISTS " + RATING_TABLE);
+			db.execSQL("DROP TABLE IF EXISTS " + UPDATE_TABLE);
 			onCreate(db);
 		}
 
@@ -562,4 +565,44 @@ public class MarketDatabase {
 		}
 		return -1;
 	}
+
+	public void insertOrUpdateToUpdateNotificationTable(Long newUpdateTime) {
+		SQLiteDatabase sqLiteDatabase = null;
+		Cursor cursor = null;
+		try {
+			sqLiteDatabase = dbHelper.getWritableDatabase();
+			ContentValues values = new ContentValues();
+			values.put("newUpdateTime", newUpdateTime);
+			cursor = sqLiteDatabase.query(UPDATE_TABLE, null, null, null, null, null, null);
+			if(cursor.getCount()>0) {
+				sqLiteDatabase.update(UPDATE_TABLE,values,null,null);
+			}else {
+				sqLiteDatabase.insert(UPDATE_TABLE, null, values);
+			}
+		} catch (SQLiteException e) {
+			System.out.println(e);
+		} finally {
+			release(sqLiteDatabase, cursor);
+		}
+	}
+	
+	
+	public Long selectNewUpdateNotificationTime() {
+		SQLiteDatabase sqLiteDatabase = null;
+		Cursor cursor = null;
+		try {
+			sqLiteDatabase = dbHelper.getReadableDatabase();
+			cursor = sqLiteDatabase.query(UPDATE_TABLE, null, null, null, null, null, null);
+			if (cursor != null && cursor.getCount() > 0) {
+				cursor.moveToFirst();
+				return cursor.getLong(cursor.getColumnIndex("newUpdateTime"));
+			}
+		} catch (SQLiteException e) {
+			System.out.println(e);
+		} finally {
+			release(sqLiteDatabase, cursor);
+		}
+		return 0L;
+	}
+
 }

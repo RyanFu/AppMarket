@@ -66,6 +66,7 @@ import com.dongji.market.activity.SoftwareManageActivity;
 import com.dongji.market.activity.SoftwareMove_list_Activity;
 import com.dongji.market.activity.BackupOrRestoreActivity.OnProgressChangeListener;
 import com.dongji.market.application.AppMarket;
+import com.dongji.market.database.MarketDatabase;
 import com.dongji.market.database.MarketDatabase.Setting_Service;
 import com.dongji.market.pojo.BackupItemInfo;
 import com.dongji.market.pojo.InstalledAppInfo;
@@ -375,6 +376,7 @@ public class DJMarketUtils implements AConstDefine {
 	}
 
 	private static final String PACKAGE_STR = "package:";
+	private static final Long DAY = 1000 * 60 * 60 * 24l;// 一天
 
 	public static String convertPackageName(String packageName) {
 		if (TextUtils.isEmpty(packageName)) {
@@ -1590,10 +1592,18 @@ public class DJMarketUtils implements AConstDefine {
 			break;
 		case FLAG_NOTIFICATION_UPDATE:
 			if (DJMarketUtils.isUpdatePrompt(context)) {
-				notice.flags = Notification.FLAG_AUTO_CANCEL;
-				remoteViews.setTextViewText(R.id.tvNotificationTitle, context.getString(R.string.notification_tip_update));
-				remoteViews.setTextViewText(R.id.tvNotificationText, count + context.getString(R.string.notification_tip_clickupdate));
-				flag = 1;
+				MarketDatabase marketDatabase = new MarketDatabase(context);
+				Long cacheTime=marketDatabase.selectNewUpdateNotificationTime();
+				Long currentTime = System.currentTimeMillis();
+				if (currentTime - cacheTime< DAY) {// 当前时间与上次更新时间比较，小于一天不弹出通知框
+					flag = 0;
+				} else {// 大于一天，则将当前时间做为最新更新时间写入数据库，并弹出通知栏
+					marketDatabase.insertOrUpdateToUpdateNotificationTable(currentTime);
+					notice.flags = Notification.FLAG_AUTO_CANCEL;
+					remoteViews.setTextViewText(R.id.tvNotificationTitle, context.getString(R.string.notification_tip_update));
+					remoteViews.setTextViewText(R.id.tvNotificationText, count + context.getString(R.string.notification_tip_clickupdate));
+					flag = 1;
+				}
 			}
 			break;
 		case FLAG_NOTIFICATION_UPDATEING:

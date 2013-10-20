@@ -34,11 +34,13 @@ public class LauncherActivity extends Activity implements AnimationListener {
 	private boolean isAnimEnd;
 	private boolean isDataLoaded;
 	private ImageView mAnimImageView;
+	public static final int FLAG_NOTIFICATION_UPDATE = 2;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_launcher);
+		DJMarketUtils.cancelNotification(this, FLAG_NOTIFICATION_UPDATE);
 		initData();
 		initHandler();
 	}

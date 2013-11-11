@@ -26,70 +26,87 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
-
-import com.dongji.market.helper.DJMarketUtils;
-
 import android.content.Context;
-import android.widget.Toast;
-
-
 
 /**
  * 
  * @author zhangkai
- *
+ * 
  */
 public class HttpClientApi {
 	private static HttpClientApi httpClientApi;
 	private static final int CONNECT_TIME_OUT = 15000;
 	private static final int SO_TIME_OUT = 15000;
 	private static final String DEFAULT_CHARSET = "utf-8";
-	
 	private HttpParams httpParams;
-	
 	private HttpPost post;
-	
+
 	private HttpClientApi() {
 		super();
-		httpParams=new BasicHttpParams();
+		httpParams = new BasicHttpParams();
 		HttpConnectionParams.setConnectionTimeout(httpParams, CONNECT_TIME_OUT);
 		HttpConnectionParams.setSoTimeout(httpParams, SO_TIME_OUT);
 	}
-	
+
+	/**
+	 * 获取httpClientApi实例
+	 * 
+	 * @return
+	 */
 	public static synchronized HttpClientApi getInstance() {
-		if(httpClientApi==null) {
-			httpClientApi=new HttpClientApi();
+		if (httpClientApi == null) {
+			httpClientApi = new HttpClientApi();
 		}
 		return httpClientApi;
 	}
-	
-	private HttpClient getHttpClient() {
-		return new DefaultHttpClient(httpParams);
-	}
-	
+
+	/**
+	 * 通过HttpGet方式获取字符串数据
+	 * 
+	 * @param url
+	 * @return
+	 * @throws IOException
+	 */
 	public String getContentFromUrl(String url) throws IOException {
-		String result=null;
-		HttpClient httpClient=getHttpClient();
-		HttpGet httpGet=new HttpGet(url);
-		HttpResponse httpResponse=httpClient.execute(httpGet);
-		HttpEntity httpEntity=httpResponse.getEntity();
-		if(httpEntity!=null) {
-			result=EntityUtils.toString(httpEntity, DEFAULT_CHARSET); //
+		String result = null;
+		HttpClient httpClient = getHttpClient();
+		HttpGet httpGet = new HttpGet(url);
+		HttpResponse httpResponse = httpClient.execute(httpGet);
+		HttpEntity httpEntity = httpResponse.getEntity();
+		if (httpEntity != null) {
+			result = EntityUtils.toString(httpEntity, DEFAULT_CHARSET); //
 			httpEntity.consumeContent();
 		}
 		return result;
 	}
-	
+
+	/**
+	 * 获取HttpClient
+	 * 
+	 * @return
+	 */
+	private HttpClient getHttpClient() {
+		return new DefaultHttpClient(httpParams);
+	}
+
+	/**
+	 * 通过HttpPost方式获取字符串数据
+	 * 
+	 * @param url
+	 * @param list
+	 * @return
+	 * @throws IOException
+	 */
 	public String getContentFromUrlByPost(String url, List<String[]> list) throws IOException {
-		System.out.println("++++++++++++++++getContentFromUrlByPost++++++++++++++++"+list.size());
-		HttpPost httpPost=new HttpPost(url);
+		System.out.println("++++++++++++++++getContentFromUrlByPost++++++++++++++++" + list.size());
+		HttpPost httpPost = new HttpPost(url);
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
-		StringBuilder sb=new StringBuilder();
+		StringBuilder sb = new StringBuilder();
 		sb.append("[");
-		for(int i=0;i<list.size();i++) {
-			String[] arr=list.get(i);
+		for (int i = 0; i < list.size(); i++) {
+			String[] arr = list.get(i);
 			sb.append("{\"apk_versioncode\":\"").append(arr[0]).append("\",\"apk_packagename\":\"").append(arr[1]).append("\"}");
-			if(i<list.size()-1) {
+			if (i < list.size() - 1) {
 				sb.append(",");
 			}
 		}
@@ -98,16 +115,16 @@ public class HttpClientApi {
 		HttpEntity httpentity;
 		try {
 			httpentity = new UrlEncodedFormEntity(params, DEFAULT_CHARSET);
-			httpPost.setEntity(httpentity);  
-			// 取得默认的HttpClient  
-			HttpClient httpclient = new DefaultHttpClient();  
-			// 取得HttpResponse  
-			HttpResponse httpResponse = httpclient.execute(httpPost);  
-			// HttpStatus.SC_OK表示连接成功  
-			if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {  
-			// 取得返回的字符串  
-				String strResult = EntityUtils.toString(httpResponse.getEntity(), DEFAULT_CHARSET);  
-				System.out.println("================== update result:"+strResult);
+			httpPost.setEntity(httpentity);
+			// 取得默认的HttpClient
+			HttpClient httpclient = new DefaultHttpClient();
+			// 取得HttpResponse
+			HttpResponse httpResponse = httpclient.execute(httpPost);
+			// HttpStatus.SC_OK表示连接成功
+			if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+				// 取得返回的字符串
+				String strResult = EntityUtils.toString(httpResponse.getEntity(), DEFAULT_CHARSET);
+				System.out.println("================== update result:" + strResult);
 				return strResult;
 			}
 		} catch (UnsupportedEncodingException e) {
@@ -115,17 +132,27 @@ public class HttpClientApi {
 		}
 		return null;
 	}
-	
+
+	/**
+	 * 云备份Post提交数据
+	 * 
+	 * @param url
+	 * @param list
+	 * @param userSessionId
+	 * @param context
+	 * @return
+	 * @throws IOException
+	 */
 	public boolean postCloundBackup(String url, List<String[]> list, String userSessionId, Context context) throws IOException {
-		HttpPost httpPost=new HttpPost(url);//+"&userssionid="+userSessionId
+		HttpPost httpPost = new HttpPost(url);// +"&userssionid="+userSessionId
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
-		StringBuilder sb=new StringBuilder();
+		StringBuilder sb = new StringBuilder();
 		sb.append("[");
-		for(int i=0;i<list.size();i++) {
-			String[] arr=list.get(i);
-//			System.out.println(arr[0]+", "+arr[1]);
+		for (int i = 0; i < list.size(); i++) {
+			String[] arr = list.get(i);
+			// System.out.println(arr[0]+", "+arr[1]);
 			sb.append("{\"apk_versioncode\":\"").append(arr[0]).append("\",\"apk_packagename\":\"").append(arr[1]).append("\"}");
-			if(i<list.size()-1) {
+			if (i < list.size() - 1) {
 				sb.append(",");
 			}
 		}
@@ -136,55 +163,61 @@ public class HttpClientApi {
 		try {
 			httpentity = new UrlEncodedFormEntity(params, "utf-8");
 			httpPost.setEntity(httpentity);
-			// 取得默认的HttpClient  
-			HttpClient httpclient = new DefaultHttpClient();  
+			// 取得默认的HttpClient
+			HttpClient httpclient = new DefaultHttpClient();
 			// 取得HttpResponse
 			HttpResponse httpResponse = httpclient.execute(httpPost);
-			// HttpStatus.SC_OK表示连接成功  
+			// HttpStatus.SC_OK表示连接成功
 			if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-			// 取得返回的字符串
-				HttpEntity httpEntity=httpResponse.getEntity();
-				if(httpEntity!=null) {
-					String result=EntityUtils.toString(httpEntity, DEFAULT_CHARSET);
-					
-					System.out.println("cloud backup result:"+result);
+				// 取得返回的字符串
+				HttpEntity httpEntity = httpResponse.getEntity();
+				if (httpEntity != null) {
+					String result = EntityUtils.toString(httpEntity, DEFAULT_CHARSET);
+
+					System.out.println("cloud backup result:" + result);
 					httpEntity.consumeContent();
-					int num=0;
-					try{
-						num=Integer.valueOf(result);
-						if(num==1) {
+					int num = 0;
+					try {
+						num = Integer.valueOf(result);
+						if (num == 1) {
 							return true;
 						}
-					}catch(NumberFormatException e) {
+					} catch (NumberFormatException e) {
 					}
 				}
 			}
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			System.out.println(e);
-		} 
+		}
 		return false;
 	}
-	
+
+	/**
+	 * 云恢复备份的数据
+	 * @param url
+	 * @param value
+	 * @return
+	 * @throws IOException
+	 */
 	public String postCloundRestore(String url, String value) throws IOException {
-		HttpPost httpPost=new HttpPost(url);
+		HttpPost httpPost = new HttpPost(url);
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("market_username", value));
 		HttpEntity httpentity;
 		try {
 			httpentity = new UrlEncodedFormEntity(params, "utf-8");
 			httpPost.setEntity(httpentity);
-			// 取得默认的HttpClient  
-			HttpClient httpclient = new DefaultHttpClient();  
+			// 取得默认的HttpClient
+			HttpClient httpclient = new DefaultHttpClient();
 			// 取得HttpResponse
 			HttpResponse httpResponse = httpclient.execute(httpPost);
-			// HttpStatus.SC_OK表示连接成功  
+			// HttpStatus.SC_OK表示连接成功
 			if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-			// 取得返回的字符串
-				HttpEntity httpEntity=httpResponse.getEntity();
-				if(httpEntity!=null) {
-					String result=EntityUtils.toString(httpEntity, DEFAULT_CHARSET);
-					
+				// 取得返回的字符串
+				HttpEntity httpEntity = httpResponse.getEntity();
+				if (httpEntity != null) {
+					String result = EntityUtils.toString(httpEntity, DEFAULT_CHARSET);
+
 					System.out.println("cloud restore result:" + result);
 					httpEntity.consumeContent();
 					return result;
@@ -195,32 +228,31 @@ public class HttpClientApi {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * post方式请求数据
+	 * 
 	 * @param url
-	 * @param paramMap			//参数值map
-	 * @return					//返回服务器返回的字符串
+	 * @param paramMap
+	 *            //参数值map
+	 * @return //返回服务器返回的字符串
 	 * @throws IOException
 	 */
 	public String postResponseData(String url, Map<String, String> paramMap) throws IOException {
-//		HttpPost post = new HttpPost(url);
 		if (post == null) {
 			post = new HttpPost();
 		}
 		try {
 			post.setURI(new URI(url));
 		} catch (URISyntaxException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		if (paramMap != null) {
 			Set<Entry<String, String>> set = paramMap.entrySet();
 			for (Entry<String, String> entry : set) {
-//				System.out.println(entry.getKey() + ": " + entry.getValue());
-				params.add(new BasicNameValuePair(entry.getKey(), entry
-						.getValue()));
+				// System.out.println(entry.getKey() + ": " + entry.getValue());
+				params.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
 			}
 		}
 		HttpResponse response = null;
@@ -236,21 +268,11 @@ public class HttpClientApi {
 				}
 			}
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
 	}
-	
-	/**
-	 * 中断post连接
-	 */
-	public void abortPostReq() {
-		if (post != null && !post.isAborted()) {
-			post.abort();
-		}
-	}
+
 }

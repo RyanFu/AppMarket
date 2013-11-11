@@ -20,24 +20,25 @@ import com.dongji.market.R;
 import com.dongji.market.adapter.GalleryDetailAdapter;
 import com.dongji.market.helper.DJMarketUtils;
 
+/**
+ * 自定义详情页截图GalleryDialog
+ * @author yvon
+ *
+ */
 public class CustomGalleryDialog extends Dialog {
 	private View mContentView;
 	private Context context;
 	private Gallery mGallery;
+	private LinearLayout mSwithBtnContainer;// 指示按钮 
+	private ImageView mSelectedSwitchButton;// 设置聚焦指示按钮 
+
 
 	public CustomGalleryDialog(Context context) {
 		super(context, R.style.dialog_progress_default);
 		this.context = context;
 		initViews();
 	}
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(mContentView);
-		setCanceledOnTouchOutside(true);
-	}
-
+	
 	private void initViews() {
 		mContentView = LayoutInflater.from(context).inflate(R.layout.activity_detail_gallery, null);
 		mGallery = (Gallery) mContentView.findViewById(R.id.gallery);
@@ -52,25 +53,15 @@ public class CustomGalleryDialog extends Dialog {
 		mFrameLayout.setLayoutParams(mParams);
 	}
 
+	
+
 	public void setImageSource(List<String> arr) {
 		GalleryDetailAdapter mAdapter = new GalleryDetailAdapter(context, arr);
 		mGallery.setAdapter(mAdapter);
 		mGallery.setOnItemSelectedListener(new ItemSelectedListener(arr.size()));
 		initSwitchIdResources(arr.size());
 	}
-
-	public void showPosition(int position) {
-		mGallery.setSelection(position);
-		if (!isShowing() && !((Activity) context).isFinishing()) {
-			show();
-		}
-	}
-
-	/**
-	 * 指示按钮
-	 */
-	private LinearLayout mSwithBtnContainer;
-
+	
 	/**
 	 * 初始化海报指示标
 	 * 
@@ -91,6 +82,13 @@ public class CustomGalleryDialog extends Dialog {
 			localImageView.setBackgroundResource(R.drawable.selector_image_switcher);
 			localImageView.setOnClickListener(localSwitchBtnClickListener);
 			mSwithBtnContainer.addView(localImageView);
+		}
+	}
+
+	public void showPosition(int position) {
+		mGallery.setSelection(position);
+		if (!isShowing() && !((Activity) context).isFinishing()) {
+			show();
 		}
 	}
 
@@ -134,12 +132,8 @@ public class CustomGalleryDialog extends Dialog {
 			setSelectedGalleryImg(position);
 		}
 	}
-
-	/**
-	 * 设置聚焦指示按钮
-	 */
-	private ImageView mSelectedSwitchButton;
-
+	
+	
 	private void setSelectedSwitchBtn(int paramInt) {
 		if (this.mSelectedSwitchButton != null)
 			this.mSelectedSwitchButton.setSelected(false);
@@ -147,7 +141,7 @@ public class CustomGalleryDialog extends Dialog {
 		this.mSelectedSwitchButton = localImageView;
 		this.mSelectedSwitchButton.setSelected(true);
 	}
-
+	
 	/**
 	 * 设置聚焦画廊海报图片
 	 * 
@@ -155,5 +149,12 @@ public class CustomGalleryDialog extends Dialog {
 	 */
 	private void setSelectedGalleryImg(int position) {
 		mGallery.setSelection(position);
+	}
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(mContentView);
+		setCanceledOnTouchOutside(true);
 	}
 }

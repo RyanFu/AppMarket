@@ -40,3 +40,30 @@
 (6) 接口在哪定义都行，只要将接口的实现对象传给希望回调的对象即可 BackupOrRestoreActivity OnProgressChangeListener                                                   
 (7) 自定义对话框的宽度可以参考customgallerydialog实现
 (8）ListBaseAdapter changeApkStatus遍历应用列表找到一个相同包名做出相应动作后，可以跳出循环结束遍历，因为不存在两个相同的包名
+(9) 自动更新时的bug
+    downloadService updateDataDone方法
+    if (list != null && list.size() > 0) {
+			for (int i = 0; i < list.size(); i++) {
+				ApkItem item = list.get(i);
+				int j = 0;
+				for (; j < downloadList.size(); j++) {
+					DownloadEntity entity = downloadList.get(j);
+					// if(entity.downloadType==TYPE_OF_DOWNLOAD ||
+					// entity.downloadType==TYPE_OF_COMPLETE) {
+					if (entity.appId == item.appId
+							&& entity.category == item.category) {
+						break;
+					}
+					// }
+				}
+				if (j == downloadList.size()) {
+					DownloadEntity d = new DownloadEntity(item);  
+					d.downloadType = TYPE_OF_UPDATE;
+					DownloadUtils.setInstallDownloadEntity(this, d);
+					tempList.add(d);
+				}
+			}
+		}
+	会判断更新列表是否在下载列表中，安装后第一次进行更新时,更新列表肯定不在下载列表中，但是自动更新是关闭状态，但是把自动更新打开，再重新进入时，此时更新列表已
+	包含在下载列表中，故不会再自动下载	
+(10)优化SlipSwitch

@@ -10,25 +10,22 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+/**
+ * 自定义无标题Dialog
+ * @author yvon
+ *
+ */
 public class CustomNoTitleDialog extends Dialog {
 	private Context context;
 	private TextView mTextView;
 	private Button mCancelButton;
 	private Button mPromptButton;
 	private View mContentView;
-	
 
 	public CustomNoTitleDialog(Context context) {
 		super(context, R.style.dialog_progress_default);
 		this.context=context;
 		initViews();
-	}
-	
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(mContentView);
-		setCanceledOnTouchOutside(true);
 	}
 	
 	private void initViews() {
@@ -82,5 +79,13 @@ public class CustomNoTitleDialog extends Dialog {
 			mCancelButton.setOnClickListener(onClickListener);
 		}
 		return this;
+	}
+	
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(mContentView);
+		setCanceledOnTouchOutside(true);
 	}
 }

@@ -4,6 +4,10 @@ import java.io.Serializable;
 import java.util.List;
 
 public class SubjectInfo implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public int subjectId;
 	public String title;
 	public String subjectIconUrl;

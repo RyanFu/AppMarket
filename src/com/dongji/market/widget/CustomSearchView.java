@@ -25,6 +25,11 @@ import android.widget.PopupWindow;
 import com.dongji.market.R;
 import com.dongji.market.helper.DJMarketUtils;
 
+/**
+ * 自定义搜索控件
+ * @author yvon
+ *
+ */
 public class CustomSearchView extends EditText {
 
 	private Context cxt;
@@ -34,7 +39,6 @@ public class CustomSearchView extends EditText {
 	private int dividerHeight;
 	private Drawable mListSelector, mPopupBg;
 	private boolean isAutoSearching;
-
 	private PopupWindow mPopup;
 	private BaseAdapter mAdapter;
 	private RequestDataListener requestDataListener;
@@ -75,6 +79,21 @@ public class CustomSearchView extends EditText {
 		mPopupItemHeight = DJMarketUtils.dip2px(cxt, 17) + DJMarketUtils.sp2px(cxt, 17);
 		mPopupMaxHeight = metrics.heightPixels / 4;
 	}
+	
+	private void buildDropDown() {
+		if (mListView == null) {
+			mListView = new MyListView(getContext());
+			mListView.setCacheColorHint(0x000);
+			mListView.setDivider(new ColorDrawable(color));
+			mListView.setDividerHeight(dividerHeight);
+			mListView.setScrollbarFadingEnabled(false);
+			mListView.setPadding(3, 0, 0, 0);
+			if (mListSelector != null) {
+				mListView.setSelector(mListSelector);
+			}
+			mListView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 1.0f));
+		}
+	}
 
 	public void setPopupHeight(int height) {
 		this.mPopupMaxHeight = height;
@@ -92,35 +111,9 @@ public class CustomSearchView extends EditText {
 		this.mOnKeyDownListener = listener;
 	}
 
-	private void initPopupWindow() {
-		mPopup = new PopupWindow(this);
-		mPopup.setAnimationStyle(R.anim.down_fade_in);
-		mPopup.setOutsideTouchable(true);
-		if (mPopupBg == null) {
-			mPopupBg = new BitmapDrawable();
-		}
-		mPopup.setBackgroundDrawable(mPopupBg);
-		mPopup.setContentView(mListView);
-	}
-
 	private void dismissPopup() {
 		if (mPopup != null && mPopup.isShowing()) {
 			mPopup.dismiss();
-		}
-	}
-
-	private void buildDropDown() {
-		if (mListView == null) {
-			mListView = new MyListView(getContext());
-			mListView.setCacheColorHint(0x000);
-			mListView.setDivider(new ColorDrawable(color));
-			mListView.setDividerHeight(dividerHeight);
-			mListView.setScrollbarFadingEnabled(false);
-			mListView.setPadding(3, 0, 0, 0);
-			if (mListSelector != null) {
-				mListView.setSelector(mListSelector);
-			}
-			mListView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 1.0f));
 		}
 	}
 
@@ -134,32 +127,6 @@ public class CustomSearchView extends EditText {
 		this.onItemClickListener = onItemClickListener;
 	}
 
-	private void showDropDown() {
-		if (mPopup == null) {
-			initPopupWindow();
-		}
-		if (mPopup.isShowing()) {
-			setSelectionTop();
-			adjustPopupHeight();
-			mPopup.update(this, 0, -3, getMeasuredWidth(), mPopupHeight);
-		} else {
-			mPopup.setWidth(getMeasuredWidth());
-			adjustPopupHeight();
-			mPopup.setHeight(mPopupHeight);
-			mPopup.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
-			mPopup.showAsDropDown(this, 0, -3);
-			setSelectionTop();
-		}
-	}
-
-	private void adjustPopupHeight() {
-		if (mAdapter.getCount() * mPopupItemHeight > mPopupMaxHeight) {
-			mPopupHeight = mPopupMaxHeight;
-		} else {
-			mPopupHeight = mPopupItemHeight * mAdapter.getCount();
-		}
-	}
-
 	public void dismissDropDown() {
 		this.dismissPopup();
 	}
@@ -168,13 +135,11 @@ public class CustomSearchView extends EditText {
 		this.dismissPopup();
 		this.clearFocus();
 	}
-
-	private void setSelectionTop() {
-		mListView.requestFocusFromTouch();
-		mListView.setSelected(true);
-		mListView.setSelection(0);
-	}
-
+	
+	/**
+	 * 设置适配器
+	 * @param adapter
+	 */
 	public <T extends BaseAdapter & RequestDataListener> void setAdapter(T adapter) {
 		if (mObserver == null) {
 			mObserver = new PopupDataSetObserver();
@@ -199,24 +164,11 @@ public class CustomSearchView extends EditText {
 		});
 	}
 
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-			if (mPopup != null && mPopup.isShowing()) {
-				mPopup.dismiss();
-				return true;
-			}
-		}
-		if (mOnKeyDownListener != null) {
-			boolean flag = mOnKeyDownListener.onKeyDown(keyCode, event);
-			if (!flag) {
-				return super.onKeyDown(keyCode, event);
-			}
-			return true;
-		}
-		return super.onKeyDown(keyCode, event);
-	}
-
+	/**
+	 * 监听内容改变观察者
+	 * @author yvon
+	 *
+	 */
 	private class MyTextWatcher implements TextWatcher {
 
 		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -243,6 +195,11 @@ public class CustomSearchView extends EditText {
 
 	}
 
+	/**
+	 * 自定义listView
+	 * @author yvon
+	 *
+	 */
 	private class MyListView extends ListView {
 
 		public MyListView(Context context) {
@@ -260,25 +217,13 @@ public class CustomSearchView extends EditText {
 			return true;
 		}
 	}
-
-	public interface RequestDataListener {
-		void request(String keyword);
-
-		void cancelPreRequest();
-	}
-
-	public interface OnItemClickListener {
-		void onItemClick(String keyword);
-	}
-
-	public interface OnTextChangeListener {
-		void afterTextChanged(Editable s);
-	}
-
-	public interface OnKeyDownListener {
-		boolean onKeyDown(int keyCode, KeyEvent event);
-	}
-
+	
+	
+	/**
+	 * Popup数据设置观察者
+	 * @author yvon
+	 *
+	 */
 	private class PopupDataSetObserver extends DataSetObserver {
 
 		@Override
@@ -295,6 +240,106 @@ public class CustomSearchView extends EditText {
 			super.onInvalidated();
 		}
 
+	}
+	
+	
+	private void showDropDown() {
+		if (mPopup == null) {
+			initPopupWindow();
+		}
+		if (mPopup.isShowing()) {
+			setSelectionTop();
+			adjustPopupHeight();
+			mPopup.update(this, 0, -3, getMeasuredWidth(), mPopupHeight);
+		} else {
+			mPopup.setWidth(getMeasuredWidth());
+			adjustPopupHeight();
+			mPopup.setHeight(mPopupHeight);
+			mPopup.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
+			mPopup.showAsDropDown(this, 0, -3);
+			setSelectionTop();
+		}
+	}
+	
+	private void initPopupWindow() {
+		mPopup = new PopupWindow(this);
+		mPopup.setAnimationStyle(R.anim.down_fade_in);
+		mPopup.setOutsideTouchable(true);
+		if (mPopupBg == null) {
+			mPopupBg = new BitmapDrawable();
+		}
+		mPopup.setBackgroundDrawable(mPopupBg);
+		mPopup.setContentView(mListView);
+	}
+	
+	private void setSelectionTop() {
+		mListView.requestFocusFromTouch();
+		mListView.setSelected(true);
+		mListView.setSelection(0);
+	}
+	
+	private void adjustPopupHeight() {
+		if (mAdapter.getCount() * mPopupItemHeight > mPopupMaxHeight) {
+			mPopupHeight = mPopupMaxHeight;
+		} else {
+			mPopupHeight = mPopupItemHeight * mAdapter.getCount();
+		}
+	}
+	
+	
+	/**
+	 * 请求数据监听器
+	 * @author yvon
+	 *
+	 */
+	public interface RequestDataListener {
+		void request(String keyword);
+		void cancelPreRequest();
+	}
+
+	/**
+	 * 条目点击监听器
+	 * @author yvon
+	 *
+	 */
+	public interface OnItemClickListener {
+		void onItemClick(String keyword);
+	}
+
+	/**
+	 * EditText内容改变监听器
+	 * @author yvon
+	 *
+	 */
+	public interface OnTextChangeListener {
+		void afterTextChanged(Editable s);
+	}
+
+	/**
+	 * 清除内容监听器
+	 * @author yvon
+	 *
+	 */
+	public interface OnKeyDownListener {
+		boolean onKeyDown(int keyCode, KeyEvent event);
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+			if (mPopup != null && mPopup.isShowing()) {
+				mPopup.dismiss();
+				return true;
+			}
+		}
+		if (mOnKeyDownListener != null) {
+			boolean flag = mOnKeyDownListener.onKeyDown(keyCode, event);
+			if (!flag) {
+				return super.onKeyDown(keyCode, event);
+			}
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 
 }

@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
@@ -19,8 +18,13 @@ import android.widget.Toast;
 import com.dongji.market.R;
 import com.dongji.market.database.MarketDatabase.Setting_Service;
 import com.dongji.market.helper.AConstDefine;
-import com.dongji.market.helper.AConstDefine;
 
+/**
+ * 自定义设置流量Dialog
+ * 
+ * @author yvon
+ * 
+ */
 public class SettingFlowDialog extends Dialog {
 	private Context cxt;
 	private EditText etInputFlow;
@@ -33,14 +37,6 @@ public class SettingFlowDialog extends Dialog {
 		super(context, R.style.dialog_progress_default);
 		cxt = context;
 		initViews();
-	}
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
-		super.onCreate(savedInstanceState);
-		setContentView(mContentView);
-		setCanceledOnTouchOutside(true);
 	}
 
 	private void initViews() {
@@ -120,5 +116,12 @@ public class SettingFlowDialog extends Dialog {
 			}
 		}
 		return super.onTouchEvent(event);
+	}
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(mContentView);
+		setCanceledOnTouchOutside(true);
 	}
 }

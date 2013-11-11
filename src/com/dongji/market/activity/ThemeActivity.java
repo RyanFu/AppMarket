@@ -73,7 +73,6 @@ public class ThemeActivity extends BaseActivity implements OnClickListener {
 	// private Context context;
 
 	private MyHandler handler;
-	private SendHandler sendHandler;
 	private final static int EVENT_REQUEST_DATA = 1;
 	private static final int EVENT_NO_NETWORK_ERROR = 3;
 	private static final int EVENT_REQUEST_DATA_ERROR = 4;
@@ -81,8 +80,6 @@ public class ThemeActivity extends BaseActivity implements OnClickListener {
 	private View mLoadingView;
 	private View mLoadingProgressBar;
 	private TextView mLoadingTextView;
-
-	private int subjectId = 0;
 
 	@Override
 	protected void onCreate(Bundle bundle) {
@@ -341,45 +338,6 @@ public class ThemeActivity extends BaseActivity implements OnClickListener {
 		}
 	}
 
-	private class SendHandler extends Handler {
-		SendHandler(Looper looper) {
-			super(looper);
-		}
-
-		@Override
-		public void handleMessage(Message msg) {
-			// TODO Auto-generated method stub
-			super.handleMessage(msg);
-			switch (msg.what) {
-			case EVENT_REQUEST_DATA:
-				try {
-					int result = 0;
-					if (subjectId != 0) {
-						result = DataManager.newInstance().subjectCount(subjectId);
-					}
-				} catch (IOException e) {
-					if (!DJMarketUtils.isNetworkAvailable(ThemeActivity.this)) {
-						sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
-					} else {
-						sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
-					}
-				} catch (JSONException e) {
-					if (!DJMarketUtils.isNetworkAvailable(ThemeActivity.this)) {
-						sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
-					} else {
-						sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
-					}
-				}
-				break;
-			case EVENT_NO_NETWORK_ERROR:
-				setErrorMessage(R.string.no_network_refresh_msg, R.string.no_network_refresh_msg2);
-				break;
-			case EVENT_REQUEST_DATA_ERROR:
-				setErrorMessage(R.string.request_data_error_msg, R.string.request_data_error_msg2);
-				break;
-			}
-		}
-	}
 
 	/**
 	 * 数据获取异常处理
@@ -465,22 +423,11 @@ public class ThemeActivity extends BaseActivity implements OnClickListener {
 		switch (v.getId()) {
 		case R.id.water_fall_item_cell:
 			SubjectInfo subjectInfo = (SubjectInfo) v.getTag();
-			if (subjectInfo != null && subjectInfo.subjectId != 0) {
-				subjectId = subjectInfo.subjectId;
-			}
-			sendClickCount();
 			startThemeList(subjectInfo);
 			break;
 		default:
 			break;
 		}
-	}
-
-	private void sendClickCount() {
-		HandlerThread mHandlerThread = new HandlerThread("HandlerThread");
-		mHandlerThread.start();
-		sendHandler = new SendHandler(mHandlerThread.getLooper());
-		sendHandler.sendEmptyMessage(EVENT_REQUEST_DATA);
 	}
 
 	private void startThemeList(SubjectInfo info) {

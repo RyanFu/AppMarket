@@ -34,7 +34,6 @@ import com.dongji.market.cache.FileService;
 import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.DownloadUtils;
-import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.pojo.ApkItem;
 import com.dongji.market.pojo.DownloadEntity;
 import com.dongji.market.service.DownloadService;

@@ -15,6 +15,11 @@ import android.widget.TextView;
 
 import com.dongji.market.R;
 
+/**
+ * 自定义Dialog
+ * @author yvon
+ *
+ */
 public class CustomDialog extends Dialog {
 	private Context cxt;
 	private ImageView mIcon;
@@ -28,14 +33,6 @@ public class CustomDialog extends Dialog {
 		super(context, R.style.dialog_progress_default);
 		cxt = context;
 		initViews();
-	}
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
-		super.onCreate(savedInstanceState);
-		setContentView(mContentView);
-		setCanceledOnTouchOutside(true);
 	}
 
 	private void initViews() {
@@ -156,4 +153,12 @@ public class CustomDialog extends Dialog {
 		}
 		return this;
 	}
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(mContentView);
+		setCanceledOnTouchOutside(true);
+	}
+
 }

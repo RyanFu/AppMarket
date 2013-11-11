@@ -15,64 +15,35 @@ import org.myjson.JSONObject;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.text.TextUtils;
 
-import com.dongji.market.database.MarketDatabase;
 import com.dongji.market.helper.DJMarketUtils;
-import com.dongji.market.helper.DJMarketUtils;
+import com.dongji.market.helper.FsCache;
 import com.dongji.market.pojo.ApkItem;
 import com.dongji.market.pojo.ChannelListInfo;
 import com.dongji.market.pojo.HistoryApkItem;
 import com.dongji.market.pojo.InstalledAppInfo;
-import com.dongji.market.pojo.NavigationInfo;
-import com.dongji.market.pojo.StaticAddress;
 import com.dongji.market.pojo.SubjectInfo;
 import com.dongji.market.pojo.SubjectItem;
 
 public class DataManager {
 	private static DataManager dataManager;
-
-	// private String
-	// bannerUrl="http://apptest.uni.me:8002/MarketDataService/WebRoot/data/banner.json";
-	// private String
-	// appsUrl="http://apptest.uni.me:8002/MarketDataService/WebRoot/data/apps.json";
-	// private String
-	// gemasUrl="http://apptest.uni.me:8002/MarketDataService/WebRoot/data/games.json";
-	// private String
-	// searchUrl="http://apptest.uni.me:8002/MarketDataService/WebRoot/data/search.json";
-	// private String
-	// updateUrl="http://apptest.uni.me:8002/MarketDataService/WebRoot/data/update.json";
-	// private String
-	// searchDropUrl="http://apptest.uni.me:8002/MarketDataService/WebRoot/data/search_drop.json";
-	// private String
-	// cloudRecoverUrl="http://apptest.uni.me:8002/MarketDataService/WebRoot/data/cloudrecover.json";
-
 	private static final String SINA_WEIBO_SHORT_URL_API = "http://api.t.sina.com.cn/short_url/shorten.json?source=2849184197&url_long=";
-
-	// private static final String DOMAIN_NAME = "http://192.168.1.200/cms/"
 	private static final String DOMAIN_NAME = "http://www.91dongji.com/";
-
-	private static final String NAV_URL = "json2/nav.txt";
-	private static final String APP_CHANNEL_URL = "json2/cat.txt";
-	private static final String UPDATE_URL = "index.php?g=Api&m=Soft3&a=softUpdate"; // http://192.168.0.101/wuxiuwu/index.php?g=Api&m=Soft2&a=softUpdate
-	private static final String SEARCH_RESULT_URL = "index.php?g=Api&m=Soft3&a=softSearch&param="; // http://192.168.0.101/wuxiuwu/index.php?g=Api&m=Soft2&a=softSearch&param=
+	private static final String UPDATE_URL = "index.php?g=Api&m=Soft3&a=softUpdate";
+	private static final String SEARCH_RESULT_URL = "index.php?g=Api&m=Soft3&a=softSearch&param=";
 	private static final String STATISTICS_INSTALL = "index.php?g=Api&m=AppCount&a=writeIn&catid=";
-	// private static final String
-	// BANNER_URL="index.php?g=Api&m=Soft2&a=bannerShow";
-	// //http://192.168.0.101/wuxiuwu/index.php?g=Api&m=Soft2&a=bannerShow
-	private static final String BANNER_URL = "index.php?g=Api&m=MobileApi2&a=bannerShow";
-	private static final String CLOUND_BACKUP_URL = "index.php?g=Api&m=Soft2&a=userBackup"; // http://192.168.0.101/wuxiuwu/index.php?g=Api&m=Soft2&a=userBackup
-	private static final String CLOUND_RECOVER_URL = "index.php?g=Api&m=Soft2&a=userRestoration"; // http://192.168.0.101/wuxiuwu/index.php?g=Api&m=Soft2&a=userRestoration
-	private static final String HOTWORD_URL = "index.php?g=Api&m=MobileApi2&a=hotword"; // index.php?g=Api&m=Soft2&a=displayhotword
-	private static final String LOGIN_URL = "index.php?g=api&m=userApi2&a=login"; // 登录url
-	private static final String REGISTER_URL = "index.php?g=api&m=userApi2&a=register"; // 注册url
-	private static final String CHANGE_PWD_URL = "index.php?g=api&m=userApi2&a=changepwd"; // 修改密码url
-	private static final String FIND_PWD_URL = "index.php?g=api&m=userApi2&a=findpwd"; // 找回密码url
-	private static final String FEEDBACK_URL = "index.php?g=api&m=feedBack&a=Fbwrite"; // 反馈url
-	private static final String GRADE_URL = "index.php?g=api&m=soft2&a=SoftScore"; // 评分url
-	private static final String TOP_50_URL = "json2/top50/top50.txt"; // Top50
+//	private static final String BANNER_URL = "index.php?g=Api&m=MobileApi2&a=bannerShow";
+	private static final String BANNER_URL = "index.php?g=Api&m=MobileApi3&a=bannerShows";
+	private static final String CLOUND_BACKUP_URL = "index.php?g=Api&m=Soft2&a=userBackup";
+	private static final String CLOUND_RECOVER_URL = "index.php?g=Api&m=Soft2&a=userRestoration";
+	private static final String HOTWORD_URL = "index.php?g=Api&m=MobileApi2&a=hotword";
+	private static final String LOGIN_URL = "index.php?g=api&m=userApi2&a=login";
+	private static final String REGISTER_URL = "index.php?g=api&m=userApi2&a=register";
+	private static final String CHANGE_PWD_URL = "index.php?g=api&m=userApi2&a=changepwd";
+	private static final String FIND_PWD_URL = "index.php?g=api&m=userApi2&a=findpwd";
+	private static final String FEEDBACK_URL = "index.php?g=api&m=feedBack&a=Fbwrite";
+	private static final String GRADE_URL = "index.php?g=api&m=soft2&a=SoftScore";
 	private static final String MAIN_DATA_URL = "index.php?g=Api&m=MobileApi2&a=index&catid="; // 编辑推荐、最近更新、装机必备、软件分类url
 	private static final String DJ_ADRESS_URL = "index.php?g=Api&m=MobileApi2&a=Marketapp";// 动机市场详情地址
 	private static final String WX_DATA_URL = "index.php?g=Api&m=MobileApi2&a=Wechatinfo";// 微信详情信息
@@ -82,28 +53,12 @@ public class DataManager {
 	private static final String COLLECT_LOCAL_INFO_URL = "index.php?g=Api&m=PI&a=Recive"; // 本地信息收集url
 	private static final String ALLSUBJECT_URL = "index.php?g=Api&m=MobileApi2&a=Gettopic"; // 所有的专题url
 	private static final String SUBJECTITEM_URL = "index.php?g=Api&m=MobileApi2&a=Topicinfo&id="; // 专题详情url
-	private static final String SUBJECTCOUNT_URL = "index.php?g=Api&m=MobileApi2&a=Writevists&id="; // 专题详情url
-	private static final String ONLINE_DOMAIN_NAME = "http://dl.91dongji.com/file/"; // http://www.91dongji.com/app/d/file/
-	// private static final String
-	// ONLINE_DOMAIN_NAME="http://192.168.1.200/cms/d/file/";
-	// //http://www.91dongji.com/app/d/file/ 测试更新地址
-
-	private static final String ONLINE_STATIC_DOMAIN_NAME = "http://www.91dongji.com/"; // http://tools.mille.us:8888/
-
-	private static final String NAVIGATION_NAME = "navigation";
+	private static final String ONLINE_DOMAIN_NAME = "http://dl.91dongji.com/file/";
+	private static final String ONLINE_STATIC_DOMAIN_NAME = "http://www.91dongji.com/";
 	private static final String CHANNEL_NAME = "channel";
 	private static final String BANNER_NAME = "banner";
-
-	private static final String CHANNEL_PREFIX = "channel_";
-
 	private static final int MAX_SEARCH_RESULT_COUNT = 50;
-
 	private static final String NULL_STRING = "null";
-
-	private static final int SORT_BY_TIME = 3; // 按时间排序
-	private static final int SORT_BY_SCORE = 2; // 按评分排序
-	private static final int SORT_BY_DOWNLOAD = 1; // 按下载次数排序
-
 	public static final int EDITOR_RECOMMEND_ID = 1; // 编辑推荐
 	public static final int RECENT_UPDATA_ID = 2; // 最近更新
 	public static final int ESSENTIAL_ID = 3; // 装机必备
@@ -121,107 +76,7 @@ public class DataManager {
 	}
 
 	/**
-	 * 获取导航数据
-	 * 
-	 * @return
-	 * @throws IOException
-	 * @throws JSONException
-	 */
-	public ArrayList<NavigationInfo> getNavigationList() throws JSONException {
-		ArrayList<NavigationInfo> list = null;
-		HttpClientApi httpClientApi = HttpClientApi.getInstance();
-		String result = null;
-		boolean isLocal = false;
-		try {
-			result = httpClientApi.getContentFromUrl(DOMAIN_NAME + NAV_URL);// DOMAIN_NAME
-		} catch (IOException e) {
-			System.out.println("getnavigation " + e);
-			result = FsCache.getCacheString(NAVIGATION_NAME);
-			isLocal = true;
-		}
-		if (!TextUtils.isEmpty(result)) {
-			JSONArray jsonArray = new JSONArray(result);
-			int length = jsonArray.length();
-			if (jsonArray != null && length > 0) {
-				list = new ArrayList<NavigationInfo>();
-				for (int i = 0; i < length; i++) {
-					NavigationInfo info = new NavigationInfo();
-					JSONObject jsonObject = jsonArray.getJSONObject(i);
-					info.id = jsonObject.getInt("catid");
-					info.name = jsonObject.getString("catname");
-					JSONObject childJsonObject = jsonObject.getJSONObject("datalist");
-					info.staticAddress = new StaticAddress[2];
-					StaticAddress gameStaticAddress = new StaticAddress();
-					gameStaticAddress.url = childJsonObject.getString("game_url");
-					gameStaticAddress.md5Value = childJsonObject.getString("game_md5");
-					StaticAddress appStaticAddress = new StaticAddress();
-					appStaticAddress.url = childJsonObject.getString("soft_url");
-					appStaticAddress.md5Value = childJsonObject.getString("soft_md5");
-
-					info.staticAddress[0] = appStaticAddress;
-					info.staticAddress[1] = gameStaticAddress;
-					list.add(info);
-				}
-			}
-			if (!isLocal) {
-				FsCache.cacheFileByMd5(result, NAVIGATION_NAME);
-			}
-		}
-		return list;
-	}
-
-	/**
-	 * 获取导航数据
-	 * 
-	 * @return
-	 * @throws IOException
-	 * @throws JSONException
-	 */
-	public ArrayList<NavigationInfo> getNavigationList(int catid) throws JSONException {
-		ArrayList<NavigationInfo> list = null;
-		HttpClientApi httpClientApi = HttpClientApi.getInstance();
-		String result = null;
-		boolean isLocal = false;
-		try {
-			result = httpClientApi.getContentFromUrl(DOMAIN_NAME + NAV_URL);// DOMAIN_NAME
-		} catch (IOException e) {
-			System.out.println("getnavigation " + e);
-			result = FsCache.getCacheString(NAVIGATION_NAME);
-			isLocal = true;
-		}
-		if (!TextUtils.isEmpty(result)) {
-			JSONArray jsonArray = new JSONArray(result);
-			int length = jsonArray.length();
-			if (jsonArray != null && length > 0) {
-				list = new ArrayList<NavigationInfo>();
-				for (int i = 0; i < length; i++) {
-					NavigationInfo info = new NavigationInfo();
-					JSONObject jsonObject = jsonArray.getJSONObject(i);
-					info.id = jsonObject.getInt("catid");
-					info.name = jsonObject.getString("catname");
-					JSONObject childJsonObject = jsonObject.getJSONObject("datalist");
-					info.staticAddress = new StaticAddress[2];
-					StaticAddress gameStaticAddress = new StaticAddress();
-					gameStaticAddress.url = childJsonObject.getString("game_url");
-					gameStaticAddress.md5Value = childJsonObject.getString("game_md5");
-					StaticAddress appStaticAddress = new StaticAddress();
-					appStaticAddress.url = childJsonObject.getString("soft_url");
-					appStaticAddress.md5Value = childJsonObject.getString("soft_md5");
-
-					info.staticAddress[0] = appStaticAddress;
-					info.staticAddress[1] = gameStaticAddress;
-					list.add(info);
-				}
-			}
-			if (!isLocal) {
-				FsCache.cacheFileByMd5(result, NAVIGATION_NAME);
-			}
-		}
-		return list;
-	}
-
-	/**
-	 * 获取列表分类数据
+	 * 获取分类列表数据
 	 * 
 	 * @return
 	 * @throws JSONException
@@ -232,10 +87,7 @@ public class DataManager {
 		String result = null;
 		boolean isLocal = false;
 		try {
-			// result = httpClientApi.getContentFromUrl(DOMAIN_NAME
-			// + APP_CHANNEL_URL);
 			result = httpClientApi.getContentFromUrl(DOMAIN_NAME + MAIN_DATA_URL + SOFT_CHANNEL_ID + getLanguageType());
-			System.out.println("channel data -------> " + result);
 		} catch (IOException e) {
 			isLocal = true;
 			result = FsCache.getCacheString(CHANNEL_NAME);
@@ -251,9 +103,8 @@ public class DataManager {
 					info.name = jsonObject.getString("catname");
 					info.parentId = jsonObject.getInt("parentid");
 					String iconUrl = jsonObject.getString("img");
-					// String iconUrl=jsonObject.getString("image");
 					if (!TextUtils.isEmpty(iconUrl)) {
-						info.iconUrl = DOMAIN_NAME + iconUrl; // ONLINE_DOMAIN_NAME
+						info.iconUrl = DOMAIN_NAME + iconUrl;
 					}
 					info.pageCount = jsonObject.getInt("total");
 					list.add(info);
@@ -266,6 +117,14 @@ public class DataManager {
 		return list;
 	}
 
+	/**
+	 * 获取列表页应用或游戏数据
+	 * @param context
+	 * @param catid
+	 * @param isApp
+	 * @return
+	 * @throws JSONException
+	 */
 	public ArrayList<ApkItem> getApps(Context context, int catid, boolean isApp) throws JSONException {
 		ArrayList<ApkItem> list = null;
 		String result = null;
@@ -288,7 +147,6 @@ public class DataManager {
 			default:
 				break;
 			}
-
 			System.out.println("=========suffixUrl=========" + DOMAIN_NAME + suffixUrl);
 			HttpClientApi httpClientApi = HttpClientApi.getInstance();
 			try {
@@ -314,7 +172,6 @@ public class DataManager {
 					if (!TextUtils.isEmpty(category)) {
 						item.category = Integer.parseInt(category);
 					}
-					// item.classx=jsonObject.getInt("catpid");
 					String language = jsonObject.getString("language");
 					if (TextUtils.isEmpty(language)) {
 						item.language = 1;
@@ -325,7 +182,6 @@ public class DataManager {
 					String apkUrl = jsonObject.getString("down_url");
 					if (!TextUtils.isEmpty(apkUrl)) {
 						item.apkUrl = ONLINE_STATIC_DOMAIN_NAME + apkUrl;
-						// item.apkUrl = DOMAIN_NAME + apkUrl;
 					}
 					item.downloadNum = jsonObject.getLong("down_count");
 					String iconUrl = jsonObject.getString("apk_icon");
@@ -344,14 +200,12 @@ public class DataManager {
 					list.add(item);
 				}
 			}
-
 		}
 		return list;
 	}
 
-	// private StringBuilder sb=new StringBuilder();
 	/**
-	 * 
+	 * 获取某一个分类下的应用或游戏列表数据
 	 * @param channelInfo
 	 * @param context
 	 * @param page
@@ -361,10 +215,6 @@ public class DataManager {
 	 */
 	public ArrayList<ApkItem> getApps(ChannelListInfo channelInfo, Context context, int sortType) throws JSONException {
 		ArrayList<ApkItem> list = null;
-		// if(sb.length()>0) {
-		// sb.delete(0, sb.length());
-		// }
-		// sb.append(DOMAIN_NAME).append("json2/cat/").append(channelInfo.id+"/").append(String.valueOf(channelInfo.currentPage)).append("_").append(sortType).append(".txt");
 		String sb = DOMAIN_NAME + SOFT_SORT_URL + sortType + "&catid=" + channelInfo.id + "&page=" + channelInfo.currentPage + getLanguageType();
 		System.out.println("sort url ===========> " + sb);
 		String result = null;
@@ -372,7 +222,6 @@ public class DataManager {
 			HttpClientApi httpClientApi = HttpClientApi.getInstance();
 			try {
 				result = httpClientApi.getContentFromUrl(sb.toString());
-				// System.out.println("sort data ========> " + result);
 			} catch (IOException e) {
 				System.out.println("getApps error:" + e + ", " + result);
 			}
@@ -386,7 +235,6 @@ public class DataManager {
 					ApkItem item = new ApkItem();
 					item.appId = jsonObject.getInt("id");
 					item.category = jsonObject.getInt("catcid");
-					// item.classx=jsonObject.getInt("catpid");
 					String language = jsonObject.getString("language");
 					if (TextUtils.isEmpty(language)) {
 						item.language = 1;
@@ -396,7 +244,6 @@ public class DataManager {
 					item.company = jsonObject.getString("developer");
 					String apkUrl = jsonObject.getString("down_url");
 					if (!TextUtils.isEmpty(apkUrl)) {
-						// item.apkUrl = ONLINE_DOMAIN_NAME + apkUrl;
 						item.apkUrl = ONLINE_STATIC_DOMAIN_NAME + apkUrl;
 					}
 					String downloadNum = jsonObject.getString("down_count");
@@ -404,7 +251,6 @@ public class DataManager {
 						item.downloadNum = Long.valueOf(downloadNum);
 					}
 					String iconUrl = jsonObject.getString("apk_icon");
-
 					if (!TextUtils.isEmpty(iconUrl)) {
 						item.appIconUrl = ONLINE_DOMAIN_NAME + iconUrl;
 					}
@@ -427,32 +273,6 @@ public class DataManager {
 			}
 		}
 		return list;
-	}
-
-	/**
-	 * 清除失效的垃圾缓存数据
-	 */
-	public void clearRubbishCacheData(Context context, List<ChannelListInfo> list) {
-		/*
-		 * MarketDatabase db=new MarketDatabase(context); List<ChannelListInfo>
-		 * saveList=db.getAllChannel(); if(saveList==null) {
-		 * FsCache.deleteChannelCacheFile(); // 删除所有分类缓存文件 }else { for(int
-		 * i=0;i<list.size();i++) { ChannelListInfo info=list.get(i); for(int
-		 * j=0;j<saveList.size();j++) { ChannelListInfo
-		 * saveInfo=saveList.get(j); if (info.equals(saveInfo)) {
-		 * if(info.staticAddress!=null) { if(saveInfo!=null &&
-		 * saveInfo.staticAddress!=null) { int
-		 * length1=info.staticAddress.length; int
-		 * length2=saveInfo.staticAddress.length; for(int
-		 * k=length1;k<length2;k++) { db.deleteChannelRefByIndex(saveInfo.id,
-		 * k); FsCache .deleteCacheFileByMd5Value(CHANNEL_PREFIX +
-		 * ((StaticAddress)saveInfo.staticAddress[k]).md5Value); } } }else {
-		 * if(saveInfo!=null && saveInfo.staticAddress!=null) {
-		 * db.deleteChannelRefByChannelId(info.id); for(int
-		 * k=0;k<saveInfo.staticAddress.length;k++) { FsCache
-		 * .deleteCacheFileByMd5Value(CHANNEL_PREFIX +
-		 * ((StaticAddress)saveInfo.staticAddress[k]).md5Value); } } } } } } }
-		 */
 	}
 
 	/**
@@ -523,20 +343,15 @@ public class DataManager {
 					item.historys[j] = historyItem;
 				}
 			}
-
 			String apkUrl = jsonObject.getString("down_url");
 			if (!TextUtils.isEmpty(apkUrl)) {
 				item.apkUrl = ONLINE_STATIC_DOMAIN_NAME + apkUrl;
 			}
-
 			item.downloadNum = jsonObject.getLong("down_count");
-
 			String iconUrl = jsonObject.getString("apk_icon");
-
 			if (!TextUtils.isEmpty(iconUrl)) {
 				item.appIconUrl = ONLINE_DOMAIN_NAME + iconUrl;
 			}
-
 			item.fileSize = jsonObject.getLong("apk_size");
 			item.appName = jsonObject.getString("apk_name");
 			JSONArray permisionJsonArray = jsonObject.getJSONArray("apk_permision");
@@ -552,7 +367,6 @@ public class DataManager {
 			if (jsonObject.has("heavy")) {
 				item.heavy = jsonObject.getInt("heavy");
 			}
-
 			JSONArray likeJsonArray = jsonObject.getJSONArray("like");
 			if (likeJsonArray != null && likeJsonArray.length() > 0) {
 				for (int i = 0; i < likeJsonArray.length(); i++) {
@@ -568,7 +382,6 @@ public class DataManager {
 					item.likeList.add(likeItem);
 				}
 			}
-
 			return item;
 		}
 		return null;
@@ -610,7 +423,7 @@ public class DataManager {
 	}
 
 	/**
-	 * 返回搜索关键字
+	 * 获取搜索热词列表
 	 * 
 	 * @return
 	 * @throws IOException
@@ -664,18 +477,13 @@ public class DataManager {
 						item.apkUrl = ONLINE_STATIC_DOMAIN_NAME + downloadUrl;
 					}
 					item.packageName = obj.getString("apk_packagename");
-					// item.firmwareVersion=obj.getString("firmware_version");
 					item.version = obj.getString("apk_versionname");
-					// item.permission=obj.getString("permision");
-					// item.classx=obj.getInt("classz");
 					item.language = obj.getInt("language");
 					item.company = obj.getString("developer");
-
 					String iconUrl = obj.getString("apk_icon");
 					if (!TextUtils.isEmpty(iconUrl)) {
 						item.appIconUrl = ONLINE_DOMAIN_NAME + iconUrl;
 					}
-					// item.appScreenshotUrl=obj.getString("app_screenshot");
 					item.discription = obj.getString("contents");
 					item.updateDate = obj.getString("updatetime");
 					item.fileSize = obj.getLong("apk_size");
@@ -689,7 +497,94 @@ public class DataManager {
 		}
 		return list;
 	}
+	
+	
+	/**
+	 * 获取更新列表数据
+	 * @param context
+	 * @return
+	 * @throws IOException
+	 * @throws JSONException
+	 */
+	public ArrayList<ApkItem> getUpdateList(Context context) throws IOException, JSONException {
+		String result = requestSoftUpdateList(context);
+		if (!TextUtils.isEmpty(result)) {
+			System.out.println("update:" + result);
+			ArrayList<ApkItem> list = parseJson(result);
+			return list;
+		}
+		return null;
+	}
 
+	
+	/**
+	 * 请求软件更新列表数据
+	 * @param context
+	 * @return
+	 * @throws IOException
+	 */
+	String requestSoftUpdateList(Context context) throws IOException {
+		List<String[]> list = initRequestUpdateList(context);
+		HttpClientApi httpClientApi = HttpClientApi.getInstance();
+		String result = httpClientApi.getContentFromUrlByPost(DOMAIN_NAME + UPDATE_URL + getLanguageType(), list);
+		if (!TextUtils.isEmpty(result)) {
+			FsCache.cacheSofeUpdateData(result);
+		}
+		return result;
+	}
+
+	
+	/**
+	 * 初始化请求更新数据
+	 * @param context
+	 * @return
+	 */
+	private List<String[]> initRequestUpdateList(Context context) {
+		List<PackageInfo> infos = DJMarketUtils.getInstalledPackages(context);
+		List<String[]> items = null;
+		if (infos != null && infos.size() > 0) {
+			items = new ArrayList<String[]>();
+			for (int i = 0; i < infos.size(); i++) {
+				PackageInfo info = infos.get(i);
+				String[] arr = new String[2];
+				arr[1] = info.packageName;
+				arr[0] = String.valueOf(info.versionCode);
+				items.add(arr);
+			}
+		}
+		System.out.println("=============initRequestUpdateList:" + items.size());
+		return items;
+	}
+
+	/**
+	 * 获取单条更新
+	 * 
+	 * @param context
+	 * @param data
+	 * @return
+	 * @throws IOException
+	 * @throws JSONException
+	 */
+	public ApkItem getUpdateBySingle(Context context, String[] data) throws IOException, JSONException {
+		HttpClientApi httpClientApi = HttpClientApi.getInstance();
+		List<String[]> list = new ArrayList<String[]>();
+		list.add(data);
+		String result = httpClientApi.getContentFromUrlByPost(DOMAIN_NAME + UPDATE_URL + getLanguageType(), list);
+		if (!TextUtils.isEmpty(result)) {
+			ArrayList<ApkItem> resultList = parseJson(result);
+			if (resultList != null && resultList.size() > 0) {
+				return resultList.get(0);
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * 解析更新列表json串
+	 * @param result
+	 * @return
+	 * @throws JSONException
+	 */
 	private ArrayList<ApkItem> parseJson(String result) throws JSONException {
 		JSONArray jsonArray = new JSONArray(result);
 		ArrayList<ApkItem> list = new ArrayList<ApkItem>();
@@ -719,78 +614,6 @@ public class DataManager {
 		}
 		return list;
 	}
-
-	private List<String[]> initRequestUpdateList(Context context) {
-		List<PackageInfo> infos = DJMarketUtils.getInstalledPackages(context);
-		List<String[]> items = null;
-		if (infos != null && infos.size() > 0) {
-			items = new ArrayList<String[]>();
-			for (int i = 0; i < infos.size(); i++) {
-				PackageInfo info = infos.get(i);
-				String[] arr = new String[2];
-				arr[1] = info.packageName;
-				arr[0] = String.valueOf(info.versionCode);
-				items.add(arr);
-			}
-		}
-		System.out.println("=============initRequestUpdateList:" + items.size());
-		return items;
-	}
-
-	String requestSoftUpdateList(Context context) throws IOException {
-		List<String[]> list = initRequestUpdateList(context);
-		HttpClientApi httpClientApi = HttpClientApi.getInstance();
-		String result = httpClientApi.getContentFromUrlByPost(DOMAIN_NAME + UPDATE_URL + getLanguageType(), list);
-		if (!TextUtils.isEmpty(result)) {
-			FsCache.cacheSofeUpdateData(result);
-		}
-		return result;
-	}
-
-	public ArrayList<ApkItem> getUpdateList(Context context) throws IOException, JSONException {
-		String result = requestSoftUpdateList(context);
-		if (!TextUtils.isEmpty(result)) {
-			System.out.println("update:" + result);
-			ArrayList<ApkItem> list = parseJson(result);
-			return list;
-		}
-		return null;
-	}
-
-	/**
-	 * 获取单条更新
-	 * 
-	 * @param context
-	 * @param data
-	 * @return
-	 * @throws IOException
-	 * @throws JSONException
-	 */
-	public ApkItem getUpdateBySingle(Context context, String[] data) throws IOException, JSONException {
-		HttpClientApi httpClientApi = HttpClientApi.getInstance();
-		List<String[]> list = new ArrayList<String[]>();
-		list.add(data);
-		String result = httpClientApi.getContentFromUrlByPost(DOMAIN_NAME + UPDATE_URL + getLanguageType(), list);
-		if (!TextUtils.isEmpty(result)) {
-			ArrayList<ApkItem> resultList = parseJson(result);
-			if (resultList != null && resultList.size() > 0) {
-				return resultList.get(0);
-			}
-		}
-		return null;
-	}
-
-	/*
-	 * public ArrayList<String> getSearchList(String str) throws IOException,
-	 * JSONException { HttpClientApi httpClientApi=HttpClientApi.getInstance();
-	 * ArrayList<String> list=null; String
-	 * result=httpClientApi.getContentFromUrl(searchDropUrl); JSONObject
-	 * jsonObj=new JSONObject(result); JSONArray
-	 * jsonArray=jsonObj.getJSONArray("imagine"); list=new ArrayList<String>();
-	 * int num=3; for(int i=0;i<jsonArray.length();i++) { JSONObject
-	 * obj=jsonArray.getJSONObject(i); if(i<=num+str.length()) {
-	 * list.add(obj.getString("item")); }else { break; } } return list; }
-	 */
 
 	/**
 	 * 安装统计
@@ -825,6 +648,13 @@ public class DataManager {
 		return result;
 	}
 
+	/**
+	 * 获取云恢复列表
+	 * @param value
+	 * @return
+	 * @throws IOException
+	 * @throws JSONException
+	 */
 	public ArrayList<ApkItem> getCloudRecoverList(String value) throws IOException, JSONException {
 		HttpClientApi httpClientApi = HttpClientApi.getInstance();
 		ArrayList<ApkItem> list = null;
@@ -841,7 +671,6 @@ public class DataManager {
 				String downloadUrl = obj.getString("down_url");
 				if (!TextUtils.isEmpty(downloadUrl)) {
 					item.apkUrl = ONLINE_STATIC_DOMAIN_NAME + downloadUrl;
-					// item.apkUrl = ONLINE_DOMAIN_NAME + downloadUrl;
 				}
 				item.packageName = obj.getString("apk_packagename");
 				item.version = obj.getString("apk_versionname");
@@ -858,42 +687,6 @@ public class DataManager {
 			}
 		}
 		return list;
-	}
-
-	/**
-	 * 检查市场版本更新
-	 * 
-	 * @param context
-	 * @return
-	 */
-	public String checkAppUpdate(Context context) {
-		String packageName = context.getPackageName();
-		PackageManager pm = context.getPackageManager();
-		PackageInfo packageInfo;
-		try {
-			packageInfo = pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
-			int versionCode = packageInfo.versionCode == 0 ? 1 : packageInfo.versionCode;
-			String url = DOMAIN_NAME + "index.php?g=Api&m=Soft2&a=upgrade&versioncode=" + versionCode + "&packagename=" + packageName;
-			// String
-			// url="http://192.168.0.101/wuxiuwu/index.php?g=Api&m=Soft22&a=upgrade&versioncode=1&packagename=cn.com.wali.walisms";
-			HttpClientApi httpClientApi = HttpClientApi.getInstance();
-			String result = httpClientApi.getContentFromUrl(url);
-			System.out.println("json result ===> " + result);
-			if (!TextUtils.isEmpty(result)) {
-				JSONObject jsonObject = new JSONObject(result);
-				String downloadUrl = jsonObject.getString("down_url");
-				if (!TextUtils.isEmpty(downloadUrl)) {
-					return ONLINE_DOMAIN_NAME + downloadUrl;
-				}
-			}
-		} catch (NameNotFoundException e) {
-			System.out.println(e);
-		} catch (IOException e) {
-			System.out.println(e);
-		} catch (JSONException e) {
-			System.out.println(e);
-		}
-		return null;
 	}
 
 	/**
@@ -1099,8 +892,6 @@ public class DataManager {
 	 */
 	public List<ApkItem> getTop50() throws IOException, JSONException {
 		HttpClientApi httpClientApi = HttpClientApi.getInstance();
-		// String
-		// result=httpClientApi.getContentFromUrl(DOMAIN_NAME+TOP_50_URL);
 		String result = httpClientApi.getContentFromUrl(DOMAIN_NAME + SHAKE_GUESSLIKE_URL + getLanguageType());
 		System.out.println("top 50 ====> " + result);
 		if (!TextUtils.isEmpty(result)) {
@@ -1200,20 +991,15 @@ public class DataManager {
 					item.historys[j] = historyItem;
 				}
 			}
-
 			String apkUrl = jsonObject.getString("down_url");
 			if (!TextUtils.isEmpty(apkUrl)) {
 				item.apkUrl = ONLINE_STATIC_DOMAIN_NAME + apkUrl;
 			}
-
 			item.downloadNum = jsonObject.getLong("down_count");
-
 			String iconUrl = jsonObject.getString("apk_icon");
-
 			if (!TextUtils.isEmpty(iconUrl)) {
 				item.appIconUrl = ONLINE_DOMAIN_NAME + iconUrl;
 			}
-
 			item.fileSize = jsonObject.getLong("apk_size");
 			item.appName = jsonObject.getString("apk_name");
 			JSONArray permisionJsonArray = jsonObject.getJSONArray("apk_permision");
@@ -1229,7 +1015,6 @@ public class DataManager {
 			if (jsonObject.has("heavy")) {
 				item.heavy = jsonObject.getInt("heavy");
 			}
-
 			JSONArray likeJsonArray = jsonObject.getJSONArray("like");
 			if (likeJsonArray != null && likeJsonArray.length() > 0) {
 				for (int i = 0; i < likeJsonArray.length(); i++) {
@@ -1253,17 +1038,16 @@ public class DataManager {
 		return null;
 	}
 
+	/**
+	 * 收集本地数据
+	 * @param cxt
+	 * @return
+	 * @throws IOException
+	 */
 	public int collectLocalData(Context cxt) throws IOException {
 		Map<String, String> deviceInfo = DJMarketUtils.getDeviceInfo(cxt);
 		Map<String, String> dataMap = new HashMap<String, String>();
 		List<InstalledAppInfo> installedAppsList = DJMarketUtils.getInstalledApps(cxt);
-		// for (InstalledAppInfo info : installedAppsList) {
-		// installedApps.put(info.getPkgName(), info.getName());
-		// }
-		// Set<Entry<String, String>> set = deviceInfo.entrySet();
-		// for (Entry<String, String> entry : set) {
-		// System.out.println(entry.getKey() + ": " + entry.getValue());
-		// }
 		JSONObject deviceInfoJson = new JSONObject(deviceInfo);
 		JSONArray appJsonArray = new JSONArray();
 		for (InstalledAppInfo info : installedAppsList) {
@@ -1271,16 +1055,11 @@ public class DataManager {
 			try {
 				jsonObj.put("app_name", info.getName());
 				jsonObj.put("pkg_name", info.getPkgName());
-				// DJMarketUtils.parseSignature(DJMarketUtils.getSignInfo(cxt,
-				// info.getPkgName()));
 				appJsonArray.put(jsonObj);
 			} catch (JSONException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		// System.out.println("device info ====> " + deviceInfoJson.toString());
-		// System.out.println("installed app ====> " + jsonArray.toString());
 		dataMap.put("device_info", deviceInfoJson.toString());
 		dataMap.put("app_info", appJsonArray.toString());
 		String result = HttpClientApi.getInstance().postResponseData(DOMAIN_NAME + COLLECT_LOCAL_INFO_URL, dataMap);
@@ -1292,12 +1071,16 @@ public class DataManager {
 			} catch (Exception e) {
 				return 0;
 			}
-
 		}
 		return 0;
-		// return Integer.valueOf(result != null ? result : "0");
 	}
 
+	/**
+	 * 获取所有专题信息
+	 * @return
+	 * @throws IOException
+	 * @throws JSONException
+	 */
 	public List<SubjectInfo> getAllSubject() throws IOException, JSONException {
 		HttpClientApi httpClientApi = HttpClientApi.getInstance();
 		String result = httpClientApi.getContentFromUrl(DOMAIN_NAME + ALLSUBJECT_URL + getLanguageType());
@@ -1320,12 +1103,16 @@ public class DataManager {
 		return null;
 	}
 
+	/**
+	 * 获取某个专题下的应用列表
+	 * @param subjectId
+	 * @return
+	 * @throws JSONException
+	 */
 	public SubjectInfo getSubjectApk(int subjectId) throws JSONException {
 		HttpClientApi httpClientApi = HttpClientApi.getInstance();
 		String url = DOMAIN_NAME + SUBJECTITEM_URL + subjectId + getLanguageType();
-
 		System.out.println("  url ----- > " + url);
-
 		String result = null;
 		try {
 			result = httpClientApi.getContentFromUrl(url);
@@ -1339,7 +1126,6 @@ public class DataManager {
 			subjectInfo.contents = jsonObject.getString("contents");
 			subjectInfo.subjectIconUrl = jsonObject.getString("pic");
 			subjectInfo.title = jsonObject.getString("title");
-
 			JSONArray listJsonArray = jsonObject.getJSONArray("lists");
 			if (listJsonArray != null && listJsonArray.length() > 0) {
 				subjectInfo.subjectItems = new ArrayList<SubjectItem>();
@@ -1368,17 +1154,10 @@ public class DataManager {
 		return null;
 	}
 
-	public int subjectCount(int subjectId) throws IOException, JSONException {
-		HttpClientApi httpClientApi = HttpClientApi.getInstance();
-		String url = DOMAIN_NAME + SUBJECTCOUNT_URL + subjectId;
-		String result = httpClientApi.getContentFromUrl(url);
-		if (result.equals("1")) {
-			return 1;
-		} else {
-			return 0;
-		}
-	}
-
+	/**
+	 * 获取系统语言
+	 * @return
+	 */
 	private String getLanguageType() {
 		String language = Locale.getDefault().getLanguage();
 		String country = Locale.getDefault().getCountry();
@@ -1483,7 +1262,6 @@ public class DataManager {
 			}
 			item.downloadNum = jsonObject.getLong("down_count");
 			String iconUrl = jsonObject.getString("apk_icon");
-
 			if (!TextUtils.isEmpty(iconUrl)) {
 				item.appIconUrl = ONLINE_DOMAIN_NAME + iconUrl;
 			}

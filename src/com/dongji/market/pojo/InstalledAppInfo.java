@@ -1,7 +1,6 @@
 package com.dongji.market.pojo;
 
 import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
 import android.graphics.drawable.Drawable;
 
 public class InstalledAppInfo {

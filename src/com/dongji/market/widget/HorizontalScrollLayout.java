@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.Scroller;
 
 /**
+ * 可水平滑动的布局控件
+ * 
  * @author zhangkai
  */
 public class HorizontalScrollLayout extends ViewGroup {
@@ -62,8 +64,6 @@ public class HorizontalScrollLayout extends ViewGroup {
 		if (DEBUG)
 			Log.e(TAG, "onMeasure");
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-		final int width = MeasureSpec.getSize(widthMeasureSpec);
 		final int widthMode = MeasureSpec.getMode(widthMeasureSpec);
 		if (widthMode != MeasureSpec.EXACTLY) {
 			throw new IllegalStateException("ScrollLayout only canmCurScreen run at EXACTLY mode!");
@@ -81,7 +81,6 @@ public class HorizontalScrollLayout extends ViewGroup {
 		}
 	}
 
-	
 	@Override
 	public void computeScroll() {
 		if (!mScroller.isFinished() && mScroller.computeScrollOffset()) {
@@ -103,7 +102,6 @@ public class HorizontalScrollLayout extends ViewGroup {
 
 		final int action = event.getAction();
 		final float x = event.getX();
-		final float y = event.getY();
 
 		switch (action) {
 		case MotionEvent.ACTION_DOWN:
@@ -146,9 +144,7 @@ public class HorizontalScrollLayout extends ViewGroup {
 				if (DEBUG)
 					Log.e(TAG, "snap right");
 				snapToScreen(mCurScreen + 1);
-			}
-
-			else {
+			} else {
 				snapToDestination();
 			}
 
@@ -215,13 +211,13 @@ public class HorizontalScrollLayout extends ViewGroup {
 	public void setOnPageChangedListener(OnPageChangedListener mListener) {
 		this.mListener = mListener;
 	}
-	
+
 	public void setToScreen(int whichScreen) {
 		whichScreen = Math.max(0, Math.min(whichScreen, getChildCount() - 1));
 		mCurScreen = whichScreen;
 		scrollTo(whichScreen * getWidth(), 0);
 	}
-	
+
 	/**
 	 * According to the position of current layout scroll to the destination
 	 * page.

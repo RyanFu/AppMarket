@@ -1,10 +1,7 @@
 package com.dongji.market.protocol;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import org.myjson.JSONException;
@@ -29,9 +26,6 @@ import android.os.Message;
 import com.dongji.market.application.AppMarket;
 import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.DJMarketUtils;
-import com.dongji.market.helper.DJMarketUtils;
-import com.dongji.market.helper.AConstDefine;
-import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.pojo.ApkItem;
 import com.dongji.market.pojo.DownloadEntity;
 
@@ -41,22 +35,15 @@ import com.dongji.market.pojo.DownloadEntity;
  * @author zhangkai
  */
 public class DataUpdateService extends Service {
-	private static final long UPDATE_TIME = 1000 * 60 * 120; // 每次更新时间* 60
 	private static long lastUpdateTime = 0L; // 最后更新次的时间
 	private boolean isMobileUpdate = true; // 是否开启蜂窝网络下的数据更新
 	private NetWodkStatusReceiver mNetWorkReceiver; // 网络状态监听广播
-
 	private static final int EVENT_REQUEST_UPDATE = 1; // 向服务器请求更新数据
-	private static final int EVENT_REQUEST_CACHE_UPDATE = 2; // 请求缓存数据
 	private static final int EVENT_REQUEST_INSTALL_UPDATE = 3; // 向服务器请求更新刚安装的程序更新
-
 	private DataManager dataManager;
-
 	private MyHandler mHandler;
-
 	private AppMarket mApp;
 	private Context context;
-
 	private static final int MAX_REQUEST_UPDATE_RETRY_NUM = 3;
 	private int currentRetry;
 	private boolean isNetwork;
@@ -74,26 +61,23 @@ public class DataUpdateService extends Service {
 		System.out.println("data service oncreate");
 	}
 
-	@Override
-	public void onStart(Intent intent, int startId) {
-		super.onStart(intent, startId);
-		isNetwork = false;
-		mHandler.sendEmptyMessage(EVENT_REQUEST_UPDATE);
+	private void initData() {
+		initLastUpdateTime();
 	}
 
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		System.out.println("data service ondestroy!");
-		unregisterAllReceiver();
-		removeAllMessage();
+	/**
+	 * 初始化最后一次更新数据时间
+	 */
+	private void initLastUpdateTime() {
+		if (lastUpdateTime == 0) {
+			SharedPreferences mSharedPreferences = getSharedPreferences(AConstDefine.SHARE_FILE_NAME, Context.MODE_PRIVATE);
+			lastUpdateTime = mSharedPreferences.getLong(AConstDefine.LAST_UPDATE_TIME, 0);
+		}
 	}
 
-	@Override
-	public IBinder onBind(Intent intent) {
-		return null;
-	}
-
+	/**
+	 * 注册广播监听器
+	 */
 	private void registerAllReceiver() {
 		mNetWorkReceiver = new NetWodkStatusReceiver();
 		IntentFilter intentFilter = new IntentFilter();
@@ -108,16 +92,36 @@ public class DataUpdateService extends Service {
 		registerReceiver(mPackageStatusReceiver, packageIntentFilter);
 	}
 
-	private void unregisterAllReceiver() {
-		unregisterReceiver(mNetWorkReceiver);
-		unregisterReceiver(mPackageStatusReceiver);
+	/**
+	 * 初始化Handler
+	 */
+	private void initHandler() {
+		HandlerThread mHandlerThread = new HandlerThread("UpdateServiceHandler");
+		mHandlerThread.start();
+		mHandler = new MyHandler(mHandlerThread.getLooper());
 	}
 
-	/**
-	 * 请求软件更新数据
-	 */
-	private void requestSoftUpdateData() throws IOException, JSONException {
-		requestCacheData();
+	private class MyHandler extends Handler {
+		MyHandler(Looper looper) {
+			super(looper);
+		}
+
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			switch (msg.what) {
+			case EVENT_REQUEST_UPDATE:// 请求更新数据
+				requestUpdateData();
+				break;
+			case EVENT_REQUEST_INSTALL_UPDATE:// 请求安装更新
+				Bundle bundle = msg.getData();
+				if (bundle != null) {
+					String[] data = bundle.getStringArray("updateData");
+					requestInstallUpdate(data);
+				}
+				break;
+			}
+		}
 	}
 
 	/**
@@ -125,9 +129,8 @@ public class DataUpdateService extends Service {
 	 */
 	private void requestUpdateData() {
 		try {
-			System.out.println("request update data!" + new SimpleDateFormat("yyyy-MM-dd hh:mm").format(new Date(lastUpdateTime)));
-			requestSoftUpdateData();
-			writeLastUpdateTime();
+			requestData();// 请求软件更新数据
+			writeLastUpdateTime();// 写入最后更新时间
 			currentRetry = 0;
 		} catch (IOException e) {
 			System.out.println("request update data error!" + e);
@@ -144,19 +147,25 @@ public class DataUpdateService extends Service {
 		}
 	}
 
-	private void requestCacheData() throws IOException, JSONException {
+	/**
+	 * 请求数据
+	 * 
+	 * @throws IOException
+	 * @throws JSONException
+	 */
+	private void requestData() throws IOException, JSONException {
 		ArrayList<ApkItem> updateList = dataManager.getUpdateList(this);
 		if (updateList != null && updateList.size() > 0) {
-			List<PackageInfo> infos = DJMarketUtils.getInstalledPackages(this);//安装应用总数
+			List<PackageInfo> infos = DJMarketUtils.getInstalledPackages(this);// 安装应用总数
 			mApp.setUpdateList(updateList);
 			int count = (infos == null ? 0 : infos.size());
-			int k = 0;//非系统应用数
+			int k = 0;// 非系统应用数
 			for (int i = 0; i < count; i++) {
 				if ((infos.get(i).applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0 && (infos.get(i).applicationInfo.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) == 0) {
 					k++;
 				}
 			}
-			int num = mApp.getUpdateList().size();//可更新应用数（包括系统应用）
+			int num = mApp.getUpdateList().size();// 可更新应用数（包括系统应用）
 			int n = num - k;
 			if (n > 0) {
 				System.out.println("count:" + count + ", num:" + num);
@@ -171,12 +180,88 @@ public class DataUpdateService extends Service {
 		}
 	}
 
+	/**
+	 * 写入数据更新后的时间
+	 */
+	private void writeLastUpdateTime() {
+		long updateTime = System.currentTimeMillis();
+		lastUpdateTime = updateTime;
+		SharedPreferences mSharedPreferences = getSharedPreferences(AConstDefine.SHARE_FILE_NAME, Context.MODE_PRIVATE);
+		SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+		mEditor.putLong(AConstDefine.LAST_UPDATE_TIME, updateTime);
+		mEditor.commit();
+	}
+
+	/**
+	 * 处理从第三方安装后的应用请求更新
+	 * 
+	 * @param data
+	 */
+	private void requestInstallUpdate(String[] data) {
+		try {
+			ApkItem item = dataManager.getUpdateBySingle(context, data);
+			if (item != null) {
+				mApp.addUpdate(item);
+				System.out.println("broadcast single update!");
+				Intent intent = new Intent(AConstDefine.BROADCAST_ACTION_SINGLE_UPDATE_DONE);
+				DownloadEntity entity = new DownloadEntity(item);
+				Bundle bundle = new Bundle();
+				bundle.putParcelable(AConstDefine.DOWNLOAD_ENTITY, entity);
+				intent.putExtras(bundle);
+				sendBroadcast(intent);
+			}
+		} catch (IOException e) {
+
+		} catch (JSONException e) {
+
+		}
+	}
+
+	@Override
+	public void onStart(Intent intent, int startId) {
+		super.onStart(intent, startId);
+		isNetwork = false;
+		mHandler.sendEmptyMessage(EVENT_REQUEST_UPDATE);
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		System.out.println("data service ondestroy!");
+		unregisterAllReceiver();
+		removeAllMessage();
+	}
+
+	private void unregisterAllReceiver() {
+		unregisterReceiver(mNetWorkReceiver);
+		unregisterReceiver(mPackageStatusReceiver);
+	}
+
+	private void removeAllMessage() {
+		if (mHandler != null) {
+			if (mHandler.hasMessages(EVENT_REQUEST_UPDATE)) {
+				mHandler.removeMessages(EVENT_REQUEST_UPDATE);
+			}
+		}
+	}
+
+	@Override
+	public IBinder onBind(Intent intent) {
+		return null;
+	}
+
+	/**
+	 * 网络状态广播、单个更新请求广播接收者
+	 * 
+	 * @author yvon
+	 * 
+	 */
 	private class NetWodkStatusReceiver extends BroadcastReceiver {
 		@Override
-		public void onReceive(Context context, Intent intent) { 
-			if (ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction())) {
+		public void onReceive(Context context, Intent intent) {
+			if (ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction())) {// 网络连接广播
 				onNetworkStatusReceiver(context);
-			} else if (AConstDefine.BROADCAST_ACTION_REQUEST_SINGLE_UPDATE.equals(intent.getAction())) {
+			} else if (AConstDefine.BROADCAST_ACTION_REQUEST_SINGLE_UPDATE.equals(intent.getAction())) {// 单个更新请求广播
 				Bundle bundle = intent.getExtras();
 				if (bundle != null) {
 					DownloadEntity entity = bundle.getParcelable(AConstDefine.DOWNLOAD_ENTITY);
@@ -214,6 +299,9 @@ public class DataUpdateService extends Service {
 		}
 	}
 
+	/**
+	 * 包安装状态接收者
+	 */
 	private BroadcastReceiver mPackageStatusReceiver = new BroadcastReceiver() {
 
 		@Override
@@ -231,6 +319,12 @@ public class DataUpdateService extends Service {
 		}
 	};
 
+	/**
+	 * 应用安装广播接收
+	 * 
+	 * @param context
+	 * @param packageName
+	 */
 	private void onAppInstallReceiver(Context context, String packageName) {
 		int versionCode = DJMarketUtils.getInstalledAppVersionCodeByPackageName(context, packageName);
 		if (versionCode != -1) {
@@ -245,106 +339,7 @@ public class DataUpdateService extends Service {
 	}
 
 	private void onAppRemoveReceiver(Context context, String packageName) {
-		//未做处理
+		// 未做处理
 	}
 
-
-	private void initData() {
-		initLastUpdateTime();
-	}
-
-	private void initHandler() {
-		HandlerThread mHandlerThread = new HandlerThread("UpdateServiceHandler");
-		mHandlerThread.start();
-		mHandler = new MyHandler(mHandlerThread.getLooper());
-	}
-
-	/**
-	 * 初始化最后一次更新数据时间
-	 */
-	private void initLastUpdateTime() {
-		if (lastUpdateTime == 0) {
-			SharedPreferences mSharedPreferences = getSharedPreferences(AConstDefine.SHARE_FILE_NAME, Context.MODE_PRIVATE);
-			lastUpdateTime = mSharedPreferences.getLong(AConstDefine.LAST_UPDATE_TIME, 0);
-		}
-	}
-
-	/**
-	 * 写入数据更新后的时间
-	 */
-	private void writeLastUpdateTime() {
-		long updateTime = System.currentTimeMillis();
-		lastUpdateTime = updateTime;
-		SharedPreferences mSharedPreferences = getSharedPreferences(AConstDefine.SHARE_FILE_NAME, Context.MODE_PRIVATE);
-		SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-		mEditor.putLong(AConstDefine.LAST_UPDATE_TIME, updateTime);
-		mEditor.commit();
-	}
-
-	private class MyHandler extends Handler {
-		MyHandler(Looper looper) {
-			super(looper);
-		}
-
-		@Override
-		public void handleMessage(Message msg) {
-			super.handleMessage(msg);
-			switch (msg.what) {
-			case EVENT_REQUEST_UPDATE:
-				requestUpdateData();
-				break;
-			case EVENT_REQUEST_CACHE_UPDATE:
-				try {
-					System.out.println("===========request cache!");
-					requestCacheData();
-				} catch (IOException e) {
-					System.out.println("cache data error:" + e);
-				} catch (JSONException e) {
-					System.out.println("cache data error:" + e);
-				}
-				break;
-			case EVENT_REQUEST_INSTALL_UPDATE:
-				Bundle bundle = msg.getData();
-				if (bundle != null) {
-					String[] data = bundle.getStringArray("updateData");
-					requestInstallUpdate(data);
-				}
-				break;
-			}
-		}
-	}
-
-	/**
-	 * 处理从第三方安装后的应用请求更新
-	 * 
-	 * @param data
-	 */
-	private void requestInstallUpdate(String[] data) {
-		try {
-			ApkItem item = dataManager.getUpdateBySingle(context, data);
-			if (item != null) {
-				mApp.addUpdate(item);
-				System.out.println("broadcast single update!");
-				Intent intent = new Intent(AConstDefine.BROADCAST_ACTION_SINGLE_UPDATE_DONE);
-				DownloadEntity entity = new DownloadEntity(item);
-				Bundle bundle = new Bundle();
-				bundle.putParcelable(AConstDefine.DOWNLOAD_ENTITY, entity);
-				intent.putExtras(bundle);
-				sendBroadcast(intent);
-			}
-		} catch (IOException e) {
-
-		} catch (JSONException e) {
-
-		}
-	}
-
-
-	private void removeAllMessage() {
-		if (mHandler != null) {
-			if (mHandler.hasMessages(EVENT_REQUEST_UPDATE)) {
-				mHandler.removeMessages(EVENT_REQUEST_UPDATE);
-			}
-		}
-	}
 }

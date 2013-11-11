@@ -15,8 +15,6 @@ import android.os.Parcelable;
 
 import com.dongji.market.helper.AConstDefine;
 import com.dongji.market.helper.DJMarketUtils;
-import com.dongji.market.helper.AConstDefine;
-import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.listener.OnDownloadListener;
 import com.dongji.market.service.DownloadService;
 

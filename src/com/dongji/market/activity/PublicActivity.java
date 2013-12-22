@@ -75,7 +75,9 @@ public abstract class PublicActivity extends Activity {
 	}
 
 	/**
-	 * 每次数据请求完成后都要重新设置apk状态 infos：为本地应用安装信息 downloadlist：为后台应用下载信息
+	 * 每次数据请求完成后都要重新设置apk状态 
+	 * infos：为本地应用安装信息 
+	 * downloadlist：为后台应用下载信息
 	 * items：为从服务端获取的应用信息
 	 * 
 	 * @param items
@@ -83,8 +85,7 @@ public abstract class PublicActivity extends Activity {
 	 */
 	protected List<ApkItem> setApkStatus(List<ApkItem> items) {
 		if (items != null && items.size() > 0) {
-			// 获取手机上已安装的应用
-			List<PackageInfo> infos = DJMarketUtils.getInstalledPackages(this);
+			List<PackageInfo> infos = DJMarketUtils.getInstalledPackages(this);// 获取手机上已安装的应用
 			for (int i = 0; i < items.size(); i++) {
 				ApkItem item = items.get(i);
 				// 与后台下载应用信息作比较
@@ -98,14 +99,14 @@ public abstract class PublicActivity extends Activity {
 								items.get(i).status = AConstDefine.STATUS_APK_INSTALL;// 设置应用为安装状态
 								break;
 							case AConstDefine.TYPE_OF_UPDATE:// 为可更新类型的应用
-								if (entity.getStatus() != AConstDefine.STATUS_OF_INITIAL && entity.getStatus() != AConstDefine.STATUS_OF_IGNORE) {// 此类型应用是否处于下载初始化或忽略状态
+								if (entity.getStatus() != AConstDefine.STATUS_OF_INITIAL && entity.getStatus() != AConstDefine.STATUS_OF_IGNORE) {// 过滤掉处于下载初始化或忽略状态
 									items.get(i).status = AConstDefine.STATUS_APK_UPDATE;// 设置应用为更新状态
 								} else {
 									items.get(i).status = AConstDefine.STATUS_APK_UNUPDATE;// 设置应用为未更新状态
 								}
 								break;
 							case AConstDefine.TYPE_OF_COMPLETE:// 为可安装类型的应用
-								if (item.status == AConstDefine.STATUS_APK_INSTALL) {// 判断应用状态是否是已安装，
+								if (item.status == AConstDefine.STATUS_APK_INSTALL) {// 判断应用状态是否是安装，
 									items.get(i).status = AConstDefine.STATUS_APK_UNINSTALL;// 设置应用为未安装
 								} else if (item.status == AConstDefine.STATUS_APK_UPDATE) {// 判断应用状态是否是更新
 									items.get(i).status = AConstDefine.STATUS_APK_UNUPDATE;// 设置应用为未更新

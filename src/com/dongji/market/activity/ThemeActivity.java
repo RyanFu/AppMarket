@@ -8,7 +8,7 @@ import java.util.List;
 
 import net.tsz.afinal.FinalBitmap;
 
-import org.myjson.JSONException;
+import org.json.JSONException;
 
 import android.content.Intent;
 import android.content.pm.PackageInfo;

@@ -2,7 +2,7 @@ package com.dongji.market.activity;
 
 import java.io.IOException;
 
-import org.myjson.JSONException;
+import org.json.JSONException;
 
 import android.app.Activity;
 import android.content.Context;

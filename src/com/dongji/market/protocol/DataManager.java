@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.myjson.JSONArray;
-import org.myjson.JSONException;
-import org.myjson.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;

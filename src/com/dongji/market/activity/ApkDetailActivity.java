@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.myjson.JSONException;
+import org.json.JSONException;
 
 import android.content.Intent;
 import android.content.pm.PackageInfo;

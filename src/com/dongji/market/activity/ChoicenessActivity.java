@@ -3,7 +3,7 @@ package com.dongji.market.activity;
 import java.io.IOException;
 import java.util.List;
 
-import org.myjson.JSONException;
+import org.json.JSONException;
 
 import android.content.Context;
 import android.content.Intent;
@@ -19,13 +19,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.FrameLayout;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemSelectedListener;
 
 import com.dongji.market.R;
 import com.dongji.market.adapter.ImageGalleryAdapter;

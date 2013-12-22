@@ -2,7 +2,7 @@ package com.dongji.market.activity;
 
 import java.util.List;
 
-import org.myjson.JSONException;
+import org.json.JSONException;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,12 +17,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.AbsListView.OnScrollListener;
-import android.widget.AdapterView.OnItemClickListener;
 
 import com.dongji.market.R;
 import com.dongji.market.adapter.ListBaseAdapter;

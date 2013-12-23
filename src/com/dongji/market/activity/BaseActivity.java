@@ -5,11 +5,15 @@ import android.view.Menu;
 
 /**
  * activity基类
+ * 
  * @author yvon
- *
+ * 
  */
 public abstract class BaseActivity extends PublicActivity {
 
+	/**
+	 * 顶部toolBar点击
+	 */
 	public void OnToolBarClick() {
 	}
 

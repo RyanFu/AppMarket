@@ -19,7 +19,6 @@ public class AppMarket extends Application {
 	private ArrayList<ApkItem> updateList; // 更新列表
 	private LoginParams loginParams; // 保存登录产生的状态值
 	private boolean isRemoteImage = true; // 是否请求网络图片
-	private boolean isPhone;
 
 	public boolean isIs3GDownloadPrompt() {
 		return is3GDownloadPrompt;
@@ -69,14 +68,6 @@ public class AppMarket extends Application {
 
 	public void setRemoteImage(boolean isRemoteImage) {
 		this.isRemoteImage = isRemoteImage;
-	}
-	
-	public boolean isPhone(){
-		return isPhone;
-	}
-	
-	public void setIsPhone(boolean isPhone){
-		this.isPhone=isPhone;
 	}
 
 }

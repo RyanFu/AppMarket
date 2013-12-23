@@ -11,17 +11,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.LinearLayout.LayoutParams;
 
 import com.dongji.market.R;
 import com.dongji.market.activity.ApkDetailActivity;
-import com.dongji.market.application.AppMarket;
 import com.dongji.market.cache.FileService;
-import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.pojo.ApkItem;
 
 /**
@@ -35,7 +30,6 @@ public class GuessLikeAdapter extends BaseAdapter {
 	private Activity context;
 	private List<ApkItem> data;
 	private Bitmap defaultBitmap_icon;
-	private boolean isPhone;
 
 	public GuessLikeAdapter() {
 		super();
@@ -46,8 +40,6 @@ public class GuessLikeAdapter extends BaseAdapter {
 		this.context = context;
 		this.data = data;
 		this.defaultBitmap_icon = defaultBitmap_icon;
-		AppMarket mApp = (AppMarket) context.getApplication();
-		isPhone = mApp.isPhone();
 	}
 
 	@Override
@@ -74,9 +66,6 @@ public class GuessLikeAdapter extends BaseAdapter {
 			holder.mIconImage = (ImageView) convertView.findViewById(R.id.app_icon);
 			holder.mTextView = (TextView) convertView.findViewById(R.id.app_name);
 			holder.ivdongji_guess = (ImageView) convertView.findViewById(R.id.ivdongji_guess);
-			if (!isPhone) {
-				adapterTablet(holder);
-			}
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
@@ -112,42 +101,6 @@ public class GuessLikeAdapter extends BaseAdapter {
 			}
 		});
 		return convertView;
-	}
-
-	/**
-	 * 适配平板
-	 * 
-	 * @param holder
-	 */
-	private void adapterTablet(ViewHolder holder) {
-		int columnWidth = 0;
-		int padding_10;
-		int screenWidth = DJMarketUtils.getScreenSize(context).widthPixels;
-		padding_10 = (int) (screenWidth * 0.0278);
-		columnWidth = (int) ((screenWidth - padding_10 * 10) / 8);
-
-		LinearLayout.LayoutParams linearParams;
-		FrameLayout.LayoutParams frameParams;
-		int actualHeight;
-		int actualWidth;
-
-		actualWidth = columnWidth;
-		actualHeight = actualWidth;
-		frameParams = (FrameLayout.LayoutParams) holder.ivdongji_guess.getLayoutParams();
-		frameParams.width = actualWidth;
-		frameParams.height = actualHeight;
-		holder.ivdongji_guess.setLayoutParams(frameParams);
-
-		frameParams = (FrameLayout.LayoutParams) holder.mIconImage.getLayoutParams();
-		frameParams.width = actualWidth;
-		frameParams.height = actualHeight;
-		holder.mIconImage.setLayoutParams(frameParams);
-
-		linearParams = (LayoutParams) holder.mTextView.getLayoutParams();
-		linearParams.width = actualWidth;
-		holder.mTextView.setLayoutParams(linearParams);
-		holder.mTextView.setTextSize(DJMarketUtils.sp2px(context, 11f));
-
 	}
 
 	private static class ViewHolder {

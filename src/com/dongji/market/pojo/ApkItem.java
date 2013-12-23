@@ -24,7 +24,6 @@ public class ApkItem implements Parcelable {
 	public long downloadNum;
 	public int versionCode;
 	public int status; // 用以区分当前apk状态
-	public HistoryApkItem[] historys;
 	public ArrayList<String> permisions = new ArrayList<String>();
 	public int minSdkVersion;
 	public String bannerUrl;
@@ -64,8 +63,6 @@ public class ApkItem implements Parcelable {
 		dest.writeLong(downloadNum);
 		dest.writeInt(versionCode);
 		dest.writeInt(status);
-		dest.writeInt(historys == null ? 0 : historys.length);
-		dest.writeTypedArray(historys, 1);
 		dest.writeList(permisions);
 		dest.writeInt(minSdkVersion);
 		dest.writeString(bannerUrl);
@@ -101,11 +98,6 @@ public class ApkItem implements Parcelable {
 			item.downloadNum = source.readLong();
 			item.versionCode = source.readInt();
 			item.status = source.readInt();
-			int length = source.readInt();
-			if (length > 0) {
-				item.historys = new HistoryApkItem[length];
-				source.readTypedArray(item.historys, HistoryApkItem.CREATOR);
-			}
 			source.readList(item.permisions, String.class.getClassLoader());
 			item.minSdkVersion = source.readInt();
 			item.bannerUrl = source.readString();

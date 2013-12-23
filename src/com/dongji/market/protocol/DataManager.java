@@ -21,7 +21,6 @@ import com.dongji.market.helper.DJMarketUtils;
 import com.dongji.market.helper.FsCache;
 import com.dongji.market.pojo.ApkItem;
 import com.dongji.market.pojo.ChannelListInfo;
-import com.dongji.market.pojo.HistoryApkItem;
 import com.dongji.market.pojo.InstalledAppInfo;
 import com.dongji.market.pojo.SubjectInfo;
 import com.dongji.market.pojo.SubjectItem;
@@ -312,35 +311,6 @@ public class DataManager {
 					if (!TextUtils.isEmpty(screenShot)) {
 						item.appScreenshotUrl.add(DOMAIN_NAME + screenShot);
 					}
-				}
-			}
-			JSONArray historyJsonArray = jsonObject.getJSONArray("history");
-			if (historyJsonArray != null && historyJsonArray.length() > 0) {
-				item.historys = new HistoryApkItem[historyJsonArray.length()];
-				for (int j = 0; j < historyJsonArray.length(); j++) {
-					HistoryApkItem historyItem = new HistoryApkItem();
-					JSONObject historyJsonObject = historyJsonArray.getJSONObject(j);
-					historyItem.appId = historyJsonObject.getInt("id");
-					historyItem.category = item.category;
-					historyItem.appName = historyJsonObject.getString("apk_name");
-					String historyIcon = historyJsonObject.getString("apk_icon");
-					if (!TextUtils.isEmpty(historyIcon)) {
-						historyItem.appIconUrl = ONLINE_DOMAIN_NAME + historyIcon;
-					}
-					historyItem.updateDate = historyJsonObject.getString("time");
-					historyItem.versionName = historyJsonObject.getString("apk_versionname");
-					historyItem.downloadNum = historyJsonObject.getLong("down_count");
-					historyItem.appSize = historyJsonObject.getLong("apk_size");
-					String historyUrl = historyJsonObject.getString("down_url");
-					if (!TextUtils.isEmpty(historyUrl)) {
-						historyItem.url = ONLINE_STATIC_DOMAIN_NAME + historyUrl;
-					}
-					historyItem.versionCode = historyJsonObject.getInt("apk_versioncode");
-					if (historyJsonObject.has("heavy")) {
-						historyItem.heavy = historyJsonObject.getInt("heavy");
-					}
-
-					item.historys[j] = historyItem;
 				}
 			}
 			String apkUrl = jsonObject.getString("down_url");
@@ -965,30 +935,6 @@ public class DataManager {
 					if (!TextUtils.isEmpty(screenShot)) {
 						item.appScreenshotUrl.add(DOMAIN_NAME + screenShot);
 					}
-				}
-			}
-			JSONArray historyJsonArray = jsonObject.getJSONArray("history");
-			if (historyJsonArray != null && historyJsonArray.length() > 0) {
-				item.historys = new HistoryApkItem[historyJsonArray.length()];
-				for (int j = 0; j < historyJsonArray.length(); j++) {
-					HistoryApkItem historyItem = new HistoryApkItem();
-					JSONObject historyJsonObject = historyJsonArray.getJSONObject(j);
-					historyItem.appId = historyJsonObject.getInt("id");
-					historyItem.category = item.category;
-					historyItem.appIconUrl = historyJsonObject.getString("apk_icon");
-					historyItem.updateDate = historyJsonObject.getString("time");
-					historyItem.versionName = historyJsonObject.getString("apk_versionname");
-					historyItem.downloadNum = historyJsonObject.getLong("down_count");
-					historyItem.appSize = historyJsonObject.getLong("apk_size");
-					String historyUrl = historyJsonObject.getString("down_url");
-					if (!TextUtils.isEmpty(historyUrl)) {
-						historyItem.url = ONLINE_STATIC_DOMAIN_NAME + historyUrl;
-					}
-					historyItem.versionCode = historyJsonObject.getInt("apk_versioncode");
-					if (historyJsonObject.has("heavy")) {
-						historyItem.heavy = historyJsonObject.getInt("heavy");
-					}
-					item.historys[j] = historyItem;
 				}
 			}
 			String apkUrl = jsonObject.getString("down_url");

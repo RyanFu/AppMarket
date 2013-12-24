@@ -44,23 +44,21 @@ import com.dongji.market.widget.LazyScrollView.ScrollListener;
  * 
  */
 public class ThemeActivity extends BaseActivity implements OnClickListener {
-
+	private final static int EVENT_REQUEST_DATA = 1;
+	private static final int EVENT_NO_NETWORK_ERROR = 3;
+	private static final int EVENT_REQUEST_DATA_ERROR = 4;
 	private static final int COLUMN_COUNT = 2;// 列数
 	private static final int MARGIN = 1;
 	// 保存图片缓存路径
 	public static String CACHE_PATH = Environment.getExternalStorageDirectory().getPath() + "/theme/imgcache/";
-
 	private LinearLayout mContainer;
 	private LazyScrollView mScrollView;
-
-	// private int mColumnWidth = 322;
 	private int mColumnWidth = 0;
 	private int mScrollHeight = 0;
 	private int mPicCount = 0;
 	private FinalBitmap mFinalBitmap;
 	// 记录每列的高度
 	private int[] mColumHeight;
-	// private int mWaterFallRequestCount = 1;//瀑布流的PageNo
 	private int scroll_height;
 	// 每列图片的数量
 	private int[] lineCellCount;
@@ -69,14 +67,7 @@ public class ThemeActivity extends BaseActivity implements OnClickListener {
 	private HashMap<Integer, Integer>[] cellTotalHeight = null;
 	private int[] screenTop;// 每列在屏幕上最顶部的图片索引
 	private int[] screenBottom;// 每列在屏幕最底部的图片索引
-
-	// private Context context;
-
 	private MyHandler handler;
-	private final static int EVENT_REQUEST_DATA = 1;
-	private static final int EVENT_NO_NETWORK_ERROR = 3;
-	private static final int EVENT_REQUEST_DATA_ERROR = 4;
-
 	private View mLoadingView;
 	private View mLoadingProgressBar;
 	private TextView mLoadingTextView;
@@ -84,10 +75,8 @@ public class ThemeActivity extends BaseActivity implements OnClickListener {
 	@Override
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
-
 		initFinalBitmap();
 		setContentView(R.layout.activity_theme);
-
 		initLoadingView();
 		initHandler();
 	}
@@ -337,7 +326,6 @@ public class ThemeActivity extends BaseActivity implements OnClickListener {
 			mLoadingView.setVisibility(View.GONE);
 		}
 	}
-
 
 	/**
 	 * 数据获取异常处理

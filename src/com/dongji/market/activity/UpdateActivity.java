@@ -78,9 +78,9 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener 
 	private void initData() {
 		dataManager = DataManager.newInstance();
 		currentType = getIntent().getIntExtra("type", 0);
-		if (currentType==AConstDefine.ACTIVITY_TYPE_CHOICENESS) {
+		if (currentType == AConstDefine.ACTIVITY_TYPE_CHOICENESS) {
 			mHandler.sendEmptyMessage(EVENT_REQUEST_BANNER_DATA);
-		}else {
+		} else {
 			mHandler.sendEmptyMessage(EVENT_REQUEST_APPLIST_DATA);// 请求applist
 		}
 	}
@@ -365,6 +365,7 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener 
 				mHandler.sendEmptyMessage(EVENT_REQUEST_APPLIST_DATA);
 			} else {
 				setDisplayVisible();
+				mHandler.sendEmptyMessage(EVENT_REFRENSH_DATA);
 			}
 		}
 	}

@@ -1,7 +1,6 @@
 package com.dongji.market.activity;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.json.JSONException;
 
@@ -35,32 +34,30 @@ import com.dongji.market.widget.ScrollListView;
  * @author zhangkai
  */
 public class ChannelActivity extends BaseActivity {
-	private MyHandler mHandler;
 	private final static int EVENT_REQUEST_DATA = 1;
 	private static final int EVENT_NO_NETWORK_ERROR = 3;
 	private static final int EVENT_REQUEST_DATA_ERROR = 4;
+	private MyHandler mHandler;
 	private Context context;
 	private boolean isAppClicked = true;
 	private boolean isDataLoaded;
 	private boolean isLoading;
-
 	private View mLoadingView;
 	private View mLoadingProgressBar;
 	private TextView mLoadingTextView;
-
 	private ScrollListView mAppListView;
 	private ScrollListView mGameListView;
-
 	private ChannelAdapter mAppListAdapter;
 	private ChannelAdapter mGameListAdapter;
+	private ArrayList<ChannelListInfo> channelList;
 	private int locStep;
-
 	private static final String APP_STRING = "应用";
 	private static final String GAME_STRING = "游戏";
 	private static final String APP_STRING2 = "應用";
 	private static final String GAME_STRING2 = "遊戲";
-
 	private boolean isFirstInApp = true, isFirstInGame = true;
+	private ArrayList<ChannelListInfo> appListInfo;
+	private ArrayList<ChannelListInfo> gameListInfo;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +99,7 @@ public class ChannelActivity extends BaseActivity {
 	}
 
 	private class MyHandler extends Handler {
+
 		MyHandler(Looper looper) {
 			super(looper);
 		}
@@ -112,18 +110,8 @@ public class ChannelActivity extends BaseActivity {
 			switch (msg.what) {
 			case EVENT_REQUEST_DATA:// 请求分类数据
 				try {
-					isLoading = true;
-					final List<ChannelListInfo> channelList = DataManager.newInstance().getChannelListData(context);
-					if (channelList != null && channelList.size() > 0) {
-						isDataLoaded = true;
-						runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								initViews(channelList);
-								isLoading = false;
-							}
-						});
-					}
+					fetchChannelData();
+					handleChannelData();
 				} catch (JSONException e) {
 					isLoading = false;
 					if (!DJMarketUtils.isNetworkAvailable(context)) {
@@ -141,17 +129,57 @@ public class ChannelActivity extends BaseActivity {
 				break;
 			}
 		}
+
+	}
+
+	private void fetchChannelData() throws JSONException {
+		isLoading = true;
+		channelList = DataManager.newInstance().getChannelListData(context);
+	}
+
+	private void handleChannelData() {
+		if (channelList != null && channelList.size() > 0) {
+			isDataLoaded = true;
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					initViews();
+					isLoading = false;
+				}
+			});
+		}
+	}
+
+	private void initViews() {
+		detachData();// 因为请求到的分类数据是应用和游戏分在一起的，在这里需要将其分开
+		mAppListView = (ScrollListView) findViewById(R.id.applistview);
+		mGameListView = (ScrollListView) findViewById(R.id.gamelistview);
+		mAppListAdapter = new ChannelAdapter(context, appListInfo, isRemoteImage);
+		mAppListView.setAdapter(mAppListAdapter);
+		mGameListAdapter = new ChannelAdapter(context, gameListInfo, isRemoteImage);
+		mGameListView.setAdapter(mGameListAdapter);
+		mLoadingView.setVisibility(View.GONE);
+		LayoutAnimationController mLayoutAnimationController = getLayoutAnimationController();
+		if (isAppClicked) {
+			isFirstInApp = false;
+			mAppListView.setVisibility(View.VISIBLE);
+			mGameListView.setVisibility(View.GONE);
+			mAppListView.setLayoutAnimation(mLayoutAnimationController);
+		} else {
+			isFirstInGame = false;
+			mGameListView.setVisibility(View.VISIBLE);
+			mAppListView.setVisibility(View.GONE);
+			mGameListView.setLayoutAnimation(mLayoutAnimationController);
+		}
 	}
 
 	/**
-	 * 因为请求到的分类数据是应用和游戏分在一起的，在这里需要将其分开
-	 * 
-	 * @param channelList
+	 * 分离数据
 	 */
-	private void initViews(List<ChannelListInfo> channelList) {
+	private void detachData() {
 		String allString = getString(R.string.all_txt);
-		List<ChannelListInfo> appListInfo = new ArrayList<ChannelListInfo>();
-		List<ChannelListInfo> gameListInfo = new ArrayList<ChannelListInfo>();
+		appListInfo = new ArrayList<ChannelListInfo>();
+		gameListInfo = new ArrayList<ChannelListInfo>();
 		int appId = 0;
 		int gameId = 0;
 		if (DJMarketUtils.getLanguageType() == 1) {
@@ -190,25 +218,6 @@ public class ChannelActivity extends BaseActivity {
 				gameListInfo.add(info);
 			}
 		}
-		mAppListView = (ScrollListView) findViewById(R.id.applistview);
-		mGameListView = (ScrollListView) findViewById(R.id.gamelistview);
-		mAppListAdapter = new ChannelAdapter(context, appListInfo, isRemoteImage);
-		mAppListView.setAdapter(mAppListAdapter);
-		mGameListAdapter = new ChannelAdapter(context, gameListInfo, isRemoteImage);
-		mGameListView.setAdapter(mGameListAdapter);
-		mLoadingView.setVisibility(View.GONE);
-		LayoutAnimationController mLayoutAnimationController = getLayoutAnimationController();
-		if (isAppClicked) {
-			isFirstInApp = false;
-			mAppListView.setVisibility(View.VISIBLE);
-			mGameListView.setVisibility(View.GONE);
-			mAppListView.setLayoutAnimation(mLayoutAnimationController);
-		} else {
-			isFirstInGame = false;
-			mGameListView.setVisibility(View.VISIBLE);
-			mAppListView.setVisibility(View.GONE);
-			mGameListView.setLayoutAnimation(mLayoutAnimationController);
-		}
 	}
 
 	/**
@@ -217,14 +226,33 @@ public class ChannelActivity extends BaseActivity {
 	 * @return
 	 */
 	private LayoutAnimationController getLayoutAnimationController() {
-		AnimationSet localAnimationSet = new AnimationSet(true);
-		AlphaAnimation localAlphaAnimation = new AlphaAnimation(0.0F, 1.0F);
-		localAlphaAnimation.setDuration(50L);
-		localAnimationSet.addAnimation(localAlphaAnimation);
-		TranslateAnimation localTranslateAnimation = new TranslateAnimation(1, 0.0F, 1, 0.0F, 1, -1.0F, 1, 0.0F);
-		localTranslateAnimation.setDuration(100L);
-		localAnimationSet.addAnimation(localTranslateAnimation);
-		return new LayoutAnimationController(localAnimationSet, 0.5F);
+		AnimationSet animationSet = new AnimationSet(true);
+		AlphaAnimation alphaAnimation = new AlphaAnimation(0.0F, 1.0F);
+		alphaAnimation.setDuration(50L);
+		animationSet.addAnimation(alphaAnimation);
+		TranslateAnimation translateAnimation = new TranslateAnimation(1, 0.0F, 1, 0.0F, 1, -1.0F, 1, 0.0F);
+		translateAnimation.setDuration(100L);
+		animationSet.addAnimation(translateAnimation);
+		return new LayoutAnimationController(animationSet, 0.5F);
+	}
+
+	/**
+	 * 数据获取异常处理
+	 * 
+	 * @param rId
+	 */
+	private void setErrorMessage(final int rId, final int rId2) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if (mLoadingView.getVisibility() == View.VISIBLE) {
+					mLoadingProgressBar.setVisibility(View.GONE);
+					mLoadingTextView.setText(rId);
+				} else {
+					DJMarketUtils.showToast(context, rId2);
+				}
+			}
+		});
 	}
 
 	/**
@@ -242,7 +270,7 @@ public class ChannelActivity extends BaseActivity {
 			if (isDataLoaded) {
 				setDisplayVisible();
 			} else {
-				if (!isLoading && !mHandler.hasMessages(EVENT_REQUEST_DATA)) {
+				if (!isLoading && !mHandler.hasMessages(EVENT_REQUEST_DATA)) {// 没有在请求数据，也没有请求数据消息
 					mHandler.sendEmptyMessage(EVENT_REQUEST_DATA);
 				}
 			}
@@ -255,12 +283,12 @@ public class ChannelActivity extends BaseActivity {
 		if (isDataLoaded) {
 			setDisplayVisible();
 		} else {
-			if (!isLoading && !mHandler.hasMessages(EVENT_REQUEST_DATA)) {
+			if (!isLoading && !mHandler.hasMessages(EVENT_REQUEST_DATA)) {// 没有在请求数据，也没有请求数据消息
 				mHandler.sendEmptyMessage(EVENT_REQUEST_DATA);
 			}
 		}
 	}
-	
+
 	private void setDisplayVisible() {
 		mLoadingView.setVisibility(View.GONE);
 		if (isAppClicked) {
@@ -300,25 +328,6 @@ public class ChannelActivity extends BaseActivity {
 	 */
 	@Override
 	public void onAppStatusChange(boolean isCancel, String packageName, int versionCode) {
-	}
-
-	/**
-	 * 数据获取异常处理
-	 * 
-	 * @param rId
-	 */
-	private void setErrorMessage(final int rId, final int rId2) {
-		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				if (mLoadingView.getVisibility() == View.VISIBLE) {
-					mLoadingProgressBar.setVisibility(View.GONE);
-					mLoadingTextView.setText(rId);
-				} else {
-					DJMarketUtils.showToast(context, rId2);
-				}
-			}
-		});
 	}
 
 	/**

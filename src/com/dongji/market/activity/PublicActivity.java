@@ -24,13 +24,18 @@ import com.umeng.analytics.MobclickAgent;
 
 /**
  * baseActivity基类
+ * 主要负责一下事情：
+ * 1.设置是否可远程下载图片
+ * 2.接收apk下载、取消、下载完成、更新数据合并、节省流量、网络连接、app安装、卸载广播，并做出相应的处理
+ * 3.当向服务器请求回数据，刷新应用列表，有应用更新数据合并时设置apk状态，
+ * 4.当应用详情页请求数据时，应用详情页onResume()时候，设置应用详情页应用状态
+ * 5.设置使用3G下载是否提示过用户
+ * 6.当应用状态改变的时候，当软件安装或卸载完成，当更新数据合并时，当网络发生改变时需回调相对应的子类的父类抽象方法实现
  * 
  * @author yvon
  * 
  */
 public abstract class PublicActivity extends Activity {
-	protected final static int INSTALL_APP_DONE = 1;// 安装成功
-	protected final static int UNINSTALL_APP_DONE = 2;// 卸载成功
 	private ApkStatusReceiver mApkStatusReceiver;// apk状态接收器
 	private PackageStatusReceiver mPackageStatusReceiver;// 包状态接收器
 	private static final String PACKAGE_STR = "package:";
@@ -123,7 +128,7 @@ public abstract class PublicActivity extends Activity {
 	}
 
 	/**
-	 * 设置应用详情页应用状态，包括历史版本状态 应用详情页请求数据时，应用详情页onResume()时候
+	 * 设置应用详情页应用状态，应用详情页请求数据时，应用详情页onResume()时候
 	 * 
 	 * @param item
 	 * @return
@@ -215,9 +220,8 @@ public abstract class PublicActivity extends Activity {
 					isRemoteImage = true;
 					loadingImage();
 				} else if (mobileNetworkInfo.isAvailable() && mobileNetworkInfo.isConnected()) {// 移动网络可用
-					if (isEconomizeTraffic) {// 开启蜂窝数据，禁止下载图片
+					if (isEconomizeTraffic) {// 已开启蜂窝数据，禁止下载图片
 						isRemoteImage = false;
-						loadingImage();
 					} else {
 						isRemoteImage = true;
 						loadingImage();
@@ -251,11 +255,12 @@ public abstract class PublicActivity extends Activity {
 						e.printStackTrace();
 					}
 					if (info != null) {
-						onAppInstallOrUninstallDone(INSTALL_APP_DONE, info);// 安装成功回调
+						onAppInstallOrUninstallDone(AConstDefine.INSTALL_APP_DONE, info);// 安装成功回调
 					}
 				} else {// 卸载广播
 					info = new PackageInfo();
-					onAppInstallOrUninstallDone(UNINSTALL_APP_DONE, info);// 卸载成功回调
+					info.packageName = packageName;
+					onAppInstallOrUninstallDone(AConstDefine.UNINSTALL_APP_DONE, info);// 卸载成功回调
 				}
 			}
 		}
@@ -314,18 +319,18 @@ public abstract class PublicActivity extends Activity {
 	public abstract void onAppInstallOrUninstallDone(int status, PackageInfo info);
 
 	/**
-	 * 当软件取消下载或更新的时候
+	 * 当应用状态改变的时候
 	 * 
 	 */
 	public abstract void onAppStatusChange(boolean isCancel, String packageName, int versionCode);
 
 	/**
-	 * 数据更新
+	 * 更新数据合并时
 	 */
 	protected abstract void onUpdateDataDone();
 
 	/**
-	 * 加载图片
+	 * 当网络状态改变时
 	 */
 	protected abstract void loadingImage();
 

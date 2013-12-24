@@ -71,15 +71,14 @@ public abstract class ListBaseAdapter extends BaseAdapter implements AConstDefin
 	public boolean changeApkStatusByPackageInfo(int status, PackageInfo info) {
 		List<ApkItem> list = getItemList();
 		if (list != null && list.size() > 0) {
-			int i = 0;
-			for (; i < list.size(); i++) {
+			for (int i = 0; i < list.size(); i++) {
 				ApkItem item = list.get(i);
-				if (status == 1) {
+				if (status == AConstDefine.INSTALL_APP_DONE) {
 					if (item.packageName.equals(info.packageName) && item.versionCode == info.versionCode) {
 						list.get(i).status = STATUS_APK_INSTALL_DONE;
 						break;
 					}
-				} else if (status == 2) {
+				} else if (status == AConstDefine.UNINSTALL_APP_DONE) {
 					if (item.packageName.equals(info.packageName)) {
 						list.get(i).status = STATUS_APK_UNINSTALL;
 						break;
@@ -115,6 +114,7 @@ public abstract class ListBaseAdapter extends BaseAdapter implements AConstDefin
 
 	/**
 	 * 显示apk状态
+	 * 
 	 * @param mTextView
 	 * @param status
 	 */

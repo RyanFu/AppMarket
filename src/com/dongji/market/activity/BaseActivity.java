@@ -4,7 +4,12 @@ import android.view.KeyEvent;
 import android.view.Menu;
 
 /**
- * activity基类
+ * MainActivity子Activity的基类
+ * 主要负责以下事情：
+ * 1.定义一个点击顶部tooBar父类方法，由子类重载实现
+ * 2.截获子Activity的菜单按钮事件，将其传递给MainActivity处理
+ * 3.截获子Activity的按钮事件，将其传递给MainActivity处理
+ * 4.定义了onAppClick(),onGameClick(),isAppclick()抽象方法，子类实现
  * 
  * @author yvon
  * 
@@ -17,10 +22,17 @@ public abstract class BaseActivity extends PublicActivity {
 	public void OnToolBarClick() {
 	}
 
+	/**
+	 * 获取父activityGroup MainActivity
+	 * @return
+	 */
 	protected MainActivity getParentActivity() {
 		return (MainActivity) getParent();
 	}
 
+	/**
+	 * 获取父控件的菜单
+	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		if (getParent() == null) {
@@ -30,6 +42,9 @@ public abstract class BaseActivity extends PublicActivity {
 		}
 	}
 
+	/**
+	 * 打开父控件的菜单
+	 */
 	@Override
 	public boolean onMenuOpened(int featureId, Menu menu) {
 		if (getParent() == null) {
@@ -39,6 +54,9 @@ public abstract class BaseActivity extends PublicActivity {
 		}
 	}
 
+	/**
+	 * 将按键事件分发到父控件处理
+	 */
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (getParent() != null) {
@@ -48,6 +66,9 @@ public abstract class BaseActivity extends PublicActivity {
 		}
 	}
 
+	/**
+	 * 返回调用
+	 */
 	@Override
 	public void onBackPressed() {
 		finish();

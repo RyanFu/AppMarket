@@ -1,5 +1,7 @@
 package com.dongji.market.activity;
 
+import java.io.IOException;
+
 import android.app.ActivityGroup;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -41,6 +43,7 @@ import com.dongji.market.helper.TitleUtil;
 import com.dongji.market.helper.TitleUtil.OnToolBarBlankClickListener;
 import com.dongji.market.pojo.LoginParams;
 import com.dongji.market.pojo.SettingConf;
+import com.dongji.market.protocol.DataManager;
 import com.dongji.market.protocol.DataUpdateService;
 import com.dongji.market.service.DownloadService;
 import com.dongji.market.widget.CustomNoTitleDialog;
@@ -57,6 +60,7 @@ import com.umeng.analytics.MobclickAgent;
 public class MainActivity extends ActivityGroup implements OnClickListener, OnPageChangedListener, AConstDefine, OnToolBarBlankClickListener {
 
 	private static final boolean DEBUG = true;
+	private static final int EVENT_COLLECT_DEVICE_INFO = 1;
 	private static final int EVENT_CHANGE_EXIT_STATUS = 2;// 改变退出状态
 	private static final int EVENT_LOADING_DATA = 3;// 加载数据
 	private static final int EVENT_CHECK_APP_UPDATE = 4;// 检查更新
@@ -95,8 +99,8 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		mApp = (AppMarket) getApplication();
-		boolean flag = DJMarketUtils.isSaveFlow(this);// 是否开启流量模式
-		mApp.setRemoteImage(!flag);// 是否下载图片
+		boolean save = DJMarketUtils.isSaveFlow(this);// 是否开启流量模式
+		mApp.setRemoteImage(!save);// 是否下载图片
 
 		checkFirstLaunch();
 		if (DEBUG)
@@ -221,6 +225,7 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		mHandler = new MyHandler(mHandlerThread.getLooper());
 		mHandler.sendEmptyMessageDelayed(EVENT_LOADING_DATA, 1500L);
 		mHandler.sendEmptyMessage(EVENT_CHECK_APP_UPDATE);
+		mHandler.sendEmptyMessage(EVENT_COLLECT_DEVICE_INFO);// 获取设备信息
 	}
 
 	private class MyHandler extends Handler {
@@ -232,6 +237,9 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
+			case EVENT_COLLECT_DEVICE_INFO:// 发送设备信息
+				reportDeviceInfo();
+				break;
 			case EVENT_CHANGE_EXIT_STATUS:// 改变退出状态
 				isExit = false;
 				break;
@@ -250,6 +258,19 @@ public class MainActivity extends ActivityGroup implements OnClickListener, OnPa
 				// }
 				break;
 			}
+		}
+	}
+
+	/**
+	 * 反馈设备信息
+	 */
+	private void reportDeviceInfo() {
+		try {
+			if (DJMarketUtils.isNetworkAvailable(this)) {
+				DataManager.newInstance().collectLocalData(this);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 

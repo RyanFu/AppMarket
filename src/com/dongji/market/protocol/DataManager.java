@@ -152,7 +152,6 @@ public class DataManager {
 				result = httpClientApi.getContentFromUrl(DOMAIN_NAME + suffixUrl);
 			} catch (IOException e) {
 				result = FsCache.getCacheString(cacheSuffix);
-				System.out.println("getApps:" + e);
 			}
 			if (!TextUtils.isEmpty(result)) {
 				FsCache.deleteCacheFileByMd5Value(cacheSuffix);

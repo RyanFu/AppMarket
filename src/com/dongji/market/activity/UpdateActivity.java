@@ -37,40 +37,28 @@ import com.dongji.market.widget.ScrollListView;
  * 
  */
 public class UpdateActivity extends BaseActivity implements OnItemClickListener {
+	private static final int EVENT_REQUEST_BANNER_DATA = 0;
 	private static final int EVENT_REQUEST_APPLIST_DATA = 1;
 	private static final int EVENT_REQUEST_GAMELIST_DATA = 2;
 	private static final int EVENT_NO_NETWORK_ERROR = 3;
 	private static final int EVENT_REQUEST_DATA_ERROR = 4;
-	private static final int EVENT_REFRENSH_DATA = 6;
-
-	private static final int TYPE_UPDATE = 1;
-
+	private static final int EVENT_REFRENSH_DATA = 5;
 	private int currentType;
-
 	private Context context;
 	private MyHandler mHandler;
-
 	private List<ApkItem> apps;
 	private List<ApkItem> games;
-
 	private ScrollListView mAppListView;
 	private ScrollListView mGameListView;
-
 	private ListSingleTemplateAdapter mAppSingleAdapter;
-
 	private ListSingleTemplateAdapter mGameSingleAdapter;
-
 	private View mLoadingView;
 	private View mLoadingProgressBar;
 	private TextView mLoadingTextView;
-
 	private DataManager dataManager;
-
 	private boolean isAppClicked = true;
-
 	private int currentAppPage;
 	private int currentGamePage;
-
 	private boolean isFirstResume = true;
 	private int locStep;
 
@@ -79,10 +67,9 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_list_template);
 		context = this;
-
-		initData();
-		initLoadingView();
 		initHandler();
+		initLoadingView();
+		initData();
 	}
 
 	/**
@@ -90,7 +77,12 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener 
 	 */
 	private void initData() {
 		dataManager = DataManager.newInstance();
-		currentType = getIntent().getIntExtra("type", 1);
+		currentType = getIntent().getIntExtra("type", 0);
+		if (currentType==AConstDefine.ACTIVITY_TYPE_CHOICENESS) {
+			mHandler.sendEmptyMessage(EVENT_REQUEST_BANNER_DATA);
+		}else {
+			mHandler.sendEmptyMessage(EVENT_REQUEST_APPLIST_DATA);// 请求applist
+		}
 	}
 
 	/**
@@ -132,7 +124,6 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener 
 		HandlerThread mHandlerThread = new HandlerThread("handlerThread");
 		mHandlerThread.start();
 		mHandler = new MyHandler(mHandlerThread.getLooper());
-		mHandler.sendEmptyMessage(EVENT_REQUEST_APPLIST_DATA);
 	}
 
 	private class MyHandler extends Handler {
@@ -146,80 +137,20 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener 
 			switch (msg.what) {
 			case EVENT_REQUEST_APPLIST_DATA:// 请求应用信息
 				try {
-					apps = getApps();
-					apps = setApkStatus(apps);// 设置应用状态
-				} catch (IOException e) {
-					System.out.println("ioexception:" + e);
+					fetchAppsData();
 				} catch (JSONException e) {
-					System.out.println("jsonexception:" + e);
 					sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
+					e.printStackTrace();
 				}
-				if (apps != null && apps.size() > 0) {
-					runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							if (currentAppPage == 0) {// 初始化
-								currentAppPage = 1;
-								initAppListView();
-								mLoadingView.setVisibility(View.GONE);
-							} else {// 显示列表，隐藏加载
-								if (isAppClicked) {
-									if (mAppListView.getVisibility() == View.GONE) {
-										mAppListView.setVisibility(View.VISIBLE);
-										mLoadingView.setVisibility(View.GONE);
-									}
-								}
-								currentAppPage++;
-							}
-						}
-					});
-				} else {
-					if (!DJMarketUtils.isNetworkAvailable(context)) {
-						sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
-					} else {
-						sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
-					}
-				}
+				handleAppsData();
 				break;
 			case EVENT_REQUEST_GAMELIST_DATA:// 请求游戏信息
 				try {
-					games = getApps();
-					games = setApkStatus(games);
-				} catch (IOException e) {
-					if (!DJMarketUtils.isNetworkAvailable(context)) {
-						sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
-					} else {
-						sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
-					}
+					fetchGamesData();
 				} catch (JSONException e) {
 					sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
 				}
-				if (games != null && games.size() > 0) {
-					runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							if (currentGamePage == 0) {
-								currentGamePage = 1;
-								initGameListView();
-								mLoadingView.setVisibility(View.GONE);
-							} else {
-								if (!isAppClicked) {
-									if (mGameListView.getVisibility() == View.GONE) {
-										mGameListView.setVisibility(View.VISIBLE);
-										mLoadingView.setVisibility(View.GONE);
-									}
-								}
-								currentGamePage++;
-							}
-						}
-					});
-				} else {
-					if (!DJMarketUtils.isNetworkAvailable(context)) {
-						sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
-					} else {
-						sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
-					}
-				}
+				handleGamesData();
 				break;
 			case EVENT_NO_NETWORK_ERROR:// 网络错误
 				setErrorMessage(R.string.no_network_refresh_msg, R.string.no_network_refresh_msg2);
@@ -232,6 +163,75 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener 
 				break;
 			}
 		}
+
+	}
+
+	private void handleGamesData() {
+		if (games != null && games.size() > 0) {
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					if (currentGamePage == 0) {
+						currentGamePage = 1;
+						initGameListView();
+						mLoadingView.setVisibility(View.GONE);
+					} else {
+						if (!isAppClicked) {
+							if (mGameListView.getVisibility() == View.GONE) {
+								mGameListView.setVisibility(View.VISIBLE);
+								mLoadingView.setVisibility(View.GONE);
+							}
+						}
+						currentGamePage++;
+					}
+				}
+			});
+		} else {
+			if (!DJMarketUtils.isNetworkAvailable(context)) {
+				mHandler.sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
+			} else {
+				mHandler.sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
+			}
+		}
+	}
+
+	private void fetchGamesData() throws JSONException {
+		games = getApps();
+		games = setApkStatus(games);
+	}
+
+	private void handleAppsData() {
+		if (apps != null && apps.size() > 0) {
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					if (currentAppPage == 0) {// 初始化
+						currentAppPage = 1;
+						initAppListView();
+						mLoadingView.setVisibility(View.GONE);
+					} else {// 显示列表，隐藏加载
+						if (isAppClicked) {
+							if (mAppListView.getVisibility() == View.GONE) {
+								mAppListView.setVisibility(View.VISIBLE);
+								mLoadingView.setVisibility(View.GONE);
+							}
+						}
+						currentAppPage++;
+					}
+				}
+			});
+		} else {
+			if (!DJMarketUtils.isNetworkAvailable(context)) {
+				mHandler.sendEmptyMessage(EVENT_NO_NETWORK_ERROR);
+			} else {
+				mHandler.sendEmptyMessage(EVENT_REQUEST_DATA_ERROR);
+			}
+		}
+	}
+
+	private void fetchAppsData() throws JSONException {
+		apps = getApps();
+		apps = setApkStatus(apps);// 设置应用状态
 	}
 
 	/**
@@ -260,12 +260,12 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener 
 	 * @throws IOException
 	 * @throws JSONException
 	 */
-	private List<ApkItem> getApps() throws IOException, JSONException {
-		return dataManager.getApps(this, currentType == TYPE_UPDATE ? DataManager.RECENT_UPDATA_ID : DataManager.ESSENTIAL_ID, isAppClicked);
+	private List<ApkItem> getApps() throws JSONException {
+		return dataManager.getApps(this, currentType, isAppClicked);
 	}
 
 	/**
-	 * 初始化应用列表视图,单行还是双行显示
+	 * 初始化应用列表视图
 	 */
 	private void initAppListView() {
 		mAppListView = (ScrollListView) findViewById(R.id.applistview);
@@ -281,7 +281,7 @@ public class UpdateActivity extends BaseActivity implements OnItemClickListener 
 	}
 
 	/**
-	 * 初始化游戏列表视图，单行还是双行显示
+	 * 初始化游戏列表视图
 	 */
 	private void initGameListView() {
 		mGameListView = (ScrollListView) findViewById(R.id.gamelistview);

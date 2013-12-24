@@ -3,6 +3,14 @@ package com.dongji.market.helper;
 import android.os.Environment;
 
 public interface AConstDefine {
+	
+	public final static int ACTIVITY_TYPE_CHOICENESS=0;
+	public final static int ACTIVITY_TYPE_UPDATE=1;
+	public final static int ACTIVITY_TYPE_ESSENTIAL=2;
+	
+	
+	public final static int INSTALL_APP_DONE = 1;// 安装成功
+	public final static int UNINSTALL_APP_DONE = 2;// 卸载成功
 	// ————————————————————————————————————NOTIFICATION————————————————————————————————————
 	/**
 	 * 标志：Notification下载提示

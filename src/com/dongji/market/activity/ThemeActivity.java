@@ -71,6 +71,7 @@ public class ThemeActivity extends BaseActivity implements OnClickListener {
 	private View mLoadingView;
 	private View mLoadingProgressBar;
 	private TextView mLoadingTextView;
+	public List<SubjectInfo> subjectInfo;
 
 	@Override
 	protected void onCreate(Bundle bundle) {
@@ -140,7 +141,7 @@ public class ThemeActivity extends BaseActivity implements OnClickListener {
 			switch (msg.what) {
 			case EVENT_REQUEST_DATA:
 				try {
-					final List<SubjectInfo> subjectInfo = DataManager.newInstance().getAllSubject();
+					fetchSubjectData();
 					if (subjectInfo != null && subjectInfo.size() > 0) {
 						runOnUiThread(new Runnable() {
 							@Override
@@ -172,6 +173,10 @@ public class ThemeActivity extends BaseActivity implements OnClickListener {
 				break;
 			}
 		}
+
+		private void fetchSubjectData() throws IOException, JSONException {
+			subjectInfo = DataManager.newInstance().getAllSubject();
+		}
 	}
 
 	private void initView() {
@@ -200,7 +205,7 @@ public class ThemeActivity extends BaseActivity implements OnClickListener {
 									if (screenTop[k] - 2 > 0) {
 										View view = localLinearLayout.getChildAt(screenTop[k] - 2);
 										WaterFallCell cell = (WaterFallCell) view.findViewById(R.id.water_fall_item_cell);
-										cell.recycle();
+//										cell.recycle();
 									}
 									// 既然顶部图片被隐藏了那么自然而然现在屏幕上的最顶部图片+1
 									screenTop[k] += 1;
@@ -232,7 +237,7 @@ public class ThemeActivity extends BaseActivity implements OnClickListener {
 								if (cellTotalHeight[k].get(screenBottom[k] - 1) > t + scroll_height) {
 									View view = localLinearLayout.getChildAt(screenBottom[k] - 1);
 									WaterFallCell cell = (WaterFallCell) view.findViewById(R.id.water_fall_item_cell);
-									cell.recycle();
+//									cell.recycle();
 									screenBottom[k] -= 1;
 								}
 							}
